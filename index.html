@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1E3A8A" />
+  <title>Insight Analytics — From Reporting to Predictive Business Intelligence</title>
+  <meta name="description" content="Insight Analytics turns scattered business data into governed, AI-assisted insight executives act on. Components already in production — customized to your data, KPIs, and workflows." />
+  <meta name="author" content="Insight Analytics" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Insight Analytics — Predictive Business Intelligence" />
+  <meta property="og:description" content="The business already has the answers. Let the system bring the story to leadership." />
+  <meta property="og:url" content="https://insightanalyticsca.github.io/insight-analytics/" />
+
+  <!-- Google Fonts: Inter + Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn7TZv2Dl3Jp2s1Lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <!-- Prevent theme flash -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("ia-theme");
+        if (t !== "light" && t !== "dark") {
+          t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ============================ NAV ============================ -->
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#top" class="brand" aria-label="Insight Analytics home">
+        <span class="brand-mark" aria-hidden="true">IA</span>
+        <span class="brand-name">Insight <b>Analytics</b></span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#services" class="nav-link" data-nav="services">Services</a>
+        <a href="#dashboard" class="nav-link" data-nav="dashboard">Dashboard</a>
+        <a href="#cases" class="nav-link" data-nav="cases">Case Studies</a>
+        <a href="#contact" class="nav-link" data-nav="contact">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
+          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i>
+          <span class="sr-only" id="theme-label">Light</span>
+        </button>
+        <a href="#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check" aria-hidden="true"></i> Book a Demo</a>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <i class="fas fa-bars" id="menu-icon" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu" role="menu" aria-label="Mobile navigation">
+    <a href="#services" class="nav-link" role="menuitem">Services</a>
+    <a href="#dashboard" class="nav-link" role="menuitem">Dashboard</a>
+    <a href="#cases" class="nav-link" role="menuitem">Case Studies</a>
+    <a href="#contact" class="nav-link" role="menuitem">Contact</a>
+    <a href="#contact" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Book a Demo</a>
+  </div>
+
+  <span id="top" aria-hidden="true"></span>
+
+  <main>
+    <!-- ============================ HERO ============================ -->
+    <section class="hero" id="hero" aria-labelledby="hero-title">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="container hero-inner">
+        <span class="eyebrow reveal"><span class="dot"></span> Enterprise Business Intelligence</span>
+        <h1 id="hero-title" class="reveal reveal-left">
+          From Reporting to <span class="grad">Predictive Business Intelligence</span>
+        </h1>
+        <p class="hero-sub reveal reveal-left">
+          The business already has the answers. Leadership should not have to hunt for them.
+          Instead of asking leadership to find the story in the data, let the system bring
+          the story to leadership.
+        </p>
+        <div class="hero-cta reveal reveal-left">
+          <a href="#contact" class="btn btn-primary btn-lg">
+            <i class="fas fa-calendar-check" aria-hidden="true"></i>
+            <span class="btn-text">Book a Demo</span>
+          </a>
+          <a href="#dashboard" class="btn btn-ghost btn-lg">
+            <i class="fas fa-chart-line" aria-hidden="true"></i>
+            <span class="btn-text">See Live Dashboard</span>
+          </a>
+        </div>
+
+        <div class="hero-meta reveal">
+          <div class="meta-item">
+            <span class="meta-num"><span class="grad">8</span></span>
+            <span class="meta-label">Step Methodology</span>
+          </div>
+          <span class="meta-divider"></span>
+          <div class="meta-item">
+            <span class="meta-num"><span class="grad">3</span></span>
+            <span class="meta-label">Production Deployments</span>
+          </div>
+          <span class="meta-divider"></span>
+          <div class="meta-item">
+            <span class="meta-num"><span class="grad">40%</span></span>
+            <span class="meta-label">Avg DSO Reduction</span>
+          </div>
+          <span class="meta-divider"></span>
+          <div class="meta-item">
+            <span class="meta-num"><span class="grad">116</span></span>
+            <span class="meta-label">Stores Governed</span>
+          </div>
+        </div>
+      </div>
+
+      <a href="#services" class="scroll-indicator" aria-label="Scroll to content">
+        <span class="scroll-mouse" aria-hidden="true"></span>
+        <span>Scroll</span>
+      </a>
+    </section>
+
+    <!-- ============================ PROBLEM ============================ -->
+    <section class="section" id="problem" aria-labelledby="problem-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow"><span class="dot"></span> The Problem</span>
+          <h2 class="section-title" id="problem-title">Leadership spends more time <span class="grad">finding</span> answers than acting on them</h2>
+          <p class="section-sub">Three patterns repeat inside nearly every organization we work with — and each one quietly drains executive time.</p>
+        </div>
+
+        <div class="problem-grid" data-stagger>
+          <article class="card problem-card" data-stagger-item>
+            <div class="problem-icon" aria-hidden="true"><i class="fas fa-network-wired"></i></div>
+            <h3>Scattered Across Systems</h3>
+            <p>Databases, spreadsheets, presentations, operational updates. People spend hours collecting, reconciling, and interpreting before a decision can be made.</p>
+          </article>
+          <article class="card problem-card" data-stagger-item>
+            <div class="problem-icon" aria-hidden="true"><i class="fas fa-hourglass-half"></i></div>
+            <h3>Hours Wasted Collecting</h3>
+            <p>Routine collection and preparation happen manually. Recurring reports begin with someone gathering files and rebuilding the same calculations.</p>
+          </article>
+          <article class="card problem-card" data-stagger-item>
+            <div class="problem-icon" aria-hidden="true"><i class="fas fa-code-branch"></i></div>
+            <h3>Competing Versions of Truth</h3>
+            <p>The same governed numbers should feed dashboards, reports, Excel, PowerPoint, and AI. Without a shared reporting layer, everyone has their own version.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ METHODOLOGY ============================ -->
+    <section class="section" id="services" aria-labelledby="method-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow"><span class="dot"></span> The Methodology</span>
+          <h2 class="section-title" id="method-title">Eight steps from <span class="grad">raw systems to closed-loop action</span></h2>
+          <p class="section-sub">A repeatable, governed path. No rip-and-replace. Each step uses components already proven in production — then tailored to your data, your KPIs, your workflows.</p>
+        </div>
+
+        <div class="methodology-grid" data-stagger>
+          <article class="method-card" data-stagger-item>
+            <div class="method-head">
+              <span class="step-num">1</span>
+              <span class="method-icon" aria-hidden="true">🔗</span>
+            </div>
+            <h3>Connect What Already Exists</h3>
+            <p>Secure database connections, system interfaces, file imports, scheduled connectors. No rip-and-replace.</p>
+          </article>
+          <article class="method-card" data-stagger-item>
+            <div class="method-head">
+              <span class="step-num">2</span>
+              <span class="method-icon" aria-hidden="true">⏱️</span>
+            </div>
+            <h3>Stop Repeated Collection</h3>
+            <p>Scheduled data pipelines pull, validate, standardize, combine. Repeatable business rules, not manual labor.</p>
+          </article>
+          <article class="method-card" data-stagger-item>
+            <div class="method-head">
+              <span class="step-num">3</span>
+              <span class="method-icon" aria-hidden="true">🎯</span>
+            </div>
+            <h3>One Reliable Picture</h3>
+            <p>Shared reporting layer with common definitions, calculations, mappings, quality checks. One number, one truth.</p>
+          </article>
+          <article class="method-card" data-stagger-item>
+            <div class="method-head">
+              <span class="step-num">4</span>
+              <span class="method-icon" aria-hidden="true">🤖</span>
+            </div>
+            <h3>Make AI the First Reader</h3>
+            <p>Before the meeting, the system has already compared current performance with history. Identified what changed, what looks unusual.</p>
+          </article>
+          <article class="method-card" data-stagger-item>
+            <div class="method-head">
+              <span class="step-num">5</span>
+              <span class="method-icon" aria-hidden="true">💬</span>
+            </div>
+            <h3>Ask Questions Directly</h3>
+            <p>Natural-language interface queries governed business data. Returns answers with relevant numbers, trends, and context.</p>
+          </article>
+          <article class="method-card" data-stagger-item>
+            <div class="method-head">
+              <span class="step-num">6</span>
+              <span class="method-icon" aria-hidden="true">📈</span>
+            </div>
+            <h3>Do Not Just Explain — Predict</h3>
+            <p>Forecast demand, revenue, activity, cost. Flag unusual behaviour. Identify situations that resemble known outcomes.</p>
+          </article>
+          <article class="method-card" data-stagger-item>
+            <div class="method-head">
+              <span class="step-num">7</span>
+              <span class="method-icon" aria-hidden="true">📍</span>
+            </div>
+            <h3>Put Insight Where People Work</h3>
+            <p>Power BI, Excel, PowerPoint, PDF, email, custom web dashboards — all fed from the same trusted source.</p>
+          </article>
+          <article class="method-card" data-stagger-item>
+            <div class="method-head">
+              <span class="step-num">8</span>
+              <span class="method-icon" aria-hidden="true">🔁</span>
+            </div>
+            <h3>Close the Loop</h3>
+            <p>Alerts, approvals, notifications, workflow rules. Route the issue, update the system of record, record the response.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ DASHBOARD SHOWCASE ============================ -->
+    <section class="section" id="dashboard" aria-labelledby="dash-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow"><span class="dot"></span> See It In Action</span>
+          <h2 class="section-title" id="dash-title">The Chatters Executive Dashboard — <span class="grad">live, interactive</span></h2>
+          <p class="section-sub">The dashboard below is a live, interactive demo. Try clicking through the charts. The AI Brief card streams a real-time analysis from the data.</p>
+        </div>
+
+        <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live Chatters Executive Dashboard">
+          <div class="browser-bar">
+            <div class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="browser-url">
+              <i class="fas fa-lock" aria-hidden="true"></i>
+              <span>insightanalyticsca.github.io/dashboards/</span>
+            </div>
+            <div class="browser-actions" aria-hidden="true">
+              <i class="fas fa-rotate-right"></i>
+              <i class="fas fa-ellipsis"></i>
+            </div>
+          </div>
+          <div class="browser-frame">
+            <div class="browser-loading" id="browser-loading">
+              <div class="spinner" aria-hidden="true"></div>
+              <span>Loading executive dashboard…</span>
+            </div>
+            <iframe
+              id="dashboard-iframe"
+              data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html"
+              title="Chatters Executive Dashboard — live interactive demo"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allow="fullscreen"
+            ></iframe>
+          </div>
+        </div>
+
+        <!-- Mobile placeholder -->
+        <div class="dashboard-mobile" role="region" aria-label="Dashboard mobile view">
+          <div class="dm-icon" aria-hidden="true"><i class="fas fa-tablet-screen-button"></i></div>
+          <h4>Chatters Executive Dashboard</h4>
+          <p>The interactive dashboard is best viewed on a larger screen. Open it directly in a new tab on this device.</p>
+          <button class="btn btn-primary" id="mobile-view-dashboard" type="button">
+            <i class="fas fa-up-right-from-square" aria-hidden="true"></i>
+            <span class="btn-text">View Dashboard</span>
+          </button>
+        </div>
+
+        <p class="dashboard-caption reveal"><b>Components already in production.</b> Customized to your data, your KPIs, your workflows.</p>
+      </div>
+    </section>
+
+    <!-- ============================ CASE STUDIES ============================ -->
+    <section class="section" id="cases" aria-labelledby="cases-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow"><span class="dot"></span> Case Studies</span>
+          <h2 class="section-title" id="cases-title">Outcomes, not <span class="grad">slide decks</span></h2>
+          <p class="section-sub">Three production deployments — each one started from components already in the field, then shaped to the client's data and operating model.</p>
+        </div>
+
+        <div class="case-grid" data-stagger>
+          <article class="card case-card" data-stagger-item>
+            <div class="case-banner" aria-hidden="true"></div>
+            <div class="case-body">
+              <span class="case-industry"><i class="fas fa-bolt"></i> Electric Utility</span>
+              <h3>Utility Company — AR Portfolio</h3>
+              <div class="case-row"><span class="label">Challenge</span><span>91+ day receivables growing, collections team overwhelmed by volume and lack of prioritization.</span></div>
+              <div class="case-row"><span class="label success">Outcome</span><span>40% reduction in DSO. AI-driven daily prioritization of collection targets.</span></div>
+              <div class="case-tags">
+                <span class="tag">Executive Dashboard</span>
+                <span class="tag">AI Brief</span>
+                <span class="tag">Collections Workflow</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card case-card" data-stagger-item>
+            <div class="case-banner" aria-hidden="true"></div>
+            <div class="case-body">
+              <span class="case-industry"><i class="fas fa-store"></i> Beauty Retail + Salon</span>
+              <h3>Retail Chain — Chatters Executive Dashboard</h3>
+              <div class="case-row"><span class="label">Challenge</span><span>No visibility into store-level performance; retail vs service mix unclear across the 116-store chain.</span></div>
+              <div class="case-row"><span class="label success">Outcome</span><span>4.7% YoY revenue growth visibility. Capacity optimization across 116 stores.</span></div>
+              <div class="case-tags">
+                <span class="tag">Executive Dashboard</span>
+                <span class="tag">Capacity Heatmap</span>
+                <span class="tag">Store Analytics</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card case-card" data-stagger-item>
+            <div class="case-banner" aria-hidden="true"></div>
+            <div class="case-body">
+              <span class="case-industry"><i class="fas fa-headset"></i> Mid-size IT Department</span>
+              <h3>IT Operations — Service Health</h3>
+              <div class="case-row"><span class="label">Challenge</span><span>Reactive incident management, no SLA visibility, ticket backlog growing month over month.</span></div>
+              <div class="case-row"><span class="label success">Outcome</span><span>60% faster incident response. SLA compliance up 23 points.</span></div>
+              <div class="case-tags">
+                <span class="tag">Service Health</span>
+                <span class="tag">SLA Dashboard</span>
+                <span class="tag">Ticket Operations</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ WHY NOW ============================ -->
+    <section class="section" id="why-now" aria-labelledby="why-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow"><span class="dot"></span> Why This Works Now</span>
+          <h2 class="section-title" id="why-title">The pieces are <span class="grad">finally mature</span> — and already built</h2>
+          <p class="section-sub">What used to be a multi-year enterprise program is now a focused engagement, because the components exist and the patterns are proven.</p>
+        </div>
+
+        <div class="why-panel reveal">
+          <div class="why-grid" data-stagger>
+            <div class="why-item" data-stagger-item>
+              <div class="why-icon" aria-hidden="true"><i class="fas fa-layer-group"></i></div>
+              <h3>Platform-Agnostic</h3>
+              <p>Works with your existing databases, business systems, and spreadsheets — no rip-and-replace required.</p>
+            </div>
+            <div class="why-item" data-stagger-item>
+              <div class="why-icon" aria-hidden="true"><i class="fas fa-plug"></i></div>
+              <h3>Modern Connectors</h3>
+              <p>Mature, reusable components shorten implementation curves dramatically. We are assembling, not inventing.</p>
+            </div>
+            <div class="why-item" data-stagger-item>
+              <div class="why-icon" aria-hidden="true"><i class="fas fa-microchip"></i></div>
+              <h3>AI-Assisted Development</h3>
+              <p>Cloud and on-premises options, with AI shortening learning curves across data engineering and analysis.</p>
+            </div>
+            <div class="why-item" data-stagger-item>
+              <div class="why-icon" aria-hidden="true"><i class="fas fa-expand"></i></div>
+              <h3>Right-Sized</h3>
+              <p>Same design scales from a focused process to enterprise-scale information flow. Start small, extend fast.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ CONTACT ============================ -->
+    <section class="section" id="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow"><span class="dot"></span> Contact</span>
+          <h2 class="section-title" id="contact-title">Book a <span class="grad">working session</span></h2>
+          <p class="section-sub">Bring one recurring report or one stubborn question. We will show you the same data, governed and ready to act on.</p>
+        </div>
+
+        <div class="contact-grid">
+          <!-- Form -->
+          <div class="contact-form-wrap reveal reveal-left">
+            <h3>Request a Demo</h3>
+            <p class="form-lead">Tell us what you are trying to see. We respond within one business day.</p>
+            <form id="contact-form" novalidate>
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="cf-name">Full Name <span class="req" aria-hidden="true">*</span></label>
+                  <input type="text" id="cf-name" name="name" autocomplete="name" required placeholder="Jane Doe" />
+                </div>
+                <div class="form-field">
+                  <label for="cf-email">Work Email <span class="req" aria-hidden="true">*</span></label>
+                  <input type="email" id="cf-email" name="email" autocomplete="email" required placeholder="jane@company.com" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-field" style="grid-column: 1 / -1;">
+                  <label for="cf-company">Company</label>
+                  <input type="text" id="cf-company" name="company" autocomplete="organization" placeholder="Company Inc." />
+                </div>
+              </div>
+              <div class="form-field" style="margin-bottom:16px;">
+                <label for="cf-message">What would you like to see? <span class="req" aria-hidden="true">*</span></label>
+                <textarea id="cf-message" name="message" required placeholder="e.g. We want one governed view of AR aging across business units."></textarea>
+              </div>
+              <div class="form-submit-row">
+                <button type="submit" class="btn btn-primary btn-lg" id="contact-submit">
+                  <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                  <span class="btn-text">Book a Demo</span>
+                </button>
+                <span class="form-status" id="form-status" aria-live="polite"></span>
+              </div>
+            </form>
+          </div>
+
+          <!-- Info -->
+          <aside class="contact-info reveal reveal-right" aria-label="Direct contact information">
+            <div class="info-card glass">
+              <div class="info-item">
+                <div class="info-icon" aria-hidden="true"><i class="fas fa-envelope"></i></div>
+                <div class="info-text">
+                  <div class="label">Email</div>
+                  <a class="value" href="mailto:sergey.gurov@insight-analytics.ca">sergey.gurov@insight-analytics.ca</a>
+                </div>
+              </div>
+              <div class="info-item">
+                <div class="info-icon" aria-hidden="true"><i class="fas fa-phone"></i></div>
+                <div class="info-text">
+                  <div class="label">Phone</div>
+                  <a class="value" href="tel:+12896359915">(289) 635-9915</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-card value-chain">
+              <div class="value-chain-title">The Value Chain</div>
+              <div class="chain-flow">
+                <div class="chain-step">Data</div>
+                <span class="chain-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                <div class="chain-step">Understanding</div>
+                <span class="chain-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                <div class="chain-step">Prediction</div>
+                <span class="chain-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                <div class="chain-step">Action</div>
+              </div>
+            </div>
+
+            <a href="#contact" class="btn btn-ghost btn-lg" style="align-self:flex-start;">
+              <i class="fas fa-handshake" aria-hidden="true"></i>
+              <span class="btn-text">Book a Demo</span>
+            </a>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a href="#top" class="brand footer-brand" aria-label="Insight Analytics home">
+          <span class="brand-mark" aria-hidden="true">IA</span>
+          <span class="brand-name">Insight <b>Analytics</b></span>
+        </a>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="#services">Services</a>
+          <a href="https://insightanalyticsca.github.io/dashboards/" target="_blank" rel="noopener noreferrer">Dashboard</a>
+          <a href="https://github.com/insightanalyticsca/dashboards" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span>
+        <div class="social">
+          <a href="https://github.com/insightanalyticsca/dashboards" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fab fa-github"></i></a>
+          <a href="mailto:sergey.gurov@insight-analytics.ca" aria-label="Email"><i class="fas fa-envelope"></i></a>
+          <a href="https://insightanalyticsca.github.io/dashboards/" target="_blank" rel="noopener noreferrer" aria-label="Live Dashboards"><i class="fas fa-chart-pie"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
+  <script src="./js/app.js" defer></script>
+  <script src="./js/hero-animation.js" defer></script>
+</body>
+</html>
