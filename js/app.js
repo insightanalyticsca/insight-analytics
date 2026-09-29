@@ -299,7 +299,7 @@
   const form = document.getElementById("contact-form");
   const formStatus = document.getElementById("form-status");
   const submitBtn = document.getElementById("contact-submit");
-  const contactEmail = "sergey.gurov@insight-analytics.ca";
+  const contactEmail = "dev@insight-analytics.ca";
 
   function setStatus(msg, kind) {
     if (!formStatus) return;
