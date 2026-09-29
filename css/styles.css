@@ -1525,3 +1525,89 @@ ul {
 @media (max-width: 1100px) {
   .browser-frame { height: 640px; }
 }
+
+/* ============================ PULL-TO-REFRESH ============================ */
+/* X-centered via left:50% + margin-left:-half-width. JS only controls Y axis. */
+.ptr-indicator {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  margin-left: -70px; /* half of min-width 140px */
+  transform: translate3d(0, 0, 0);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 14px 18px 12px;
+  border-radius: 0 0 18px 18px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.98) 0%,
+    rgba(248,250,252,0.95) 100%);
+  box-shadow: 0 8px 24px -8px rgba(15, 23, 42, 0.25),
+              0 2px 6px -2px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--border);
+  border-top: none;
+  min-width: 140px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  will-change: transform;
+}
+.ptr-indicator.ptr-visible {
+  opacity: 1;
+}
+
+.ptr-spinner {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary, #1E3A8A);
+  transition: color 220ms ease;
+}
+.ptr-spinner svg {
+  width: 24px;
+  height: 24px;
+}
+.ptr-indicator.ready .ptr-spinner,
+.ptr-indicator.refreshing .ptr-spinner {
+  color: var(--accent, #06B6D4);
+}
+
+.ptr-label {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-soft, #475569);
+  text-transform: uppercase;
+}
+
+/* Spin animation for the refreshing state */
+@keyframes ptr-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .ptr-indicator {
+  background: linear-gradient(180deg,
+    rgba(30, 41, 59, 0.98) 0%,
+    rgba(15, 23, 42, 0.95) 100%);
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.55),
+              0 2px 6px -2px rgba(0, 0, 0, 0.35);
+}
+[data-theme="dark"] .ptr-label {
+  color: rgba(226, 232, 240, 0.85);
+}
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .ptr-indicator,
+  .ptr-spinner,
+  .ptr-indicator.ready .ptr-spinner {
+    transition: none !important;
+  }
+}

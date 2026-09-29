@@ -2,11 +2,28 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#1E3A8A" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
   <title>Insight Analytics — From Reporting to Predictive Business Intelligence</title>
   <meta name="description" content="Insight Analytics turns scattered business data into trusted, AI-assisted insight executives act on. Components already in production — customized to your data, KPIs, and workflows." />
   <meta name="author" content="Insight Analytics" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512.png" />
+  <link rel="shortcut icon" href="./icons/favicon.ico" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Insight Analytics" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="Insight Analytics" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -721,5 +738,17 @@
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
   <script src="./js/app.js" defer></script>
   <script src="./js/hero-animation.js" defer></script>
+  <script src="./js/pull-to-refresh.js" defer></script>
+
+  <!-- Register service worker for PWA (installable + offline cache) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+          .then(function (reg) { console.log('[PWA] Service worker registered with scope:', reg.scope); })
+          .catch(function (err) { console.warn('[PWA] Service worker registration failed:', err); });
+      });
+    }
+  </script>
 </body>
 </html>
