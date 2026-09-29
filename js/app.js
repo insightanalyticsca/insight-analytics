@@ -335,19 +335,34 @@
       }
       setStatus("Preparing your message…", "");
 
-      // Build a mailto fallback — guarantees delivery on a static host
+      // Build a sleek, branded email body — opens in the visitor's email
+      // client pre-formatted as a polished business inquiry, not a raw
+      // data dump. Plain-text only (mailto: doesn't support HTML), so the
+      // design relies on Unicode box-drawing chars + aligned columns.
+      const frame = "══════════════════════════════════════════════";
+      const rule  = "─────────────────────────────────────────────";
+      const indentedMessage = message.replace(/\n/g, "\n   ");
+
       const subject = encodeURIComponent(
-        "Demo Request — " + name + (company ? " (" + company + ")" : "")
+        "Demo Request  ·  " + name + (company ? "  —  " + company : "")
       );
       const body = encodeURIComponent(
-        "Name: " +
-          name +
-          "\nEmail: " +
-          email +
-          "\nCompany: " +
-          (company || "—") +
-          "\n\nMessage:\n" +
-          message
+        frame + "\n" +
+        "  INSIGHT ANALYTICS   ·   DEMO REQUEST\n" +
+        frame + "\n\n" +
+        "Hello,\n\n" +
+        "I'd like to schedule a working session with Insight Analytics to explore what unified reporting and AI-assisted insight could look like for our team.\n\n" +
+        "— WHO " + rule.slice(0, rule.length - 6) + "\n" +
+        "   Name      " + name + "\n" +
+        "   Email     " + email + "\n" +
+        "   Company   " + (company || "—") + "\n\n" +
+        "— MESSAGE " + rule.slice(0, rule.length - 10) + "\n" +
+        "   " + indentedMessage + "\n\n" +
+        "Looking forward to your reply.\n\n" +
+        "— " + name + "\n" +
+        frame + "\n" +
+        "  Sent via  insightanalyticsca.github.io/insight-analytics/\n" +
+        frame
       );
       const mailto = "mailto:" + contactEmail + "?subject=" + subject + "&body=" + body;
 
@@ -360,7 +375,7 @@
         }
         form.reset();
         setStatus(
-          "Thank you. Opening your email client to deliver the request — or call (289) 635-9915 directly.",
+          "Thank you. Your email client is opening with a polished request pre-filled to dev@insight-analytics.ca — or call (289) 635-9915 directly.",
           "success"
         );
         // Trigger mailto in a new attempt
