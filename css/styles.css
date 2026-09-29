@@ -86,6 +86,10 @@
 
 html {
   scroll-behavior: smooth;
+  /* Snap to section starts on Page Down / wheel / touch — proximity is gentler
+     than mandatory: only snaps when the user is already close to a section
+     boundary, so it doesn't fight users mid-scroll inside a long section. */
+  scroll-snap-type: y proximity;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -182,6 +186,11 @@ ul {
 .section {
   padding: 96px 0;
   position: relative;
+  /* Snap each major section's top to the viewport when the user pages down /
+     scrolls near a section boundary. scroll-margin-top offsets the fixed
+     navbar so the section title isn't hidden behind it. */
+  scroll-snap-align: start;
+  scroll-margin-top: var(--nav-h);
 }
 .section-sm {
   padding: 72px 0;
@@ -533,6 +542,9 @@ ul {
   align-items: center;
   padding: calc(var(--nav-h) + 40px) 0 60px;
   overflow: hidden;
+  /* Snap target — Page Up from any lower section snaps back to hero top */
+  scroll-snap-align: start;
+  scroll-margin-top: 0;
   background:
     radial-gradient(900px 500px at 78% 12%, rgba(99, 102, 241, 0.16), transparent 60%),
     radial-gradient(700px 500px at 12% 88%, rgba(6, 182, 212, 0.14), transparent 60%),
@@ -1379,6 +1391,10 @@ ul {
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  /* Disable scroll snapping for reduced-motion users — they should be able
+     to scroll freely without the browser re-anchoring to section starts. */
+  html { scroll-snap-type: none !important; }
+  .section, .hero { scroll-snap-align: none !important; }
   .reveal, [data-stagger-item] { opacity: 1; transform: none; }
   .scroll-mouse::before { animation: none; }
 }
