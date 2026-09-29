@@ -165,9 +165,10 @@
 
   /* ------------------------------------------------------------------
    * Active nav link highlighting via section observation
+   * Covers both .nav-link (primary nav) and .nav-pill (Platform-Agnostic / Agile)
    * ------------------------------------------------------------------ */
   const sections = document.querySelectorAll("section[id]");
-  const navLinks = document.querySelectorAll('.nav-link[data-nav]');
+  const navLinks = document.querySelectorAll('.nav-link[data-nav], .nav-pill[data-nav]');
   if ("IntersectionObserver" in window && sections.length && navLinks.length) {
     const nio = new IntersectionObserver(
       function (entries) {
