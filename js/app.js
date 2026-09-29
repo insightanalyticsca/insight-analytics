@@ -246,6 +246,51 @@
   }
 
   /* ------------------------------------------------------------------
+   * Browser mock maximize / restore — expand iframe to full screen
+   * ------------------------------------------------------------------ */
+  const browserMock = document.getElementById("browserMock");
+  const maximizeBtn = document.getElementById("browserMaximize");
+
+  // Create backdrop element
+  const backdrop = document.createElement("div");
+  backdrop.className = "browser-backdrop";
+  document.body.appendChild(backdrop);
+
+  if (browserMock && maximizeBtn) {
+    maximizeBtn.addEventListener("click", function () {
+      const isMax = browserMock.classList.toggle("is-maximized");
+      backdrop.classList.toggle("is-visible", isMax);
+      maximizeBtn.setAttribute("aria-label", isMax ? "Restore dashboard" : "Maximize to full screen");
+      maximizeBtn.title = isMax ? "Restore" : "Maximize to full screen";
+      document.body.style.overflow = isMax ? "hidden" : "";
+    });
+  }
+
+  // Click backdrop to restore
+  backdrop.addEventListener("click", function () {
+    if (browserMock) browserMock.classList.remove("is-maximized");
+    backdrop.classList.remove("is-visible");
+    if (maximizeBtn) {
+      maximizeBtn.setAttribute("aria-label", "Maximize to full screen");
+      maximizeBtn.title = "Maximize to full screen";
+    }
+    document.body.style.overflow = "";
+  });
+
+  // ESC to restore
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && browserMock && browserMock.classList.contains("is-maximized")) {
+      browserMock.classList.remove("is-maximized");
+      backdrop.classList.remove("is-visible");
+      if (maximizeBtn) {
+        maximizeBtn.setAttribute("aria-label", "Maximize to full screen");
+        maximizeBtn.title = "Maximize to full screen";
+      }
+      document.body.style.overflow = "";
+    }
+  });
+
+  /* ------------------------------------------------------------------
    * Contact form handler (client-side validation + feedback)
    * NOTE: static site — no backend. We simulate submission and offer
    * a mailto fallback so the lead still reaches the inbox.

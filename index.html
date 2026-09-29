@@ -475,7 +475,7 @@
           <p class="section-sub">The dashboard below is a live, interactive demo. Try clicking through the charts. The AI Brief card streams a real-time analysis from the data.</p>
         </div>
 
-        <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live Executive Operating Dashboard">
+        <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live Executive Operating Dashboard" id="browserMock">
           <div class="browser-bar">
             <div class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></div>
             <div class="browser-url">
@@ -486,6 +486,9 @@
               <i class="fas fa-rotate-right"></i>
               <i class="fas fa-ellipsis"></i>
             </div>
+            <button class="browser-maximize" id="browserMaximize" type="button" aria-label="Maximize dashboard" title="Maximize to full screen">
+              <i class="fas fa-expand"></i>
+            </button>
           </div>
           <div class="browser-frame">
             <div class="browser-loading" id="browser-loading">
