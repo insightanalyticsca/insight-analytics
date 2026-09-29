@@ -1413,3 +1413,53 @@ ul {
   .reveal, [data-stagger-item] { opacity: 1; transform: none; }
   body { font-size: 12pt; color: #000; background: #fff; }
 }
+
+/* ============================ OPERATING DAY TIMELINE ============================ */
+.timeline { position: relative; padding-left: 100px; max-width: 900px; margin: 0 auto; }
+.timeline::before { content: ''; position: absolute; left: 80px; top: 12px; bottom: 12px; width: 2px; background: linear-gradient(180deg, var(--accent), var(--primary), transparent); }
+.timeline-item { display: grid; grid-template-columns: 60px 24px 1fr; gap: 16px; align-items: start; margin-bottom: 24px; }
+.timeline-time { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: var(--primary); text-align: right; padding-top: 14px; white-space: nowrap; }
+.timeline-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); margin: 14px auto 0; box-shadow: 0 0 0 4px rgba(99,102,241,0.12); position: relative; z-index: 1; }
+.timeline-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.timeline-card p { font-size: 13px; line-height: 1.6; }
+.shift-banner { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 40px; padding: 20px 32px; border-radius: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04)); border: 1px solid var(--border); flex-wrap: wrap; }
+.shift-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); display: block; margin-bottom: 4px; }
+.shift-flow { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; }
+.shift-from .shift-flow { color: var(--muted); text-decoration: line-through; opacity: 0.7; }
+.shift-arrow { font-size: 20px; color: var(--accent); }
+@media (max-width: 768px) { .timeline { padding-left: 60px; } .timeline::before { left: 44px; } .timeline-item { grid-template-columns: 40px 16px 1fr; gap: 10px; } .shift-banner { flex-direction: column; gap: 12px; } }
+
+/* ============================ ORG CHANGE ============================ */
+.org-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 32px; }
+@media (max-width: 1024px) { .org-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .org-grid { grid-template-columns: 1fr; } }
+.org-card { padding: 24px; }
+.org-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 18px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; margin-bottom: 14px; }
+.org-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.org-today, .org-target { font-size: 12px; line-height: 1.6; margin-bottom: 8px; padding-left: 12px; border-left: 2px solid var(--border); }
+.org-today { border-left-color: rgba(239,68,68,0.3); }
+.org-target { border-left-color: rgba(16,185,129,0.3); }
+.org-frees { font-size: 13px; font-weight: 600; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.common-thread { text-align: center; padding: 24px; border-radius: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.04), rgba(6,182,212,0.03)); border: 1px solid var(--border); }
+.common-thread p { font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
+.common-thread strong { font-weight: 700; }
+.thread-sub { font-size: 13px !important; color: var(--muted); font-style: italic; }
+
+/* ============================ TECHNICAL OPERATING MODEL ============================ */
+.tech-pipeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px; }
+@media (max-width: 1024px) { .tech-pipeline { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px) { .tech-pipeline { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .tech-pipeline { grid-template-columns: 1fr; } }
+.tech-layer { position: relative; }
+.tech-num { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; font-size: 13px; font-weight: 800; display: grid; place-items: center; z-index: 2; box-shadow: 0 4px 12px rgba(99,102,241,0.25); }
+.tech-card { padding: 24px 16px 16px; text-align: left; }
+.tech-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; text-align: center; }
+.tech-card ul { list-style: none; padding: 0; margin: 0; }
+.tech-card li { font-size: 11px; line-height: 1.5; padding: 3px 0 3px 14px; position: relative; color: var(--text-soft); }
+.tech-card li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); }
+.governed-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 32px; }
+.gov-pill { padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.06)); border: 1px solid var(--border); color: var(--text-soft); }
+.production-blocks { padding: 24px 32px; border-radius: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.04), rgba(6,182,212,0.03)); border: 1px solid var(--border); }
+.production-blocks h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+.production-blocks p { font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+.blocks-note { font-size: 12px !important; color: var(--muted); font-style: italic; }
