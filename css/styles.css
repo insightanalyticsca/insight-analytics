@@ -449,20 +449,20 @@ ul {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   margin-left: 8px;
 }
 
 .theme-toggle {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid var(--border-strong);
   background: var(--surface-2);
   color: var(--text);
   display: grid;
   place-items: center;
-  font-size: 1rem;
+  font-size: 0.85rem;
   transition: transform 0.4s var(--ease), background 0.2s var(--ease-soft), border-color 0.2s var(--ease-soft), color 0.2s var(--ease-soft);
 }
 .theme-toggle:hover {
@@ -472,19 +472,23 @@ ul {
 }
 
 .nav-cta {
-  padding: 10px 20px;
-  font-size: 0.9rem;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
 }
 
 .menu-toggle {
   display: none;
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
   border: 1px solid var(--border-strong);
   background: var(--surface-2);
   color: var(--text);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   align-items: center;
   justify-content: center;
 }
@@ -577,13 +581,7 @@ ul {
   line-height: 1.7;
 }
 
-.hero-cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 48px;
-}
-
+/* .hero-cta removed — CTAs now live only in the top nav menu */
 .hero-meta {
   display: flex;
   flex-wrap: wrap;
@@ -1380,8 +1378,7 @@ ul {
 
   .hero { min-height: auto; padding-top: calc(var(--nav-h) + 48px); padding-bottom: 64px; }
   .hero h1 { font-size: clamp(2rem, 9vw, 3rem); }
-  .hero-cta { flex-direction: column; align-items: stretch; }
-  .hero-cta .btn { width: 100%; }
+  /* .hero-cta removed — top nav holds the only CTAs */
   .hero-meta { gap: 20px; }
   .hero-meta .meta-divider { display: none; }
 
@@ -1619,17 +1616,19 @@ ul {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 0 14px;
+  height: 36px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.05));
   color: var(--text);
-  font-size: 13px;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 180ms ease;
   position: relative;
   font-family: var(--font-ui, inherit);
+  white-space: nowrap;
 }
 .assistant-btn:hover {
   background: linear-gradient(135deg, rgba(99,102,241,0.18), rgba(6,182,212,0.12));
