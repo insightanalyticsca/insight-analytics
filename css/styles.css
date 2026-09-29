@@ -1457,8 +1457,8 @@ ul {
 .tech-card ul { list-style: none; padding: 0; margin: 0; }
 .tech-card li { font-size: 11px; line-height: 1.5; padding: 3px 0 3px 14px; position: relative; color: var(--text-soft); }
 .tech-card li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); }
-.governed-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 32px; }
-.gov-pill { padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.06)); border: 1px solid var(--border); color: var(--text-soft); }
+.blocks-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 32px; }
+.pill-block { padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.06)); border: 1px solid var(--border); color: var(--text-soft); }
 .production-blocks { padding: 24px 32px; border-radius: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.04), rgba(6,182,212,0.03)); border: 1px solid var(--border); }
 .production-blocks h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
 .production-blocks p { font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
