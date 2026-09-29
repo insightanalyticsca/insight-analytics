@@ -165,10 +165,10 @@
 
   /* ------------------------------------------------------------------
    * Active nav link highlighting via section observation
-   * Covers .nav-link (primary nav) and .hero-pill (Platform-Agnostic / Agile)
+   * Covers .nav-link (primary nav) and .meta-link (hero meta pills)
    * ------------------------------------------------------------------ */
   const sections = document.querySelectorAll("section[id]");
-  const navLinks = document.querySelectorAll('.nav-link[data-nav], .hero-pill[data-nav]');
+  const navLinks = document.querySelectorAll('.nav-link[data-nav], .meta-link[data-nav]');
   if ("IntersectionObserver" in window && sections.length && navLinks.length) {
     const nio = new IntersectionObserver(
       function (entries) {

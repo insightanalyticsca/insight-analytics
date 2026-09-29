@@ -453,7 +453,7 @@ ul {
   margin-left: 8px;
 }
 
-/* (nav-pill rules removed — Platform-Agnostic + Agile now live in the hero, see .hero-pill below) */
+/* (nav-pill rules removed — Platform-Agnostic + Agile now live as .meta-link inside .hero-meta) */
 
 .theme-toggle {
   width: 36px;
@@ -620,67 +620,41 @@ ul {
   background: var(--border-strong);
 }
 
-/* Hero positioning pills (Platform-Agnostic, Agile) — sit right under the meta stats */
-.hero-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 28px;
-}
-.hero-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--border-strong);
-  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  color: var(--text-soft);
-  font-family: var(--font-head);
-  font-size: 0.86rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+/* Clickable meta items (Platform-Agnostic, Agile) — same format as the stat tiles, just links */
+.hero-meta .meta-link {
   text-decoration: none;
-  white-space: nowrap;
-  transition: color 180ms ease, border-color 180ms ease, background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 6px;
+  margin: -4px -6px;
+  border-radius: 8px;
+  transition: background 180ms ease, transform 180ms ease;
 }
-.hero-pill i {
-  font-size: 0.78rem;
-  color: var(--accent);
-  transition: color 180ms ease;
-}
-.hero-pill:hover {
-  color: var(--text);
-  border-color: var(--accent);
-  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.06));
+.hero-meta .meta-link:hover {
+  background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.04));
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px -8px rgba(99, 102, 241, 0.35);
 }
-.hero-pill:hover i {
-  color: var(--indigo);
-}
-/* When the target section is in view, pill highlights as 'current' */
-.hero-pill.is-active {
+.hero-meta .meta-link:hover .meta-label {
   color: var(--text);
-  border-color: var(--accent);
-  background: linear-gradient(135deg, rgba(99,102,241,0.16), rgba(6,182,212,0.08));
 }
-.hero-pill.is-active i {
-  color: var(--indigo);
+.hero-meta .meta-link.is-active .meta-label,
+.hero-meta .meta-link.is-active .meta-num {
+  color: var(--text);
 }
-
-/* Dark theme adjustments */
-[data-theme="dark"] .hero-pill {
-  background: color-mix(in srgb, var(--surface-2) 40%, transparent);
-  border-color: rgba(148, 163, 184, 0.25);
-  color: rgba(226, 232, 240, 0.85);
+.hero-meta .meta-link.is-active {
+  background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(6,182,212,0.05));
 }
-[data-theme="dark"] .hero-pill:hover {
-  background: linear-gradient(135deg, rgba(99,102,241,0.18), rgba(6,182,212,0.1));
-  border-color: var(--accent);
-  color: #fff;
+/* Icon-sized equivalent of the gradient .grad text treatment */
+.hero-meta .grad-icon {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 /* Scroll-down indicator */
