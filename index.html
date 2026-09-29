@@ -486,12 +486,32 @@
           <p class="section-sub">The dashboard below is a live, interactive demo. Try clicking through the charts. The AI Brief card streams a real-time analysis from the data.</p>
         </div>
 
-        <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live Executive Operating Dashboard" id="browserMock">
+        <!-- Dashboard switcher — pick which live dashboard to preview -->
+        <div class="dashboard-switcher reveal" id="dashboardSwitcher" role="tablist" aria-label="Choose a live dashboard to preview">
+          <button class="dash-tab is-active" type="button" role="tab" aria-selected="true" data-dash="executive" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html" title="Retail chain — revenue mix, capacity heatmap, store performance">
+            <i class="fas fa-chart-line" aria-hidden="true"></i>
+            <span>Executive Operating</span>
+          </button>
+          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="it-ops" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/its-service-health.html" title="IT department — SLA, ticket operations, uptime">
+            <i class="fas fa-server" aria-hidden="true"></i>
+            <span>IT Service Health</span>
+          </button>
+          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="payments" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-customer-payments.html" title="Finance — daily + monthly customer payments, cash cycle">
+            <i class="fas fa-wallet" aria-hidden="true"></i>
+            <span>Customer Payments</span>
+          </button>
+          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="ebill" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-ebill-performance.html" title="Customer experience — eBill adoption + delivery performance">
+            <i class="fas fa-file-invoice" aria-hidden="true"></i>
+            <span>eBill Performance</span>
+          </button>
+        </div>
+
+        <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live dashboard preview" id="browserMock">
           <div class="browser-bar">
             <div class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></div>
             <div class="browser-url">
               <i class="fas fa-lock" aria-hidden="true"></i>
-              <span>insightanalyticsca.github.io/dashboards/</span>
+              <span id="browser-url-text">insightanalyticsca.github.io/dashboards/</span>
             </div>
             <div class="browser-actions" aria-hidden="true">
               <i class="fas fa-rotate-right"></i>
@@ -504,28 +524,17 @@
           <div class="browser-frame">
             <div class="browser-loading" id="browser-loading">
               <div class="spinner" aria-hidden="true"></div>
-              <span>Loading executive dashboard…</span>
+              <span id="browser-loading-label">Loading executive dashboard…</span>
             </div>
             <iframe
               id="dashboard-iframe"
               data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html"
-              title="Executive Operating Dashboard — live interactive demo"
+              title="Live dashboard — interactive demo"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               allow="fullscreen"
             ></iframe>
           </div>
-        </div>
-
-        <!-- Mobile placeholder -->
-        <div class="dashboard-mobile" role="region" aria-label="Dashboard mobile view">
-          <div class="dm-icon" aria-hidden="true"><i class="fas fa-tablet-screen-button"></i></div>
-          <h4>Executive Operating Dashboard</h4>
-          <p>The interactive dashboard is best viewed on a larger screen. Open it directly in a new tab on this device.</p>
-          <button class="btn btn-primary" id="mobile-view-dashboard" type="button">
-            <i class="fas fa-up-right-from-square" aria-hidden="true"></i>
-            <span class="btn-text">View Dashboard</span>
-          </button>
         </div>
 
         <p class="dashboard-caption reveal"><b>Components already in production.</b> Customized to your data, your KPIs, your workflows.</p>

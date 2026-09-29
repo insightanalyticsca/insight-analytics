@@ -192,27 +192,20 @@
   }
 
   /* ------------------------------------------------------------------
-   * Live dashboard showcase — mobile placeholder toggle
-   * On small screens we hide the iframe and show a placeholder card
-   * with a "View Dashboard" button. The button opens the live URL.
+   * Live dashboard showcase — switcher + iframe lazy-load
+   * The mobile placeholder fallback has been removed; the iframe is now
+   * visible on all breakpoints (just shorter on mobile).
    * ------------------------------------------------------------------ */
-  const dashboardUrl =
-    "https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html";
-  const mobileViewBtn = document.getElementById("mobile-view-dashboard");
-  if (mobileViewBtn) {
-    mobileViewBtn.addEventListener("click", function () {
-      window.open(dashboardUrl, "_blank", "noopener,noreferrer");
-    });
-  }
 
-  // Optionally lazy-load the iframe only when the showcase section is near viewport
+  // Lazy-load the iframe when the showcase section is near viewport.
+  // Works on all breakpoints (was previously gated to >=768px, but the
+  // mobile fallback has been removed so the iframe is now the only view).
   const showcaseFrame = document.getElementById("dashboard-iframe");
   const showcaseSection = document.getElementById("dashboard");
   if (
     showcaseFrame &&
     showcaseSection &&
-    "IntersectionObserver" in window &&
-    window.innerWidth >= 768
+    "IntersectionObserver" in window
   ) {
     const src = showcaseFrame.getAttribute("data-src");
     if (src) showcaseFrame.removeAttribute("src");
@@ -240,10 +233,72 @@
         loadingOverlay.style.display = "none";
       }, 420);
     }
+    function showLoading(label) {
+      loadingOverlay.style.display = "";
+      loadingOverlay.style.opacity = "1";
+      loadingOverlay.style.transition = "opacity 0.2s ease";
+      const lbl = document.getElementById("browser-loading-label");
+      if (lbl && label) lbl.textContent = label;
+    }
     showcaseFrame.addEventListener("load", hideLoading);
     showcaseFrame.addEventListener("error", hideLoading);
     // Safety net — never leave a stuck spinner
     setTimeout(hideLoading, 8000);
+
+    /* ------------------------------------------------------------------
+     * Dashboard switcher — click a tab to swap the iframe src + URL bar
+     * ------------------------------------------------------------------ */
+    const switcher = document.getElementById("dashboardSwitcher");
+    const urlText = document.getElementById("browser-url-text");
+    if (switcher) {
+      switcher.addEventListener("click", function (e) {
+        const tab = e.target.closest(".dash-tab");
+        if (!tab) return;
+        const newSrc = tab.getAttribute("data-src");
+        const dashKey = tab.getAttribute("data-dash");
+        if (!newSrc || !showcaseFrame) return;
+
+        // Already active — no-op
+        if (tab.classList.contains("is-active")) return;
+
+        // Update active tab styling
+        switcher.querySelectorAll(".dash-tab").forEach(function (t) {
+          t.classList.remove("is-active");
+          t.setAttribute("aria-selected", "false");
+        });
+        tab.classList.add("is-active");
+        tab.setAttribute("aria-selected", "true");
+
+        // Update URL bar text to reflect the new dashboard
+        if (urlText) {
+          try {
+            const u = new URL(newSrc);
+            // Show: <host>/<path-without-leading-custom-html-or-suffix>
+            let path = u.pathname;
+            path = path.replace(/^\/dashboards\//, "").replace(/\.html$/, "");
+            urlText.textContent = u.host + "/" + path;
+          } catch (_) {
+            urlText.textContent = "insightanalyticsca.github.io/dashboards/";
+          }
+        }
+
+        // Show loading overlay with the new label
+        const labelMap = {
+          "executive": "Loading executive dashboard…",
+          "it-ops": "Loading IT service health dashboard…",
+          "payments": "Loading customer payments dashboard…",
+          "ebill": "Loading eBill performance dashboard…"
+        };
+        showLoading(labelMap[dashKey] || "Loading dashboard…");
+
+        // Swap iframe src — using a cache-busting query param forces a fresh
+        // load (some browsers won't fire 'load' again if src is identical to
+        // what it was before, but since each dashboard has a different URL
+        // this is mostly belt-and-suspenders)
+        showcaseFrame.setAttribute("data-src", newSrc);
+        showcaseFrame.setAttribute("src", newSrc);
+      });
+    }
   }
 
   /* ------------------------------------------------------------------
