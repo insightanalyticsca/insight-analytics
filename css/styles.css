@@ -86,10 +86,11 @@
 
 html {
   scroll-behavior: smooth;
-  /* Snap to section starts on Page Down / wheel / touch — proximity is gentler
-     than mandatory: only snaps when the user is already close to a section
-     boundary, so it doesn't fight users mid-scroll inside a long section. */
-  scroll-snap-type: y proximity;
+  /* Snap to section starts on Page Down / wheel / touch.
+     Using 'mandatory' so the browser always snaps to the nearest section
+     start after any scroll gesture — proximity was too weak for tall sections
+     (dashboard iframe, methodology grid) where Page Down lands mid-section. */
+  scroll-snap-type: y mandatory;
   -webkit-text-size-adjust: 100%;
 }
 

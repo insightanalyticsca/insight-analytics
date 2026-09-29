@@ -403,6 +403,104 @@
   }
 
   /* ------------------------------------------------------------------
+   * Section-by-section keyboard navigation
+   * PageDown / Space / ArrowDown → jump to next section start
+   * PageUp / Shift+Space / ArrowUp → jump to previous section start
+   * Home → jump to top, End → jump to bottom
+   *
+   * This pairs with CSS scroll-snap-type: y mandatory — the snap handles
+   * mouse wheel + touch + the residual snap after PageDown, while this
+   * handler guarantees that PageDown ALWAYS advances exactly one section,
+   * even when the current section is taller than the viewport.
+   * ------------------------------------------------------------------ */
+  const NAV_OFFSET = 80; // px — offset for the fixed navbar so titles aren't hidden
+  const SNAP_TARGETS = function () {
+    return Array.prototype.slice.call(
+      document.querySelectorAll("section[id], main > section, footer")
+    );
+  };
+
+  function currentSectionIndex() {
+    const targets = SNAP_TARGETS();
+    if (!targets.length) return -1;
+    const viewTop = window.scrollY || document.documentElement.scrollTop;
+    const viewMid = viewTop + window.innerHeight / 2;
+    // Find the section whose vertical range contains the viewport midpoint.
+    // If the midpoint is below the last section (e.g. footer), return last.
+    let idx = 0;
+    for (let i = 0; i < targets.length; i++) {
+      const t = targets[i];
+      const top = t.offsetTop;
+      const bottom = top + t.offsetHeight;
+      if (viewMid >= top && viewMid < bottom) {
+        idx = i;
+        break;
+      }
+      if (viewMid >= bottom) idx = i;
+    }
+    return idx;
+  }
+
+  function snapTo(target) {
+    if (!target) return;
+    const top = target.getBoundingClientRect().top + (window.scrollY || document.documentElement.scrollTop) - NAV_OFFSET;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  }
+
+  function nextSection() {
+    const targets = SNAP_TARGETS();
+    const idx = currentSectionIndex();
+    if (idx < 0) return;
+    const next = targets[idx + 1];
+    if (next) snapTo(next);
+  }
+
+  function prevSection() {
+    const targets = SNAP_TARGETS();
+    const idx = currentSectionIndex();
+    if (idx <= 0) {
+      // Already at top — snap to first section
+      snapTo(targets[0]);
+      return;
+    }
+    snapTo(targets[idx - 1]);
+  }
+
+  // Skip keyboard nav for reduced-motion users — they get default browser
+  // behavior (Page Down scrolls one viewport, no snap, no JS interference).
+  // The CSS prefers-reduced-motion block also disables scroll-snap entirely.
+  const prefersReducedMotionKbd = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!prefersReducedMotionKbd) {
+    document.addEventListener("keydown", function (e) {
+      // Don't hijack keyboard when the user is typing in a form field or
+      // using a screen reader (let the AT handle the keys natively)
+      const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+      if (tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable) {
+        return;
+      }
+      // Also skip when any modifier except Shift is held (Ctrl/Cmd/Alt — let browser handle)
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const key = e.key;
+      if (key === "PageDown" || (key === " " && !e.shiftKey) || key === "ArrowDown") {
+        e.preventDefault();
+        nextSection();
+      } else if (key === "PageUp" || (key === " " && e.shiftKey) || key === "ArrowUp") {
+        e.preventDefault();
+        prevSection();
+      } else if (key === "Home") {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else if (key === "End") {
+        e.preventDefault();
+        const targets = SNAP_TARGETS();
+        const last = targets[targets.length - 1];
+        if (last) snapTo(last);
+      }
+    });
+  }
+
+  /* ------------------------------------------------------------------
    * Footer year
    * ------------------------------------------------------------------ */
   const yearEl = document.getElementById("year");
