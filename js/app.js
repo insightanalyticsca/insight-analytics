@@ -292,14 +292,17 @@
   });
 
   /* ------------------------------------------------------------------
-   * Contact form handler (client-side validation + feedback)
-   * NOTE: static site — no backend. We simulate submission and offer
-   * a mailto fallback so the lead still reaches the inbox.
+   * Contact form handler
+   * Tries the Netlify Edge Function /send-email endpoint first (delivers a
+   * polished HTML email via Resend). Falls back to a polished plain-text
+   * mailto: if the endpoint returns 503 (service not configured) or any
+   * network error. Either way, the lead reaches dev@insight-analytics.ca.
    * ------------------------------------------------------------------ */
   const form = document.getElementById("contact-form");
   const formStatus = document.getElementById("form-status");
   const submitBtn = document.getElementById("contact-submit");
   const contactEmail = "dev@insight-analytics.ca";
+  const SEND_EMAIL_ENDPOINT = "https://dashboards-groq-proxy.netlify.app/send-email";
 
   function setStatus(msg, kind) {
     if (!formStatus) return;
@@ -333,20 +336,14 @@
         submitBtn.classList.add("is-loading");
         submitBtn.setAttribute("aria-busy", "true");
       }
-      setStatus("Preparing your message…", "");
+      setStatus("Sending your request…", "");
 
-      // Build a sleek, branded email body — opens in the visitor's email
-      // client pre-formatted as a polished business inquiry, not a raw
-      // data dump. Plain-text only (mailto: doesn't support HTML), so the
-      // design relies on Unicode box-drawing chars + aligned columns.
+      // Build a polished plain-text mailto: fallback (used if endpoint fails)
       const frame = "══════════════════════════════════════════════";
       const rule  = "─────────────────────────────────────────────";
       const indentedMessage = message.replace(/\n/g, "\n   ");
-
-      const subject = encodeURIComponent(
-        "Demo Request  ·  " + name + (company ? "  —  " + company : "")
-      );
-      const body = encodeURIComponent(
+      const subjectFallback = "Demo Request  ·  " + name + (company ? "  —  " + company : "");
+      const bodyFallback = encodeURIComponent(
         frame + "\n" +
         "  INSIGHT ANALYTICS   ·   DEMO REQUEST\n" +
         frame + "\n\n" +
@@ -364,23 +361,66 @@
         "  Sent via  insightanalyticsca.github.io/insight-analytics/\n" +
         frame
       );
-      const mailto = "mailto:" + contactEmail + "?subject=" + subject + "&body=" + body;
+      const mailtoFallback = "mailto:" + contactEmail + "?subject=" + encodeURIComponent(subjectFallback) + "&body=" + bodyFallback;
 
-      setTimeout(function () {
-        // Reset button state
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.classList.remove("is-loading");
-          submitBtn.removeAttribute("aria-busy");
+      // Try the HTML-email endpoint first
+      (async function () {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 12000); // 12s timeout
+          const res = await fetch(SEND_EMAIL_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, company, message }),
+            signal: controller.signal
+          });
+          clearTimeout(timeout);
+
+          if (res.ok) {
+            // HTML email sent successfully — no email client opens
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.classList.remove("is-loading");
+              submitBtn.removeAttribute("aria-busy");
+            }
+            form.reset();
+            setStatus(
+              "Thank you. Your request has been sent to dev@insight-analytics.ca as a branded HTML email. We'll reply within one business day — or call (289) 635-9915 directly.",
+              "success"
+            );
+            return;
+          }
+
+          if (res.status === 429) {
+            // Rate limited — don't fall back to mailto, just tell them
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.classList.remove("is-loading");
+              submitBtn.removeAttribute("aria-busy");
+            }
+            setStatus("You've sent several requests recently. Please wait an hour and try again, or call (289) 635-9915.", "error");
+            return;
+          }
+
+          // Endpoint returned non-OK (503 = not configured, 400 = validation,
+          // 502 = email service error) — fall back to mailto:
+          throw new Error("Endpoint returned " + res.status);
+        } catch (err) {
+          // Network / timeout / 503 / other — fall back to mailto: with the
+          // polished plain-text version. Either way the lead gets through.
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove("is-loading");
+            submitBtn.removeAttribute("aria-busy");
+          }
+          form.reset();
+          setStatus(
+            "Your email client is opening with a pre-filled, branded request to dev@insight-analytics.ca — send it to deliver. Or call (289) 635-9915 directly.",
+            "success"
+          );
+          window.location.href = mailtoFallback;
         }
-        form.reset();
-        setStatus(
-          "Thank you. Your email client is opening with a polished request pre-filled to dev@insight-analytics.ca — or call (289) 635-9915 directly.",
-          "success"
-        );
-        // Trigger mailto in a new attempt
-        window.location.href = mailto;
-      }, 900);
+      })();
     });
   }
 
