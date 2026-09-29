@@ -453,48 +453,7 @@ ul {
   margin-left: 8px;
 }
 
-/* Ghost positioning pills (Platform-Agnostic / Agile) — subtle, not CTAs */
-.nav-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 12px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--text-soft);
-  font-family: var(--font-head);
-  font-size: 0.76rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 180ms ease, border-color 180ms ease, background 180ms ease, transform 180ms ease;
-}
-.nav-pill:hover {
-  color: var(--text);
-  border-color: var(--accent);
-  background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.03));
-  transform: translateY(-1px);
-}
-.nav-pill i {
-  font-size: 0.7rem;
-  color: var(--accent);
-  transition: color 180ms ease;
-}
-.nav-pill:hover i {
-  color: var(--indigo);
-}
-/* When the page-section is active/visible, pill highlights as 'current' */
-.nav-pill.is-active {
-  color: var(--text);
-  border-color: var(--accent);
-  background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.04));
-}
-.nav-pill.is-active i {
-  color: var(--indigo);
-}
+/* (nav-pill rules removed — Platform-Agnostic + Agile now live in the hero, see .hero-pill below) */
 
 .theme-toggle {
   width: 36px;
@@ -659,6 +618,69 @@ ul {
   width: 1px;
   height: 36px;
   background: var(--border-strong);
+}
+
+/* Hero positioning pills (Platform-Agnostic, Agile) — sit right under the meta stats */
+.hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--text-soft);
+  font-family: var(--font-head);
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+.hero-pill i {
+  font-size: 0.78rem;
+  color: var(--accent);
+  transition: color 180ms ease;
+}
+.hero-pill:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.06));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -8px rgba(99, 102, 241, 0.35);
+}
+.hero-pill:hover i {
+  color: var(--indigo);
+}
+/* When the target section is in view, pill highlights as 'current' */
+.hero-pill.is-active {
+  color: var(--text);
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(99,102,241,0.16), rgba(6,182,212,0.08));
+}
+.hero-pill.is-active i {
+  color: var(--indigo);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .hero-pill {
+  background: color-mix(in srgb, var(--surface-2) 40%, transparent);
+  border-color: rgba(148, 163, 184, 0.25);
+  color: rgba(226, 232, 240, 0.85);
+}
+[data-theme="dark"] .hero-pill:hover {
+  background: linear-gradient(135deg, rgba(99,102,241,0.18), rgba(6,182,212,0.1));
+  border-color: var(--accent);
+  color: #fff;
 }
 
 /* Scroll-down indicator */
@@ -1400,18 +1422,12 @@ ul {
 /* ------------------------------------------------------------------
    17. Responsive — mobile
    ------------------------------------------------------------------ */
-@media (max-width: 1180px) {
-  /* Hide the Agile pill first — Platform-Agnostic stays visible */
-  .nav-pill-secondary { display: none; }
-}
-
 @media (max-width: 860px) {
   body { font-size: 16px; }
   .section { padding: 64px 0; }
   .section-head { margin-bottom: 40px; }
 
   .nav-links { display: none; }
-  .nav-pill { display: none; } /* Both positioning pills hide on mobile — they're in the mobile menu */
   .nav-actions .nav-cta { display: none; }
   .menu-toggle { display: flex; margin-left: auto; }
 
