@@ -779,16 +779,20 @@ ul {
   text-align: left;
 }
 .problem-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
+  /* Unified with .org-icon: same 48×48px, same border-radius, same font-size,
+     same solid-gradient + white-icon treatment. Different hue per section. */
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
-  font-size: 1.4rem;
-  background: var(--gradient-soft);
-  border: 1px solid rgba(99, 102, 241, 0.22);
-  margin-bottom: 22px;
-  color: var(--indigo);
+  font-size: 1.15rem;
+  /* Indigo → cyan brand gradient (cool blue family) */
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  color: #fff;
+  border: 0;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 16px -8px rgba(99, 102, 241, 0.45);
 }
 .problem-card h3 {
   font-size: 1.28rem;
@@ -1539,7 +1543,21 @@ ul {
 @media (max-width: 1024px) { .org-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) { .org-grid { grid-template-columns: 1fr; } }
 .org-card { padding: 24px; }
-.org-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 18px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; margin-bottom: 14px; }
+.org-icon {
+  /* Unified with .problem-icon: same 48×48px, same border-radius, same font-size,
+     same solid-gradient + white-icon treatment. Different hue — emerald → teal
+     (cool green family, distinct from the Problem section's indigo→cyan). */
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+  background: linear-gradient(135deg, #10b981, #14b8a6); /* emerald → teal */
+  color: #fff;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 16px -8px rgba(16, 185, 129, 0.45);
+}
 .org-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
 .org-today, .org-target { font-size: 12px; line-height: 1.6; margin-bottom: 8px; padding-left: 12px; border-left: 2px solid var(--border); }
 .org-today { border-left-color: rgba(239,68,68,0.3); }
