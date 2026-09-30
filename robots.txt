@@ -1,0 +1,7 @@
+# Insight Analytics — robots.txt
+# Allow all search engines to crawl all content
+User-agent: *
+Allow: /
+
+# Point to the sitemap
+Sitemap: https://insight-analytics.ca/sitemap.xml
