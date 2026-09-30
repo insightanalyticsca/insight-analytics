@@ -939,55 +939,14 @@ ul {
 .browser-frame {
   position: relative;
   width: 100%;
-  /* Container height — the iframe is scaled to fit inside this.
-     Dashboard natural content height is ~1700-1800px (metrics + 7 charts + table).
-     With transform: scale(0.65), 1800px → 1170px visually. */
-  height: 1170px;
+  height: 960px;
   background: var(--bg);
-  overflow: hidden;
 }
 .browser-frame iframe {
-  /* Render the dashboard at its natural design width (1280px) — most of the
-     dashboards in the deck are laid out for a 1280-wide viewport. */
-  width: 1280px;
-  height: 1800px;
+  width: 100%;
+  height: 100%;
   border: 0;
   display: block;
-  /* Scale the iframe down to fit the container's width (1100px typical) AND
-     the container's height (1170px). The scale factor matches the height
-     ratio: 1170 / 1800 = 0.65. We use 0.65 which fits both dimensions
-     (1280 * 0.65 = 832px wide — fits in 1100px container with margin). */
-  transform: scale(0.65);
-  transform-origin: top left;
-  /* Horizontally center the scaled iframe (1280 * 0.65 = 832px, container is
-     100% wide so we offset by (100% - 832px) / 2 = ~50% - 416px). Simpler:
-     use left: 50% + translateX(-50%) for true centering. */
-  position: absolute;
-  top: 0;
-  left: 50%;
-  margin-left: -416px; /* half of scaled width (1280 * 0.65 / 2) */
-}
-@media (max-width: 1100px) {
-  /* On narrower viewports, scale down more so the dashboard width still fits. */
-  .browser-frame { height: 1000px; }
-  .browser-frame iframe {
-    transform: scale(0.55);
-    margin-left: -352px; /* half of 1280 * 0.55 */
-  }
-}
-@media (max-width: 860px) {
-  .browser-frame { height: 760px; }
-  .browser-frame iframe {
-    transform: scale(0.45);
-    margin-left: -288px; /* half of 1280 * 0.45 */
-  }
-}
-@media (max-width: 520px) {
-  .browser-frame { height: 580px; }
-  .browser-frame iframe {
-    transform: scale(0.35);
-    margin-left: -224px; /* half of 1280 * 0.35 */
-  }
 }
 .browser-loading {
   position: absolute;
@@ -1491,7 +1450,7 @@ ul {
   .section { padding: 80px 0; }
   .why-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
   .methodology-grid { grid-template-columns: repeat(4, 1fr); }
-  /* (browser-frame responsive heights are now defined inline with the iframe scaling rules above) */
+  .browser-frame { height: 560px; }
 }
 
 /* ------------------------------------------------------------------
@@ -1529,8 +1488,9 @@ ul {
 
   .scroll-indicator { display: none; }
 
-  /* Iframe scaling rules are now defined inline at the top with the .browser-frame
-     base rules — see transform: scale() + per-breakpoint height there. */
+  /* Iframe visible on mobile — shorter height for smaller screens,
+     user can scroll within the iframe to see the whole dashboard */
+  .browser-mock .browser-frame { height: 480px; }
   .browser-frame iframe { display: block; }
   .dashboard-switcher { gap: 6px; }
   .dash-tab { padding: 8px 12px; font-size: 0.76rem; }
@@ -1630,13 +1590,20 @@ ul {
 /* Fullscreen / maximized state */
 .browser-mock.is-maximized {
   position: fixed !important;
-  inset: 0 !important;
+  /* Respect iOS notch + status bar on mobile PWA — without this, the maximize/
+     restore button gets hidden under the notch and users can't collapse back. */
+  top: env(safe-area-inset-top, 0px) !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
   z-index: 99999 !important;
   max-width: none !important;
   margin: 0 !important;
   border-radius: 0 !important;
   border: 0 !important;
-  height: 100vh !important;
+  /* Use 100vh minus safe-area-top so the browser bar (with the restore button)
+     is fully visible below the notch. */
+  height: calc(100vh - env(safe-area-inset-top, 0px)) !important;
   display: flex !important;
   flex-direction: column !important;
 }
@@ -1656,6 +1623,13 @@ ul {
 }
 .browser-mock.is-maximized .browser-bar {
   padding: 8px 16px;
+  /* Make the restore button hit-target larger on mobile for easier collapse */
+}
+.browser-mock.is-maximized .browser-maximize {
+  padding: 10px 14px; /* larger tap target */
+  font-size: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
 }
 .browser-mock.is-maximized .browser-maximize i::before {
   content: "\f066"; /* fa-compress */
