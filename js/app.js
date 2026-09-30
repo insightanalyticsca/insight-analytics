@@ -269,17 +269,17 @@
         tab.classList.add("is-active");
         tab.setAttribute("aria-selected", "true");
 
-        // Update URL bar text to reflect the new dashboard
+        // Update URL bar text — masked to show insight-analytics.ca/dashboards/<tab>
+        // instead of the actual GitHub Pages URL (which is in the data-src attribute
+        // but shouldn't be visible to users)
         if (urlText) {
-          try {
-            const u = new URL(newSrc);
-            // Show: <host>/<path-without-leading-custom-html-or-suffix>
-            let path = u.pathname;
-            path = path.replace(/^\/dashboards\//, "").replace(/\.html$/, "");
-            urlText.textContent = u.host + "/" + path;
-          } catch (_) {
-            urlText.textContent = "insightanalyticsca.github.io/dashboards/";
-          }
+          const urlMap = {
+            "executive": "insight-analytics.ca/dashboards/executive-operating",
+            "it-ops": "insight-analytics.ca/dashboards/it-service-health",
+            "payments": "insight-analytics.ca/dashboards/customer-payments",
+            "ebill": "insight-analytics.ca/dashboards/ebill-performance"
+          };
+          urlText.textContent = urlMap[dashKey] || "insight-analytics.ca/dashboards/executive-operating";
         }
 
         // Show loading overlay with the new label
