@@ -362,7 +362,12 @@ ul {
   top: 0;
   left: 0;
   right: 0;
-  height: var(--nav-h);
+  /* PWA on iPhone X+: status bar overlays content with black-translucent meta.
+     Add safe-area-inset-top padding so the navbar's CONTENT sits below the
+     notch + status bar. The navbar's visual background still extends to top: 0
+     for an immersive look. */
+  height: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -373,7 +378,7 @@ ul {
   transition: background 0.35s var(--ease), border-color 0.35s var(--ease), box-shadow 0.35s var(--ease), height 0.35s var(--ease);
 }
 .navbar.is-scrolled {
-  height: 64px;
+  height: calc(64px + env(safe-area-inset-top, 0px));
   border-bottom-color: var(--border);
   box-shadow: 0 8px 30px -18px rgba(15, 23, 42, 0.25);
   background: color-mix(in srgb, var(--bg) 92%, transparent);
@@ -507,7 +512,10 @@ ul {
 
 .mobile-menu {
   position: fixed;
-  inset: var(--nav-h) 0 auto 0;
+  /* Position below the navbar (which now includes safe-area-inset-top on iPhone X+) */
+  top: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
+  left: 0;
+  right: 0;
   background: var(--bg);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
@@ -1466,7 +1474,7 @@ ul {
 
   .form-row { grid-template-columns: 1fr; }
 
-  .hero { min-height: auto; padding-top: calc(var(--nav-h) + 48px); padding-bottom: 64px; }
+  .hero { min-height: auto; padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 48px); padding-bottom: 64px; }
   .hero h1 { font-size: clamp(2rem, 9vw, 3rem); }
   /* .hero-cta removed — top nav holds the only CTAs */
   .hero-meta { gap: 20px; }
@@ -1621,7 +1629,10 @@ ul {
 /* X-centered via left:50% + margin-left:-half-width. JS only controls Y axis. */
 .ptr-indicator {
   position: fixed;
-  top: 0;
+  /* Start below the navbar (which now includes safe-area-inset-top on iPhone X+
+     PWAs). Without this, the indicator slides down from under the notch and
+     stays hidden behind the navbar until the user pulls way past the threshold. */
+  top: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
   left: 50%;
   margin-left: -70px; /* half of min-width 140px */
   transform: translate3d(0, 0, 0);
@@ -1792,9 +1803,12 @@ ul {
 /* Floating chat panel — docks under the nav button on desktop, full-width sheet on mobile */
 .assistant-panel {
   position: fixed;
-  top: 0;
+  /* Push the panel below the iOS notch + status bar when installed as PWA */
+  top: env(safe-area-inset-top, 0px);
   right: 0;
   bottom: 0;
+  /* Leave space for the iOS home indicator at the bottom */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   width: 100%;
   max-width: 420px;
   background: var(--bg, #ffffff);
@@ -1818,7 +1832,7 @@ ul {
 }
 @media (min-width: 768px) {
   .assistant-panel {
-    top: 72px;
+    top: calc(72px + env(safe-area-inset-top, 0px));
     bottom: auto;
     height: min(640px, calc(100vh - 96px));
     border-radius: 14px;
