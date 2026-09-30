@@ -15,6 +15,12 @@
   --indigo: #6366f1;
   --cyan: #06b6d4;
   --gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+  /* Aliases — these are the names other rules use (--primary / --accent).
+     Without these aliases, var(--primary) and var(--accent) resolve to nothing
+     (transparent), which made the active dashboard pill's gradient background
+     disappear in light mode (white text on no background = invisible). */
+  --primary: #6366f1;
+  --accent: #06b6d4;
   --gradient-soft: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(6, 182, 212, 0.12));
 
   /* Light theme defaults */
@@ -933,14 +939,55 @@ ul {
 .browser-frame {
   position: relative;
   width: 100%;
-  height: 960px;
+  /* Container height — the iframe is scaled to fit inside this.
+     Dashboard natural content height is ~1700-1800px (metrics + 7 charts + table).
+     With transform: scale(0.65), 1800px → 1170px visually. */
+  height: 1170px;
   background: var(--bg);
+  overflow: hidden;
 }
 .browser-frame iframe {
-  width: 100%;
-  height: 100%;
+  /* Render the dashboard at its natural design width (1280px) — most of the
+     dashboards in the deck are laid out for a 1280-wide viewport. */
+  width: 1280px;
+  height: 1800px;
   border: 0;
   display: block;
+  /* Scale the iframe down to fit the container's width (1100px typical) AND
+     the container's height (1170px). The scale factor matches the height
+     ratio: 1170 / 1800 = 0.65. We use 0.65 which fits both dimensions
+     (1280 * 0.65 = 832px wide — fits in 1100px container with margin). */
+  transform: scale(0.65);
+  transform-origin: top left;
+  /* Horizontally center the scaled iframe (1280 * 0.65 = 832px, container is
+     100% wide so we offset by (100% - 832px) / 2 = ~50% - 416px). Simpler:
+     use left: 50% + translateX(-50%) for true centering. */
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -416px; /* half of scaled width (1280 * 0.65 / 2) */
+}
+@media (max-width: 1100px) {
+  /* On narrower viewports, scale down more so the dashboard width still fits. */
+  .browser-frame { height: 1000px; }
+  .browser-frame iframe {
+    transform: scale(0.55);
+    margin-left: -352px; /* half of 1280 * 0.55 */
+  }
+}
+@media (max-width: 860px) {
+  .browser-frame { height: 760px; }
+  .browser-frame iframe {
+    transform: scale(0.45);
+    margin-left: -288px; /* half of 1280 * 0.45 */
+  }
+}
+@media (max-width: 520px) {
+  .browser-frame { height: 580px; }
+  .browser-frame iframe {
+    transform: scale(0.35);
+    margin-left: -224px; /* half of 1280 * 0.35 */
+  }
 }
 .browser-loading {
   position: absolute;
@@ -1444,7 +1491,7 @@ ul {
   .section { padding: 80px 0; }
   .why-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
   .methodology-grid { grid-template-columns: repeat(4, 1fr); }
-  .browser-frame { height: 560px; }
+  /* (browser-frame responsive heights are now defined inline with the iframe scaling rules above) */
 }
 
 /* ------------------------------------------------------------------
@@ -1482,9 +1529,8 @@ ul {
 
   .scroll-indicator { display: none; }
 
-  /* Iframe visible on mobile too — shorter height for smaller screens,
-     user can scroll within the iframe to see the whole dashboard */
-  .browser-mock .browser-frame { height: 480px; }
+  /* Iframe scaling rules are now defined inline at the top with the .browser-frame
+     base rules — see transform: scale() + per-breakpoint height there. */
   .browser-frame iframe { display: block; }
   .dashboard-switcher { gap: 6px; }
   .dash-tab { padding: 8px 12px; font-size: 0.76rem; }
@@ -1598,6 +1644,15 @@ ul {
   flex: 1;
   height: auto !important;
   min-height: 0;
+}
+.browser-mock.is-maximized .browser-frame iframe {
+  /* When maximized to fullscreen, drop the scaling — show the dashboard at its
+     natural size, let the user scroll within the iframe for the full dashboard. */
+  transform: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: static !important;
+  margin-left: 0 !important;
 }
 .browser-mock.is-maximized .browser-bar {
   padding: 8px 16px;
