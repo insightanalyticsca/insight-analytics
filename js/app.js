@@ -357,7 +357,7 @@
   const formStatus = document.getElementById("form-status");
   const submitBtn = document.getElementById("contact-submit");
   const contactEmail = "dev@insight-analytics.ca";
-  const SEND_EMAIL_ENDPOINT = "https://dashboards-groq-proxy.netlify.app/send-email";
+  const SEND_EMAIL_ENDPOINT = "https://startling-belekoy-b0ec70.netlify.app/send-email";
 
   function setStatus(msg, kind) {
     if (!formStatus) return;

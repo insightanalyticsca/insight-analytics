@@ -25,7 +25,7 @@
   'use strict';
 
   const CONFIG = {
-    proxyUrl: 'https://dashboards-groq-proxy.netlify.app/groq-proxy',
+    proxyUrl: 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy',
     groqModel: 'qwen/qwen3.8-27b',
     maxTokens: 800,
     temperature: 0.4,
