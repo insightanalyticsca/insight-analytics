@@ -1465,14 +1465,12 @@ ul {
   .section { padding: 64px 0; }
   .section-head { margin-bottom: 40px; }
 
-  /* Hide the "Book a Demo" CTA at tablet width (accessible via hamburger if needed) —
-     but keep the nav-links (Services, Dashboard, Case Studies, Contact) visible directly
-     so users don't have to tap the hamburger just to see the menu. */
+  /* Show hamburger menu on portrait tablets + phones (≤860px) — inline nav-links
+     hidden because the screen doesn't have enough horizontal room for the 4 links
+     alongside brand + theme-toggle + AI button + hamburger. */
+  .nav-links { display: none; }
   .nav-actions .nav-cta { display: none; }
-
-  /* Compact the nav-links so all 4 fit on a portrait tablet (~768-834px wide) */
-  .nav-links { gap: 2px; }
-  .nav-link { font-size: 0.85rem; padding: 7px 10px; }
+  .menu-toggle { display: flex; margin-left: auto; }
 
   .problem-grid { grid-template-columns: 1fr; }
   .methodology-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1763,24 +1761,30 @@ ul {
 
 /* ============================ AI ASSISTANT BUTTON + PANEL ============================ */
 
-/* Nav button (top-right, beside theme toggle) */
+/* Nav button (top-right, beside theme toggle) — sleek icon-only pill,
+   matches the theme-toggle and menu-toggle size for visual consistency.
+   The "Ask AI" label is hidden at all breakpoints (the title attribute
+   provides the tooltip on hover for discoverability). */
 .assistant-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 14px;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
   height: 36px;
+  padding: 0;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.05));
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.08));
   color: var(--text);
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 180ms ease;
   position: relative;
   font-family: var(--font-ui, inherit);
   white-space: nowrap;
+}
+.assistant-btn .assistant-btn-label {
+  display: none !important; /* icon-only at all breakpoints for sleek look */
 }
 .assistant-btn:hover {
   background: linear-gradient(135deg, rgba(99,102,241,0.18), rgba(6,182,212,0.12));
@@ -1816,13 +1820,9 @@ ul {
   background: #22c55e;
 }
 @media (max-width: 640px) {
-  /* On actual phones, hide the inline nav-links and show the hamburger menu.
-     Tablet portrait (641-860px) keeps the inline links from the 860px block above. */
-  .nav-links { display: none; }
-  .menu-toggle { display: flex; margin-left: auto; }
-
-  .assistant-btn-label { display: none; }
-  .assistant-btn { padding: 8px 10px; }
+  /* No additional nav changes needed — the 860px breakpoint above already
+     shows the hamburger + hides inline links. Keep this breakpoint just
+     for non-nav responsive tweaks. */
 }
 
 /* Backdrop (dims page when panel is open on mobile) */
