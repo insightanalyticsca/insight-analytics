@@ -1447,9 +1447,14 @@ ul {
   .section { padding: 64px 0; }
   .section-head { margin-bottom: 40px; }
 
-  .nav-links { display: none; }
+  /* Hide the "Book a Demo" CTA at tablet width (accessible via hamburger if needed) —
+     but keep the nav-links (Services, Dashboard, Case Studies, Contact) visible directly
+     so users don't have to tap the hamburger just to see the menu. */
   .nav-actions .nav-cta { display: none; }
-  .menu-toggle { display: flex; margin-left: auto; }
+
+  /* Compact the nav-links so all 4 fit on a portrait tablet (~768-834px wide) */
+  .nav-links { gap: 2px; }
+  .nav-link { font-size: 0.85rem; padding: 7px 10px; }
 
   .problem-grid { grid-template-columns: 1fr; }
   .methodology-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1753,6 +1758,11 @@ ul {
   background: #22c55e;
 }
 @media (max-width: 640px) {
+  /* On actual phones, hide the inline nav-links and show the hamburger menu.
+     Tablet portrait (641-860px) keeps the inline links from the 860px block above. */
+  .nav-links { display: none; }
+  .menu-toggle { display: flex; margin-left: auto; }
+
   .assistant-btn-label { display: none; }
   .assistant-btn { padding: 8px 10px; }
 }
