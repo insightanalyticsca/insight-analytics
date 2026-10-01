@@ -232,6 +232,43 @@
     <p>If you paste Bitcoin daily closes, the series view shows the trend, the rolling view shows volatility clustering, the predictions view shows a forecast with widening confidence bands, and the match-up view shows where the model was right and where it was wrong.</p>
     <p>Two completely different domains — geophysics and finance — analyzed by the same tool, with the same six views, in the same browser tab. That's the power of a universal predictor.</p>
 
+    <h2>Try the Live Demo</h2>
+    <p>The predictor is live right now. Paste a URL, drop a file, or pick from the curated data sources — the dashboard lights up in real time. Click the expand icon for fullscreen.</p>
+
+    <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live ML predictor demo" id="browserMock" style="margin: 32px 0;">
+      <div class="browser-bar">
+        <div class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="browser-url">
+          <i class="fas fa-lock" aria-hidden="true"></i>
+          <span id="browser-url-text">insight-analytics.ca/predictor</span>
+        </div>
+        <div class="browser-actions" aria-hidden="true">
+          <i class="fas fa-rotate-right"></i>
+          <i class="fas fa-ellipsis"></i>
+        </div>
+        <button class="browser-maximize" id="browserMaximize" type="button" aria-label="Maximize predictor" title="Maximize to full screen">
+          <i class="fas fa-expand"></i>
+        </button>
+      </div>
+      <div class="browser-frame" style="height: 720px;">
+        <iframe
+          src="https://dream-framework.github.io/universal_ml_predictor/"
+          title="Universal ML Predictor — live interactive demo"
+          style="width: 100%; height: 100%; border: 0; display: block;"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allow="fullscreen"
+        ></iframe>
+      </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 16px;">
+      <a href="https://dream-framework.github.io/universal_ml_predictor/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-lg" style="text-decoration: none;">
+        <i class="fas fa-up-right-from-square" aria-hidden="true"></i>
+        <span class="btn-text">Open the Predictor in a new tab</span>
+      </a>
+    </p>
+
     <div class="article-cta">
       <h3>Want to see your data forecast?</h3>
       <p>Bring one time series — sales, revenue, traffic, weather, anything with a date and a number. We'll run it through the predictor and show you what the dashboard reveals.</p>
