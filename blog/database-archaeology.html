@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
+
+  <!-- SEO -->
+  <title>Database Archaeology: Turning Legacy Systems into Self-Explaining Maps | Insight Analytics</title>
+  <meta name="description" content="How to build an automated archaeologist that walks through legacy databases and code — mapping dependencies, detecting suspicious logic, and using grounded AI to explain what the system does and why." />
+  <meta name="keywords" content="database archaeology, data discovery, dependency graph, lineage analysis, SQL code analysis, LLM reasoning, Ollama, rule engine, legacy system modernization, data lineage, code-to-database mapping" />
+  <meta name="author" content="Insight Analytics" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://insight-analytics.ca/blog/database-archaeology" />
+
+  <!-- PWA / Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="../icons/favicon.ico" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Database Archaeology: Turning Legacy Systems into Self-Explaining Maps" />
+  <meta property="og:description" content="An automated archaeologist that walks through legacy databases and code — mapping dependencies, detecting suspicious logic, and using grounded AI to explain what the system does and why." />
+  <meta property="og:url" content="https://insight-analytics.ca/blog/database-archaeology" />
+  <meta property="og:site_name" content="Insight Analytics" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="article:published_time" content="2026-10-01T00:00:00Z" />
+  <meta property="article:author" content="Insight Analytics" />
+  <meta property="article:section" content="Data Architecture" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Database Archaeology: Turning Legacy Systems into Self-Explaining Maps" />
+  <meta name="twitter:description" content="An automated archaeologist for legacy databases and code — grounded AI reasoning over a dependency graph." />
+
+  <!-- Article structured data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Database Archaeology: Turning Legacy Systems into Self-Explaining Maps",
+    "description": "How to build an automated archaeologist that walks through legacy databases and code — mapping dependencies, detecting suspicious logic, and using grounded AI to explain what the system does and why.",
+    "author": {
+      "@type": "Organization",
+      "name": "Insight Analytics",
+      "url": "https://insight-analytics.ca/"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Insight Analytics",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://insight-analytics.ca/icons/icon-512.png"
+      }
+    },
+    "datePublished": "2026-10-01",
+    "dateModified": "2026-10-01",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://insight-analytics.ca/blog/database-archaeology"
+    },
+    "articleSection": "Data Architecture",
+    "keywords": ["database archaeology", "data discovery", "dependency graph", "lineage analysis", "LLM reasoning", "Ollama"]
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <style>
+    /* Blog article-specific styles */
+    .article-hero {
+      padding: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 60px) 0 40px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(99,102,241,0.04) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .article-hero .container { max-width: 760px; }
+    .article-eyebrow {
+      font-family: var(--font-head);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .article-hero h1 {
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .article-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .article-meta span { white-space: nowrap; }
+    .article-meta .sep { opacity: 0.4; }
+
+    .article-body {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+    .article-body h2 {
+      font-family: var(--font-head);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 48px 0 16px;
+      letter-spacing: -0.01em;
+    }
+    .article-body h2:first-child { margin-top: 0; }
+    .article-body h3 {
+      font-family: var(--font-head);
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 32px 0 12px;
+    }
+    .article-body p {
+      font-size: 1.06rem;
+      line-height: 1.75;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+    .article-body ul, .article-body ol {
+      margin: 0 0 24px;
+      padding-left: 24px;
+    }
+    .article-body li {
+      font-size: 1.06rem;
+      line-height: 1.75;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .article-body strong { color: var(--text); font-weight: 700; }
+    .article-body code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      background: var(--surface-2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--indigo);
+    }
+    .article-body pre {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      overflow-x: auto;
+      margin: 0 0 24px;
+    }
+    .article-body pre code {
+      background: none;
+      padding: 0;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    .article-body blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 8px 20px;
+      margin: 0 0 24px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .article-body a {
+      color: var(--indigo);
+      text-decoration: underline;
+      text-decoration-color: rgba(99,102,241,0.3);
+    }
+    .article-body a:hover { text-decoration-color: var(--indigo); }
+
+    .article-cta {
+      margin: 48px auto 0;
+      max-width: 720px;
+      padding: 32px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04));
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .article-cta h3 {
+      font-family: var(--font-head);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 12px;
+    }
+    .article-cta p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin: 0 0 20px;
+    }
+    .article-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-head);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 32px;
+      transition: color 180ms ease;
+    }
+    .article-back:hover { color: var(--accent); }
+    .article-back i { font-size: 0.78rem; }
+
+    [data-theme="dark"] .article-body code { color: #a5b4fc; }
+    [data-theme="dark"] .article-body pre { background: rgba(30,41,59,0.6); }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar (same as main site) -->
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="https://insight-analytics.ca/" class="brand" aria-label="Insight Analytics home">
+        <span class="brand-mark" aria-hidden="true">IA</span>
+        <span class="brand-name">Insight <b>Analytics</b></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="https://insight-analytics.ca/#services" class="nav-link">Services</a>
+        <a href="https://insight-analytics.ca/#dashboard" class="nav-link">Dashboard</a>
+        <a href="https://insight-analytics.ca/#cases" class="nav-link">Case Studies</a>
+        <a href="/blog/" class="nav-link">Blog</a>
+        <a href="https://insight-analytics.ca/#contact" class="nav-link">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
+          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i>
+          <span class="sr-only" id="theme-label">Light</span>
+        </button>
+        <a href="https://insight-analytics.ca/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check" aria-hidden="true"></i> Book a Demo</a>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <i class="fas fa-bars" id="menu-icon" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Article hero -->
+  <section class="article-hero">
+    <div class="container">
+      <a href="/blog/" class="article-back">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        <span>Back to Blog</span>
+      </a>
+      <div class="article-eyebrow">Data Architecture</div>
+      <h1>Database Archaeology: Turning Legacy Systems into Self-Explaining Maps</h1>
+      <div class="article-meta">
+        <span>By Insight Analytics</span>
+        <span class="sep">·</span>
+        <span>October 1, 2026</span>
+        <span class="sep">·</span>
+        <span>7 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Article body -->
+  <article class="article-body">
+
+    <h2>The Problem Hiding in Every Legacy Database</h2>
+    <p>Every database that has been in production for more than a few years is basically an ancient city. Layers of structures built by generations of developers, many of whom vanished without leaving a map. Tables record the data. SQL records the logic. Comments record the hopes. And nobody currently on the team can tell you why a specific view filters out certain customers — or what would break if you dropped a column that "looks unused."</p>
+    <p>The standard tools for understanding a database — SchemaSpy, ER diagrams, dbt lineage graphs — show you the skeleton. They show you what's there. They don't tell you what it does, why it does it, or what's suspicious about it.</p>
+    <p>What if you could build an automated archaeologist that walks through the ruins and says: <em>"Here is what this temple probably did, and by the way, this column looks like it was added during a panic in 2017."</em></p>
+
+    <h2>The Core Insight: LLMs Should Explain, Not Decide</h2>
+    <p>The key architectural decision is this: <strong>the LLM should never be the engine. It should be the narrator.</strong></p>
+    <p>Most "AI for databases" tools today try to use the LLM to parse SQL, extract dependencies, and determine correctness. That's fragile — LLMs are pattern recognizers, not compilers. They hallucinate joins, miss edge cases, and can't be trusted with structural correctness.</p>
+    <p>The right split is:</p>
+    <ul>
+      <li><strong>Rule engine</strong> → deterministic checks (finds the problems)</li>
+      <li><strong>LLM</strong> → reasoning and explanation (explains why they matter)</li>
+    </ul>
+    <p>The rule engine detects: <code>LEFT JOIN without WHERE filter</code>. The LLM explains: <em>"This view joins orders to customers without filtering for active customers, which means deleted customer records may appear in downstream reports."</em></p>
+    <p>The result feels magical to developers — but it's grounded in actual structural analysis, not AI vibes.</p>
+
+    <h2>The 4-Layer Architecture</h2>
+    <p>The system is built as four layers, each with a clear boundary:</p>
+
+    <h3>Layer 1 — Discovery (deterministic extraction)</h3>
+    <p>This layer extracts raw metadata from databases and code:</p>
+    <ul>
+      <li><strong>SQL Server:</strong> <code>sys.objects</code>, <code>sys.sql_modules</code>, dependency trees, foreign keys, columns, proc parameters</li>
+      <li><strong>C#:</strong> parsed with Roslyn — controllers, services, repositories, Dapper/EF calls, route mappings</li>
+      <li><strong>JavaScript/TypeScript:</strong> parsed with tree-sitter or Babel AST — fetch/axios calls, route ownership, dataset bindings</li>
+      <li><strong>Java:</strong> parsed with JavaParser — JDBC calls, repository/service/controller links</li>
+    </ul>
+    <p>This layer never touches the LLM. It's pure structural extraction.</p>
+
+    <h3>Layer 2 — Normalization (the canonical graph)</h3>
+    <p>All findings are converted into one shared model: nodes and edges. Every object — whether it's a SQL table, a C# repository method, or a JavaScript fetch call — becomes a node. Every relationship (<code>calls</code>, <code>reads from</code>, <code>writes to</code>, <code>joins to</code>, <code>selects column</code>, <code>invokes proc</code>) becomes an edge.</p>
+    <p>This is where the product becomes stable. Without this layer, you just have disconnected scanners.</p>
+
+    <h3>Layer 3 — Rule Engine (hard checks, no guessing)</h3>
+    <p>Deterministic rules catch the problems that matter:</p>
+    <ul>
+      <li><code>SELECT *</code> in persisted views</li>
+      <li>Unused procedure parameters</li>
+      <li>Non-SARGable predicates (<code>LIKE '%text'</code>)</li>
+      <li>Comment/code mismatch (the comment says "returns all active customers" but the SQL filters <code>WHERE status = 'P'</code>)</li>
+      <li>Views that narrow enum values inconsistently</li>
+      <li>Objects with no inbound references (dead code)</li>
+      <li>Circular dependencies</li>
+      <li>Endpoints calling deprecated procs</li>
+    </ul>
+    <p>This is where trust comes from. These checks are deterministic — they either fire or they don't. No hallucination.</p>
+
+    <h3>Layer 4 — Reasoning (grounded AI)</h3>
+    <p>The LLM sits on top and only sees <strong>structured packets</strong>, not raw chaos:</p>
+    <pre><code>{
+  "object": "sp_monthly_revenue",
+  "type": "StoredProcedure",
+  "depends_on": ["vw_valid_transactions"],
+  "called_by": ["RevenueRepository.GetMonthlyRevenueAsync"],
+  "rules_triggered": [
+    "Enum mismatch on status filter",
+    "Unused parameter @IncludeSettled"
+  ]
+}</code></pre>
+    <p>The LLM then produces: plain-English purpose, likely business intent, impact summary, suspicious logic explanation, and a confidence score. The LLM should explain, not decide.</p>
+
+    <h2>The Killer Feature: End-to-End Lineage Tracing</h2>
+    <p>The most valuable capability isn't browsing a graph — it's tracing a full path through the system:</p>
+    <blockquote>
+      <strong>UI page</strong> → calls <strong>API endpoint</strong> → invokes <strong>C# repository</strong> → executes <strong>stored procedure</strong> → reads <strong>view</strong> → filters <strong>table</strong>
+    </blockquote>
+    <p>A user asks: <em>"Why does this dashboard exclude some customers?"</em></p>
+    <p>The engine returns the full chain: the UI page calls an endpoint, the endpoint invokes a repository method, the repository executes a stored procedure, the proc reads a view, the view filters <code>status = 'COMPLETE'</code>, and the source table also contains <code>status = 'SETTLED'</code>. The likely exclusion occurs in the view — revenue may be underreported.</p>
+    <p>That is far more valuable than a pretty dependency graph. It's a forensic trace from the symptom to the root cause.</p>
+
+    <h2>Visualization: From Graph to Command Center</h2>
+    <p>The dependency graph is only one panel. The real UI should feel like a <strong>command center for the organism</strong>, not a generic node-link diagram.</p>
+    <ul>
+      <li><strong>Semantic zoom:</strong> At far zoom, you see domains as glowing clusters. At medium zoom, schemas and repositories. At close zoom, exact tables, procs, methods, and issue markers.</li>
+      <li><strong>Animated lineage traces:</strong> When a user asks "where does this number come from?", the system animates a route from screen to table. That one animation sells the whole product.</li>
+      <li><strong>Impact shockwave:</strong> Drop a column or select a proc, and downstream dependencies light up outward like a ripple. Immediate visual feedback on blast radius.</li>
+      <li><strong>Mode overlays:</strong> The same graph, different lenses — structure, risk, logic, narrative.</li>
+      <li><strong>Focus mode:</strong> Click a node and everything else dims. Only the path-in and path-out stay bright.</li>
+    </ul>
+
+    <h2>Evidence Everywhere</h2>
+    <p>Every narrative the system produces points back to: object name, file path, method name, line span, SQL excerpt or AST rule. Without evidence, the tool becomes "AI vibes." With evidence, it feels like forensics. That distinction is what separates a toy from a product.</p>
+
+    <h2>What a First Engagement Looks Like</h2>
+    <p>This isn't a plug-and-play SaaS tool. A discovery engagement runs on your infrastructure — your SQL Server, your code repositories, your network. Here's what the first conversation actually involves:</p>
+    <ol>
+      <li><strong>Access assessment</strong> — we review what systems are in scope (SQL Server instances, C# solutions, JS/TS repos, Java projects) and what authorizations are needed: read access to system catalogs, source code repository access, and network access to the relevant environments.</li>
+      <li><strong>Infrastructure planning</strong> — the discovery engine is deployed on your systems. Depending on your stack, that's an IIS-deployed service, a Visual Studio-integrated tool, or a local service running on a development server. We plan where the scanner runs, where the graph is stored, and how the reasoning layer connects.</li>
+      <li><strong>Scope definition</strong> — we identify which databases and codebases to include in the first scan, which rules to enable, and what questions your team wants answered.</li>
+      <li><strong>Initial scan</strong> — the discovery engine extracts the metadata graph, runs the rule engine, and produces the first system map with findings and narratives.</li>
+      <li><strong>Review session</strong> — we walk through the graph together, trace lineage paths, review flagged issues, and prioritize what to address first.</li>
+    </ol>
+    <p>The first engagement typically takes 1–2 weeks from access setup to initial results. The discovery engine then stays running on your infrastructure — subsequent scans are faster, drift detection kicks in, and the graph becomes a living map of your system.</p>
+
+    <div class="article-cta">
+      <h3>Want to explore this for your systems?</h3>
+      <p>Bring one database or one codebase to a working session. We'll assess your environment, plan the deployment, and show you what the first discovery scan would look like.</p>
+      <a href="https://insight-analytics.ca/#contact" class="btn btn-primary btn-lg">
+        <i class="fas fa-calendar-check" aria-hidden="true"></i>
+        <span class="btn-text">Book a Working Session</span>
+      </a>
+    </div>
+
+  </article>
+
+  <!-- Footer (same as main site) -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a href="https://insight-analytics.ca/" class="brand footer-brand" aria-label="Insight Analytics home">
+          <span class="brand-mark" aria-hidden="true">IA</span>
+          <span class="brand-name">Insight <b>Analytics</b></span>
+        </a>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="https://insight-analytics.ca/#services">Services</a>
+          <a href="https://insight-analytics.ca/#dashboard">Dashboard</a>
+          <a href="/blog/">Blog</a>
+          <a href="https://insight-analytics.ca/#contact">Contact</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span>
+        <div class="social">
+          <a href="mailto:dev@insight-analytics.ca" aria-label="Email"><i class="fas fa-envelope"></i></a>
+          <a href="https://insight-analytics.ca/#dashboard" aria-label="Live Dashboards"><i class="fas fa-chart-pie"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../js/app.js" defer></script>
+
+</body>
+</html>
