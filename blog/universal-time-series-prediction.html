@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
+
+  <!-- SEO -->
+  <title>Universal Time Series Prediction: From Earthquakes to Bitcoin | Insight Analytics</title>
+  <meta name="description" content="A universal predictor that takes any time series — earthquakes, crypto, climate, economic data — and produces forecasts, model benchmarks, and AI-powered insights in the browser." />
+  <meta name="keywords" content="time series prediction, forecasting, machine learning, ECharts, Groq AI, data visualization, universal predictor, time series analysis, forecasting models" />
+  <meta name="author" content="Insight Analytics" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://insight-analytics.ca/blog/universal-time-series-prediction" />
+
+  <!-- PWA / Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="../icons/favicon.ico" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Universal Time Series Prediction: From Earthquakes to Bitcoin" />
+  <meta property="og:description" content="A universal predictor that takes any time series and produces forecasts, model benchmarks, and AI-powered insights — all in the browser." />
+  <meta property="og:url" content="https://insight-analytics.ca/blog/universal-time-series-prediction" />
+  <meta property="og:site_name" content="Insight Analytics" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="article:published_time" content="2026-10-01T00:00:00Z" />
+  <meta property="article:author" content="Insight Analytics" />
+  <meta property="article:section" content="Machine Learning" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Universal Time Series Prediction: From Earthquakes to Bitcoin" />
+  <meta name="twitter:description" content="A universal predictor that takes any time series and produces forecasts, model benchmarks, and AI-powered insights." />
+
+  <!-- Article structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Universal Time Series Prediction: From Earthquakes to Bitcoin",
+    "description": "A universal predictor that takes any time series — earthquakes, crypto, climate, economic data — and produces forecasts, model benchmarks, and AI-powered insights in the browser.",
+    "author": { "@type": "Organization", "name": "Insight Analytics", "url": "https://insight-analytics.ca/" },
+    "publisher": { "@type": "Organization", "name": "Insight Analytics", "logo": { "@type": "ImageObject", "url": "https://insight-analytics.ca/icons/icon-512.png" } },
+    "datePublished": "2026-10-01",
+    "dateModified": "2026-10-01",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://insight-analytics.ca/blog/universal-time-series-prediction" },
+    "articleSection": "Machine Learning",
+    "keywords": ["time series prediction", "forecasting", "machine learning", "ECharts", "Groq AI"]
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <style>
+    .article-hero { padding: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 60px) 0 40px; text-align: center; background: linear-gradient(180deg, rgba(99,102,241,0.04) 0%, transparent 100%); border-bottom: 1px solid var(--border); }
+    .article-hero .container { max-width: 760px; }
+    .article-eyebrow { font-family: var(--font-head); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .article-hero h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 20px; }
+    .article-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .article-meta .sep { opacity: 0.4; }
+    .article-body { max-width: 720px; margin: 0 auto; padding: 48px 24px 64px; }
+    .article-body h2 { font-family: var(--font-head); font-size: 1.5rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    .article-body h2:first-child { margin-top: 0; }
+    .article-body h3 { font-family: var(--font-head); font-size: 1.15rem; font-weight: 600; margin: 32px 0 12px; }
+    .article-body p { font-size: 1.06rem; line-height: 1.75; margin-bottom: 24px; color: var(--text); }
+    .article-body ul, .article-body ol { margin: 0 0 24px; padding-left: 24px; }
+    .article-body li { font-size: 1.06rem; line-height: 1.75; margin-bottom: 8px; color: var(--text); }
+    .article-body strong { color: var(--text); font-weight: 700; }
+    .article-body code { font-family: 'Courier New', monospace; font-size: 0.9em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--indigo); }
+    .article-body blockquote { border-left: 3px solid var(--accent); padding: 8px 20px; margin: 0 0 24px; color: var(--text-muted); font-style: italic; }
+    .article-body a { color: var(--indigo); text-decoration: underline; text-decoration-color: rgba(99,102,241,0.3); }
+    .article-body a:hover { text-decoration-color: var(--indigo); }
+    .article-cta { margin: 48px auto 0; max-width: 720px; padding: 32px; border-radius: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04)); border: 1px solid var(--border); text-align: center; }
+    .article-cta h3 { font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; margin: 0 0 12px; }
+    .article-cta p { font-size: 0.95rem; color: var(--text-muted); margin: 0 0 20px; }
+    .article-back { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 0.88rem; font-weight: 600; color: var(--text-muted); text-decoration: none; margin-bottom: 32px; transition: color 180ms ease; }
+    .article-back:hover { color: var(--accent); }
+    .article-back i { font-size: 0.78rem; }
+    [data-theme="dark"] .article-body code { color: #a5b4fc; }
+    [data-theme="dark"] .article-body pre { background: rgba(30,41,59,0.6); }
+  </style>
+</head>
+<body>
+
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="https://insight-analytics.ca/" class="brand" aria-label="Insight Analytics home">
+        <span class="brand-mark" aria-hidden="true">IA</span>
+        <span class="brand-name">Insight <b>Analytics</b></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="https://insight-analytics.ca/#services" class="nav-link">Services</a>
+        <a href="https://insight-analytics.ca/#dashboard" class="nav-link">Dashboard</a>
+        <a href="https://insight-analytics.ca/#cases" class="nav-link">Case Studies</a>
+        <a href="/blog/" class="nav-link">Blog</a>
+        <a href="https://insight-analytics.ca/#contact" class="nav-link">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
+          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i>
+          <span class="sr-only" id="theme-label">Light</span>
+        </button>
+        <a href="https://insight-analytics.ca/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check" aria-hidden="true"></i> Book a Demo</a>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <i class="fas fa-bars" id="menu-icon" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="article-hero">
+    <div class="container">
+      <a href="/blog/" class="article-back">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        <span>Back to Blog</span>
+      </a>
+      <div class="article-eyebrow">Machine Learning</div>
+      <h1>Universal Time Series Prediction: From Earthquakes to Bitcoin</h1>
+      <div class="article-meta">
+        <span>By Insight Analytics</span>
+        <span class="sep">·</span>
+        <span>October 1, 2026</span>
+        <span class="sep">·</span>
+        <span>6 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="article-body">
+
+    <h2>The Problem with Forecasting Tools</h2>
+    <p>Every forecasting tool on the market answers the same question differently: "What happens next with this data?" But most of them require you to know what model to use, how to prepare your data, and which parameters to tune before you even see a single prediction.</p>
+    <p>What if you could just <strong>paste a URL</strong> — any URL that points to time series data — and get a full analysis with forecasts, model benchmarks, and AI-powered insights? No setup, no configuration, no model selection. Just paste and read.</p>
+    <p>That's exactly what the universal predictor does.</p>
+
+    <h2>How It Works</h2>
+    <p>The predictor has two panels: a <strong>chat interface</strong> on the left and a <strong>dashboard</strong> on the right. You interact with both simultaneously.</p>
+    <p>On the chat side, you can:</p>
+    <ul>
+      <li><strong>Paste a URL</strong> to any CSV, JSON, or TSV file containing time series data</li>
+      <li><strong>Drop a file</strong> directly into the browser (no upload to a server — everything is processed client-side)</li>
+      <li><strong>Pick from a curated list</strong> of real-world data sources — earthquakes, river flows, crypto prices, climate data, space weather, economic indicators</li>
+      <li><strong>Ask questions</strong> about the data in natural language (powered by Groq AI)</li>
+    </ul>
+    <p>The bot reads your data, identifies the time column and value column automatically, runs the analysis, and the dashboard on the right lights up with results.</p>
+
+    <h2>The Six Dashboard Views</h2>
+    <p>Once the data is loaded, the dashboard gives you six different lenses on the same signal:</p>
+
+    <h3>1. Series — the raw signal</h3>
+    <p>The full time series plotted with interactive tooltips, zoom, and scroll. You see the shape of your data immediately — trends, seasonality, anomalies, gaps.</p>
+
+    <h3>2. Predictions — the forecast</h3>
+    <p>The model projects the next N periods forward, with confidence bands. You see not just "what will happen" but "how confident the model is" at each step.</p>
+
+    <h3>3. Match-up — model vs. actual</h3>
+    <p>A side-by-side comparison of the model's predictions against actual historical values. This is the honesty test — does the model actually fit the data, or is it hallucinating trends?</p>
+
+    <h3>4. Rolling — rolling statistics</h3>
+    <p>Rolling mean, rolling standard deviation, and rolling correlation. These reveal whether the signal's statistical properties are stable over time or shifting — critical for detecting regime changes.</p>
+
+    <h3>5. Phase — phase space</h3>
+    <p>A phase space plot (value vs. lagged value) reveals periodicities, attractors, and chaos in the signal. This is the view that turns a time series into a geometric object — and it's where patterns that are invisible in the time domain suddenly become obvious.</p>
+
+    <h3>6. Dust Fields — advanced analytics</h3>
+    <p>Additional analytical views that surface patterns the standard charts miss: autocorrelation, partial autocorrelation, spectral density, and residual diagnostics.</p>
+
+    <h2>Real-World Data Sources</h2>
+    <p>The predictor ships with a curated list of real-world data feeds you can analyze in one click:</p>
+    <ul>
+      <li><strong>Geophysical:</strong> USGS global earthquakes (30-day hourly counts), river flows (Potomac, Mississippi, Colorado, Sacramento), NOAA water levels</li>
+      <li><strong>Climate:</strong> Open-Meteo temperature, wind speed, humidity, precipitation, soil temperature, air quality across multiple cities</li>
+      <li><strong>Crypto:</strong> Bitcoin, Ethereum, Solana, Cardano, Polkadot daily prices (Binance + CoinGecko)</li>
+      <li><strong>Space weather:</strong> NOAA GOES X-ray flux, magnetometer, electron/proton counts, solar wind speed, planetary K-index</li>
+      <li><strong>Economic:</strong> World Bank GDP, CPI, unemployment (65 years of annual data)</li>
+      <li><strong>Society:</strong> Wikimedia pageviews for any article over 2.5 years</li>
+    </ul>
+    <p>Or paste any URL that returns CSV, JSON, or TSV with a date column and a numeric column. The predictor handles the parsing automatically.</p>
+
+    <h2>The Architecture: Three Layers</h2>
+    <p>Behind the scenes, the predictor is built as three clean layers:</p>
+
+    <h3>Layer 1 — Data ingestion (client-side)</h3>
+    <p>Everything runs in the browser. No server-side processing, no data upload. The predictor fetches the URL you paste (subject to CORS), parses CSV/JSON/TSV, identifies the time column and value column, and normalizes the series. This means your data never leaves your browser — a critical privacy guarantee for sensitive datasets.</p>
+
+    <h3>Layer 2 — Forecasting engine</h3>
+    <p>The engine benchmarks multiple forecasting approaches against your data: naive (persistence), moving average, seasonal naive, linear trend, and more. The best-performing model is selected automatically and used for the predictions view. The match-up view shows how each model performed against actual values so you can see the honest comparison.</p>
+
+    <h3>Layer 3 — AI reasoning (Groq)</h3>
+    <p>The chat interface connects to Groq (running a fast LLM) so you can ask questions about the data in natural language: "Is there a trend?", "What's the seasonal pattern?", "Is the forecast reliable?" The AI has access to the statistical summary, the chart data, and the model metrics — so its answers are grounded in the actual analysis, not generic text generation.</p>
+
+    <h2>Why This Matters</h2>
+    <p>Time series forecasting has traditionally been the domain of specialists — data scientists who know which model to use, how to tune hyperparameters, and how to interpret residual plots. The universal predictor democratizes this:</p>
+    <ul>
+      <li><strong>No setup:</strong> paste a URL and get results in seconds</li>
+      <li><strong>No model selection:</strong> the engine benchmarks multiple models and picks the best one</li>
+      <li><strong>No configuration:</strong> the dashboard auto-adapts to the data's characteristics (seasonality, trend, frequency)</li>
+      <li><strong>AI explains:</strong> the chat bot translates statistical jargon into plain English</li>
+      <li><strong>Privacy by design:</strong> everything runs client-side — your data never touches a server</li>
+    </ul>
+    <p>For an executive who wants to understand whether a trend is real or noise, this tool answers the question in the time it takes to paste a URL. For a data scientist, it's a fast first-look tool that surfaces patterns before they commit to a full modeling pipeline.</p>
+
+    <h2>The Visualization Layer</h2>
+    <p>All six dashboard views are built with <strong>Apache ECharts</strong> — the same charting library we use across all our dashboards. ECharts was chosen for three reasons:</p>
+    <ul>
+      <li><strong>Performance:</strong> handles large datasets (10,000+ points) without lag</li>
+      <li><strong>Interactivity:</strong> built-in zoom, pan, tooltips, and brush selection — no extra code needed</li>
+      <li><strong>Consistency:</strong> the same visual language across every dashboard we build, so users don't have to relearn the UI</li>
+    </ul>
+    <p>The dark/light theme toggle uses CSS variables, so the dashboard adapts to the user's preference instantly. The phase space view and dust fields view use ECharts custom series for bespoke visualizations that wouldn't be possible with standard chart types.</p>
+
+    <h2>Persistence: Save and Compare</h2>
+    <p>Every analysis can be saved to a GitHub repository (configured in the settings modal). This means:</p>
+    <ul>
+      <li>Analyses are version-controlled — you can see how a forecast changed over time as new data arrived</li>
+      <li>Results are shareable — send a colleague a link to a saved analysis</li>
+      <li>The history modal lets you reload any past analysis and compare it side-by-side with a new one</li>
+    </ul>
+    <p>The GitHub token stays in the browser's localStorage and is never sent anywhere except <code>api.github.com</code> — the predictor's own servers never see it.</p>
+
+    <h2>What a First Look Reveals</h2>
+    <p>If you paste the USGS earthquake feed, the predictor shows you the hourly count of global earthquakes over the last 30 days. The series view reveals a baseline rate with periodic spikes. The rolling view shows whether the rate is stable or trending up. The predictions view forecasts the next few days. The phase view reveals whether the timing of aftershocks follows a pattern.</p>
+    <p>If you paste Bitcoin daily closes, the series view shows the trend, the rolling view shows volatility clustering, the predictions view shows a forecast with widening confidence bands, and the match-up view shows where the model was right and where it was wrong.</p>
+    <p>Two completely different domains — geophysics and finance — analyzed by the same tool, with the same six views, in the same browser tab. That's the power of a universal predictor.</p>
+
+    <div class="article-cta">
+      <h3>Want to see your data forecast?</h3>
+      <p>Bring one time series — sales, revenue, traffic, weather, anything with a date and a number. We'll run it through the predictor and show you what the dashboard reveals.</p>
+      <a href="https://insight-analytics.ca/#contact" class="btn btn-primary btn-lg">
+        <i class="fas fa-calendar-check" aria-hidden="true"></i>
+        <span class="btn-text">Book a Working Session</span>
+      </a>
+    </div>
+
+  </article>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a href="https://insight-analytics.ca/" class="brand footer-brand" aria-label="Insight Analytics home">
+          <span class="brand-mark" aria-hidden="true">IA</span>
+          <span class="brand-name">Insight <b>Analytics</b></span>
+        </a>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="https://insight-analytics.ca/#services">Services</a>
+          <a href="https://insight-analytics.ca/#dashboard">Dashboard</a>
+          <a href="/blog/">Blog</a>
+          <a href="https://insight-analytics.ca/#contact">Contact</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span>
+        <div class="social">
+          <a href="mailto:dev@insight-analytics.ca" aria-label="Email"><i class="fas fa-envelope"></i></a>
+          <a href="https://insight-analytics.ca/#dashboard" aria-label="Live Dashboards"><i class="fas fa-chart-pie"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/app.js" defer></script>
+
+</body>
+</html>
