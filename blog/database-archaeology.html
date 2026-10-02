@@ -361,6 +361,43 @@
     <h2>Evidence Everywhere</h2>
     <p>Every narrative the system produces points back to: object name, file path, method name, line span, SQL excerpt or AST rule. Without evidence, the tool becomes "AI vibes." With evidence, it feels like forensics. That distinction is what separates a toy from a product.</p>
 
+    <h2>Try the Live Demo</h2>
+    <p>The discovery graph below is interactive. Click any object to inspect its dependencies, columns, and rule-engine findings. Use the filter buttons to isolate tables, views, or procedures. The search box finds objects by name.</p>
+
+    <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live metadata discovery demo" id="browserMock" style="margin: 32px 0;">
+      <div class="browser-bar">
+        <div class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="browser-url">
+          <i class="fas fa-lock" aria-hidden="true"></i>
+          <span id="browser-url-text">insight-analytics.ca/discovery</span>
+        </div>
+        <div class="browser-actions" aria-hidden="true">
+          <i class="fas fa-rotate-right"></i>
+          <i class="fas fa-ellipsis"></i>
+        </div>
+        <button class="browser-maximize" id="browserMaximize" type="button" aria-label="Maximize discovery demo" title="Maximize to full screen">
+          <i class="fas fa-expand"></i>
+        </button>
+      </div>
+      <div class="browser-frame" style="height: 640px;">
+        <iframe
+          src="https://insightanalyticsca.github.io/metadata-discovery/"
+          title="Metadata Discovery — live interactive demo"
+          style="width: 100%; height: 100%; border: 0; display: block;"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allow="fullscreen"
+        ></iframe>
+      </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 16px;">
+      <a href="https://insightanalyticsca.github.io/metadata-discovery/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-lg" style="text-decoration: none;">
+        <i class="fas fa-up-right-from-square" aria-hidden="true"></i>
+        <span class="btn-text">Open the Discovery Demo in a new tab</span>
+      </a>
+    </p>
+
     <h2>What a First Engagement Looks Like</h2>
     <p>This isn't a plug-and-play SaaS tool. A discovery engagement runs on your infrastructure — your SQL Server, your code repositories, your network. Here's what the first conversation actually involves:</p>
     <ol>
