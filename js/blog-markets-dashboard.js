@@ -52,16 +52,18 @@
           <div class="bmd-kpi"><div class="bmd-kpi-label">Gold</div><div class="bmd-kpi-val bmd-skeleton">---</div><div class="bmd-kpi-change">---</div></div>
         </div>
 
-        <div class="bmd-chart-grid">
-          <div class="bmd-chart-card bmd-wide-2">
+        <div class="bmd-chart-grid bmd-grid-row1">
+          <div class="bmd-chart-card bmd-trends-card">
             <div class="bmd-chart-title"><i class="fas fa-chart-line"></i> Index &amp; Crypto Trends <span class="bmd-src" id="bmd-src-trends">loading…</span></div>
             <div class="bmd-chart-body bmd-tall" id="bmd-chart-trends"></div>
           </div>
-          <div class="bmd-chart-card">
+          <div class="bmd-chart-card bmd-fx-card">
             <div class="bmd-chart-title"><i class="fas fa-globe"></i> Currency Heatmap <span class="bmd-src" id="bmd-src-fx">loading…</span></div>
             <div class="bmd-chart-body bmd-tall" id="bmd-chart-fx"></div>
           </div>
-          <div class="bmd-chart-card">
+        </div>
+        <div class="bmd-chart-grid bmd-grid-row2">
+          <div class="bmd-chart-card bmd-sectors-card">
             <div class="bmd-chart-title"><i class="fas fa-th"></i> Sector Performance <span class="bmd-src">computed</span></div>
             <div class="bmd-chart-body" id="bmd-chart-sectors"></div>
           </div>
@@ -168,8 +170,7 @@
       }
       @keyframes bmd-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
       .bmd-chart-grid {
-        display: grid; grid-template-columns: 1fr 1fr 1fr;
-        gap: 8px; margin-bottom: 10px;
+        display: grid; gap: 8px; margin-bottom: 8px;
       }
       .bmd-chart-card {
         background: rgba(15, 23, 42, .85);
@@ -178,6 +179,10 @@
       }
       .bmd-chart-card.bmd-wide { grid-column: 1 / -1; }
       .bmd-chart-card.bmd-wide-2 { grid-column: span 2; }
+      /* Row 1: trends (narrower) + FX heatmap (wider) — 55/45 split */
+      .bmd-grid-row1 { grid-template-columns: 1.1fr 1.4fr; }
+      /* Row 2: sectors (wider) + crypto + futures — 1.5/1/1 split */
+      .bmd-grid-row2 { grid-template-columns: 1.6fr 1fr 1fr; }
       .bmd-chart-title {
         font-size: 11px; font-weight: 600; color: #e2e8f0;
         margin-bottom: 6px; display: flex; align-items: center; gap: 4px;
@@ -221,7 +226,8 @@
       }
       @media (max-width: 1024px) {
         .bmd-kpi-grid { grid-template-columns: repeat(3, 1fr); }
-        .bmd-chart-grid { grid-template-columns: 1fr 1fr; }
+        .bmd-grid-row1 { grid-template-columns: 1fr; }
+        .bmd-grid-row2 { grid-template-columns: 1fr 1fr; }
         .bmd-ai-grid { grid-template-columns: 1fr 1fr; }
       }
       @media (max-width: 640px) {
@@ -602,19 +608,83 @@
 
   function parseBrief(text, streaming) {
     if (!text) return;
-    // Strip markdown bold markers (** **) — they break the split + look ugly
-    var clean = text.replace(/\*\*/g, '');
-    // Split on "N: " where N is 1-4, at the start of a line
-    // Use a more precise regex that won't match digits inside numbers
-    var parts = clean.split(/\n\d:\s*|\d:\s*/).filter(function (s) { return s.trim(); });
-    if (parts.length < 4 && !streaming) return;
-    var ids = ['bmd-ai-happened', 'bmd-ai-why', 'bmd-ai-expect', 'bmd-ai-do'];
-    parts.forEach(function (p, i) {
-      if (i < ids.length && p.trim()) {
-        var el = document.getElementById(ids[i]);
-        if (el) { el.classList.remove('bmd-shimmer'); el.textContent = p.trim().slice(0, 300); }
+    // Strip markdown bold markers (** **) — they break parsing + look ugly
+    var clean = text.replace(/\*\*/g, '').replace(/\*/g, '').trim();
+
+    // Try multiple split strategies to handle different AI response formats:
+    // Strategy 1: "1: WHAT HAPPENED" format (number prefix)
+    // Strategy 2: "WHAT HAPPENED:" format (header colon)
+    // Strategy 3: "## What Happened" format (markdown header)
+    var sections = [
+      { names: ['what happened', 'whathappened'], id: 'bmd-ai-happened' },
+      { names: ['why it matters', 'whyitmatters'], id: 'bmd-ai-why' },
+      { names: ['what to expect', 'whattoexpect'], id: 'bmd-ai-expect' },
+      { names: ['what to do', 'whattodo'], id: 'bmd-ai-do' }
+    ];
+
+    // Find each section by name in the text, extract content between headers
+    var lowerClean = clean.toLowerCase();
+    var positions = [];
+
+    sections.forEach(function (sec) {
+      sec.names.forEach(function (name) {
+        var idx = lowerClean.indexOf(name);
+        if (idx >= 0) {
+          positions.push({ start: idx + name.length, name: name, sectionId: sec.id });
+        }
+      });
+    });
+
+    // Sort by position in text
+    positions.sort(function (a, b) { return a.start - b.start; });
+
+    // Remove duplicate section matches (keep first occurrence of each section)
+    var seen = {};
+    var uniquePositions = [];
+    positions.forEach(function (p) {
+      var sec = sections.find(function (s) { return s.id === p.sectionId; });
+      if (sec && !seen[p.sectionId]) {
+        seen[p.sectionId] = true;
+        uniquePositions.push(p);
       }
     });
+
+    if (uniquePositions.length >= 2) {
+      // Extract content between each section header and the next
+      uniquePositions.forEach(function (pos, i) {
+        var contentStart = pos.start;
+        // Skip past any colon or newline after the header name
+        while (contentStart < clean.length && /[:\-\n\r\s]/.test(clean[contentStart])) contentStart++;
+        var contentEnd = (i + 1 < uniquePositions.length) ? uniquePositions[i + 1].start - uniquePositions[i + 1].name.length : clean.length;
+        var content = clean.substring(contentStart, contentEnd).trim();
+        // Clean up the content — remove leading header text if duplicated
+        content = content.replace(/^(what happened|why it matters|what to expect|what to do)[:\-\s]*/i, '').trim();
+        if (content) {
+          var el = document.getElementById(pos.sectionId);
+          if (el) { el.classList.remove('bmd-shimmer'); el.textContent = content.slice(0, 300); }
+        }
+      });
+      return;
+    }
+
+    // Fallback: try the old "N: " split strategy
+    var parts = clean.split(/\n?\d[:.\)]\s*/).filter(function (s) { return s.trim(); });
+    if (parts.length >= 4) {
+      var ids = ['bmd-ai-happened', 'bmd-ai-why', 'bmd-ai-expect', 'bmd-ai-do'];
+      parts.forEach(function (p, i) {
+        if (i < ids.length && p.trim()) {
+          var el = document.getElementById(ids[i]);
+          if (el) { el.classList.remove('bmd-shimmer'); el.textContent = p.trim().slice(0, 300); }
+        }
+      });
+      return;
+    }
+
+    // If streaming and we have some text, put it all in the first cell
+    if (streaming && parts.length > 0) {
+      var el0 = document.getElementById('bmd-ai-happened');
+      if (el0) { el0.classList.remove('bmd-shimmer'); el0.textContent = parts[0].trim().slice(0, 300); }
+    }
   }
 
   // ─── Boot ────────────────────────────────────────────────────────────────
