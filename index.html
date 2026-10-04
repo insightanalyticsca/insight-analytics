@@ -589,28 +589,19 @@
             </button>
           </div>
           <div class="browser-frame">
-            <div class="browser-loading" id="browser-loading">
-              <div class="spinner" aria-hidden="true"></div>
-              <span id="browser-loading-label">Loading executive dashboard…</span>
+            <div id="exec-dashboard-mount">
+              <div class="exec-loading">Loading dashboard…</div>
             </div>
-            <iframe
-              id="dashboard-iframe"
-              data-src="./dashboards-preview/custom-html/executive-chatters-portfolio.html"
-              title="Live dashboard — interactive demo"
-              referrerpolicy="no-referrer-when-downgrade"
-              allow="fullscreen"
-            ></iframe>
             <a
               class="browser-fallback"
               id="browserFallback"
               href="https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html"
               target="_blank"
               rel="noopener noreferrer"
-              hidden
             >
               <i class="fas fa-external-link-alt" aria-hidden="true"></i>
-              <span>Open the live dashboard in a new tab</span>
-              <small>If the preview doesn't render above, tap here to view the full dashboard.</small>
+              <span>Open the live interactive dashboard</span>
+              <small>Tap to open in a new tab — fully interactive with chart hover, theme toggle, and AI brief.</small>
             </a>
           </div>
         </div>
@@ -826,7 +817,9 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js" defer></script>
   <script src="./js/app.js" defer></script>
+  <script src="./js/exec-dashboard-inline.js" defer></script>
   <script src="./js/hero-animation.js" defer></script>
   <script src="./js/pull-to-refresh.js" defer></script>
   <script src="./js/assistant.js" defer></script>

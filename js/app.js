@@ -192,129 +192,61 @@
   }
 
   /* ------------------------------------------------------------------
-   * Live dashboard showcase — iframe with local mirror + fallback timer
+   * Dashboard showcase — INLINE renderer (no iframe, no SW issues)
    *
-   * The iframe loads a same-origin local mirror at /dashboards-preview/.
-   * The marketing site's service worker has been modified to SKIP all
-   * requests to /dashboards-preview/ — the iframe's HTML, CSS, JS, and
-   * JSON data all go straight to the network with zero SW interference.
-   * This is what makes the live dashboard render reliably on iOS Safari
-   * and PWA, where SW-intercepted iframe requests were stalling.
+   * Pattern: same as markets-dashboard — NO IFRAME, NO service worker,
+   * NO cross-origin issues. Direct fetch() to the dashboard's JSON data,
+   * ECharts renders directly into divs on the page. Works on every
+   * browser including iOS Safari + PWA where iframe-based loading was
+   * stalling.
    *
-   * A 12-second fallback timer surfaces an "Open in new tab" link if the
-   * iframe still hasn't fired its load event (e.g., on a flaky mobile
-   * network where the dashboard's many resources take too long).
+   * The renderer lives in /js/exec-dashboard-inline.js and exposes
+   * window.loadExecDashboard(suite) where suite is one of:
+   *   - chatters  → Executive Operating (markets)
+   *   - payments  → Customer Payments (finance)
+   *   - ebill     → eBill Performance
    * ------------------------------------------------------------------ */
-  const showcaseFrame = document.getElementById("dashboard-iframe");
-  const showcaseSection = document.getElementById("dashboard");
-  const fallbackLink = document.getElementById("browserFallback");
-  const urlText = document.getElementById("browser-url-text");
   const switcher = document.getElementById("dashboardSwitcher");
-  const loadingOverlay = document.getElementById("browser-loading");
 
-  // Eagerly set iframe src on page load (no IntersectionObserver — that
-  // was causing issues on iOS Safari PWA where the observer never fires
-  // in the standalone context).
-  if (showcaseFrame) {
-    const src = showcaseFrame.getAttribute("data-src");
-    if (src) showcaseFrame.setAttribute("src", src);
+  // Map tab data-dash → suite key for the JSON file
+  const dashToSuite = {
+    "executive": "chatters",
+    "payments": "payments",
+    "ebill": "ebill"
+  };
+
+  // Initial load — render the default dashboard (Executive Operating)
+  // once ECharts + the renderer script have loaded (deferred).
+  function initDashboard() {
+    if (typeof window.loadExecDashboard !== "function") {
+      // Scripts still loading — retry in 100ms
+      setTimeout(initDashboard, 100);
+      return;
+    }
+    window.loadExecDashboard("chatters");
   }
+  initDashboard();
 
-  if (showcaseFrame && loadingOverlay) {
-    let loadedSuccessfully = false;
-    let fallbackTimer = null;
-    let safetyTimer = null;
+  if (switcher) {
+    switcher.addEventListener("click", function (e) {
+      const tab = e.target.closest(".dash-tab");
+      if (!tab) return;
+      const dashKey = tab.getAttribute("data-dash");
+      const suite = dashToSuite[dashKey];
+      if (!suite) return;
+      if (tab.classList.contains("is-active")) return;
 
-    function hideLoading() {
-      loadingOverlay.style.opacity = "0";
-      loadingOverlay.style.transition = "opacity 0.4s ease";
-      setTimeout(function () {
-        loadingOverlay.style.display = "none";
-      }, 420);
-    }
-    function showLoading(label) {
-      loadingOverlay.style.display = "";
-      loadingOverlay.style.opacity = "1";
-      loadingOverlay.style.transition = "opacity 0.2s ease";
-      const lbl = document.getElementById("browser-loading-label");
-      if (lbl && label) lbl.textContent = label;
-    }
-    function showFallback() {
-      if (loadedSuccessfully || !fallbackLink) return;
-      hideLoading();
-      fallbackLink.hidden = false;
-      if (showcaseFrame) {
-        showcaseFrame.style.opacity = "0.25";
-        showcaseFrame.style.transition = "opacity 0.4s ease";
-      }
-    }
-    function markLoaded() {
-      loadedSuccessfully = true;
-      if (fallbackLink) fallbackLink.hidden = true;
-      if (showcaseFrame) showcaseFrame.style.opacity = "";
-      hideLoading();
-    }
-    function resetFallbackState() {
-      loadedSuccessfully = false;
-      if (fallbackLink) fallbackLink.hidden = true;
-      if (showcaseFrame) showcaseFrame.style.opacity = "";
-      if (fallbackTimer) clearTimeout(fallbackTimer);
-      if (safetyTimer) clearTimeout(safetyTimer);
-      fallbackTimer = setTimeout(showFallback, 12000);
-      safetyTimer = setTimeout(hideLoading, 15000);
-    }
-
-    showcaseFrame.addEventListener("load", markLoaded);
-    showcaseFrame.addEventListener("error", hideLoading);
-    fallbackTimer = setTimeout(showFallback, 12000);
-    safetyTimer = setTimeout(hideLoading, 15000);
-
-    // Switcher — click a tab to swap iframe src + URL bar
-    if (switcher) {
-      switcher.addEventListener("click", function (e) {
-        const tab = e.target.closest(".dash-tab");
-        if (!tab) return;
-        const newSrc = tab.getAttribute("data-src");
-        const newLive = tab.getAttribute("data-live");
-        const dashKey = tab.getAttribute("data-dash");
-        if (!newSrc || !showcaseFrame) return;
-        if (tab.classList.contains("is-active")) return;
-
-        // Update active tab styling
-        switcher.querySelectorAll(".dash-tab").forEach(function (t) {
-          t.classList.remove("is-active");
-          t.setAttribute("aria-selected", "false");
-        });
-        tab.classList.add("is-active");
-        tab.setAttribute("aria-selected", "true");
-
-        // Update masked URL bar
-        if (urlText) {
-          const urlMap = {
-            "executive": "insight-analytics.ca/dashboards/executive-operating",
-            "payments": "insight-analytics.ca/dashboards/customer-payments",
-            "ebill": "insight-analytics.ca/dashboards/ebill-performance"
-          };
-          urlText.textContent = urlMap[dashKey] || "insight-analytics.ca/dashboards/executive-operating";
-        }
-
-        // Show loading overlay with the new label
-        const labelMap = {
-          "executive": "Loading executive dashboard…",
-          "payments": "Loading customer payments dashboard…",
-          "ebill": "Loading eBill performance dashboard…"
-        };
-        showLoading(labelMap[dashKey] || "Loading dashboard…");
-
-        // Swap iframe src
-        showcaseFrame.setAttribute("data-src", newSrc);
-        showcaseFrame.setAttribute("src", newSrc);
-
-        // Update fallback link + reset timer state
-        if (fallbackLink && newLive) fallbackLink.setAttribute("href", newLive);
-        resetFallbackState();
+      // Update active tab styling
+      switcher.querySelectorAll(".dash-tab").forEach(function (t) {
+        t.classList.remove("is-active");
+        t.setAttribute("aria-selected", "false");
       });
-    }
+      tab.classList.add("is-active");
+      tab.setAttribute("aria-selected", "true");
+
+      // Render the new dashboard inline (fetch JSON + render ECharts)
+      window.loadExecDashboard(suite);
+    });
   }
 
   /* ------------------------------------------------------------------
