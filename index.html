@@ -551,28 +551,36 @@
       <div class="container">
         <div class="section-head reveal">
           <span class="eyebrow"><span class="dot"></span> See It In Action</span>
-          <h2 class="section-title" id="dash-title">Live Markets &amp; Finance Dashboard — <span class="grad">streaming now</span></h2>
-          <p class="section-sub">Live tickers from Binance (crypto) and Frankfurter/ECB (FX). AI brief streams in real time from Groq. Same dashboard pattern as our <a href="https://insightanalyticsca.github.io/markets-dashboard/" target="_blank" rel="noopener noreferrer">markets-dashboard</a> — no iframe, no service worker interference, renders on every browser.</p>
+          <h2 class="section-title" id="dash-title">The Executive Operating Dashboard — <span class="grad">live, interactive</span></h2>
+          <p class="section-sub">The dashboard below is a live, interactive demo. Try clicking through the charts. The AI Brief card streams a real-time analysis from the data.</p>
         </div>
 
-        <!-- Dashboard switcher — Markets + Finance -->
+        <!-- Dashboard switcher — pick which live dashboard to preview -->
         <div class="dashboard-switcher reveal" id="dashboardSwitcher" role="tablist" aria-label="Choose a live dashboard to preview">
-          <button class="dash-tab is-active" type="button" role="tab" aria-selected="true" data-mftab="markets" title="Indices, crypto, gold — live from Binance">
+          <button class="dash-tab is-active" type="button" role="tab" aria-selected="true" data-dash="executive" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html" title="Retail chain — revenue mix, capacity heatmap, store performance">
             <i class="fas fa-chart-line" aria-hidden="true"></i>
-            <span>Markets</span>
+            <span>Executive Operating</span>
           </button>
-          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-mftab="finance" title="FX rates, futures curve — live from Frankfurter/ECB">
+          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="it-ops" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/its-service-health.html" title="IT department — SLA, ticket operations, uptime">
+            <i class="fas fa-server" aria-hidden="true"></i>
+            <span>IT Service Health</span>
+          </button>
+          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="payments" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-customer-payments.html" title="Finance — daily + monthly customer payments, cash cycle">
             <i class="fas fa-wallet" aria-hidden="true"></i>
-            <span>Finance</span>
+            <span>Customer Payments</span>
+          </button>
+          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="ebill" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-ebill-performance.html" title="Customer experience — eBill adoption + delivery performance">
+            <i class="fas fa-file-invoice" aria-hidden="true"></i>
+            <span>eBill Performance</span>
           </button>
         </div>
 
-        <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live markets dashboard" id="browserMock">
+        <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live dashboard preview" id="browserMock">
           <div class="browser-bar">
             <div class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></div>
             <div class="browser-url">
               <i class="fas fa-lock" aria-hidden="true"></i>
-              <span id="browser-url-text">insight-analytics.ca/markets</span>
+              <span id="browser-url-text">insight-analytics.ca/dashboards/executive-operating</span>
             </div>
             <div class="browser-actions" aria-hidden="true">
               <i class="fas fa-rotate-right"></i>
@@ -583,109 +591,22 @@
             </button>
           </div>
           <div class="browser-frame">
-            <div id="exec-dashboard-mount" class="mf-app">
-              <!-- MARKETS TAB -->
-              <div id="mf-tab-markets">
-                <div class="mf-topbar">
-                  <div class="mf-brand">
-                    <div class="mf-bm">IA</div>
-                    <div>
-                      <div class="mf-bn">Markets Dashboard</div>
-                      <div class="mf-bs">Indexes · Crypto · Gold · AI Narrative</div>
-                    </div>
-                  </div>
-                  <div class="mf-live-badge"><span class="mf-live-dot"></span><span id="mf-live-status">Loading live data…</span></div>
-                </div>
-                <div class="mf-kpi-grid" id="mf-kpi-grid">
-                  <div class="mf-kpi"><div class="mf-kpi-label">S&amp;P 500</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                  <div class="mf-kpi"><div class="mf-kpi-label">NASDAQ</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                  <div class="mf-kpi"><div class="mf-kpi-label">Dow Jones</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                  <div class="mf-kpi"><div class="mf-kpi-label">TSX</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                  <div class="mf-kpi"><div class="mf-kpi-label">BTC/USD</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                  <div class="mf-kpi"><div class="mf-kpi-label">Gold</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                </div>
-                <div class="mf-chart-grid">
-                  <div class="mf-chart-card wide">
-                    <div class="mf-chart-title"><i class="fas fa-chart-line"></i> Index &amp; Crypto Trends <span class="src" id="mf-src-trends">demo + Binance</span></div>
-                    <div class="mf-chart-body tall" id="mf-chart-trends"></div>
-                  </div>
-                  <div class="mf-chart-card">
-                    <div class="mf-chart-title"><i class="fas fa-th"></i> Sector Performance <span class="src">computed</span></div>
-                    <div class="mf-chart-body" id="mf-chart-sectors"></div>
-                  </div>
-                  <div class="mf-chart-card">
-                    <div class="mf-chart-title"><i class="fas fa-coins"></i> Crypto Comparison <span class="src" id="mf-src-crypto">loading…</span></div>
-                    <div class="mf-chart-body" id="mf-chart-crypto"></div>
-                  </div>
-                </div>
-                <div class="mf-ai-brief">
-                  <div class="mf-ai-head">
-                    <div class="mf-ai-icon"><i class="fas fa-robot"></i></div>
-                    <div>
-                      <div class="mf-ai-title">AI Market Brief</div>
-                      <div class="mf-ai-sub">Streaming narrative · grounded in live dashboard data</div>
-                    </div>
-                  </div>
-                  <div class="mf-ai-grid">
-                    <div class="mf-ai-cell"><div class="mf-ai-cell-label">What Happened</div><div class="mf-ai-cell-text mf-shimmer" id="mf-ai-happened">Loading…</div></div>
-                    <div class="mf-ai-cell"><div class="mf-ai-cell-label">Why It Matters</div><div class="mf-ai-cell-text mf-shimmer" id="mf-ai-why">Loading…</div></div>
-                    <div class="mf-ai-cell"><div class="mf-ai-cell-label">What to Expect</div><div class="mf-ai-cell-text mf-shimmer" id="mf-ai-expect">Loading…</div></div>
-                    <div class="mf-ai-cell"><div class="mf-ai-cell-label">What to Do</div><div class="mf-ai-cell-text mf-shimmer" id="mf-ai-do">Loading…</div></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- FINANCE TAB -->
-              <div id="mf-tab-finance">
-                <div class="mf-topbar">
-                  <div class="mf-brand">
-                    <div class="mf-bm">IA</div>
-                    <div>
-                      <div class="mf-bn">Finance Dashboard</div>
-                      <div class="mf-bs">FX Rates · Futures · AI Narrative</div>
-                    </div>
-                  </div>
-                  <div class="mf-live-badge"><span class="mf-live-dot"></span><span id="mf-finance-status">Loading FX…</span></div>
-                </div>
-                <div class="mf-kpi-grid" id="mf-kpi-grid-finance">
-                  <div class="mf-kpi"><div class="mf-kpi-label">EUR/USD</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                  <div class="mf-kpi"><div class="mf-kpi-label">GBP/USD</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                  <div class="mf-kpi"><div class="mf-kpi-label">USD/JPY</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                  <div class="mf-kpi"><div class="mf-kpi-label">USD/CAD</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                  <div class="mf-kpi"><div class="mf-kpi-label">USD/AUD</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                  <div class="mf-kpi"><div class="mf-kpi-label">USD/CHF</div><div class="mf-kpi-val mf-kpi-skeleton">---</div><div class="mf-kpi-change">---</div></div>
-                </div>
-                <div class="mf-chart-grid">
-                  <div class="mf-chart-card wide">
-                    <div class="mf-chart-title"><i class="fas fa-globe"></i> Currency Heatmap <span class="src" id="mf-src-fx">loading…</span></div>
-                    <div class="mf-chart-body tall" id="mf-chart-fx"></div>
-                  </div>
-                  <div class="mf-chart-card">
-                    <div class="mf-chart-title"><i class="fas fa-oil-can"></i> Futures Curve <span class="src">computed</span></div>
-                    <div class="mf-chart-body" id="mf-chart-futures"></div>
-                  </div>
-                  <div class="mf-chart-card">
-                    <div class="mf-chart-title"><i class="fas fa-coins"></i> Crypto (cross-ref) <span class="src" id="mf-src-crypto-finance">Binance</span></div>
-                    <div class="mf-chart-body" id="mf-chart-crypto-finance"></div>
-                  </div>
-                </div>
-              </div>
+            <div class="browser-loading" id="browser-loading">
+              <div class="spinner" aria-hidden="true"></div>
+              <span id="browser-loading-label">Loading executive dashboard…</span>
             </div>
-            <a
-              class="browser-fallback"
-              id="browserFallback"
-              href="https://insightanalyticsca.github.io/markets-dashboard/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <i class="fas fa-external-link-alt" aria-hidden="true"></i>
-              <span>Open the full markets dashboard</span>
-              <small>Tap to open in a new tab — full version with additional charts.</small>
-            </a>
+            <iframe
+              id="dashboard-iframe"
+              data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html"
+              title="Live dashboard — interactive demo"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allow="fullscreen"
+            ></iframe>
           </div>
         </div>
 
-        <p class="dashboard-caption reveal"><b>Live data, streaming now.</b> Binance for crypto · Frankfurter/ECB for FX · Groq for AI narrative. Same pattern as our <a href="https://insightanalyticsca.github.io/markets-dashboard/" target="_blank" rel="noopener noreferrer">markets-dashboard</a>.</p>
+        <p class="dashboard-caption reveal"><b>Components already in production.</b> Customized to your data, your KPIs, your workflows.</p>
       </div>
     </section>
 
@@ -896,9 +817,7 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js" defer></script>
   <script src="./js/app.js" defer></script>
-  <script src="./js/markets-finance-inline.js" defer></script>
   <script src="./js/hero-animation.js" defer></script>
   <script src="./js/pull-to-refresh.js" defer></script>
   <script src="./js/assistant.js" defer></script>

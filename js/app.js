@@ -192,42 +192,113 @@
   }
 
   /* ------------------------------------------------------------------
-   * Live Markets & Finance Dashboard — inline, no iframe
-   *
-   * The markets-finance-inline.js script auto-boots on DOMContentLoaded.
-   * It exposes window.marketsFinanceShowTab(tabName) for switching between
-   * the Markets and Finance tabs.
+   * Live dashboard showcase — switcher + iframe lazy-load
+   * The mobile placeholder fallback has been removed; the iframe is now
+   * visible on all breakpoints (just shorter on mobile).
    * ------------------------------------------------------------------ */
-  const switcher = document.getElementById("dashboardSwitcher");
-  const mfApp = document.getElementById("exec-dashboard-mount");
 
-  if (switcher) {
-    switcher.addEventListener("click", function (e) {
-      const tab = e.target.closest(".dash-tab");
-      if (!tab) return;
-      const tabName = tab.getAttribute("data-mftab");
-      if (!tabName) return;
-      if (tab.classList.contains("is-active")) return;
+  // Lazy-load the iframe when the showcase section is near viewport.
+  // Works on all breakpoints (was previously gated to >=768px, but the
+  // mobile fallback has been removed so the iframe is now the only view).
+  const showcaseFrame = document.getElementById("dashboard-iframe");
+  const showcaseSection = document.getElementById("dashboard");
+  if (
+    showcaseFrame &&
+    showcaseSection &&
+    "IntersectionObserver" in window
+  ) {
+    const src = showcaseFrame.getAttribute("data-src");
+    if (src) showcaseFrame.removeAttribute("src");
+    const fio = new IntersectionObserver(
+      function (entries, observer) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting && src) {
+            showcaseFrame.setAttribute("src", src);
+            observer.unobserve(showcaseSection);
+          }
+        });
+      },
+      { rootMargin: "200px 0px 200px 0px" }
+    );
+    fio.observe(showcaseSection);
+  }
 
-      // Update active tab styling
-      switcher.querySelectorAll(".dash-tab").forEach(function (t) {
-        t.classList.remove("is-active");
-        t.setAttribute("aria-selected", "false");
+  // Hide the browser loading overlay once the iframe reports it is loaded.
+  const loadingOverlay = document.getElementById("browser-loading");
+  if (showcaseFrame && loadingOverlay) {
+    function hideLoading() {
+      loadingOverlay.style.opacity = "0";
+      loadingOverlay.style.transition = "opacity 0.4s ease";
+      setTimeout(function () {
+        loadingOverlay.style.display = "none";
+      }, 420);
+    }
+    function showLoading(label) {
+      loadingOverlay.style.display = "";
+      loadingOverlay.style.opacity = "1";
+      loadingOverlay.style.transition = "opacity 0.2s ease";
+      const lbl = document.getElementById("browser-loading-label");
+      if (lbl && label) lbl.textContent = label;
+    }
+    showcaseFrame.addEventListener("load", hideLoading);
+    showcaseFrame.addEventListener("error", hideLoading);
+    // Safety net — never leave a stuck spinner
+    setTimeout(hideLoading, 8000);
+
+    /* ------------------------------------------------------------------
+     * Dashboard switcher — click a tab to swap the iframe src + URL bar
+     * ------------------------------------------------------------------ */
+    const switcher = document.getElementById("dashboardSwitcher");
+    const urlText = document.getElementById("browser-url-text");
+    if (switcher) {
+      switcher.addEventListener("click", function (e) {
+        const tab = e.target.closest(".dash-tab");
+        if (!tab) return;
+        const newSrc = tab.getAttribute("data-src");
+        const dashKey = tab.getAttribute("data-dash");
+        if (!newSrc || !showcaseFrame) return;
+
+        // Already active — no-op
+        if (tab.classList.contains("is-active")) return;
+
+        // Update active tab styling
+        switcher.querySelectorAll(".dash-tab").forEach(function (t) {
+          t.classList.remove("is-active");
+          t.setAttribute("aria-selected", "false");
+        });
+        tab.classList.add("is-active");
+        tab.setAttribute("aria-selected", "true");
+
+        // Update URL bar text — masked to show insight-analytics.ca/dashboards/<tab>
+        // instead of the actual GitHub Pages URL (which is in the data-src attribute
+        // but shouldn't be visible to users)
+        if (urlText) {
+          const urlMap = {
+            "executive": "insight-analytics.ca/dashboards/executive-operating",
+            "it-ops": "insight-analytics.ca/dashboards/it-service-health",
+            "payments": "insight-analytics.ca/dashboards/customer-payments",
+            "ebill": "insight-analytics.ca/dashboards/ebill-performance"
+          };
+          urlText.textContent = urlMap[dashKey] || "insight-analytics.ca/dashboards/executive-operating";
+        }
+
+        // Show loading overlay with the new label
+        const labelMap = {
+          "executive": "Loading executive dashboard…",
+          "it-ops": "Loading IT service health dashboard…",
+          "payments": "Loading customer payments dashboard…",
+          "ebill": "Loading eBill performance dashboard…"
+        };
+        showLoading(labelMap[dashKey] || "Loading dashboard…");
+
+        // Swap iframe src — using a cache-busting query param forces a fresh
+        // load (some browsers won't fire 'load' again if src is identical to
+        // what it was before, but since each dashboard has a different URL
+        // this is mostly belt-and-suspenders)
+        showcaseFrame.setAttribute("data-src", newSrc);
+        showcaseFrame.setAttribute("src", newSrc);
       });
-      tab.classList.add("is-active");
-      tab.setAttribute("aria-selected", "true");
-
-      // Switch tab content + update URL bar
-      if (mfApp && window.marketsFinanceShowTab) {
-        window.marketsFinanceShowTab(tabName);
-      }
-      const urlText = document.getElementById("browser-url-text");
-      if (urlText) {
-        urlText.textContent = tabName === "finance"
-          ? "insight-analytics.ca/finance"
-          : "insight-analytics.ca/markets";
-      }
-    });
+    }
   }
 
   /* ------------------------------------------------------------------
