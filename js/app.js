@@ -192,48 +192,21 @@
   }
 
   /* ------------------------------------------------------------------
-   * Dashboard showcase — INLINE renderer (no iframe, no SW issues)
+   * Live Markets & Finance Dashboard — inline, no iframe
    *
-   * Pattern: same as markets-dashboard — NO IFRAME, NO service worker,
-   * NO cross-origin issues. Direct fetch() to the dashboard's JSON data,
-   * ECharts renders directly into divs on the page. Works on every
-   * browser including iOS Safari + PWA where iframe-based loading was
-   * stalling.
-   *
-   * The renderer lives in /js/exec-dashboard-inline.js and exposes
-   * window.loadExecDashboard(suite) where suite is one of:
-   *   - chatters  → Executive Operating (markets)
-   *   - payments  → Customer Payments (finance)
-   *   - ebill     → eBill Performance
+   * The markets-finance-inline.js script auto-boots on DOMContentLoaded.
+   * It exposes window.marketsFinanceShowTab(tabName) for switching between
+   * the Markets and Finance tabs.
    * ------------------------------------------------------------------ */
   const switcher = document.getElementById("dashboardSwitcher");
-
-  // Map tab data-dash → suite key for the JSON file
-  const dashToSuite = {
-    "executive": "chatters",
-    "payments": "payments",
-    "ebill": "ebill"
-  };
-
-  // Initial load — render the default dashboard (Executive Operating)
-  // once ECharts + the renderer script have loaded (deferred).
-  function initDashboard() {
-    if (typeof window.loadExecDashboard !== "function") {
-      // Scripts still loading — retry in 100ms
-      setTimeout(initDashboard, 100);
-      return;
-    }
-    window.loadExecDashboard("chatters");
-  }
-  initDashboard();
+  const mfApp = document.getElementById("exec-dashboard-mount");
 
   if (switcher) {
     switcher.addEventListener("click", function (e) {
       const tab = e.target.closest(".dash-tab");
       if (!tab) return;
-      const dashKey = tab.getAttribute("data-dash");
-      const suite = dashToSuite[dashKey];
-      if (!suite) return;
+      const tabName = tab.getAttribute("data-mftab");
+      if (!tabName) return;
       if (tab.classList.contains("is-active")) return;
 
       // Update active tab styling
@@ -244,8 +217,16 @@
       tab.classList.add("is-active");
       tab.setAttribute("aria-selected", "true");
 
-      // Render the new dashboard inline (fetch JSON + render ECharts)
-      window.loadExecDashboard(suite);
+      // Switch tab content + update URL bar
+      if (mfApp && window.marketsFinanceShowTab) {
+        window.marketsFinanceShowTab(tabName);
+      }
+      const urlText = document.getElementById("browser-url-text");
+      if (urlText) {
+        urlText.textContent = tabName === "finance"
+          ? "insight-analytics.ca/finance"
+          : "insight-analytics.ca/markets";
+      }
     });
   }
 
