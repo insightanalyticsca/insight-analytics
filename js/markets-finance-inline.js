@@ -233,21 +233,26 @@
   // ═══════════════════════════════════════════════════════════════════════
   function renderFinanceKPIs(fxOk) {
     var rates = liveData.fxRates;
+    // Demo fallback FX rates (used when Frankfurter is slow/unavailable)
+    var demos = {
+      EUR: 1.0875, GBP: 0.7680, JPY: 0.0067,
+      CAD: 0.7350, AUD: 0.6550, CHF: 1.1350
+    };
     var kpis = [
-      { label: 'EUR/USD', value: rates.EUR, prev: 1.0850, fmt: function (v) { return v.toFixed(4); } },
-      { label: 'GBP/USD', value: rates.GBP, prev: 0.7650, fmt: function (v) { return v.toFixed(4); } },
-      { label: 'USD/JPY', value: rates.JPY ? 1 / rates.JPY : null, prev: 149.5, fmt: function (v) { return v.toFixed(2); } },
-      { label: 'USD/CAD', value: rates.CAD ? 1 / rates.CAD : null, prev: 1.3580, fmt: function (v) { return v.toFixed(4); } },
-      { label: 'USD/AUD', value: rates.AUD ? 1 / rates.AUD : null, prev: 1.5230, fmt: function (v) { return v.toFixed(4); } },
-      { label: 'USD/CHF', value: rates.CHF ? 1 / rates.CHF : null, prev: 0.8810, fmt: function (v) { return v.toFixed(4); } }
+      { label: 'EUR/USD', raw: rates.EUR || demos.EUR, prev: 1.0850, fmt: function (v) { return v.toFixed(4); } },
+      { label: 'GBP/USD', raw: rates.GBP || demos.GBP, prev: 0.7650, fmt: function (v) { return v.toFixed(4); } },
+      { label: 'USD/JPY', raw: (rates.JPY || demos.JPY) ? 1 / (rates.JPY || demos.JPY) : null, prev: 149.5, fmt: function (v) { return v.toFixed(2); } },
+      { label: 'USD/CAD', raw: (rates.CAD || demos.CAD) ? 1 / (rates.CAD || demos.CAD) : null, prev: 1.3580, fmt: function (v) { return v.toFixed(4); } },
+      { label: 'USD/AUD', raw: (rates.AUD || demos.AUD) ? 1 / (rates.AUD || demos.AUD) : null, prev: 1.5230, fmt: function (v) { return v.toFixed(4); } },
+      { label: 'USD/CHF', raw: (rates.CHF || demos.CHF) ? 1 / (rates.CHF || demos.CHF) : null, prev: 0.8810, fmt: function (v) { return v.toFixed(4); } }
     ];
     var html = kpis.map(function (k) {
       var chg = 0, dir = 'up';
-      if (k.value != null && k.prev) {
-        chg = ((k.value - k.prev) / k.prev * 100);
+      if (k.raw != null && k.prev) {
+        chg = ((k.raw - k.prev) / k.prev * 100);
         dir = chg >= 0 ? 'up' : 'down';
       }
-      var val = k.value != null ? k.fmt(k.value) : '—';
+      var val = k.raw != null ? k.fmt(k.raw) : '—';
       return '<div class="mf-kpi"><div class="mf-kpi-label">' + k.label + '</div>' +
         '<div class="mf-kpi-val">' + val + '</div>' +
         '<div class="mf-kpi-change ' + dir + '">' + (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%</div></div>';
@@ -256,7 +261,7 @@
     if (grid) grid.innerHTML = html;
 
     var status = document.getElementById('mf-finance-status');
-    if (status) status.textContent = fxOk ? 'Live: Frankfurter/ECB' : 'Loading FX…';
+    if (status) status.textContent = fxOk ? 'Live: Frankfurter/ECB' : 'Demo FX (Frankfurter timed out)';
   }
 
   function renderFXHeatmap() {
