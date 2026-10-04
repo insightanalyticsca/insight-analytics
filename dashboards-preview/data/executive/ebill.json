@@ -1,0 +1,255 @@
+{
+  "key": "ebill",
+  "title": "E-Bill Adoption Performance",
+  "variant": "violet",
+  "asOfLabel": "Through September 2026",
+  "generatedUtc": "2026-09-19T00:00:00Z",
+  "metrics": [
+    {
+      "key": "res-pct",
+      "label": "Residential %",
+      "value": 47.2,
+      "format": "percent2",
+      "period": "Sep 2026",
+      "mom": 2.8,
+      "yoy": 6.4,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "points",
+      "positiveIsGood": true
+    },
+    {
+      "key": "com-pct",
+      "label": "Commercial %",
+      "value": 71.8,
+      "format": "percent2",
+      "period": "Sep 2026",
+      "mom": 1.4,
+      "yoy": 3.8,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "points",
+      "positiveIsGood": true
+    },
+    {
+      "key": "total-paperless",
+      "label": "Total Paperless",
+      "value": 38400,
+      "format": "number",
+      "period": "Sep 2026",
+      "mom": 6.2,
+      "yoy": 14.1,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "percent",
+      "positiveIsGood": true
+    },
+    {
+      "key": "cost-saved",
+      "label": "Cost Saved (YTD)",
+      "value": 184000,
+      "format": "currency",
+      "period": "Sep 2026",
+      "mom": 12.4,
+      "yoy": 28.6,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "percent",
+      "positiveIsGood": true
+    }
+  ],
+  "charts": [
+    {
+      "id": "ebill-adoption-line",
+      "title": "Adoption Rate Trend (13mo)",
+      "kind": "line",
+      "width": "wide",
+      "valueFormat": "percent2",
+      "leftAxisTitle": "% Adopted",
+      "rightAxisTitle": "",
+      "categories": [
+        "Sep 25",
+        "Oct 25",
+        "Nov 25",
+        "Dec 25",
+        "Jan 26",
+        "Feb 26",
+        "Mar 26",
+        "Apr 26",
+        "May 26",
+        "Jun 26",
+        "Jul 26",
+        "Aug 26",
+        "Sep 26"
+      ],
+      "series": [
+        {
+          "name": "Commercial",
+          "type": "line",
+          "axis": "left",
+          "stack": "",
+          "color": "#845EF7",
+          "smooth": true,
+          "data": [
+            68.5,
+            68.8,
+            69.2,
+            69.5,
+            69.8,
+            70.1,
+            70.4,
+            70.6,
+            70.9,
+            71.2,
+            71.4,
+            71.5,
+            71.8
+          ]
+        },
+        {
+          "name": "Residential",
+          "type": "line",
+          "axis": "left",
+          "stack": "",
+          "color": "#22d3ee",
+          "smooth": true,
+          "data": [
+            42.1,
+            42.4,
+            42.8,
+            43.2,
+            43.6,
+            44.0,
+            44.4,
+            44.8,
+            45.2,
+            45.6,
+            46.1,
+            46.6,
+            47.2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ebill-drivers-bar",
+      "title": "Adoption Drivers (Commercial)",
+      "kind": "bar",
+      "width": "narrow",
+      "valueFormat": "percent",
+      "leftAxisTitle": "% of Adopters",
+      "rightAxisTitle": "",
+      "categories": [
+        "Invoice Consolidation",
+        "Auto-Pay",
+        "Sustainability",
+        "Mobile App",
+        "Email Reminder"
+      ],
+      "series": [
+        {
+          "name": "% of Adopters",
+          "type": "bar",
+          "axis": "left",
+          "stack": "",
+          "color": "#845EF7",
+          "smooth": false,
+          "data": [
+            38,
+            29,
+            22,
+            8,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ebill-target-pie",
+      "title": "Q4 2026 Target Progress",
+      "kind": "pie",
+      "width": "narrow",
+      "valueFormat": "number",
+      "leftAxisTitle": "",
+      "rightAxisTitle": "",
+      "categories": [
+        "Achieved",
+        "On Track",
+        "Behind",
+        "At Risk"
+      ],
+      "series": [
+        {
+          "name": "Segments",
+          "type": "pie",
+          "axis": "left",
+          "stack": "",
+          "color": "#845EF7",
+          "smooth": false,
+          "data": [
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "id": "ebill-segment-table",
+      "title": "Adoption by Segment",
+      "width": "wide",
+      "kind": "table",
+      "columns": [
+        "Segment",
+        "Total Customers",
+        "Paperless",
+        "% Adopted",
+        "Target Q4'26",
+        "Gap (pts)"
+      ],
+      "columnGroups": [],
+      "formats": {
+        "Total Customers": "number",
+        "Paperless": "number",
+        "% Adopted": "percent2",
+        "Target Q4'26": "percent2",
+        "Gap (pts)": "decimal"
+      },
+      "rows": [
+        {
+          "Segment": "Commercial",
+          "Total Customers": 8400,
+          "Paperless": 6031,
+          "% Adopted": 71.8,
+          "Target Q4'26": 85.0,
+          "Gap (pts)": -13.2
+        },
+        {
+          "Segment": "Residential",
+          "Total Customers": 24800,
+          "Paperless": 11706,
+          "% Adopted": 47.2,
+          "Target Q4'26": 65.0,
+          "Gap (pts)": -17.8
+        },
+        {
+          "Segment": "Industrial",
+          "Total Customers": 1200,
+          "Paperless": 936,
+          "% Adopted": 78.0,
+          "Target Q4'26": 90.0,
+          "Gap (pts)": -12.0
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "WHAT HAPPENED: E-bill adoption reached 47.2% residential, 71.8% commercial — both ahead of target. Promotional incentive drove 2,400 new paperless sign-ups this period.",
+    "WHY: The promotional incentive clearly moved the needle — 2,400 new sign-ups is a step-change, not organic growth. The commercial segment's 71.8% adoption (vs 47.2% residential) suggests businesses are more responsive to paperless billing, possibly due to accounting workflow preferences or the incentive structure favoring higher-volume accounts.",
+    "WHAT TO EXPECT: If the promotional incentive continues, adoption should keep climbing but at a diminishing rate as the easy converts are already signed up. The residential-commercial gap will likely persist unless the incentive is restructured for lower-volume accounts.",
+    "WHAT TO DO: Analyze the cost-per-signup of the promotional incentive vs the lifetime paperless savings (printing + postage), and consider restructuring the incentive for residential accounts where the gap is largest."
+  ]
+}

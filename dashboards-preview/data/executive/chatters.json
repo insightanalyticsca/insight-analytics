@@ -1,0 +1,580 @@
+{
+  "key": "chatters-portfolio",
+  "title": "Executive Operating Dashboard",
+  "variant": "cyan",
+  "asOfLabel": "Week 38 · Sep 2026 · Demo Build",
+  "generatedUtc": "2026-09-19T00:00:00Z",
+  "metrics": [
+    {
+      "key": "total-revenue",
+      "label": "Total Revenue (est.)",
+      "value": 309000000,
+      "format": "currency",
+      "period": "TTM",
+      "mom": 4.7,
+      "yoy": 8.2,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "percent",
+      "positiveIsGood": true
+    },
+    {
+      "key": "rev-per-store",
+      "label": "Revenue / Store",
+      "value": 2664000,
+      "format": "currency",
+      "period": "TTM",
+      "mom": 2.1,
+      "yoy": 5.4,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "percent",
+      "positiveIsGood": true
+    },
+    {
+      "key": "rev-per-visit",
+      "label": "Revenue / Visit",
+      "value": 61.8,
+      "format": "currency",
+      "period": "TTM",
+      "mom": 1.8,
+      "yoy": 3.2,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "percent",
+      "positiveIsGood": true
+    },
+    {
+      "key": "retail-attach",
+      "label": "Retail Attachment",
+      "value": 21.8,
+      "format": "percent",
+      "period": "Week 38",
+      "mom": -2.3,
+      "yoy": -0.8,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "percent",
+      "positiveIsGood": true
+    }
+  ],
+  "charts": [
+    {
+      "id": "revenue-split",
+      "title": "Revenue Mix: Retail vs Services",
+      "kind": "pie",
+      "width": "third",
+      "valueFormat": "currency",
+      "categories": [
+        "Retail (60%)",
+        "Services (40%)"
+      ],
+      "series": [
+        {
+          "name": "Revenue",
+          "type": "pie",
+          "axis": "left",
+          "stack": "",
+          "color": "#0808ee",
+          "smooth": false,
+          "data": [
+            185400000,
+            123600000
+          ]
+        }
+      ]
+    },
+    {
+      "id": "revenue-trend",
+      "title": "Monthly Revenue Trend (CAD, M)",
+      "kind": "combo",
+      "width": "two-thirds",
+      "valueFormat": "compact",
+      "leftAxisTitle": "Revenue (CAD M)",
+      "rightAxisTitle": "SSS Growth %",
+      "categories": [
+        "Oct",
+        "Nov",
+        "Dec",
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep"
+      ],
+      "series": [
+        {
+          "name": "Retail",
+          "type": "bar",
+          "axis": "left",
+          "stack": "revenue",
+          "color": "#0808ee",
+          "smooth": false,
+          "data": [
+            14.8,
+            15.2,
+            15.8,
+            17.1,
+            14.5,
+            14.2,
+            15.1,
+            15.4,
+            15.6,
+            15.9,
+            16.1,
+            15.5
+          ]
+        },
+        {
+          "name": "Services",
+          "type": "bar",
+          "axis": "left",
+          "stack": "revenue",
+          "color": "#09c698",
+          "smooth": false,
+          "data": [
+            9.8,
+            10.1,
+            10.4,
+            11.2,
+            9.6,
+            9.4,
+            10.0,
+            10.2,
+            10.3,
+            10.5,
+            10.6,
+            10.2
+          ]
+        },
+        {
+          "name": "SSS Growth %",
+          "type": "line",
+          "axis": "right",
+          "stack": "",
+          "color": "#BBFF05",
+          "smooth": true,
+          "data": [
+            3.2,
+            4.1,
+            5.8,
+            7.2,
+            2.1,
+            1.8,
+            3.4,
+            4.7,
+            5.1,
+            5.9,
+            6.3,
+            4.7
+          ]
+        }
+      ]
+    },
+    {
+      "id": "store-productivity",
+      "title": "Store Productivity: Revenue per Store by Province",
+      "kind": "bar",
+      "width": "half",
+      "valueFormat": "currency",
+      "leftAxisTitle": "Revenue / Store (CAD)",
+      "rightAxisTitle": "",
+      "categories": [
+        "ON",
+        "BC",
+        "AB",
+        "QC",
+        "MB",
+        "SK",
+        "NS"
+      ],
+      "series": [
+        {
+          "name": "Revenue / Store",
+          "type": "bar",
+          "axis": "left",
+          "stack": "",
+          "color": "#0808ee",
+          "smooth": false,
+          "data": [
+            2890000,
+            2740000,
+            2610000,
+            2480000,
+            2350000,
+            2280000,
+            2190000
+          ]
+        }
+      ]
+    },
+    {
+      "id": "capacity-utilization",
+      "title": "Appointment Capacity Utilization by Day/Time",
+      "kind": "heatmap",
+      "width": "half",
+      "valueFormat": "percent",
+      "leftAxisTitle": "",
+      "rightAxisTitle": "",
+      "categories": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
+      "series": [
+        {
+          "name": "9 AM",
+          "type": "heatmap",
+          "axis": "left",
+          "stack": "",
+          "color": "#0808ee",
+          "smooth": false,
+          "data": [
+            28,
+            32,
+            45,
+            52,
+            68,
+            75,
+            40
+          ]
+        },
+        {
+          "name": "12 PM",
+          "type": "heatmap",
+          "axis": "left",
+          "stack": "",
+          "color": "#09c698",
+          "smooth": false,
+          "data": [
+            42,
+            48,
+            58,
+            65,
+            82,
+            91,
+            55
+          ]
+        },
+        {
+          "name": "3 PM",
+          "type": "heatmap",
+          "axis": "left",
+          "stack": "",
+          "color": "#845ef7",
+          "smooth": false,
+          "data": [
+            48,
+            52,
+            62,
+            71,
+            89,
+            95,
+            58
+          ]
+        },
+        {
+          "name": "5 PM",
+          "type": "heatmap",
+          "axis": "left",
+          "stack": "",
+          "color": "#BBFF05",
+          "smooth": false,
+          "data": [
+            55,
+            58,
+            68,
+            78,
+            97,
+            99,
+            62
+          ]
+        },
+        {
+          "name": "7 PM",
+          "type": "heatmap",
+          "axis": "left",
+          "stack": "",
+          "color": "#e53e6b",
+          "smooth": false,
+          "data": [
+            38,
+            42,
+            52,
+            61,
+            78,
+            85,
+            48
+          ]
+        }
+      ]
+    },
+    {
+      "id": "customer-segments",
+      "title": "Customer Segmentation (LTV tiers)",
+      "kind": "donut",
+      "width": "third",
+      "valueFormat": "compact",
+      "categories": [
+        "Regular",
+        "High-Value",
+        "New",
+        "At-Risk",
+        "Dormant",
+        "Reactivated"
+      ],
+      "series": [
+        {
+          "name": "Customers",
+          "type": "pie",
+          "axis": "left",
+          "stack": "",
+          "color": "#0808ee",
+          "smooth": false,
+          "data": [
+            1850000,
+            420000,
+            680000,
+            310000,
+            240000,
+            150000
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stylist-productivity",
+      "title": "Stylist Productivity: Revenue per Hour by Tier",
+      "kind": "bar",
+      "width": "third",
+      "valueFormat": "currency",
+      "leftAxisTitle": "Revenue / Hour (CAD)",
+      "rightAxisTitle": "",
+      "categories": [
+        "Master",
+        "Senior",
+        "Junior",
+        "Apprentice"
+      ],
+      "series": [
+        {
+          "name": "Revenue/Hour",
+          "type": "bar",
+          "axis": "left",
+          "stack": "",
+          "color": "#0808ee",
+          "smooth": false,
+          "data": [
+            185,
+            142,
+            98,
+            62
+          ]
+        },
+        {
+          "name": "Utilization %",
+          "type": "line",
+          "axis": "right",
+          "stack": "",
+          "color": "#BBFF05",
+          "smooth": true,
+          "data": [
+            88,
+            79,
+            64,
+            51
+          ]
+        }
+      ]
+    },
+    {
+      "id": "forecast-revenue",
+      "title": "Revenue Forecast: Next 4 Weeks (CAD M)",
+      "kind": "line",
+      "width": "third",
+      "valueFormat": "compact",
+      "leftAxisTitle": "Revenue (CAD M)",
+      "rightAxisTitle": "",
+      "categories": [
+        "W39",
+        "W40",
+        "W41",
+        "W42"
+      ],
+      "series": [
+        {
+          "name": "Forecast",
+          "type": "line",
+          "axis": "left",
+          "stack": "",
+          "color": "#0808ee",
+          "smooth": true,
+          "data": [
+            26.8,
+            27.1,
+            27.4,
+            27.8
+          ]
+        },
+        {
+          "name": "Upper bound",
+          "type": "line",
+          "axis": "left",
+          "stack": "",
+          "color": "#09c698",
+          "smooth": true,
+          "data": [
+            28.2,
+            28.6,
+            29.1,
+            29.6
+          ]
+        },
+        {
+          "name": "Lower bound",
+          "type": "line",
+          "axis": "left",
+          "stack": "",
+          "color": "#e53e6b",
+          "smooth": true,
+          "data": [
+            25.4,
+            25.6,
+            25.7,
+            26.0
+          ]
+        }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "id": "store-performance",
+      "title": "Store Performance Matrix — Top/Bottom 5 by SSS Growth",
+      "width": "wide",
+      "kind": "table",
+      "columns": [
+        "Store",
+        "City",
+        "Type",
+        "Revenue (TTM)",
+        "SSS Growth",
+        "Utilization",
+        "Attach Rate"
+      ],
+      "columnGroups": [],
+      "formats": {
+        "Revenue (TTM)": "currency",
+        "SSS Growth": "percent",
+        "Utilization": "percent",
+        "Attach Rate": "percent"
+      },
+      "rows": [
+        {
+          "Store": "C-042",
+          "City": "Toronto Eaton Centre",
+          "Type": "Corporate",
+          "Revenue (TTM)": 3420000,
+          "SSS Growth": 12.4,
+          "Utilization": 91,
+          "Attach Rate": 28.2
+        },
+        {
+          "Store": "C-017",
+          "City": "Vancouver Pacific Centre",
+          "Type": "Corporate",
+          "Revenue (TTM)": 3180000,
+          "SSS Growth": 9.8,
+          "Utilization": 88,
+          "Attach Rate": 26.5
+        },
+        {
+          "Store": "C-089",
+          "City": "Calgary Chinook",
+          "Type": "Corporate",
+          "Revenue (TTM)": 2940000,
+          "SSS Growth": 8.1,
+          "Utilization": 85,
+          "Attach Rate": 25.1
+        },
+        {
+          "Store": "C-031",
+          "City": "Mississauga Square One",
+          "Type": "Corporate",
+          "Revenue (TTM)": 2810000,
+          "SSS Growth": 7.2,
+          "Utilization": 83,
+          "Attach Rate": 24.8
+        },
+        {
+          "Store": "C-056",
+          "City": "Ottawa Rideau",
+          "Type": "Corporate",
+          "Revenue (TTM)": 2680000,
+          "SSS Growth": 6.4,
+          "Utilization": 81,
+          "Attach Rate": 23.9
+        },
+        {
+          "Store": "F-014",
+          "City": "Saskatoon Midtown",
+          "Type": "Franchise",
+          "Revenue (TTM)": 1890000,
+          "SSS Growth": -3.2,
+          "Utilization": 58,
+          "Attach Rate": 18.4
+        },
+        {
+          "Store": "C-078",
+          "City": "Halifax Mic Mac",
+          "Type": "Corporate",
+          "Revenue (TTM)": 1740000,
+          "SSS Growth": -4.1,
+          "Utilization": 54,
+          "Attach Rate": 17.8
+        },
+        {
+          "Store": "F-023",
+          "City": "St. John's Avalon",
+          "Type": "Franchise",
+          "Revenue (TTM)": 1620000,
+          "SSS Growth": -5.8,
+          "Utilization": 49,
+          "Attach Rate": 16.2
+        },
+        {
+          "Store": "C-065",
+          "City": "Montréal Galeries d'Anjou",
+          "Type": "Corporate",
+          "Revenue (TTM)": 1480000,
+          "SSS Growth": -7.3,
+          "Utilization": 44,
+          "Attach Rate": 15.1
+        },
+        {
+          "Store": "F-009",
+          "City": "Fredericton Regent",
+          "Type": "Franchise",
+          "Revenue (TTM)": 1310000,
+          "SSS Growth": -8.9,
+          "Utilization": 39,
+          "Attach Rate": 14.3
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "WHAT HAPPENED: Revenue +4.7% YoY, driven by retail (+7.2%). Salon services flat (+0.8%). Ontario outperformed network by 3.1pp on same-store growth.",
+    "WHY: The 7.2pp gap between retail growth (+7.2%) and salon services (+0.8%) points to a product mix shift — customers are spending more on retail goods relative to service time, likely reflecting either a successful product attachment push or a capacity ceiling on salon appointments. Ontario's 3.1pp outperformance versus the network suggests the regional merchandising or staffing model is working — the rest of the chain should be benchmarked against it. The capacity utilization heatmap (Fri–Sat saturation, Mon–Tue slack below 55%) indicates the salon softness is a capacity-allocation issue, not a demand problem — demand is showing up on peak days and being turned away, while off-peak capacity sits idle.",
+    "WHAT TO EXPECT: If the current trend continues, retail momentum should persist and salon services should remain roughly flat for the next period. A specific point forecast cannot be derived from this aggregated payload.",
+    "WHAT TO DO: Review the capacity utilization heatmap and store performance table on this dashboard to identify which segments warrant targeted action. A store-level data pull would be needed before reallocating stylist capacity or launching reactivation campaigns."
+  ]
+}

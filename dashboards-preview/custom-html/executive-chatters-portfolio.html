@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Executive Operating Dashboard</title>
+  <link rel="stylesheet" href="../css/executive-dashboard-suite.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <link rel="stylesheet" href="../css/canvas-host.css">
+  <link rel="stylesheet" href="../css/theme-vivid.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    /* Hide the dashboard's own topbar + contact footer when embedded in the marketing site.
+       The marketing site's browser mockup chrome already provides branding + actions. */
+    .topbar, [data-contact-footer] { display: none !important; }
+    body { background: var(--bg, #f5f7fb); }
+  </style>
+</head>
+<body data-suite="chatters" data-variant="cyan">
+  <div id="app"></div>
+  <!-- Core dashboard renderer -->
+  <script src="../js/dash-suite.js"></script>
+  <!-- Theme persistence (light/dark) -->
+  <script src="../js/theme-toggle.js"></script>
+  <!-- AI brief panel — fetches a pre-rendered brief from the dashboard payload -->
+  <script src="../js/exec-ai-brief.js"></script>
+  <!-- NOTE: service worker registration, contact-chat, visual-chat, and pull-to-refresh
+       are intentionally omitted — they interfere with iOS Safari/PWA iframe embedding
+       and aren't needed for the marketing-site preview. -->
+</body>
+</html>

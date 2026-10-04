@@ -1,0 +1,1163 @@
+:root {
+    --exec-bg: #f4f6fb;
+    --exec-panel: #ffffff;
+    --exec-ink: #171777;
+    --exec-muted: #60708b;
+    --exec-border: #d8deea;
+    --exec-grid: #e9edf5;
+    --exec-primary: #0808ee;
+    --exec-secondary: #09c698;
+    --exec-accent: #bbff05;
+    --exec-highlight: #38bdf8;
+    --exec-shadow: 0 8px 22px rgba(23, 23, 119, .08);
+}
+
+html, body, #app {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    overflow: auto;
+    background: var(--exec-bg);
+    color: var(--exec-ink);
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body[data-variant="cyan"] {
+    --exec-primary: #0b5b72;
+    --exec-secondary: #22d3ee;
+    --exec-accent: #a3e635;
+    --exec-highlight: #4c6fff;
+}
+
+body[data-variant="teal"] {
+    --exec-primary: #0f766e;
+    --exec-secondary: #09c698;
+    --exec-accent: #bbff05;
+    --exec-highlight: #38bdf8;
+}
+
+body[data-variant="indigo"] {
+    --exec-primary: #4338ca;
+    --exec-secondary: #2dd4bf;
+    --exec-accent: #fbbf24;
+    --exec-highlight: #60a5fa;
+}
+
+body[data-variant="blue"] {
+    --exec-primary: #1f4e78;
+    --exec-secondary: #38bdf8;
+    --exec-accent: #09c698;
+    --exec-highlight: #845ef7;
+}
+
+.exec-page {
+    min-height: calc(100vh - 48px);
+    height: auto;
+    padding: 6px;
+    overflow: visible;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    gap: 8px;
+}
+
+/* On mobile: allow the page to scroll so the fixed-height canvas is fully visible.
+   Landscape mode especially needs this — viewport is too short for the dashboard. */
+@media (max-width: 1024px) {
+    .exec-page {
+        overflow: visible;
+        height: auto;
+        min-height: 0;
+    }
+    .exec-canvas {
+        overflow: visible !important;
+    }
+}
+
+.exec-header {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 4px;
+}
+
+.exec-title {
+    font-size: 18px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: .1px;
+    color: var(--exec-primary);
+}
+
+.exec-asof {
+    color: var(--exec-muted);
+    font-size: 11px;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.exec-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 8px;
+}
+
+.exec-metric {
+    min-height: 82px;
+    border: 1px solid var(--exec-border);
+    border-top: 4px solid var(--exec-primary);
+    background: var(--exec-panel);
+    box-shadow: var(--exec-shadow);
+    padding: 9px 11px 8px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 2px;
+}
+
+    .exec-metric:nth-child(4n+2) {
+        border-top-color: var(--exec-secondary);
+    }
+
+    .exec-metric:nth-child(4n+3) {
+        border-top-color: var(--exec-highlight);
+    }
+
+    .exec-metric:nth-child(4n+4) {
+        border-top-color: var(--exec-accent);
+    }
+
+.exec-metric-label {
+    color: var(--exec-muted);
+    font-size: 10px;
+    line-height: 1.2;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: .35px;
+}
+
+.exec-metric-main {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.exec-metric-value {
+    color: var(--exec-ink);
+    font-size: 25px;
+    line-height: 1;
+    font-weight: 850;
+    white-space: nowrap;
+}
+
+.exec-metric-period {
+    color: var(--exec-muted);
+    font-size: 10px;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.exec-deltas {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.exec-delta {
+    border-radius: 999px;
+    padding: 2px 7px;
+    background: #edf2f8;
+    color: #4b5870;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+    .exec-delta.good {
+        background: rgba(9, 198, 152, .14);
+        color: #087d63;
+    }
+
+    .exec-delta.bad {
+        background: rgba(220, 38, 38, .11);
+        color: #b91c1c;
+    }
+
+    .exec-delta.neutral {
+        background: rgba(56, 189, 248, .13);
+        color: #0369a1;
+    }
+
+.exec-content {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: minmax(180px, 1fr);
+    gap: 8px;
+    overflow: auto;
+    padding-right: 2px;
+}
+
+.exec-panel {
+    min-height: 0;
+    grid-column: span 6;
+    border: 1px solid var(--exec-border);
+    background: var(--exec-panel);
+    box-shadow: var(--exec-shadow);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+}
+
+    .exec-panel.wide {
+        grid-column: span 12;
+    }
+
+    .exec-panel.third {
+        grid-column: span 4;
+    }
+
+    .exec-panel.two-thirds {
+        grid-column: span 8;
+    }
+
+.exec-panel-title {
+    min-height: 32px;
+    padding: 8px 10px 5px;
+    border-bottom: 1px solid var(--exec-grid);
+    color: var(--exec-primary);
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.exec-chart {
+    width: 100%;
+    height: 100%;
+    min-height: 160px;
+}
+
+.exec-table-wrap {
+    min-height: 0;
+    overflow: auto;
+}
+
+.exec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+    color: #26324a;
+}
+
+    .exec-table th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--exec-primary);
+        color: #fff;
+        padding: 6px 7px;
+        text-align: right;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+        .exec-table th:first-child,
+        .exec-table td:first-child {
+            text-align: left;
+        }
+
+    .exec-table td {
+        padding: 5px 7px;
+        border-bottom: 1px solid var(--exec-grid);
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .exec-table tbody tr:nth-child(even) td {
+        background: #f7f9fc;
+    }
+
+    .exec-table tbody tr.total td {
+        font-weight: 800;
+        background: #dcebf7;
+    }
+
+.exec-empty, .exec-error, .exec-loading {
+    height: 100%;
+    min-height: 180px;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    text-align: center;
+    color: var(--exec-muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.exec-error {
+    color: #b91c1c;
+}
+
+.exec-note {
+    color: var(--exec-muted);
+    font-size: 9px;
+    padding: 0 4px;
+}
+
+@media (max-width: 900px) {
+    .exec-panel, .exec-panel.third, .exec-panel.two-thirds {
+        grid-column: span 12;
+    }
+
+    .exec-metric-value {
+        font-size: 21px;
+    }
+}
+
+/* MOBILE / PWA — shrink fonts + padding so tiles fit without piling */
+@media (max-width: 768px) {
+    .exec-title { font-size: 11px; font-weight: 700; }
+    .exec-asof { font-size: 7px; }
+
+    .exec-metrics { gap: 3px; }
+    .exec-metric {
+        min-height: 48px;
+        padding: 3px 4px;
+        gap: 1px;
+    }
+    .exec-metric-label { font-size: 6px; letter-spacing: .15px; }
+    .exec-metric-value { font-size: 12px; font-weight: 700; }
+    .exec-metric-period { font-size: 6px; }
+    .exec-delta { font-size: 5px; padding: 1px 3px; font-weight: 700; }
+    .exec-deltas { gap: 2px; }
+
+    .exec-panel-title { font-size: 7px; padding: 2px 4px 1px; min-height: 16px; font-weight: 700; }
+    .exec-chart { min-height: 80px; }
+
+    .exec-table { font-size: 6px; }
+    .exec-table th { padding: 1px 3px; font-size: 5px; }
+    .exec-table td { padding: 1px 3px; }
+
+    .exec-empty, .exec-error, .exec-loading { font-size: 8px; min-height: 60px; padding: 6px; }
+    .exec-note { font-size: 6px; padding: 0 2px; line-height: 1.3; }
+
+    .exec-canvas { min-height: 400px; }
+    .exec-visual { min-width: 0; }
+
+    /* ECharts text scaling: legends, axis labels, tooltips get tiny on mobile */
+    .exec-chart .ec-text { font-size: 6px !important; }
+    .exec-chart .ec-legend { font-size: 6px !important; }
+}
+
+@media (max-width: 480px) {
+    .exec-title { font-size: 10px; }
+    .exec-metric { min-height: 40px; padding: 2px 3px; }
+    .exec-metric-label { font-size: 5px; }
+    .exec-metric-value { font-size: 10px; }
+    .exec-metric-period { font-size: 5px; }
+    .exec-delta { font-size: 4px; padding: 0 2px; }
+    .exec-panel-title { font-size: 6px; padding: 1px 3px; }
+    .exec-table { font-size: 5px; }
+    .exec-table th { padding: 1px 2px; font-size: 4px; }
+    .exec-table td { padding: 1px 2px; }
+    .exec-note { font-size: 5px; line-height: 1.2; }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --exec-bg: #0f1525;
+        --exec-panel: #171e31;
+        --exec-ink: #e8ecff;
+        --exec-muted: #aab5cf;
+        --exec-border: #2b3650;
+        --exec-grid: #263149;
+        --exec-shadow: 0 8px 22px rgba(0, 0, 0, .23);
+    }
+
+    .exec-table td {
+        color: #dbe3f8;
+    }
+
+    .exec-table tbody tr:nth-child(even) td {
+        background: #1b2439;
+    }
+
+    .exec-table tbody tr.total td {
+        background: #223653;
+    }
+
+    .exec-delta {
+        background: #253149;
+        color: #c0cae0;
+    }
+}
+
+.exec-notes {
+    color: var(--exec-muted);
+    font-size: 9px;
+    line-height: 1.25;
+    padding: 0 4px 2px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   AI BRIEF — dazzling 4-section card with AI-wired badge + shimmer
+   Populated by dash-suite.js with static notes, then replaced at runtime
+   by exec-ai-brief.js (Groq streaming) when a Groq key is configured.
+   ════════════════════════════════════════════════════════════════════════════ */
+.exec-ai-brief {
+    margin: 12px 4px 4px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    background:
+        linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, rgba(6, 182, 212, 0.04) 50%, rgba(139, 92, 246, 0.05) 100%),
+        var(--exec-bg, rgba(255, 255, 255, 0.96));
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    box-shadow: 0 4px 18px rgba(99, 102, 241, 0.10), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle top sheen */
+.exec-ai-brief::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(99, 102, 241, 0.45) 20%, rgba(6, 182, 212, 0.45) 50%, rgba(139, 92, 246, 0.45) 80%, transparent 100%);
+}
+
+.exec-ai-brief-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.exec-ai-brief-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #6366f1 0%, #06b6d4 50%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.exec-ai-brief-spark {
+    display: grid;
+    place-items: center;
+    color: #6366f1;
+    animation: execAiSparkSpin 4s ease-in-out infinite;
+}
+
+@keyframes execAiSparkSpin {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+}
+
+.exec-ai-brief-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px 3px 7px;
+    border-radius: 12px;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    background: rgba(16, 185, 129, 0.10);
+    color: #10b981;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.exec-ai-brief-badge[data-state="streaming"] {
+    border-color: rgba(99, 102, 241, 0.45);
+    background: rgba(99, 102, 241, 0.12);
+    color: #6366f1;
+}
+
+.exec-ai-brief-badge[data-state="cached"] {
+    border-color: rgba(14, 165, 233, 0.40);
+    background: rgba(14, 165, 233, 0.10);
+    color: #0ea5e9;
+}
+
+.exec-ai-brief-badge[data-state="fallback"] {
+    border-color: rgba(148, 163, 184, 0.35);
+    background: rgba(148, 163, 184, 0.10);
+    color: #64748b;
+}
+
+.exec-ai-brief-badge-text { line-height: 1; }
+
+.exec-ai-brief-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+    animation: execAiPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes execAiPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.25); }
+}
+
+.exec-ai-brief-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+@media (max-width: 900px) {
+    .exec-ai-brief-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px) {
+    .exec-ai-brief-grid { grid-template-columns: 1fr; }
+}
+
+.exec-ai-brief-cell {
+    position: relative;
+    padding: 10px 12px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(99, 102, 241, 0.10);
+    background: rgba(255, 255, 255, 0.04);
+    overflow: hidden;
+    transition: transform 200ms cubic-bezier(.22, 1, .36, 1), box-shadow 200ms;
+}
+
+.exec-ai-brief-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.14);
+}
+
+/* Section accent strip on top */
+.exec-ai-brief-cell::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0.85;
+}
+
+.exec-ai-brief-what::before  { background: linear-gradient(90deg, #10b981, #06b6d4); }
+.exec-ai-brief-why::before   { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+.exec-ai-brief-next::before  { background: linear-gradient(90deg, #06b6d4, #6366f1); }
+.exec-ai-brief-do::before    { background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+
+.exec-ai-brief-cell-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.exec-ai-brief-cell-icon {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.exec-ai-brief-what .exec-ai-brief-cell-icon  { background: linear-gradient(135deg, #10b981, #06b6d4); }
+.exec-ai-brief-why .exec-ai-brief-cell-icon   { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+.exec-ai-brief-next .exec-ai-brief-cell-icon  { background: linear-gradient(135deg, #06b6d4, #6366f1); }
+.exec-ai-brief-do .exec-ai-brief-cell-icon    { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+
+.exec-ai-brief-cell-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--exec-muted, #64748b);
+}
+
+.exec-ai-brief-cell-body {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--exec-text, #0f172a);
+    word-wrap: break-word;
+}
+
+/* Shimmer placeholder while Groq is streaming */
+.exec-ai-brief-cell-body[data-loading="true"]::after {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 11px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+    background-size: 200% 100%;
+    animation: execAiShimmer 1.2s linear infinite;
+    vertical-align: -1px;
+    margin-left: 2px;
+}
+
+@keyframes execAiShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Dark theme adaptations */
+[data-theme="dark"] .exec-ai-brief {
+    background:
+        linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.05) 50%, rgba(139, 92, 246, 0.06) 100%),
+        rgba(15, 23, 42, 0.6);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+[data-theme="dark"] .exec-ai-brief-cell {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .exec-ai-brief-cell-body {
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .exec-ai-brief-cell-label {
+    color: #94a3b8;
+}
+
+/* Executive internal visual canvas: same saved drag/resize concept as CSR pages. */
+html, body, #app {
+    overflow: auto;
+}
+
+.exec-page {
+    min-height: 100%;
+    height: auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.exec-canvas {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgba(216, 222, 234, .72);
+    background: linear-gradient(135deg, rgba(8, 8, 238, .018), transparent 34%), var(--exec-bg);
+}
+
+.exec-visual {
+    position: absolute;
+    min-width: 0;
+    min-height: 0;
+    touch-action: none;
+}
+
+.exec-metric {
+    height: auto;
+}
+
+.exec-metric-1 {
+    border-top-color: var(--exec-secondary);
+}
+
+.exec-metric-2 {
+    border-top-color: var(--exec-highlight);
+}
+
+.exec-metric-3 {
+    border-top-color: var(--exec-accent);
+}
+
+.exec-panel {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+}
+
+.exec-layout-move {
+    position: absolute;
+    top: 3px;
+    right: 24px;
+    z-index: 30;
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(96, 112, 139, .28);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, .78);
+    color: var(--exec-muted);
+    display: grid;
+    place-items: center;
+    padding: 0;
+    cursor: grab;
+    opacity: .18;
+    transition: opacity .15s ease, background .15s ease;
+}
+
+    .exec-layout-move:active {
+        cursor: grabbing;
+    }
+
+.exec-layout-resize {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    z-index: 30;
+    width: 17px;
+    height: 17px;
+    cursor: nwse-resize;
+    opacity: .22;
+}
+
+    .exec-layout-resize::after {
+        content: '';
+        position: absolute;
+        right: 2px;
+        bottom: 2px;
+        width: 9px;
+        height: 9px;
+        border-right: 2px solid var(--exec-primary);
+        border-bottom: 2px solid var(--exec-primary);
+    }
+
+.exec-visual:hover > .exec-layout-move,
+.exec-visual:hover > .exec-layout-resize,
+.exec-layout-active > .exec-layout-move,
+.exec-layout-active > .exec-layout-resize {
+    opacity: .92;
+}
+
+.exec-layout-active {
+    box-shadow: 0 12px 30px rgba(23, 23, 119, .18);
+    outline: 1px solid rgba(8, 8, 238, .3);
+}
+
+/* ─── Frozen canvas: hide drag/resize handles by default ─────────────────── */
+/* The canvas starts frozen — users can't accidentally drag/resize.          */
+/* Clicking "Edit" removes this class → handles appear.                       */
+.exec-canvas-frozen .exec-layout-move,
+.exec-canvas-frozen .exec-layout-resize {
+    display: none !important;
+}
+
+.exec-canvas-frozen .exec-visual {
+    cursor: default;
+}
+
+/* ─── Edit button (in the header) ─────────────────────────────────────────── */
+.exec-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(99, 102, 241, 0.30);
+    background: rgba(99, 102, 241, 0.08);
+    color: var(--exec-primary, #6366f1);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 200ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.exec-edit-btn:hover {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.50);
+    transform: translateY(-1px);
+}
+
+.exec-edit-btn.is-active {
+    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.exec-edit-btn i {
+    font-size: 10px;
+}
+
+.exec-layout-changing {
+    user-select: none;
+}
+
+    .exec-layout-changing iframe,
+    .exec-layout-changing canvas {
+        pointer-events: none;
+    }
+
+@media (max-width: 900px) {
+    .exec-visual {
+        min-width: 0;
+    }
+}
+
+/* Matrix and hierarchy shapes used by executive versions 213-217. */
+.exec-table.exec-table-matrix,
+.exec-table.exec-table-hierarchy {
+    font-size: 9.5px;
+}
+
+.exec-table thead tr + tr th {
+    top: 27px;
+    background: color-mix(in srgb, var(--exec-primary) 88%, #ffffff 12%);
+}
+
+.exec-table th.exec-column-group {
+    text-align: center;
+    letter-spacing: .2px;
+    border-left: 1px solid rgba(255, 255, 255, .28);
+    border-right: 1px solid rgba(255, 255, 255, .28);
+}
+
+.exec-table tbody tr.group td {
+    background: color-mix(in srgb, var(--exec-primary) 10%, var(--exec-panel) 90%);
+    color: var(--exec-primary);
+    font-weight: 850;
+    text-align: left;
+    border-top: 1px solid color-mix(in srgb, var(--exec-primary) 24%, var(--exec-border) 76%);
+    border-bottom: 1px solid color-mix(in srgb, var(--exec-primary) 18%, var(--exec-border) 82%);
+}
+
+.exec-table tbody tr.group-total td {
+    background: color-mix(in srgb, var(--exec-primary) 9%, var(--exec-panel) 91%);
+    font-weight: 850;
+}
+
+.exec-table tbody tr.delta td {
+    font-weight: 800;
+    border-top: 1px solid var(--exec-border);
+}
+
+.exec-table td.tone-good {
+    color: #15803d;
+    font-weight: 800;
+}
+
+.exec-table td.tone-bad {
+    color: #b91c1c;
+    font-weight: 800;
+}
+
+.exec-table td.tone-neutral {
+    color: var(--exec-ink);
+    font-weight: 800;
+}
+
+.exec-table td.hierarchy-child {
+    position: relative;
+}
+
+    .exec-table td.hierarchy-child::before {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        width: 5px;
+        border-top: 1px solid var(--exec-border);
+    }
+
+.exec-table.exec-table-matrix th,
+.exec-table.exec-table-matrix td,
+.exec-table.exec-table-hierarchy th,
+.exec-table.exec-table-hierarchy td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+/* Required because executive-dashboard-suite.js currently writes a large inline
+   min-height (often 1,000-2,000+ px) before the saved SQL layout is applied.
+   SQL can position visuals, but it cannot override that inline CSS by itself. */
+
+html,
+body,
+#app {
+    overflow: auto !important;
+}
+
+.exec-page {
+    width: 100%;
+    height: auto !important;
+    min-height: 600px !important;
+    overflow: visible !important;
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+}
+
+.exec-canvas {
+    width: 100%;
+    height: auto !important;
+    min-height: 720px;
+    overflow: visible;
+}
+
+/* Executive matrix header: remove the gap between grouped header levels. */
+.exec-table.exec-table-matrix {
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+}
+
+    .exec-table.exec-table-matrix thead,
+    .exec-table.exec-table-matrix thead tr,
+    .exec-table.exec-table-matrix thead th {
+        margin: 0 !important;
+        border-spacing: 0 !important;
+    }
+
+        .exec-table.exec-table-matrix thead tr.exec-matrix-group-row,
+        .exec-table.exec-table-matrix thead tr.exec-matrix-leaf-row {
+            height: 26px;
+        }
+
+            .exec-table.exec-table-matrix thead tr.exec-matrix-group-row th,
+            .exec-table.exec-table-matrix thead tr.exec-matrix-leaf-row th {
+                height: 26px;
+                min-height: 26px;
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                line-height: 26px !important;
+                vertical-align: middle !important;
+                box-shadow: none !important;
+            }
+
+            .exec-table.exec-table-matrix thead tr.exec-matrix-group-row th {
+                border-bottom: 0 !important;
+            }
+
+            .exec-table.exec-table-matrix thead tr.exec-matrix-leaf-row th {
+                border-top: 0 !important;
+            }
+
+        .exec-table.exec-table-matrix thead th.exec-matrix-row-header {
+            height: 52px;
+            line-height: normal !important;
+            vertical-align: middle !important;
+            border-top: 0 !important;
+            border-bottom: 0 !important;
+        }
+
+/* ============================================================
+   Executive visual polish � SQL layout safe
+   Decoration only. SQL JSON placement remains authoritative
+   on .exec-visual.
+   ============================================================ */
+
+:root {
+    --exec-panel-glass: rgba(255, 255, 255, .84);
+    --exec-panel-glass-strong: rgba(255, 255, 255, .91);
+    --exec-hairline: rgba(111, 126, 154, .20);
+    --exec-hairline-soft: rgba(111, 126, 154, .13);
+    --exec-radius-lg: 16px;
+    --exec-radius-md: 13px;
+    --exec-shadow-soft: 0 10px 28px rgba(23, 23, 119, .06), 0 2px 8px rgba(23, 23, 119, .03);
+    --exec-shadow-hover: 0 14px 34px rgba(23, 23, 119, .095), 0 3px 10px rgba(23, 23, 119, .045);
+}
+
+html,
+body,
+#app {
+    background-image: radial-gradient(circle at 8% 2%, rgba(56, 189, 248, .07), transparent 28%), radial-gradient(circle at 96% 0%, rgba(9, 198, 152, .05), transparent 25%), linear-gradient(145deg, #f7f9fd 0%, var(--exec-bg) 48%, #f1f5fb 100%);
+}
+
+.exec-title {
+    letter-spacing: .16px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
+}
+
+.exec-canvas {
+    border-color: var(--exec-hairline);
+    border-radius: var(--exec-radius-lg);
+    background-image: linear-gradient(135deg, rgba(8, 8, 238, .022), transparent 34%), linear-gradient(315deg, rgba(9, 198, 152, .018), transparent 36%);
+    background-color: rgba(247, 249, 253, .56);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .72), inset 0 0 0 1px rgba(255, 255, 255, .18), 0 10px 30px rgba(23, 23, 119, .035);
+    backdrop-filter: blur(10px) saturate(112%);
+    -webkit-backdrop-filter: blur(10px) saturate(112%);
+}
+
+.exec-metric,
+.exec-panel {
+    border-color: var(--exec-hairline);
+    border-radius: var(--exec-radius-md);
+    background-color: var(--exec-panel-glass);
+    box-shadow: var(--exec-shadow-soft), inset 0 1px 0 rgba(255, 255, 255, .68);
+    backdrop-filter: blur(11px) saturate(118%);
+    -webkit-backdrop-filter: blur(11px) saturate(118%);
+    transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+
+    .exec-metric:hover,
+    .exec-panel:hover {
+        border-color: rgba(96, 112, 139, .29);
+        background-color: var(--exec-panel-glass-strong);
+        box-shadow: var(--exec-shadow-hover), inset 0 1px 0 rgba(255, 255, 255, .74);
+    }
+
+.exec-panel-title {
+    border-bottom-color: var(--exec-hairline-soft);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, .40), rgba(255, 255, 255, .07));
+    letter-spacing: .08px;
+}
+
+.exec-metric-label {
+    letter-spacing: .42px;
+}
+
+.exec-metric-value {
+    letter-spacing: -.35px;
+}
+
+.exec-delta {
+    border-color: rgba(96, 112, 139, .11);
+    background-color: rgba(237, 242, 248, .78);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .62);
+}
+
+    .exec-delta.good {
+        border-color: rgba(9, 198, 152, .15);
+        background-color: rgba(9, 198, 152, .11);
+    }
+
+    .exec-delta.bad {
+        border-color: rgba(220, 38, 38, .13);
+        background-color: rgba(220, 38, 38, .085);
+    }
+
+    .exec-delta.neutral {
+        border-color: rgba(56, 189, 248, .16);
+        background-color: rgba(56, 189, 248, .10);
+    }
+
+.exec-table-wrap {
+    scrollbar-color: rgba(96, 112, 139, .34) transparent;
+}
+
+    .exec-table-wrap::-webkit-scrollbar-thumb,
+    .exec-content::-webkit-scrollbar-thumb {
+        border-color: transparent;
+        border-radius: 999px;
+        background-clip: padding-box;
+        background-color: rgba(96, 112, 139, .32);
+    }
+
+    .exec-table-wrap::-webkit-scrollbar-track,
+    .exec-content::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+
+.exec-table th {
+    border-right-color: rgba(255, 255, 255, .13);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .11);
+}
+
+.exec-table td {
+    border-bottom-color: var(--exec-hairline-soft);
+}
+
+.exec-table tbody tr:nth-child(even) td {
+    background-color: rgba(247, 249, 252, .68);
+}
+
+.exec-table tbody tr:hover td {
+    background-color: color-mix( in srgb, var(--exec-primary) 4%, var(--exec-panel) 96%);
+}
+
+.exec-table tbody tr.total td {
+    background-color: color-mix( in srgb, var(--exec-highlight) 11%, var(--exec-panel) 89%);
+    border-top-color: color-mix( in srgb, var(--exec-highlight) 18%, var(--exec-border) 82%);
+}
+
+.exec-table th.exec-column-group {
+    border-left-color: rgba(255, 255, 255, .18);
+    border-right-color: rgba(255, 255, 255, .18);
+}
+
+.exec-layout-move {
+    border-color: rgba(96, 112, 139, .20);
+    border-radius: 7px;
+    background-color: rgba(255, 255, 255, .68);
+    box-shadow: 0 2px 7px rgba(23, 23, 119, .06);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.exec-layout-resize::after {
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    opacity: .82;
+}
+
+.exec-layout-active {
+    border-radius: var(--exec-radius-md);
+    box-shadow: var(--exec-shadow-hover);
+    outline-color: color-mix( in srgb, var(--exec-primary) 22%, transparent 78%);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --exec-panel-glass: rgba(23, 30, 49, .82);
+        --exec-panel-glass-strong: rgba(28, 37, 59, .91);
+        --exec-hairline: rgba(170, 181, 207, .18);
+        --exec-hairline-soft: rgba(170, 181, 207, .10);
+        --exec-shadow-soft: 0 12px 30px rgba(0, 0, 0, .22), 0 2px 8px rgba(0, 0, 0, .15);
+        --exec-shadow-hover: 0 16px 38px rgba(0, 0, 0, .30), 0 3px 10px rgba(0, 0, 0, .19);
+    }
+
+    html,
+    body,
+    #app {
+        background-image: radial-gradient(circle at 8% 2%, rgba(56, 189, 248, .075), transparent 28%), radial-gradient(circle at 96% 0%, rgba(9, 198, 152, .055), transparent 25%), linear-gradient(145deg, #12192a 0%, var(--exec-bg) 48%, #0c1220 100%);
+    }
+
+    .exec-canvas {
+        background-image: linear-gradient(135deg, rgba(56, 189, 248, .03), transparent 34%), linear-gradient(315deg, rgba(9, 198, 152, .02), transparent 36%);
+        background-color: rgba(15, 21, 37, .60);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035), inset 0 0 0 1px rgba(255, 255, 255, .018), 0 12px 34px rgba(0, 0, 0, .19);
+    }
+
+    .exec-panel-title {
+        background-image: linear-gradient( 180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .01));
+    }
+
+    .exec-table tbody tr:nth-child(even) td {
+        background-color: rgba(27, 36, 57, .62);
+    }
+
+    .exec-layout-move {
+        background-color: rgba(23, 30, 49, .72);
+    }
+}
+
+
+/* Reset Layout button + header right */
+.exec-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.exec-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: var(--exec-primary, #0808ee);
+    color: #fff;
+    border: 0;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 140ms ease;
+    white-space: nowrap;
+}
+.exec-reset-btn:hover {
+    background: var(--exec-ink, #171777);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(8,8,238,0.30);
+}

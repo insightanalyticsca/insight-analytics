@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ITS — Service Health</title>
+  <link rel="stylesheet" href="../css/canvas-host.css?v=20260822">
+  <link rel="stylesheet" href="../css/theme-vivid.css?v=20260804">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/executive-dashboard-suite.css?v=20260822">
+</head>
+<body data-suite="its-service-health" data-variant="indigo">
+  <header class="topbar">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">D</span>
+      <span class="brand-text">
+        <span class="brand-name">Dashboards Studio</span>
+        <span class="brand-sub">ITS — Service Health</span>
+      </span>
+    </a>
+    <nav class="topbar-actions">
+      <a href="../visuals.html" class="navlink"><i class="fa-solid fa-grip"></i> Gallery</a>
+      <a href="../index.html" class="navlink"><i class="fa-solid fa-comments"></i> Chat</a>
+    </nav>
+  </header>
+  <div class="canvas-page">
+    <div id="app">
+      <header class="canvas-header">
+        <div class="canvas-title">ITS — Service Health</div>
+        <div class="canvas-asof">Period: March 2026</div>
+      </header>
+      <div class="canvas-grid"></div>
+      <div class="canvas-notes"></div>
+    </div>
+  </div>
+  <script>
+    window.CANVAS_CONFIG = {
+  "version": "its-service-health",
+  "title": "ITS \u2014 Service Health",
+  "asOfLabel": "Period: March 2026",
+  "visuals": [
+    {
+      "id": "its-uptime",
+      "file": "its-uptime.html",
+      "title": "Uptime Report",
+      "w": 12,
+      "h": 400
+    },
+    {
+      "id": "its-ticket-volume-open",
+      "file": "its-ticket-volume-open.html",
+      "title": "Ticket Volume (Open)",
+      "w": 6,
+      "h": 340
+    },
+    {
+      "id": "its-ticket-volume-close",
+      "file": "its-ticket-volume-close.html",
+      "title": "Ticket Volume (Close)",
+      "w": 6,
+      "h": 340
+    }
+  ],
+  "notes": [
+    "Overall uptime 99.974% \u2014 within SLA.",
+    "VPN breached SLA (99.91% vs 99.95% target)."
+  ]
+};
+  </script>
+  <script src="../js/canvas-host.js?v=20260822"></script>
+  <script src="../js/theme-toggle.js?v=20260804"></script>
+  <script src="../js/visual-chat.js?v=20260804"></script>
+  <script src="../js/exec-ai-brief.js?v=20260822"></script>
+<!-- Pull-to-refresh + service worker -->
+<script src="../js/pull-to-refresh.js?v=20260808"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('../service-worker.js').catch(function() {});
+    });
+  }
+</script>
+</body>
+</html>

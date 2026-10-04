@@ -1,0 +1,5 @@
+{
+  "provider": "groq",
+  "proxyUrl": "https://dashboards-groq-proxy.netlify.app/groq-proxy",
+  "groqModel": "qwen/qwen3.8-27b"
+}

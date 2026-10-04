@@ -1,0 +1,305 @@
+{
+  "key": "payments",
+  "title": "Customer Payments Performance",
+  "variant": "blue",
+  "asOfLabel": "Period: September 2026",
+  "generatedUtc": "2026-09-19T00:00:00Z",
+  "metrics": [
+    {
+      "key": "total-payments",
+      "label": "Total Payments",
+      "value": 12400000,
+      "format": "currency",
+      "period": "Sep 2026",
+      "mom": 4.2,
+      "yoy": 8.1,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "percent",
+      "positiveIsGood": true
+    },
+    {
+      "key": "autopay-rate",
+      "label": "Auto-Pay Rate",
+      "value": 58.4,
+      "format": "percent",
+      "period": "Sep 2026",
+      "mom": 2.1,
+      "yoy": 5.4,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "points",
+      "positiveIsGood": true
+    },
+    {
+      "key": "avg-days",
+      "label": "Avg Days to Pay",
+      "value": 12.3,
+      "format": "decimal",
+      "period": "Sep 2026",
+      "mom": -0.4,
+      "yoy": -1.2,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "number",
+      "positiveIsGood": true
+    },
+    {
+      "key": "failed",
+      "label": "Failed Payments",
+      "value": 142,
+      "format": "number",
+      "period": "Sep 2026",
+      "mom": -8,
+      "yoy": -22,
+      "momLabel": "MoM",
+      "yoyLabel": "YoY",
+      "deltaMode": "percent",
+      "positiveIsGood": true
+    }
+  ],
+  "charts": [
+    {
+      "id": "payments-trend",
+      "title": "Payments Volume (CAD ×1000)",
+      "kind": "bar",
+      "width": "wide",
+      "valueFormat": "currency",
+      "leftAxisTitle": "CAD (×1000)",
+      "rightAxisTitle": "",
+      "categories": [
+        "Sep 25",
+        "Oct 25",
+        "Nov 25",
+        "Dec 25",
+        "Jan 26",
+        "Feb 26",
+        "Mar 26",
+        "Apr 26",
+        "May 26",
+        "Jun 26",
+        "Jul 26",
+        "Aug 26",
+        "Sep 26"
+      ],
+      "series": [
+        {
+          "name": "Commercial",
+          "type": "bar",
+          "axis": "left",
+          "stack": "",
+          "color": "#1f4e78",
+          "smooth": false,
+          "data": [
+            6200,
+            6300,
+            6400,
+            6500,
+            6600,
+            6700,
+            6800,
+            6900,
+            7000,
+            7100,
+            7200,
+            7300,
+            7300
+          ]
+        },
+        {
+          "name": "Residential",
+          "type": "bar",
+          "axis": "left",
+          "stack": "",
+          "color": "#38bdf8",
+          "smooth": false,
+          "data": [
+            4200,
+            4250,
+            4300,
+            4350,
+            4400,
+            4450,
+            4500,
+            4550,
+            4600,
+            4650,
+            4700,
+            4750,
+            4800
+          ]
+        }
+      ]
+    },
+    {
+      "id": "payment-method-pie",
+      "title": "Payment Methods",
+      "kind": "pie",
+      "width": "narrow",
+      "valueFormat": "percent",
+      "leftAxisTitle": "",
+      "rightAxisTitle": "",
+      "categories": [
+        "Auto-Pay",
+        "Online Portal",
+        "Phone",
+        "Mail",
+        "In-Person"
+      ],
+      "series": [
+        {
+          "name": "% of Payments",
+          "type": "pie",
+          "axis": "left",
+          "stack": "",
+          "color": "#1f4e78",
+          "smooth": false,
+          "data": [
+            58,
+            24,
+            9,
+            6,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "days-to-pay-line",
+      "title": "Avg Days to Pay",
+      "kind": "line",
+      "width": "wide",
+      "valueFormat": "decimal",
+      "leftAxisTitle": "Days",
+      "rightAxisTitle": "",
+      "categories": [
+        "Sep 25",
+        "Oct 25",
+        "Nov 25",
+        "Dec 25",
+        "Jan 26",
+        "Feb 26",
+        "Mar 26",
+        "Apr 26",
+        "May 26",
+        "Jun 26",
+        "Jul 26",
+        "Aug 26",
+        "Sep 26"
+      ],
+      "series": [
+        {
+          "name": "Commercial",
+          "type": "line",
+          "axis": "left",
+          "stack": "",
+          "color": "#1f4e78",
+          "smooth": true,
+          "data": [
+            14.2,
+            14.0,
+            13.9,
+            13.7,
+            13.5,
+            13.4,
+            13.1,
+            12.9,
+            12.8,
+            12.6,
+            12.5,
+            12.4,
+            12.3
+          ]
+        },
+        {
+          "name": "Residential",
+          "type": "line",
+          "axis": "left",
+          "stack": "",
+          "color": "#38bdf8",
+          "smooth": true,
+          "data": [
+            9.8,
+            9.7,
+            9.6,
+            9.5,
+            9.4,
+            9.3,
+            9.2,
+            9.1,
+            9.0,
+            8.9,
+            8.8,
+            8.7,
+            8.7
+          ]
+        }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "id": "payment-methods-table",
+      "title": "Payment Methods Breakdown",
+      "width": "wide",
+      "kind": "table",
+      "columns": [
+        "Method",
+        "Volume (CAD)",
+        "% Share",
+        "Avg Days",
+        "Failed %"
+      ],
+      "columnGroups": [],
+      "formats": {
+        "Volume (CAD)": "currency",
+        "% Share": "percent",
+        "Avg Days": "decimal",
+        "Failed %": "percent"
+      },
+      "rows": [
+        {
+          "Method": "Auto-Pay (ACH)",
+          "Volume (CAD)": 7230000,
+          "% Share": 58.3,
+          "Avg Days": 0.0,
+          "Failed %": 0.4
+        },
+        {
+          "Method": "Online Portal",
+          "Volume (CAD)": 2970000,
+          "% Share": 24.0,
+          "Avg Days": 1.2,
+          "Failed %": 0.8
+        },
+        {
+          "Method": "Phone (IVR)",
+          "Volume (CAD)": 1110000,
+          "% Share": 9.0,
+          "Avg Days": 0.8,
+          "Failed %": 1.2
+        },
+        {
+          "Method": "Mail Check",
+          "Volume (CAD)": 740000,
+          "% Share": 6.0,
+          "Avg Days": 5.4,
+          "Failed %": 2.1
+        },
+        {
+          "Method": "In-Person",
+          "Volume (CAD)": 340000,
+          "% Share": 2.7,
+          "Avg Days": 0.0,
+          "Failed %": 0.3
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "WHAT HAPPENED: Auto-pay adoption crossed 60% threshold in commercial segment. Average payment processing time improved 0.4 days MoM.",
+    "WHY: The 60% commercial auto-pay threshold is a meaningful milestone — once adoption crosses 60%, the remaining 40% are likely the harder-to-convert accounts (smaller businesses, variable cash flow). The 0.4-day processing time improvement is modest but consistent with operational efficiency gains from fewer manual payment processing touches.",
+    "WHAT TO EXPECT: If the current trend continues, commercial auto-pay adoption should plateau around 65-68% within the next 2-3 periods as the convertible segment is exhausted. Processing time gains will be marginal from here.",
+    "WHAT TO DO: Segment the remaining 40% non-auto-pay commercial accounts by payment frequency and amount — identify which subset would benefit from a targeted auto-pay incentive, and which are structurally unsuitable (e.g., project-based billing)."
+  ]
+}

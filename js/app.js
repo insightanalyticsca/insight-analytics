@@ -242,8 +242,60 @@
     }
     showcaseFrame.addEventListener("load", hideLoading);
     showcaseFrame.addEventListener("error", hideLoading);
-    // Safety net — never leave a stuck spinner
-    setTimeout(hideLoading, 8000);
+
+    /* ------------------------------------------------------------------
+     * Stuck-loading fallback — if the iframe takes too long to render
+     * (which happens on iOS Safari + PWA where the dashboard's service
+     * worker inside the iframe interferes with the data fetch), surface
+     * an "Open in new tab" link so the user can still reach the dashboard.
+     * The iframe is sandboxed (no allow-same-origin) to block SW
+     * registration in the first place, but if the dashboard's data fetch
+     * still hangs (network slow, CDN issue, etc.), this fallback kicks in.
+     * ------------------------------------------------------------------ */
+    const fallbackLink = document.getElementById("browserFallback");
+    let loadedSuccessfully = false;
+    let fallbackTimer = null;
+    let safetyTimer = null;
+
+    function showFallback() {
+      if (loadedSuccessfully || !fallbackLink) return;
+      hideLoading();
+      // Reveal fallback link + dim the iframe so the user sees the CTA
+      fallbackLink.hidden = false;
+      if (showcaseFrame) {
+        showcaseFrame.style.opacity = "0.25";
+        showcaseFrame.style.transition = "opacity 0.4s ease";
+      }
+    }
+    function markLoaded() {
+      loadedSuccessfully = true;
+      if (fallbackLink) fallbackLink.hidden = true;
+      if (showcaseFrame) showcaseFrame.style.opacity = "";
+      hideLoading();
+    }
+    function resetFallbackState() {
+      loadedSuccessfully = false;
+      if (fallbackLink) fallbackLink.hidden = true;
+      if (showcaseFrame) showcaseFrame.style.opacity = "";
+      // (Re)arm the fallback timer — fires if the new dashboard hangs
+      if (fallbackTimer) clearTimeout(fallbackTimer);
+      if (safetyTimer) clearTimeout(safetyTimer);
+      fallbackTimer = setTimeout(showFallback, 12000);
+      safetyTimer = setTimeout(hideLoading, 15000);
+    }
+    // Real load — replace hideLoading with markLoaded so the fallback can be suppressed
+    showcaseFrame.removeEventListener("load", hideLoading);
+    showcaseFrame.addEventListener("load", markLoaded);
+    // Arm initial timers
+    fallbackTimer = setTimeout(showFallback, 12000);
+    safetyTimer = setTimeout(hideLoading, 15000);
+
+    // Expose resetFallbackState so the switcher handler (below) can call it
+    // when the user picks a different dashboard.
+    showcaseFrame._resetFallbackState = resetFallbackState;
+    showcaseFrame._updateFallbackUrl = function (url) {
+      if (fallbackLink && url) fallbackLink.setAttribute("href", url);
+    };
 
     /* ------------------------------------------------------------------
      * Dashboard switcher — click a tab to swap the iframe src + URL bar
@@ -275,7 +327,6 @@
         if (urlText) {
           const urlMap = {
             "executive": "insight-analytics.ca/dashboards/executive-operating",
-            "it-ops": "insight-analytics.ca/dashboards/it-service-health",
             "payments": "insight-analytics.ca/dashboards/customer-payments",
             "ebill": "insight-analytics.ca/dashboards/ebill-performance"
           };
@@ -285,7 +336,6 @@
         // Show loading overlay with the new label
         const labelMap = {
           "executive": "Loading executive dashboard…",
-          "it-ops": "Loading IT service health dashboard…",
           "payments": "Loading customer payments dashboard…",
           "ebill": "Loading eBill performance dashboard…"
         };
@@ -297,6 +347,10 @@
         // this is mostly belt-and-suspenders)
         showcaseFrame.setAttribute("data-src", newSrc);
         showcaseFrame.setAttribute("src", newSrc);
+
+        // Reset fallback state + sync the fallback URL for the new dashboard
+        if (showcaseFrame._resetFallbackState) showcaseFrame._resetFallbackState();
+        if (showcaseFrame._updateFallbackUrl) showcaseFrame._updateFallbackUrl(newSrc);
       });
     }
   }

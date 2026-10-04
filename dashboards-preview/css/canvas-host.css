@@ -1,0 +1,691 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   canvas-host.css — Canvas host styling with drag + resize support
+   Mirrors .NET executive-dashboard-suite.css layout pattern:
+   - Tiles are absolutely positioned (not grid)
+   - Drag handle (⠿) and resize handle (corner) on each tile
+   - Canvas is position:relative, min-height set dynamically
+   ════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --exec-bg: #f4f6fb;
+  --exec-panel: #ffffff;
+  --exec-ink: #171777;
+  --exec-muted: #60708b;
+  --exec-border: #d8deea;
+  --exec-grid: #e9edf5;
+  --exec-primary: #0808ee;
+  --exec-secondary: #09c698;
+  --exec-accent: #bbff05;
+  --exec-highlight: #38bdf8;
+  --exec-shadow: 0 8px 22px rgba(23, 23, 119, .08);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--exec-bg);
+  color: var(--exec-ink);
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  height: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+#app {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.canvas-page { padding: 10px; min-height: 100vh; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   TOPBAR — shared across all pages (index, gallery, canvases)
+   Blends into background via translucent gradient, no hard rectangle
+   ════════════════════════════════════════════════════════════════════════════ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 20px;
+  background: linear-gradient(180deg, var(--theme-bg) 0%, transparent 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--theme-border, var(--card-border));
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--theme-text, var(--text));
+}
+
+.brand-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--theme-primary, var(--primary)) 0%, var(--theme-accent, var(--accent)) 100%);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.20);
+}
+
+/* Blend: subtle glow ring that fades into bg, no hard rectangle */
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--theme-primary, var(--primary)), var(--theme-accent, var(--accent)), var(--theme-hot, var(--hot)));
+  opacity: 0.15;
+  z-index: -1;
+  filter: blur(3px);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-name {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.02em;
+  color: var(--theme-text, var(--text));
+}
+
+.brand-sub {
+  font-size: 9px;
+  color: var(--theme-muted, var(--muted));
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navlink, .topbar-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--theme-text-soft, rgba(255,255,255,0.85));
+  text-decoration: none;
+  transition: all 140ms ease;
+  border: 1px solid transparent;
+}
+
+.navlink:hover, .topbar-actions a:hover {
+  background: var(--theme-panel-hover, rgba(255,255,255,0.08));
+  border-color: var(--theme-border, var(--card-border));
+  color: var(--theme-text, var(--text));
+}
+
+.canvas-header {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 4px 6px;
+}
+
+.canvas-title { font-size: 14px; font-weight: 700; color: var(--theme-text, var(--exec-ink)); }
+.canvas-asof { font-size: 10px; color: var(--theme-muted, var(--exec-muted)); }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CANVAS — position:relative container for absolutely-positioned tiles
+   ════════════════════════════════════════════════════════════════════════════ */
+.canvas-grid {
+  position: relative;
+  width: 100%;
+  min-height: 720px;
+  /* No grid — tiles are absolutely positioned */
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   TILES — absolutely positioned, draggable, resizable
+   ════════════════════════════════════════════════════════════════════════════ */
+.canvas-tile {
+  position: absolute;
+  background: var(--theme-panel, var(--exec-panel));
+  border: 1px solid var(--theme-border, var(--exec-border));
+  border-radius: 10px;
+  box-shadow: var(--theme-shadow-card, var(--exec-shadow));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* Position is set via JS (left, top, width, height in %) */
+}
+
+.canvas-tile-head {
+  padding: 5px 9px;
+  border-bottom: 1px solid var(--theme-border, var(--exec-grid));
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--theme-text, var(--exec-ink));
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.canvas-tile-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.canvas-tile-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.canvas-tile-body iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  display: block;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   DRAG + RESIZE HANDLES — mirrors executive-dashboard-suite.css
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Move handle (⠿) — top-right corner of tile head */
+.canvas-layout-move {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 10;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.10);
+  color: var(--exec-primary);
+  font-size: 10px;
+  line-height: 1;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+  transition: opacity 140ms ease, background 140ms ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.canvas-tile:hover .canvas-layout-move {
+  opacity: 1;
+}
+
+.canvas-layout-move:hover {
+  background: rgba(99, 102, 241, 0.20);
+}
+
+.canvas-layout-move:active {
+  cursor: grabbing;
+  background: rgba(99, 102, 241, 0.30);
+}
+
+/* Resize handle — bottom-right corner */
+.canvas-layout-resize {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 10;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+  opacity: 0;
+  transition: opacity 140ms ease;
+  touch-action: none;
+}
+
+.canvas-tile:hover .canvas-layout-resize {
+  opacity: 0.5;
+}
+
+.canvas-layout-resize:hover {
+  opacity: 1 !important;
+}
+
+.canvas-layout-resize::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--theme-primary, var(--exec-primary));
+  border-bottom: 1.5px solid var(--theme-primary, var(--exec-primary));
+  border-bottom-right-radius: 3px;
+}
+
+/* Active (dragging/resizing) state */
+.canvas-tile.canvas-layout-active {
+  box-shadow: 0 0 0 2px var(--exec-primary), 0 16px 48px rgba(8, 8, 238, 0.25);
+  z-index: 9999 !important;
+  cursor: grabbing;
+}
+
+.canvas-grid.canvas-layout-changing {
+  cursor: grabbing;
+}
+
+/* Notes */
+.canvas-notes {
+  margin-top: 8px;
+  padding: 6px 9px;
+  background: transparent;
+  border: 1px solid var(--theme-border, var(--exec-border));
+  border-radius: 8px;
+  font-size: 9px;
+  color: var(--theme-muted, var(--exec-muted));
+  line-height: 1.5;
+}
+
+.canvas-notes > div { padding: 2px 0; }
+
+.canvas-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #fff;
+  border: 1px solid var(--exec-border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--exec-ink);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.canvas-back:hover { background: var(--exec-grid); }
+
+/* Reset Layout button */
+.canvas-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--exec-primary);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 140ms ease;
+  white-space: nowrap;
+}
+.canvas-reset-btn:hover {
+  background: var(--exec-ink);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(8, 8, 238, 0.30);
+}
+.canvas-reset-btn:active { transform: translateY(0); }
+
+/* ─── Edit button: freeze/unfreeze drag+resize ───────────────────────────── */
+.canvas-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(99, 102, 241, 0.30);
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--theme-primary, #6366f1);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(.22, 1, .36, 1);
+  white-space: nowrap;
+}
+.canvas-edit-btn:hover {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: rgba(99, 102, 241, 0.50);
+  transform: translateY(-1px);
+}
+.canvas-edit-btn.is-active {
+  background: linear-gradient(135deg, #6366f1, #06b6d4);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+.canvas-edit-btn i { font-size: 10px; }
+
+/* Frozen canvas: hide drag/resize handles by default */
+.canvas-frozen .canvas-layout-move,
+.canvas-frozen .canvas-layout-resize {
+  display: none !important;
+}
+.canvas-frozen .canvas-tile {
+  cursor: default;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — mobile/PWA
+   Tiles ALWAYS keep the same column layout as desktop (12-col grid).
+   They scale proportionally — a row of 4 cards stays as 4 cards, just smaller.
+   No column reduction, no piling into single column.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .canvas-page { padding: 4px; }
+
+  .canvas-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .canvas-title { font-size: 13px; }
+  .canvas-asof { font-size: 9px; }
+
+  .canvas-tile-head {
+    padding: 3px 5px;
+    font-size: 8px;
+  }
+
+  /* Hide drag/resize handles on touch — users can't drag precisely on mobile */
+  .canvas-layout-move,
+  .canvas-layout-resize {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .canvas-page { padding: 2px; }
+  .canvas-tile-head { padding: 2px 4px; font-size: 7px; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CONTACT FOOTER — sleek translucent bar with brand mark + contact links
+   Used on the Chatters page (data-contact-footer marker)
+   ════════════════════════════════════════════════════════════════════════════ */
+.contact-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: linear-gradient(0deg, var(--theme-bg, #f8fafc) 0%, transparent 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-top: 1px solid var(--theme-border, rgba(99, 102, 241, 0.10));
+}
+
+.contact-footer-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.contact-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contact-footer-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--theme-primary, #6366f1) 0%, var(--theme-accent, #06b6d4) 100%);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.20);
+}
+
+.contact-footer-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.contact-footer-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--theme-text, #0f172a);
+  line-height: 1.2;
+}
+
+.contact-footer-tag {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--theme-muted, #64748b);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.contact-footer-spacer {
+  flex: 1;
+}
+
+.contact-footer-link {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--theme-primary, #6366f1);
+  text-decoration: none;
+  transition: color 150ms, opacity 150ms;
+}
+
+.contact-footer-link:hover {
+  color: var(--theme-accent, #06b6d4);
+  opacity: 0.85;
+}
+
+.contact-footer-sep {
+  color: var(--theme-muted, #94a3b8);
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+/* Translucent Contact button (collapsed state of the compact widget) */
+.contact-footer-btn,
+.contact-collapsed-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--toggle-border, rgba(99, 102, 241, 0.25));
+  background: var(--toggle-bg, rgba(99, 102, 241, 0.12));
+  color: var(--theme-primary, #6366f1);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 220ms cubic-bezier(.22, 1, .36, 1);
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+}
+
+.contact-footer-btn:hover,
+.contact-collapsed-pill:hover {
+  transform: translateY(-1px) scale(1.03);
+  background: var(--toggle-bg, rgba(99, 102, 241, 0.20));
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+}
+
+.contact-footer-icon,
+.contact-collapsed-icon {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--theme-primary, #6366f1), var(--theme-accent, #06b6d4));
+  color: #fff;
+}
+
+.contact-footer-text,
+.contact-collapsed-text {
+  letter-spacing: 0.02em;
+}
+
+/* ─── Inline compact widget (right side of footer, same line as IA logo) ─── */
+.contact-compact-host {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+/* data-state="open" → show compact strip, hide collapsed pill */
+.contact-compact-host[data-state="open"] .contact-compact { display: flex; }
+.contact-compact-host[data-state="open"] .contact-collapsed-pill { display: none; }
+
+/* data-state="collapsed" → hide compact strip, show pill */
+.contact-compact-host[data-state="collapsed"] .contact-compact { display: none; }
+.contact-compact-host[data-state="collapsed"] .contact-collapsed-pill { display: inline-flex; }
+
+.contact-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 8px;
+  border-radius: 18px;
+  border: 1px solid var(--toggle-border, rgba(99, 102, 241, 0.25));
+  background: var(--toggle-bg, rgba(99, 102, 241, 0.10));
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+  transition: all 220ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.contact-compact:hover {
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.20);
+}
+
+/* Tiny icon buttons (mailto: + tel:) */
+.contact-compact-iconbtn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #fff !important;  /* !important to override theme-vivid.css global a{color:var(--theme-accent)} rule — otherwise the SVG stroke (currentColor) inherits teal, making the phone icon invisible on its teal→green gradient background */
+  transition: transform 150ms, box-shadow 150ms;
+  flex-shrink: 0;
+}
+
+.contact-compact-mail {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.contact-compact-phone {
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+}
+
+.contact-compact-iconbtn:hover {
+  transform: translateY(-1px) scale(1.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.contact-compact-iconbtn:active {
+  transform: scale(0.96);
+}
+
+/* Ask pill (opens full chat panel) */
+.contact-compact-ask {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px 5px 8px;
+  border-radius: 14px;
+  border: 0;
+  background: linear-gradient(135deg, var(--theme-primary, #6366f1), var(--theme-accent, #06b6d4));
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: transform 150ms, box-shadow 150ms;
+}
+
+.contact-compact-ask:hover {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.contact-compact-ask-icon {
+  display: grid;
+  place-items: center;
+}
+
+.contact-compact-ask-text {
+  line-height: 1;
+}
+
+/* Close X button (collapses compact widget) */
+.contact-compact-close {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--theme-muted, #94a3b8);
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+  flex-shrink: 0;
+}
+
+.contact-compact-close:hover {
+  background: rgba(239, 68, 68, 0.10);
+  color: var(--theme-danger, #ef4444);
+}
+
+@media (max-width: 600px) {
+  .contact-footer-inner {
+    justify-content: center;
+    gap: 8px;
+  }
+  .contact-footer-spacer { display: none; }
+  .contact-footer-tag { display: none; }
+  /* Compact widget wraps below the brand on small screens */
+  .contact-compact-host {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+}
