@@ -943,11 +943,8 @@ ul {
 .browser-frame {
   position: relative;
   width: 100%;
+  height: 960px;
   background: var(--bg);
-  /* Reserve space for the screenshot using aspect-ratio.
-     1440x1267 = aspect-ratio 1440 / 1267 ≈ 1.137. */
-  aspect-ratio: 1440 / 1267;
-  overflow: hidden;
 }
 .browser-frame iframe {
   width: 100%;
@@ -955,29 +952,38 @@ ul {
   border: 0;
   display: block;
 }
-.dashboard-img {
-  display: block;
-  width: 100%;
-  height: auto;
-  /* Preserve aspect ratio of the source PNG */
-  aspect-ratio: 1440 / 1267;
-  object-fit: contain;
-  background: var(--bg);
+.browser-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-soft);
+  font-family: var(--font-head);
+  font-size: 0.9rem;
+  gap: 12px;
+}
+.browser-loading .spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border-strong);
+  border-top-color: var(--indigo);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-/* ====================== FALLBACK LINK (Open live dashboard CTA) ====================== */
+/* ====================== FALLBACK LINK (if iframe stuck loading) ====================== */
 .browser-fallback {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 20px 24px;
+  padding: 28px 24px;
   text-align: center;
   background: var(--surface-2);
   color: var(--text);
   text-decoration: none;
-  border-top: 1px solid var(--border-strong);
+  border-top: 1px dashed var(--border-strong);
   transition: background 200ms ease;
 }
 .browser-fallback:hover,
@@ -989,7 +995,7 @@ ul {
 .browser-fallback > span { font-weight: 600; font-size: 0.95rem; }
 .browser-fallback > small { color: var(--text-soft); font-size: 0.78rem; max-width: 460px; }
 .browser-mock.is-maximized .browser-fallback {
-  padding: 24px;
+  padding: 60px 24px;
 }
 
 /* ============================ DASHBOARD SWITCHER ============================ */
@@ -1475,7 +1481,7 @@ ul {
   .section { padding: 80px 0; }
   .why-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
   .methodology-grid { grid-template-columns: repeat(4, 1fr); }
-  /* .browser-frame now uses aspect-ratio — no fixed height needed */
+  .browser-frame { height: 560px; }
 }
 
 /* ------------------------------------------------------------------
@@ -1511,9 +1517,10 @@ ul {
 
   .scroll-indicator { display: none; }
 
-  /* On mobile, the dashboard image scales to viewport width via aspect-ratio */
-  .browser-mock .browser-frame { aspect-ratio: 1440 / 1267; }
-  .browser-frame .dashboard-img { display: block; }
+  /* Iframe visible on mobile — shorter height for smaller screens,
+     user can scroll within the iframe to see the whole dashboard */
+  .browser-mock .browser-frame { height: 480px; }
+  .browser-frame iframe { display: block; }
   .dashboard-switcher { gap: 6px; }
   .dash-tab { padding: 8px 12px; font-size: 0.76rem; }
   .dash-tab span { font-size: 0.76rem; }
@@ -1647,17 +1654,15 @@ ul {
   flex: 1;
   height: auto !important;
   min-height: 0;
-  aspect-ratio: auto !important;
-  overflow-y: auto;
 }
-.browser-mock.is-maximized .dashboard-img {
-  /* When maximized to fullscreen, show the screenshot at full natural width
-     so the user can scroll to see all of it. */
+.browser-mock.is-maximized .browser-frame iframe {
+  /* When maximized to fullscreen, drop the scaling — show the dashboard at its
+     natural size, let the user scroll within the iframe for the full dashboard. */
+  transform: none !important;
   width: 100% !important;
-  height: auto !important;
-  aspect-ratio: 1440 / 1267 !important;
-  object-fit: contain;
-  display: block;
+  height: 100% !important;
+  position: static !important;
+  margin-left: 0 !important;
 }
 .browser-mock.is-maximized .browser-bar {
   padding: 8px 16px;
@@ -1685,8 +1690,12 @@ ul {
   display: block;
 }
 
-/* Fixed heights removed — .browser-frame now uses aspect-ratio: 1440 / 1267
-   which scales responsively on all breakpoints. */
+@media (max-width: 1356px) {
+  .browser-frame { height: 800px; }
+}
+@media (max-width: 1100px) {
+  .browser-frame { height: 640px; }
+}
 
 /* ============================ PULL-TO-REFRESH ============================ */
 /* X-centered via left:50% + margin-left:-half-width. JS only controls Y axis. */

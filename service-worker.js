@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v2.7.0-20261005-static-screenshots';
+const VERSION = 'v2.8.0-20261005-sw-bypass-dashboards';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -77,6 +77,19 @@ self.addEventListener('fetch', (event) => {
 
   // Skip non-http(s) schemes (chrome-extension://, data:, blob:)
   if (!url.protocol.startsWith('http')) return;
+
+  // CRITICAL: Skip /dashboards-preview/ entirely — let all requests (HTML, CSS,
+  // JS, JSON data) go straight to the network with zero SW interception.
+  // The marketing SW's stale-while-revalidate strategy was causing the iframe
+  // (which loads many resources in parallel — ECharts from CDN, multiple local
+  // CSS/JS files, JSON data) to stall on iOS Safari + PWA. By letting these
+  // requests bypass the SW entirely, the iframe behaves like a normal same-origin
+  // resource load and renders reliably on every browser.
+  if (url.pathname.indexOf('/dashboards-preview/') === 0) return;
+
+  // Same for the dashboard data files (in case the dashboard's relative path
+  // resolves outside /dashboards-preview/, e.g. legacy paths).
+  if (url.pathname.indexOf('/data/executive/') === 0) return;
 
   // For the navigation request (the HTML page itself), network-first so users
   // always get the latest deployed content on a hard refresh / pull-to-refresh.

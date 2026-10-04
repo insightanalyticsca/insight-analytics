@@ -192,57 +192,129 @@
   }
 
   /* ------------------------------------------------------------------
-   * Dashboard showcase — image-based switcher (no iframe, no SW issues)
+   * Live dashboard showcase — iframe with local mirror + fallback timer
    *
-   * The dashboard preview is now a static PNG screenshot of the live
-   * dashboard, rendered headlessly and saved under
-   * /dashboards-preview/screenshots/. This bypasses every iOS Safari/PWA
-   * iframe loading issue — images always load.
+   * The iframe loads a same-origin local mirror at /dashboards-preview/.
+   * The marketing site's service worker has been modified to SKIP all
+   * requests to /dashboards-preview/ — the iframe's HTML, CSS, JS, and
+   * JSON data all go straight to the network with zero SW interference.
+   * This is what makes the live dashboard render reliably on iOS Safari
+   * and PWA, where SW-intercepted iframe requests were stalling.
    *
-   * Each switcher tab carries:
-   *   data-img       → path to the screenshot PNG (swapped into <img>)
-   *   data-live      → URL of the live interactive dashboard (opens in new tab)
-   *   data-url-text  → masked URL shown in the browser chrome bar
+   * A 12-second fallback timer surfaces an "Open in new tab" link if the
+   * iframe still hasn't fired its load event (e.g., on a flaky mobile
+   * network where the dashboard's many resources take too long).
    * ------------------------------------------------------------------ */
-  const showcaseImg = document.getElementById("dashboard-img");
+  const showcaseFrame = document.getElementById("dashboard-iframe");
   const showcaseSection = document.getElementById("dashboard");
   const fallbackLink = document.getElementById("browserFallback");
   const urlText = document.getElementById("browser-url-text");
   const switcher = document.getElementById("dashboardSwitcher");
+  const loadingOverlay = document.getElementById("browser-loading");
 
-  if (switcher && showcaseImg) {
-    switcher.addEventListener("click", function (e) {
-      const tab = e.target.closest(".dash-tab");
-      if (!tab) return;
+  // Eagerly set iframe src on page load (no IntersectionObserver — that
+  // was causing issues on iOS Safari PWA where the observer never fires
+  // in the standalone context).
+  if (showcaseFrame) {
+    const src = showcaseFrame.getAttribute("data-src");
+    if (src) showcaseFrame.setAttribute("src", src);
+  }
 
-      // Already active — no-op
-      if (tab.classList.contains("is-active")) return;
+  if (showcaseFrame && loadingOverlay) {
+    let loadedSuccessfully = false;
+    let fallbackTimer = null;
+    let safetyTimer = null;
 
-      const newImg = tab.getAttribute("data-img");
-      const newLive = tab.getAttribute("data-live");
-      const newUrlText = tab.getAttribute("data-url-text");
-      if (!newImg) return;
+    function hideLoading() {
+      loadingOverlay.style.opacity = "0";
+      loadingOverlay.style.transition = "opacity 0.4s ease";
+      setTimeout(function () {
+        loadingOverlay.style.display = "none";
+      }, 420);
+    }
+    function showLoading(label) {
+      loadingOverlay.style.display = "";
+      loadingOverlay.style.opacity = "1";
+      loadingOverlay.style.transition = "opacity 0.2s ease";
+      const lbl = document.getElementById("browser-loading-label");
+      if (lbl && label) lbl.textContent = label;
+    }
+    function showFallback() {
+      if (loadedSuccessfully || !fallbackLink) return;
+      hideLoading();
+      fallbackLink.hidden = false;
+      if (showcaseFrame) {
+        showcaseFrame.style.opacity = "0.25";
+        showcaseFrame.style.transition = "opacity 0.4s ease";
+      }
+    }
+    function markLoaded() {
+      loadedSuccessfully = true;
+      if (fallbackLink) fallbackLink.hidden = true;
+      if (showcaseFrame) showcaseFrame.style.opacity = "";
+      hideLoading();
+    }
+    function resetFallbackState() {
+      loadedSuccessfully = false;
+      if (fallbackLink) fallbackLink.hidden = true;
+      if (showcaseFrame) showcaseFrame.style.opacity = "";
+      if (fallbackTimer) clearTimeout(fallbackTimer);
+      if (safetyTimer) clearTimeout(safetyTimer);
+      fallbackTimer = setTimeout(showFallback, 12000);
+      safetyTimer = setTimeout(hideLoading, 15000);
+    }
 
-      // Update active tab styling
-      switcher.querySelectorAll(".dash-tab").forEach(function (t) {
-        t.classList.remove("is-active");
-        t.setAttribute("aria-selected", "false");
+    showcaseFrame.addEventListener("load", markLoaded);
+    showcaseFrame.addEventListener("error", hideLoading);
+    fallbackTimer = setTimeout(showFallback, 12000);
+    safetyTimer = setTimeout(hideLoading, 15000);
+
+    // Switcher — click a tab to swap iframe src + URL bar
+    if (switcher) {
+      switcher.addEventListener("click", function (e) {
+        const tab = e.target.closest(".dash-tab");
+        if (!tab) return;
+        const newSrc = tab.getAttribute("data-src");
+        const newLive = tab.getAttribute("data-live");
+        const dashKey = tab.getAttribute("data-dash");
+        if (!newSrc || !showcaseFrame) return;
+        if (tab.classList.contains("is-active")) return;
+
+        // Update active tab styling
+        switcher.querySelectorAll(".dash-tab").forEach(function (t) {
+          t.classList.remove("is-active");
+          t.setAttribute("aria-selected", "false");
+        });
+        tab.classList.add("is-active");
+        tab.setAttribute("aria-selected", "true");
+
+        // Update masked URL bar
+        if (urlText) {
+          const urlMap = {
+            "executive": "insight-analytics.ca/dashboards/executive-operating",
+            "payments": "insight-analytics.ca/dashboards/customer-payments",
+            "ebill": "insight-analytics.ca/dashboards/ebill-performance"
+          };
+          urlText.textContent = urlMap[dashKey] || "insight-analytics.ca/dashboards/executive-operating";
+        }
+
+        // Show loading overlay with the new label
+        const labelMap = {
+          "executive": "Loading executive dashboard…",
+          "payments": "Loading customer payments dashboard…",
+          "ebill": "Loading eBill performance dashboard…"
+        };
+        showLoading(labelMap[dashKey] || "Loading dashboard…");
+
+        // Swap iframe src
+        showcaseFrame.setAttribute("data-src", newSrc);
+        showcaseFrame.setAttribute("src", newSrc);
+
+        // Update fallback link + reset timer state
+        if (fallbackLink && newLive) fallbackLink.setAttribute("href", newLive);
+        resetFallbackState();
       });
-      tab.classList.add("is-active");
-      tab.setAttribute("aria-selected", "true");
-
-      // Swap the screenshot (cache-bust so the browser doesn't show a stale
-      // version after we redeploy)
-      const cacheBust = newImg + (newImg.indexOf("?") >= 0 ? "&" : "?") + "v=20261005";
-      showcaseImg.src = cacheBust;
-      showcaseImg.setAttribute("data-dash", tab.getAttribute("data-dash"));
-
-      // Update the masked URL in the browser chrome bar
-      if (urlText && newUrlText) urlText.textContent = newUrlText;
-
-      // Update the "Open live dashboard" CTA to point at the new dashboard
-      if (fallbackLink && newLive) fallbackLink.setAttribute("href", newLive);
-    });
+    }
   }
 
   /* ------------------------------------------------------------------
