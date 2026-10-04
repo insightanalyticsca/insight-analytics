@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v2.6.0-20261005-local-mirror';
+const VERSION = 'v2.7.0-20261005-static-screenshots';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 

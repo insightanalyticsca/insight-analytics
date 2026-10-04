@@ -192,167 +192,57 @@
   }
 
   /* ------------------------------------------------------------------
-   * Live dashboard showcase — switcher + iframe lazy-load
-   * The mobile placeholder fallback has been removed; the iframe is now
-   * visible on all breakpoints (just shorter on mobile).
+   * Dashboard showcase — image-based switcher (no iframe, no SW issues)
+   *
+   * The dashboard preview is now a static PNG screenshot of the live
+   * dashboard, rendered headlessly and saved under
+   * /dashboards-preview/screenshots/. This bypasses every iOS Safari/PWA
+   * iframe loading issue — images always load.
+   *
+   * Each switcher tab carries:
+   *   data-img       → path to the screenshot PNG (swapped into <img>)
+   *   data-live      → URL of the live interactive dashboard (opens in new tab)
+   *   data-url-text  → masked URL shown in the browser chrome bar
    * ------------------------------------------------------------------ */
-
-  // Lazy-load the iframe when the showcase section is near viewport.
-  // Works on all breakpoints (was previously gated to >=768px, but the
-  // mobile fallback has been removed so the iframe is now the only view).
-  const showcaseFrame = document.getElementById("dashboard-iframe");
+  const showcaseImg = document.getElementById("dashboard-img");
   const showcaseSection = document.getElementById("dashboard");
-  if (
-    showcaseFrame &&
-    showcaseSection &&
-    "IntersectionObserver" in window
-  ) {
-    const src = showcaseFrame.getAttribute("data-src");
-    if (src) showcaseFrame.removeAttribute("src");
-    const fio = new IntersectionObserver(
-      function (entries, observer) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting && src) {
-            showcaseFrame.setAttribute("src", src);
-            observer.unobserve(showcaseSection);
-          }
-        });
-      },
-      { rootMargin: "200px 0px 200px 0px" }
-    );
-    fio.observe(showcaseSection);
-  }
+  const fallbackLink = document.getElementById("browserFallback");
+  const urlText = document.getElementById("browser-url-text");
+  const switcher = document.getElementById("dashboardSwitcher");
 
-  // Hide the browser loading overlay once the iframe reports it is loaded.
-  const loadingOverlay = document.getElementById("browser-loading");
-  if (showcaseFrame && loadingOverlay) {
-    function hideLoading() {
-      loadingOverlay.style.opacity = "0";
-      loadingOverlay.style.transition = "opacity 0.4s ease";
-      setTimeout(function () {
-        loadingOverlay.style.display = "none";
-      }, 420);
-    }
-    function showLoading(label) {
-      loadingOverlay.style.display = "";
-      loadingOverlay.style.opacity = "1";
-      loadingOverlay.style.transition = "opacity 0.2s ease";
-      const lbl = document.getElementById("browser-loading-label");
-      if (lbl && label) lbl.textContent = label;
-    }
-    showcaseFrame.addEventListener("load", hideLoading);
-    showcaseFrame.addEventListener("error", hideLoading);
+  if (switcher && showcaseImg) {
+    switcher.addEventListener("click", function (e) {
+      const tab = e.target.closest(".dash-tab");
+      if (!tab) return;
 
-    /* ------------------------------------------------------------------
-     * Stuck-loading fallback — if the iframe takes too long to render
-     * (which happens on iOS Safari + PWA where the dashboard's service
-     * worker inside the iframe interferes with the data fetch), surface
-     * an "Open in new tab" link so the user can still reach the dashboard.
-     * The iframe is sandboxed (no allow-same-origin) to block SW
-     * registration in the first place, but if the dashboard's data fetch
-     * still hangs (network slow, CDN issue, etc.), this fallback kicks in.
-     * ------------------------------------------------------------------ */
-    const fallbackLink = document.getElementById("browserFallback");
-    let loadedSuccessfully = false;
-    let fallbackTimer = null;
-    let safetyTimer = null;
+      // Already active — no-op
+      if (tab.classList.contains("is-active")) return;
 
-    function showFallback() {
-      if (loadedSuccessfully || !fallbackLink) return;
-      hideLoading();
-      // Reveal fallback link + dim the iframe so the user sees the CTA
-      fallbackLink.hidden = false;
-      if (showcaseFrame) {
-        showcaseFrame.style.opacity = "0.25";
-        showcaseFrame.style.transition = "opacity 0.4s ease";
-      }
-    }
-    function markLoaded() {
-      loadedSuccessfully = true;
-      if (fallbackLink) fallbackLink.hidden = true;
-      if (showcaseFrame) showcaseFrame.style.opacity = "";
-      hideLoading();
-    }
-    function resetFallbackState() {
-      loadedSuccessfully = false;
-      if (fallbackLink) fallbackLink.hidden = true;
-      if (showcaseFrame) showcaseFrame.style.opacity = "";
-      // (Re)arm the fallback timer — fires if the new dashboard hangs
-      if (fallbackTimer) clearTimeout(fallbackTimer);
-      if (safetyTimer) clearTimeout(safetyTimer);
-      fallbackTimer = setTimeout(showFallback, 12000);
-      safetyTimer = setTimeout(hideLoading, 15000);
-    }
-    // Real load — replace hideLoading with markLoaded so the fallback can be suppressed
-    showcaseFrame.removeEventListener("load", hideLoading);
-    showcaseFrame.addEventListener("load", markLoaded);
-    // Arm initial timers
-    fallbackTimer = setTimeout(showFallback, 12000);
-    safetyTimer = setTimeout(hideLoading, 15000);
+      const newImg = tab.getAttribute("data-img");
+      const newLive = tab.getAttribute("data-live");
+      const newUrlText = tab.getAttribute("data-url-text");
+      if (!newImg) return;
 
-    // Expose resetFallbackState so the switcher handler (below) can call it
-    // when the user picks a different dashboard.
-    showcaseFrame._resetFallbackState = resetFallbackState;
-    showcaseFrame._updateFallbackUrl = function (url) {
-      if (fallbackLink && url) fallbackLink.setAttribute("href", url);
-    };
-
-    /* ------------------------------------------------------------------
-     * Dashboard switcher — click a tab to swap the iframe src + URL bar
-     * ------------------------------------------------------------------ */
-    const switcher = document.getElementById("dashboardSwitcher");
-    const urlText = document.getElementById("browser-url-text");
-    if (switcher) {
-      switcher.addEventListener("click", function (e) {
-        const tab = e.target.closest(".dash-tab");
-        if (!tab) return;
-        const newSrc = tab.getAttribute("data-src");
-        const dashKey = tab.getAttribute("data-dash");
-        if (!newSrc || !showcaseFrame) return;
-
-        // Already active — no-op
-        if (tab.classList.contains("is-active")) return;
-
-        // Update active tab styling
-        switcher.querySelectorAll(".dash-tab").forEach(function (t) {
-          t.classList.remove("is-active");
-          t.setAttribute("aria-selected", "false");
-        });
-        tab.classList.add("is-active");
-        tab.setAttribute("aria-selected", "true");
-
-        // Update URL bar text — masked to show insight-analytics.ca/dashboards/<tab>
-        // instead of the actual GitHub Pages URL (which is in the data-src attribute
-        // but shouldn't be visible to users)
-        if (urlText) {
-          const urlMap = {
-            "executive": "insight-analytics.ca/dashboards/executive-operating",
-            "payments": "insight-analytics.ca/dashboards/customer-payments",
-            "ebill": "insight-analytics.ca/dashboards/ebill-performance"
-          };
-          urlText.textContent = urlMap[dashKey] || "insight-analytics.ca/dashboards/executive-operating";
-        }
-
-        // Show loading overlay with the new label
-        const labelMap = {
-          "executive": "Loading executive dashboard…",
-          "payments": "Loading customer payments dashboard…",
-          "ebill": "Loading eBill performance dashboard…"
-        };
-        showLoading(labelMap[dashKey] || "Loading dashboard…");
-
-        // Swap iframe src — using a cache-busting query param forces a fresh
-        // load (some browsers won't fire 'load' again if src is identical to
-        // what it was before, but since each dashboard has a different URL
-        // this is mostly belt-and-suspenders)
-        showcaseFrame.setAttribute("data-src", newSrc);
-        showcaseFrame.setAttribute("src", newSrc);
-
-        // Reset fallback state + sync the fallback URL for the new dashboard
-        if (showcaseFrame._resetFallbackState) showcaseFrame._resetFallbackState();
-        if (showcaseFrame._updateFallbackUrl) showcaseFrame._updateFallbackUrl(newSrc);
+      // Update active tab styling
+      switcher.querySelectorAll(".dash-tab").forEach(function (t) {
+        t.classList.remove("is-active");
+        t.setAttribute("aria-selected", "false");
       });
-    }
+      tab.classList.add("is-active");
+      tab.setAttribute("aria-selected", "true");
+
+      // Swap the screenshot (cache-bust so the browser doesn't show a stale
+      // version after we redeploy)
+      const cacheBust = newImg + (newImg.indexOf("?") >= 0 ? "&" : "?") + "v=20261005";
+      showcaseImg.src = cacheBust;
+      showcaseImg.setAttribute("data-dash", tab.getAttribute("data-dash"));
+
+      // Update the masked URL in the browser chrome bar
+      if (urlText && newUrlText) urlText.textContent = newUrlText;
+
+      // Update the "Open live dashboard" CTA to point at the new dashboard
+      if (fallbackLink && newLive) fallbackLink.setAttribute("href", newLive);
+    });
   }
 
   /* ------------------------------------------------------------------

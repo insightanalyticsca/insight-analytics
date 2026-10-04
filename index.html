@@ -551,24 +551,24 @@
       <div class="container">
         <div class="section-head reveal">
           <span class="eyebrow"><span class="dot"></span> See It In Action</span>
-          <h2 class="section-title" id="dash-title">The Executive Operating Dashboard — <span class="grad">live, interactive</span></h2>
-          <p class="section-sub">The dashboard below is a live, interactive demo. Try clicking through the charts. The AI Brief card streams a real-time analysis from the data.</p>
+          <h2 class="section-title" id="dash-title">The Executive Operating Dashboard — <span class="grad">in production</span></h2>
+          <p class="section-sub">Preview each dashboard below — tap a tab to switch. The "Open live dashboard" link opens the fully interactive version with chart hover, theme toggle, and AI brief.</p>
         </div>
 
-        <!-- Dashboard switcher — pick which live dashboard to preview.
-             NOTE: IT Service Health tab removed — its data file (its-service-health.json)
-             doesn't exist on the source repo, so the iframe shows "data failed to load".
-             Re-add when the data is deployed. -->
-        <div class="dashboard-switcher reveal" id="dashboardSwitcher" role="tablist" aria-label="Choose a live dashboard to preview">
-          <button class="dash-tab is-active" type="button" role="tab" aria-selected="true" data-dash="executive" data-src="./dashboards-preview/custom-html/executive-chatters-portfolio.html" title="Retail chain — revenue mix, capacity heatmap, store performance">
+        <!-- Dashboard switcher — pick which dashboard preview to show.
+             Each tab swaps the screenshot in the browser mockup below.
+             The "Open live dashboard" link below the screenshot opens the
+             fully interactive version in a new tab. -->
+        <div class="dashboard-switcher reveal" id="dashboardSwitcher" role="tablist" aria-label="Choose a dashboard to preview">
+          <button class="dash-tab is-active" type="button" role="tab" aria-selected="true" data-dash="executive" data-img="./dashboards-preview/screenshots/markets.png" data-live="https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html" data-url-text="insight-analytics.ca/dashboards/executive-operating" title="Retail chain — revenue mix, capacity heatmap, store performance">
             <i class="fas fa-chart-line" aria-hidden="true"></i>
             <span>Executive Operating</span>
           </button>
-          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="payments" data-src="./dashboards-preview/custom-html/executive-customer-payments.html" title="Finance — daily + monthly customer payments, cash cycle">
+          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="payments" data-img="./dashboards-preview/screenshots/finance.png" data-live="https://insightanalyticsca.github.io/dashboards/custom-html/executive-customer-payments.html" data-url-text="insight-analytics.ca/dashboards/customer-payments" title="Finance — daily + monthly customer payments, cash cycle">
             <i class="fas fa-wallet" aria-hidden="true"></i>
             <span>Customer Payments</span>
           </button>
-          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="ebill" data-src="./dashboards-preview/custom-html/executive-ebill-performance.html" title="Customer experience — eBill adoption + delivery performance">
+          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="ebill" data-img="./dashboards-preview/screenshots/ebill.png" data-live="https://insightanalyticsca.github.io/dashboards/custom-html/executive-ebill-performance.html" data-url-text="insight-analytics.ca/dashboards/ebill-performance" title="Customer experience — eBill adoption + delivery performance">
             <i class="fas fa-file-invoice" aria-hidden="true"></i>
             <span>eBill Performance</span>
           </button>
@@ -590,34 +590,32 @@
             </button>
           </div>
           <div class="browser-frame">
-            <div class="browser-loading" id="browser-loading">
-              <div class="spinner" aria-hidden="true"></div>
-              <span id="browser-loading-label">Loading executive dashboard…</span>
-            </div>
-            <iframe
-              id="dashboard-iframe"
-              data-src="./dashboards-preview/custom-html/executive-chatters-portfolio.html"
-              title="Live dashboard — interactive demo"
+            <img
+              id="dashboard-img"
+              class="dashboard-img"
+              src="./dashboards-preview/screenshots/markets.png"
+              data-dash="executive"
+              alt="Executive Operating Dashboard — preview of the live interactive dashboard with revenue mix, capacity heatmap, and store performance"
               loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              allow="fullscreen"
-            ></iframe>
+              decoding="async"
+              width="1440"
+              height="1267"
+            >
             <a
               class="browser-fallback"
               id="browserFallback"
               href="https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html"
               target="_blank"
               rel="noopener noreferrer"
-              hidden
             >
               <i class="fas fa-external-link-alt" aria-hidden="true"></i>
-              <span>Open the live dashboard in a new tab</span>
-              <small>If the preview doesn't render above, tap here to view the full dashboard.</small>
+              <span>Open the live interactive dashboard</span>
+              <small>Tap to open in a new tab — fully interactive with chart hover, theme toggle, and AI brief.</small>
             </a>
           </div>
         </div>
 
-        <p class="dashboard-caption reveal"><b>Components already in production.</b> Customized to your data, your KPIs, your workflows.</p>
+        <p class="dashboard-caption reveal"><b>Components already in production.</b> Customized to your data, your KPIs, your workflows. <a href="https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html" target="_blank" rel="noopener noreferrer">Open the live dashboard →</a></p>
       </div>
     </section>
 
