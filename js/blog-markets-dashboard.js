@@ -53,9 +53,13 @@
         </div>
 
         <div class="bmd-chart-grid">
-          <div class="bmd-chart-card bmd-wide">
+          <div class="bmd-chart-card bmd-wide-2">
             <div class="bmd-chart-title"><i class="fas fa-chart-line"></i> Index &amp; Crypto Trends <span class="bmd-src" id="bmd-src-trends">loading…</span></div>
             <div class="bmd-chart-body bmd-tall" id="bmd-chart-trends"></div>
+          </div>
+          <div class="bmd-chart-card">
+            <div class="bmd-chart-title"><i class="fas fa-globe"></i> Currency Heatmap <span class="bmd-src" id="bmd-src-fx">loading…</span></div>
+            <div class="bmd-chart-body bmd-tall" id="bmd-chart-fx"></div>
           </div>
           <div class="bmd-chart-card">
             <div class="bmd-chart-title"><i class="fas fa-th"></i> Sector Performance <span class="bmd-src">computed</span></div>
@@ -68,10 +72,6 @@
           <div class="bmd-chart-card">
             <div class="bmd-chart-title"><i class="fas fa-oil-can"></i> Futures Curve <span class="bmd-src">computed</span></div>
             <div class="bmd-chart-body" id="bmd-chart-futures"></div>
-          </div>
-          <div class="bmd-chart-card bmd-wide">
-            <div class="bmd-chart-title"><i class="fas fa-globe"></i> Currency Heatmap <span class="bmd-src" id="bmd-src-fx">loading…</span></div>
-            <div class="bmd-chart-body" id="bmd-chart-fx"></div>
           </div>
         </div>
 
