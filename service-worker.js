@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v2.3.0-20261004-blog-dashboard-builder';
+const VERSION = 'v2.4.0-20261004-markets-dashboard';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 

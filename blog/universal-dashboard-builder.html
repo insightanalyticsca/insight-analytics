@@ -159,14 +159,15 @@
     <p>Each dashboard is built from the same platform — the same rendering engine, the same AI brief card, the same theme system, the same contact bot — but tailored to the client's specific data, KPIs, and operating model.</p>
 
     <h2>See It Live</h2>
-    <p>The dashboard below is a live, interactive demo. Try clicking through the charts. Switch between the four dashboards using the tabs above the browser frame.</p>
+    <p>The dashboard below is a live, interactive demo built with the same platform — ECharts rendering, AI Brief streaming, dark theme, responsive layout. This is a <strong>markets & finance dashboard</strong>: indexes, sector heatmap, crypto, futures, currency pairs, and an AI narrative that streams from a language model grounded in the dashboard's data.</p>
+    <p>Every chart is clickable. The AI Brief at the bottom streams in real-time — 4 sections: What Happened, Why It Matters, What to Expect, What to Do. Click the expand icon for fullscreen.</p>
 
-    <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live dashboard demo" id="browserMock" style="margin: 32px 0;">
+    <div class="browser-mock reveal reveal-scale" role="figure" aria-label="Live markets dashboard demo" id="browserMock" style="margin: 32px 0;">
       <div class="browser-bar">
         <div class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="browser-url">
           <i class="fas fa-lock" aria-hidden="true"></i>
-          <span id="browser-url-text">insight-analytics.ca/dashboards/executive-operating</span>
+          <span id="browser-url-text">insight-analytics.ca/dashboards/markets-finance</span>
         </div>
         <div class="browser-actions" aria-hidden="true">
           <i class="fas fa-rotate-right"></i>
@@ -176,17 +177,37 @@
           <i class="fas fa-expand"></i>
         </button>
       </div>
-      <div class="browser-frame" style="height: 720px;">
+      <div class="browser-frame" style="height: 920px;">
         <iframe
-          src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-chatters-portfolio.html"
-          title="Executive Operating Dashboard — live interactive demo"
-          style="width: 100%; height: 100%; border: 0; display: block;"
+          src="https://insightanalyticsca.github.io/markets-dashboard/"
+          title="Markets & Finance Dashboard — live interactive demo"
+          style="width: 100%; height: 100%; border: 0; display: block; min-height: 700px;"
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
           allow="fullscreen"
+          id="markets-iframe"
         ></iframe>
       </div>
     </div>
+
+    <p style="text-align: center; margin-top: 16px;">
+      <a href="https://insightanalyticsca.github.io/markets-dashboard/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-lg" style="text-decoration: none;">
+        <i class="fas fa-up-right-from-square" aria-hidden="true"></i>
+        <span class="btn-text">Open the Markets Dashboard in a new tab</span>
+      </a>
+    </p>
+
+    <h3>What's in this dashboard</h3>
+    <ul>
+      <li><strong>6 KPI tiles:</strong> S&P 500, NASDAQ, Dow Jones, TSX, BTC/USD, Gold — each with value, change %, direction-aware color coding</li>
+      <li><strong>Index trend chart:</strong> 30-day S&P 500 + NASDAQ close prices with volume bars (combo chart, dual Y-axis)</li>
+      <li><strong>Sector performance heatmap:</strong> 11 sectors × 3 timeframes (1D, 1W, 1M) — red = negative, green = positive</li>
+      <li><strong>Crypto comparison:</strong> BTC vs ETH vs SOL, 90-day trend lines</li>
+      <li><strong>Futures curve:</strong> Crude oil, natural gas, gold, silver, copper, wheat, corn, soybean — bar chart with $ values</li>
+      <li><strong>Currency heatmap:</strong> USD pairs (EUR, GBP, JPY, CAD, AUD, CHF, CNY) — daily change %</li>
+      <li><strong>AI Market Brief:</strong> 4-section narrative streaming from Groq (qwen3.8-27b) — What Happened, Why It Matters, What to Expect, What to Do</li>
+    </ul>
+    <p>This dashboard was built using the same dashboard builder platform as the utility, retail, and IT operations dashboards — same ECharts engine, same AI Brief pattern, same theme system. Different data, same machinery.</p>
 
     <h2>How It Works</h2>
     <p>The platform is built as three layers:</p>
