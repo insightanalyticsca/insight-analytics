@@ -228,6 +228,42 @@
     document.head.insertAdjacentHTML('beforeend', css);
   }
 
+  // Netlify markets-proxy endpoint (server-side fetch of Yahoo + Frankfurter)
+  var MARKETS_PROXY = 'https://startling-belekoy-b0ec70.netlify.app/markets-proxy';
+
+  // ─── Fetch LIVE indices + gold via Netlify proxy (Yahoo server-side) ───
+  async function fetchIndices() {
+    try {
+      var symbols = ['^GSPC', '^IXIC', '^DJI', '^GSPTSE', 'GC=F'];
+      var symList = symbols.map(function (s) { return encodeURIComponent(s); }).join(',');
+      var r = await fetch(MARKETS_PROXY + '?symbols=' + symList);
+      if (!r.ok) return false;
+      var d = await r.json();
+      if (!d || !d.quotes) return false;
+      var keyMap = { '^GSPC': 'sp500', '^IXIC': 'nasdaq', '^DJI': 'dow', '^GSPTSE': 'tsx', 'GC=F': 'gold' };
+      var anyOk = false;
+      d.quotes.forEach(function (q) {
+        if (q.price != null && keyMap[q.symbol]) {
+          liveData[keyMap[q.symbol]] = { price: q.price, change: q.changePct };
+          anyOk = true;
+        }
+      });
+      return anyOk;
+    } catch (e) { return false; }
+  }
+
+  // ─── Fetch LIVE FX via Netlify proxy (Frankfurter server-side) ─────────
+  async function fetchFX() {
+    try {
+      var r = await fetch(MARKETS_PROXY + '?fx=1');
+      if (!r.ok) return false;
+      var d = await r.json();
+      if (!d || !d.rates) return false;
+      liveData.fxRates = d.rates;
+      return true;
+    } catch (e) { return false; }
+  }
+
   // ─── Fetch LIVE crypto from Binance ──────────────────────────────────────
   async function fetchCrypto() {
     try {
@@ -273,7 +309,10 @@
     var grid = document.getElementById('bmd-kpi-grid');
     if (grid) grid.innerHTML = html;
     var status = document.getElementById('bmd-live-status');
-    if (status) status.textContent = binanceOk ? 'Live: Binance crypto · indices demo' : 'Loading live data…';
+    // Status is now set in boot() based on what actually loaded (indices/crypto/FX)
+    if (status && !status.textContent.startsWith('Live:')) {
+      status.textContent = binanceOk ? 'Live: Binance crypto' : 'Demo data';
+    }
   }
 
   // ─── Render charts (ECharts) ─────────────────────────────────────────────
@@ -483,14 +522,32 @@
     renderFutures();
     renderFX();
 
-    // Fetch live Binance data
-    var binanceOk = false;
+    // Fetch all live data sources in parallel: Binance + Netlify proxy (indices + FX)
+    var binanceOk = false, indicesOk = false, fxOk = false;
     try { binanceOk = await fetchCrypto(); } catch (e) {}
+    try { indicesOk = await fetchIndices(); } catch (e) {}
+    try { fxOk = await fetchFX(); } catch (e) {}
 
-    // Re-render KPIs + crypto chart with live data
+    // Build status string showing exactly what's live
+    var liveSources = [];
+    if (indicesOk) liveSources.push('indices');
+    if (binanceOk) liveSources.push('crypto');
+    if (fxOk) liveSources.push('FX');
+    var statusText = liveSources.length ? ('Live: ' + liveSources.join(' · ')) : 'Demo data';
+    var statusEl = document.getElementById('bmd-live-status');
+    if (statusEl) statusEl.textContent = statusText;
+
+    // Re-render KPIs with live data
     renderKPIs(binanceOk);
+
+    // Re-render FX chart with live data (if Frankfurter succeeded via proxy)
+    if (fxOk) {
+      if (charts.fx) { try { charts.fx.dispose(); } catch (_) {} }
+      renderFX();
+    }
+
+    // Re-render trends + crypto chart with live BTC data
     if (binanceOk) {
-      // Re-render trends + crypto chart with live BTC data
       if (charts.trends) { try { charts.trends.dispose(); } catch (_) {} renderTrends(); }
       if (charts.crypto) { try { charts.crypto.dispose(); } catch (_) {} }
       renderCrypto();
