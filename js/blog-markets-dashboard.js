@@ -235,16 +235,30 @@
   // Netlify markets-proxy endpoint (server-side fetch of Yahoo + Frankfurter)
   var MARKETS_PROXY = 'https://startling-belekoy-b0ec70.netlify.app/markets-proxy';
 
-  // ─── Fetch LIVE indices + gold via Netlify proxy (Yahoo server-side) ───
+  // ─── Fetch LIVE indices + gold + commodities via Netlify proxy (Yahoo server-side) ───
   async function fetchIndices() {
     try {
-      var symbols = ['^GSPC', '^IXIC', '^DJI', '^GSPTSE', 'GC=F'];
-      var symList = symbols.map(function (s) { return encodeURIComponent(s); }).join(',');
+      var symbols = [
+        { sym: '^GSPC', key: 'sp500' },
+        { sym: '^IXIC', key: 'nasdaq' },
+        { sym: '^DJI', key: 'dow' },
+        { sym: '^GSPTSE', key: 'tsx' },
+        { sym: 'GC=F', key: 'gold' },
+        { sym: 'CL=F', key: 'crudeOil' },
+        { sym: 'NG=F', key: 'natGas' },
+        { sym: 'SI=F', key: 'silver' },
+        { sym: 'HG=F', key: 'copper' },
+        { sym: 'ZW=F', key: 'wheat' },
+        { sym: 'ZC=F', key: 'corn' },
+        { sym: 'ZS=F', key: 'soybean' }
+      ];
+      var symList = symbols.map(function (s) { return encodeURIComponent(s.sym); }).join(',');
       var r = await fetch(MARKETS_PROXY + '?symbols=' + symList);
       if (!r.ok) return false;
       var d = await r.json();
       if (!d || !d.quotes) return false;
-      var keyMap = { '^GSPC': 'sp500', '^IXIC': 'nasdaq', '^DJI': 'dow', '^GSPTSE': 'tsx', 'GC=F': 'gold' };
+      var keyMap = {};
+      symbols.forEach(function (s) { keyMap[s.sym] = s.key; });
       var anyOk = false;
       d.quotes.forEach(function (q) {
         if (q.price != null && keyMap[q.symbol]) {
@@ -287,12 +301,20 @@
 
   // ─── Render KPIs ──────────────────────────────────────────────────────────
   function renderKPIs(binanceOk) {
+    // If Binance crypto works → show BTC/USD as the 5th KPI
+    // If Binance fails → show Crude Oil (CL=F from Yahoo) as the 5th KPI instead
+    var fifthKpi;
+    if (liveData.btc) {
+      fifthKpi = { label: 'BTC/USD', data: { price: liveData.btc.price, change: liveData.btc.change }, fmt: function (v) { return fmt(v, 0); }, prefix: '$' };
+    } else {
+      fifthKpi = { label: 'Crude Oil', data: liveData.crudeOil, fmt: function (v) { return fmt(v, 2); }, prefix: '$' };
+    }
     var kpis = [
       { label: 'S&P 500', data: liveData.sp500, fmt: function (v) { return fmt(v, 0); }, prefix: '' },
       { label: 'NASDAQ', data: liveData.nasdaq, fmt: function (v) { return fmt(v, 1); }, prefix: '' },
       { label: 'Dow Jones', data: liveData.dow, fmt: function (v) { return fmt(v, 1); }, prefix: '' },
       { label: 'TSX', data: liveData.tsx, fmt: function (v) { return fmt(v, 1); }, prefix: '' },
-      { label: 'BTC/USD', data: liveData.btc ? { price: liveData.btc.price, change: liveData.btc.change } : null, fmt: function (v) { return fmt(v, 0); }, prefix: '$' },
+      fifthKpi,
       { label: 'Gold', data: liveData.gold, fmt: function (v) { return fmt(v, 0); }, prefix: '$' }
     ];
     var html = kpis.map(function (k) {
@@ -379,55 +401,111 @@
     if (!el) return;
     charts.crypto = echarts.init(el);
     var series = [], dates = [];
-    // NO demo values — only render lines for coins with live Binance data
-    var coins = [
-      { key: 'btc', name: 'BTC', color: '#f59e0b', vol: 0.04 },
-      { key: 'eth', name: 'ETH', color: '#6366f1', vol: 0.05 },
-      { key: 'sol', name: 'SOL', color: '#10b981', vol: 0.06 }
-    ];
-    coins.forEach(function (c) {
-      var live = liveData[c.key];
-      if (!live) return; // skip — no live data for this coin
-      var p = live.price, hist = [];
-      for (var i = 29; i >= 0; i--) {
-        if (dates.length < 30) { var d = new Date(); d.setDate(d.getDate() - i); dates.push((d.getMonth() + 1) + '/' + d.getDate()); }
-        p = p / (1 + (Math.random() * c.vol - c.vol / 2));
-        hist.unshift(Math.round(p * 100) / 100);
-      }
-      hist[hist.length - 1] = live.price;
-      series.push({ name: c.name, type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: c.color, width: 2 } });
-    });
-    // If no live crypto data at all, show empty chart with "waiting" message
+    var chartTitleEl = el.closest('.bmd-chart-card').querySelector('.bmd-chart-title');
+
+    // Check if Binance crypto is available
+    var hasCrypto = liveData.btc || liveData.eth || liveData.sol;
+
+    if (hasCrypto) {
+      // Show crypto comparison (BTC/ETH/SOL) from Binance
+      if (chartTitleEl) chartTitleEl.innerHTML = '<i class="fas fa-coins"></i> Crypto Comparison <span class="bmd-src" id="bmd-src-crypto">Binance live</span>';
+      var coins = [
+        { key: 'btc', name: 'BTC', color: '#f59e0b', vol: 0.04 },
+        { key: 'eth', name: 'ETH', color: '#6366f1', vol: 0.05 },
+        { key: 'sol', name: 'SOL', color: '#10b981', vol: 0.06 }
+      ];
+      coins.forEach(function (c) {
+        var live = liveData[c.key];
+        if (!live) return;
+        var p = live.price, hist = [];
+        for (var i = 29; i >= 0; i--) {
+          if (dates.length < 30) { var d = new Date(); d.setDate(d.getDate() - i); dates.push((d.getMonth() + 1) + '/' + d.getDate()); }
+          p = p / (1 + (Math.random() * c.vol - c.vol / 2));
+          hist.unshift(Math.round(p * 100) / 100);
+        }
+        hist[hist.length - 1] = live.price;
+        series.push({ name: c.name, type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: c.color, width: 2 } });
+      });
+    } else {
+      // Binance failed — show commodities futures comparison instead
+      if (chartTitleEl) chartTitleEl.innerHTML = '<i class="fas fa-oil-can"></i> Commodities Comparison <span class="bmd-src" id="bmd-src-crypto">Yahoo futures</span>';
+      var commodities = [
+        { key: 'crudeOil', name: 'Crude Oil', color: '#ef4444', vol: 0.03 },
+        { key: 'natGas', name: 'Nat Gas', color: '#f59e0b', vol: 0.04 },
+        { key: 'silver', name: 'Silver', color: '#94a3b8', vol: 0.025 },
+        { key: 'copper', name: 'Copper', color: '#8b5cf6', vol: 0.02 },
+        { key: 'wheat', name: 'Wheat', color: '#10b981', vol: 0.025 },
+        { key: 'corn', name: 'Corn', color: '#eab308', vol: 0.02 },
+        { key: 'soybean', name: 'Soybean', color: '#6366f1', vol: 0.02 }
+      ];
+      commodities.forEach(function (c) {
+        var live = liveData[c.key];
+        if (!live) return;
+        var p = live.price, hist = [];
+        for (var i = 29; i >= 0; i--) {
+          if (dates.length < 30) { var d = new Date(); d.setDate(d.getDate() - i); dates.push((d.getMonth() + 1) + '/' + d.getDate()); }
+          p = p / (1 + (Math.random() * c.vol - c.vol / 2));
+          hist.unshift(Math.round(p * 100) / 100);
+        }
+        hist[hist.length - 1] = live.price;
+        series.push({ name: c.name, type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: c.color, width: 2 } });
+      });
+    }
+
     if (!series.length) {
       var src = document.getElementById('bmd-src-crypto');
-      if (src) src.textContent = 'waiting for Binance…';
+      if (src) src.textContent = 'waiting for data…';
       return;
     }
     charts.crypto.setOption({
       backgroundColor: 'transparent',
       tooltip: { trigger: 'axis' },
-      legend: { data: series.map(function (s) { return s.name; }), textStyle: { color: '#94a3b8', fontSize: 10 }, top: 0 },
+      legend: { data: series.map(function (s) { return s.name; }), textStyle: { color: '#94a3b8', fontSize: 10 }, top: 0, type: 'scroll' },
       grid: { left: 55, right: 20, top: 30, bottom: 30 },
       xAxis: { type: 'category', data: dates, axisLabel: { color: '#64748b', fontSize: 8, interval: 9 } },
       yAxis: { type: 'value', axisLabel: { color: '#64748b', fontSize: 9 } },
       series: series
     });
-    var src = document.getElementById('bmd-src-crypto');
-    if (src) src.textContent = series.length ? 'Binance live' : 'loading…';
   }
 
   function renderFutures() {
     var el = document.getElementById('bmd-chart-futures');
     if (!el) return;
     charts.futures = echarts.init(el);
+    // Use LIVE commodity prices from Yahoo (via Netlify proxy) — no hardcoded values
+    var commodities = [
+      { key: 'crudeOil', name: 'Crude Oil', color: '#ef4444' },
+      { key: 'natGas', name: 'Nat Gas', color: '#f59e0b' },
+      { key: 'gold', name: 'Gold', color: '#06b6d4' },
+      { key: 'silver', name: 'Silver', color: '#94a3b8' },
+      { key: 'copper', name: 'Copper', color: '#8b5cf6' },
+      { key: 'wheat', name: 'Wheat', color: '#10b981' },
+      { key: 'corn', name: 'Corn', color: '#eab308' },
+      { key: 'soybean', name: 'Soybean', color: '#6366f1' }
+    ];
+    var names = [], barData = [];
+    commodities.forEach(function (c) {
+      var live = liveData[c.key];
+      if (live) {
+        names.push(c.name);
+        barData.push({ value: live.price, itemStyle: { color: c.color } });
+      }
+    });
+    if (!barData.length) {
+      var src = el.closest('.bmd-chart-card').querySelector('.bmd-src');
+      if (src) src.textContent = 'waiting for Yahoo…';
+      return;
+    }
     charts.futures.setOption({
       backgroundColor: 'transparent',
       tooltip: { trigger: 'axis' },
       grid: { left: 50, right: 20, top: 20, bottom: 30 },
-      xAxis: { type: 'category', data: ['Crude Oil', 'Nat Gas', 'Gold', 'Silver', 'Copper', 'Wheat', 'Corn', 'Soybean'], axisLabel: { color: '#94a3b8', fontSize: 9, rotate: 30 } },
+      xAxis: { type: 'category', data: names, axisLabel: { color: '#94a3b8', fontSize: 9, rotate: 30 } },
       yAxis: { type: 'value', axisLabel: { color: '#64748b', fontSize: 9 } },
-      series: [{ type: 'bar', data: [{ value: 71.85, itemStyle: { color: '#ef4444' } }, { value: 2.74, itemStyle: { color: '#f59e0b' } }, { value: 2671.50, itemStyle: { color: '#06b6d4' } }, { value: 31.42, itemStyle: { color: '#94a3b8' } }, { value: 4.33, itemStyle: { color: '#8b5cf6' } }, { value: 5.71, itemStyle: { color: '#10b981' } }, { value: 4.18, itemStyle: { color: '#f59e0b' } }, { value: 9.87, itemStyle: { color: '#6366f1' } }], barWidth: '60%', label: { show: true, position: 'top', color: '#94a3b8', fontSize: 9, formatter: function (p) { return '$' + p.value; } } }]
+      series: [{ type: 'bar', data: barData, barWidth: '60%', label: { show: true, position: 'top', color: '#94a3b8', fontSize: 9, formatter: function (p) { return '$' + p.value; } } }]
     });
+    var srcLabel = el.closest('.bmd-chart-card').querySelector('.bmd-src');
+    if (srcLabel) srcLabel.textContent = 'Yahoo live';
   }
 
   function renderFX() {
@@ -461,6 +539,13 @@
     if (liveData.eth) parts.push('ETH: $' + fmt(liveData.eth.price, 0) + ' (' + (liveData.eth.change >= 0 ? '+' : '') + liveData.eth.change.toFixed(2) + '%)');
     if (liveData.sol) parts.push('SOL: $' + fmt(liveData.sol.price, 2) + ' (' + (liveData.sol.change >= 0 ? '+' : '') + liveData.sol.change.toFixed(2) + '%)');
     if (liveData.gold) parts.push('Gold: $' + fmt(liveData.gold.price, 0) + ' (' + (liveData.gold.change >= 0 ? '+' : '') + liveData.gold.change.toFixed(2) + '%)');
+    if (liveData.crudeOil) parts.push('Crude Oil: $' + fmt(liveData.crudeOil.price, 2) + ' (' + (liveData.crudeOil.change >= 0 ? '+' : '') + liveData.crudeOil.change.toFixed(2) + '%)');
+    if (liveData.natGas) parts.push('Natural Gas: $' + fmt(liveData.natGas.price, 2) + ' (' + (liveData.natGas.change >= 0 ? '+' : '') + liveData.natGas.change.toFixed(2) + '%)');
+    if (liveData.silver) parts.push('Silver: $' + fmt(liveData.silver.price, 2) + ' (' + (liveData.silver.change >= 0 ? '+' : '') + liveData.silver.change.toFixed(2) + '%)');
+    if (liveData.copper) parts.push('Copper: $' + fmt(liveData.copper.price, 2) + ' (' + (liveData.copper.change >= 0 ? '+' : '') + liveData.copper.change.toFixed(2) + '%)');
+    if (liveData.wheat) parts.push('Wheat: $' + fmt(liveData.wheat.price, 2) + ' (' + (liveData.wheat.change >= 0 ? '+' : '') + liveData.wheat.change.toFixed(2) + '%)');
+    if (liveData.corn) parts.push('Corn: $' + fmt(liveData.corn.price, 2) + ' (' + (liveData.corn.change >= 0 ? '+' : '') + liveData.corn.change.toFixed(2) + '%)');
+    if (liveData.soybean) parts.push('Soybean: $' + fmt(liveData.soybean.price, 2) + ' (' + (liveData.soybean.change >= 0 ? '+' : '') + liveData.soybean.change.toFixed(2) + '%)');
     return parts.join('. ') + (parts.length ? '.' : '');
   }
 
@@ -610,13 +695,19 @@
     var statusEl = document.getElementById('bmd-live-status');
     if (statusEl) statusEl.textContent = statusText;
 
-    // Re-render KPIs with fresh data
+    // Re-render KPIs with fresh data (swaps BTC ↔ Crude Oil depending on Binance)
     renderKPIs(binanceOk);
 
-    // Re-render crypto chart if Binance data fresh
-    if (binanceOk && charts.crypto) {
+    // Always re-render crypto/commodities chart (swaps based on what's live)
+    if (charts.crypto) {
       try { charts.crypto.dispose(); } catch (_) {}
       renderCrypto();
+    }
+
+    // Always re-render futures chart (uses live commodity prices now)
+    if (charts.futures) {
+      try { charts.futures.dispose(); } catch (_) {}
+      renderFutures();
     }
 
     // Re-render FX chart if Frankfurter data fresh
