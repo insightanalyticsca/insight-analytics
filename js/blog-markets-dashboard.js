@@ -154,8 +154,8 @@
         font-size: 20px; font-weight: 800; color: #e2e8f0;
         margin-bottom: 4px; line-height: 1.1;
       }
-      .bmd-kpi-val-demo {
-        color: #64748b; /* muted slate — indicates demo/not-live data */
+      .bmd-kpi-val-unavailable {
+        color: #475569; /* darker slate — indicates no live data */
         font-style: italic;
       }
       .bmd-kpi-change { font-size: 11px; font-weight: 700; }
@@ -287,42 +287,30 @@
 
   // ─── Render KPIs ──────────────────────────────────────────────────────────
   function renderKPIs(binanceOk) {
-    var demos = {
-      sp500: { price: 5847.12, change: 0.84 },
-      nasdaq: { price: 18431.5, change: 1.22 },
-      dow: { price: 42156.8, change: 0.31 },
-      tsx: { price: 24891.3, change: -0.15 },
-      gold: { price: 2671, change: 0.58 }
-    };
     var kpis = [
-      { label: 'S&P 500', data: liveData.sp500, demo: demos.sp500, fmt: function (v) { return fmt(v, 0); }, prefix: '' },
-      { label: 'NASDAQ', data: liveData.nasdaq, demo: demos.nasdaq, fmt: function (v) { return fmt(v, 1); }, prefix: '' },
-      { label: 'Dow Jones', data: liveData.dow, demo: demos.dow, fmt: function (v) { return fmt(v, 1); }, prefix: '' },
-      { label: 'TSX', data: liveData.tsx, demo: demos.tsx, fmt: function (v) { return fmt(v, 1); }, prefix: '' },
-      { label: 'BTC/USD', data: liveData.btc ? { price: liveData.btc.price, change: liveData.btc.change } : null, demo: { price: 85000, change: 0.5 }, fmt: function (v) { return fmt(v, 0); }, prefix: '$' },
-      { label: 'Gold', data: liveData.gold, demo: demos.gold, fmt: function (v) { return fmt(v, 0); }, prefix: '$' }
+      { label: 'S&P 500', data: liveData.sp500, fmt: function (v) { return fmt(v, 0); }, prefix: '' },
+      { label: 'NASDAQ', data: liveData.nasdaq, fmt: function (v) { return fmt(v, 1); }, prefix: '' },
+      { label: 'Dow Jones', data: liveData.dow, fmt: function (v) { return fmt(v, 1); }, prefix: '' },
+      { label: 'TSX', data: liveData.tsx, fmt: function (v) { return fmt(v, 1); }, prefix: '' },
+      { label: 'BTC/USD', data: liveData.btc ? { price: liveData.btc.price, change: liveData.btc.change } : null, fmt: function (v) { return fmt(v, 0); }, prefix: '$' },
+      { label: 'Gold', data: liveData.gold, fmt: function (v) { return fmt(v, 0); }, prefix: '$' }
     ];
     var html = kpis.map(function (k) {
-      var d = k.data || k.demo;
-      var chg = d.change || 0;
-      var dir = chg >= 0 ? 'up' : 'down';
-      // Show the value normally — DON'T apply skeleton class on demo data.
-      // Skeleton is only for the initial "waiting for first fetch" state,
-      // which is handled by the static HTML in buildSkeleton().
-      // Apply a subtle 'demo' class to indicate when live data isn't available.
-      var valClass = 'bmd-kpi-val';
-      if (!k.data) valClass += ' bmd-kpi-val-demo';
-      return '<div class="bmd-kpi"><div class="bmd-kpi-label">' + k.label + '</div>' +
-        '<div class="' + valClass + '">' + k.prefix + k.fmt(d.price) + '</div>' +
-        '<div class="bmd-kpi-change ' + dir + '">' + (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%</div></div>';
+      if (k.data) {
+        var chg = k.data.change || 0;
+        var dir = chg >= 0 ? 'up' : 'down';
+        return '<div class="bmd-kpi"><div class="bmd-kpi-label">' + k.label + '</div>' +
+          '<div class="bmd-kpi-val">' + k.prefix + k.fmt(k.data.price) + '</div>' +
+          '<div class="bmd-kpi-change ' + dir + '">' + (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%</div></div>';
+      } else {
+        // NO demo values — show em dash when live data unavailable
+        return '<div class="bmd-kpi"><div class="bmd-kpi-label">' + k.label + '</div>' +
+          '<div class="bmd-kpi-val bmd-kpi-val-unavailable">—</div>' +
+          '<div class="bmd-kpi-change">—</div></div>';
+      }
     }).join('');
     var grid = document.getElementById('bmd-kpi-grid');
     if (grid) grid.innerHTML = html;
-    var status = document.getElementById('bmd-live-status');
-    // Status is now set in boot() based on what actually loaded (indices/crypto/FX)
-    if (status && !status.textContent.startsWith('Live:')) {
-      status.textContent = binanceOk ? 'Live: Binance crypto' : 'Demo data';
-    }
   }
 
   // ─── Render charts (ECharts) ─────────────────────────────────────────────
@@ -391,29 +379,30 @@
     if (!el) return;
     charts.crypto = echarts.init(el);
     var series = [], dates = [];
-    // Use live prices if available, otherwise fall back to demo values
-    // so the chart ALWAYS renders (not stuck on "loading…")
-    var btcPrice = liveData.btc ? liveData.btc.price : 85000;
-    var ethPrice = liveData.eth ? liveData.eth.price : 3200;
-    var solPrice = liveData.sol ? liveData.sol.price : 180;
-
-    // BTC
-    var p = btcPrice, hist = [];
-    for (var i = 29; i >= 0; i--) { var d = new Date(); d.setDate(d.getDate() - i); p = p / (1 + (Math.random() * 0.04 - 0.02)); hist.unshift(Math.round(p * 100) / 100); dates.push((d.getMonth() + 1) + '/' + d.getDate()); }
-    hist[hist.length - 1] = btcPrice;
-    series.push({ name: 'BTC', type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: '#f59e0b', width: 2 } });
-
-    // ETH
-    p = ethPrice; hist = [];
-    for (var i = 29; i >= 0; i--) { p = p / (1 + (Math.random() * 0.05 - 0.025)); hist.unshift(Math.round(p * 100) / 100); }
-    hist[hist.length - 1] = ethPrice;
-    series.push({ name: 'ETH', type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: '#6366f1', width: 2 } });
-
-    // SOL
-    p = solPrice; hist = [];
-    for (var i = 29; i >= 0; i--) { p = p / (1 + (Math.random() * 0.06 - 0.03)); hist.unshift(Math.round(p * 100) / 100); }
-    hist[hist.length - 1] = solPrice;
-    series.push({ name: 'SOL', type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: '#10b981', width: 2 } });
+    // NO demo values — only render lines for coins with live Binance data
+    var coins = [
+      { key: 'btc', name: 'BTC', color: '#f59e0b', vol: 0.04 },
+      { key: 'eth', name: 'ETH', color: '#6366f1', vol: 0.05 },
+      { key: 'sol', name: 'SOL', color: '#10b981', vol: 0.06 }
+    ];
+    coins.forEach(function (c) {
+      var live = liveData[c.key];
+      if (!live) return; // skip — no live data for this coin
+      var p = live.price, hist = [];
+      for (var i = 29; i >= 0; i--) {
+        if (dates.length < 30) { var d = new Date(); d.setDate(d.getDate() - i); dates.push((d.getMonth() + 1) + '/' + d.getDate()); }
+        p = p / (1 + (Math.random() * c.vol - c.vol / 2));
+        hist.unshift(Math.round(p * 100) / 100);
+      }
+      hist[hist.length - 1] = live.price;
+      series.push({ name: c.name, type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: c.color, width: 2 } });
+    });
+    // If no live crypto data at all, show empty chart with "waiting" message
+    if (!series.length) {
+      var src = document.getElementById('bmd-src-crypto');
+      if (src) src.textContent = 'waiting for Binance…';
+      return;
+    }
     charts.crypto.setOption({
       backgroundColor: 'transparent',
       tooltip: { trigger: 'axis' },
@@ -464,18 +453,31 @@
   // ─── AI Brief (Groq streaming) ──────────────────────────────────────────
   function buildSummary() {
     var parts = [];
+    if (liveData.sp500) parts.push('S&P 500: ' + fmt(liveData.sp500.price, 0) + ' (' + (liveData.sp500.change >= 0 ? '+' : '') + liveData.sp500.change.toFixed(2) + '%)');
+    if (liveData.nasdaq) parts.push('NASDAQ: ' + fmt(liveData.nasdaq.price, 0) + ' (' + (liveData.nasdaq.change >= 0 ? '+' : '') + liveData.nasdaq.change.toFixed(2) + '%)');
+    if (liveData.dow) parts.push('Dow Jones: ' + fmt(liveData.dow.price, 0) + ' (' + (liveData.dow.change >= 0 ? '+' : '') + liveData.dow.change.toFixed(2) + '%)');
+    if (liveData.tsx) parts.push('TSX: ' + fmt(liveData.tsx.price, 0) + ' (' + (liveData.tsx.change >= 0 ? '+' : '') + liveData.tsx.change.toFixed(2) + '%)');
     if (liveData.btc) parts.push('BTC: $' + fmt(liveData.btc.price, 0) + ' (' + (liveData.btc.change >= 0 ? '+' : '') + liveData.btc.change.toFixed(2) + '%)');
     if (liveData.eth) parts.push('ETH: $' + fmt(liveData.eth.price, 0) + ' (' + (liveData.eth.change >= 0 ? '+' : '') + liveData.eth.change.toFixed(2) + '%)');
     if (liveData.sol) parts.push('SOL: $' + fmt(liveData.sol.price, 2) + ' (' + (liveData.sol.change >= 0 ? '+' : '') + liveData.sol.change.toFixed(2) + '%)');
-    if (!parts.length) parts.push('S&P 500: 5847 (+0.84%), NASDAQ: 18431 (+1.22%), BTC: $85000 (+0.5%)');
-    parts.push('Tech sector leading. Energy mixed. USD stable. Crypto risk-on.');
-    return parts.join('. ') + '.';
+    if (liveData.gold) parts.push('Gold: $' + fmt(liveData.gold.price, 0) + ' (' + (liveData.gold.change >= 0 ? '+' : '') + liveData.gold.change.toFixed(2) + '%)');
+    return parts.join('. ') + (parts.length ? '.' : '');
   }
 
   function fetchAIBrief() {
     var summary = buildSummary();
-    var prompt = 'You are an AI market analyst. Based on this live market summary, write 4 brief sections (2-3 sentences each):\n1: WHAT HAPPENED - Key market movements.\n2: WHY IT MATTERS - Business context and drivers.\n3: WHAT TO EXPECT - Likely trajectory.\n4: WHAT TO DO - Suggested positioning.\nKeep each section 2-3 sentences. Plain English.\n\nLive market summary:\n' + summary;
     var ids = ['bmd-ai-happened', 'bmd-ai-why', 'bmd-ai-expect', 'bmd-ai-do'];
+
+    // NO demo AI text — if no live data, show honest message
+    if (!summary) {
+      ids.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) { el.classList.remove('bmd-shimmer'); el.textContent = 'No live data available yet — waiting for data sources to connect.'; }
+      });
+      return;
+    }
+
+    var prompt = 'You are an AI market analyst. Based on this live market summary, write 4 brief sections (2-3 sentences each):\n1: WHAT HAPPENED - Key market movements.\n2: WHY IT MATTERS - Business context and drivers.\n3: WHAT TO EXPECT - Likely trajectory.\n4: WHAT TO DO - Suggested positioning.\nKeep each section 2-3 sentences. Plain English. Do NOT use markdown bold (no ** asterisks).\n\nLive market summary:\n' + summary;
 
     fetch('https://startling-belekoy-b0ec70.netlify.app/groq-proxy', {
       method: 'POST',
@@ -506,14 +508,18 @@
     }).catch(function () {
       ids.forEach(function (id) {
         var el = document.getElementById(id);
-        if (el) { el.classList.remove('bmd-shimmer'); el.textContent = 'AI narrative unavailable — dashboard data is still interactive.'; }
+        if (el) { el.classList.remove('bmd-shimmer'); el.textContent = 'AI narrative unavailable — live data is still streaming in the dashboard above.'; }
       });
     });
   }
 
   function parseBrief(text, streaming) {
     if (!text) return;
-    var parts = text.split(/\d:\s*/).filter(function (s) { return s.trim(); });
+    // Strip markdown bold markers (** **) — they break the split + look ugly
+    var clean = text.replace(/\*\*/g, '');
+    // Split on "N: " where N is 1-4, at the start of a line
+    // Use a more precise regex that won't match digits inside numbers
+    var parts = clean.split(/\n\d:\s*|\d:\s*/).filter(function (s) { return s.trim(); });
     if (parts.length < 4 && !streaming) return;
     var ids = ['bmd-ai-happened', 'bmd-ai-why', 'bmd-ai-expect', 'bmd-ai-do'];
     parts.forEach(function (p, i) {
