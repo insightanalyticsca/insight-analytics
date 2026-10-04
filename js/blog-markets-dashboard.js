@@ -71,7 +71,7 @@
           </div>
           <div class="bmd-chart-card bmd-wide">
             <div class="bmd-chart-title"><i class="fas fa-globe"></i> Currency Heatmap <span class="bmd-src" id="bmd-src-fx">loading…</span></div>
-            <div class="bmd-chart-body bmd-tall" id="bmd-chart-fx"></div>
+            <div class="bmd-chart-body" id="bmd-chart-fx"></div>
           </div>
         </div>
 
@@ -103,12 +103,12 @@
         background: linear-gradient(145deg, #0a0e1a 0%, #0f172a 100%);
         color: #e2e8f0;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        padding: 16px;
-        min-height: 600px;
+        padding: 10px;
+        min-height: 400px;
       }
       .bmd-topbar {
         display: flex; align-items: center; justify-content: space-between;
-        padding: 8px 0 12px; margin-bottom: 14px;
+        padding: 4px 0 6px; margin-bottom: 8px;
         border-bottom: 1px solid rgba(99,102,241,.15);
       }
       .bmd-brand { display: flex; align-items: center; gap: 10px; }
@@ -135,30 +135,30 @@
       @keyframes bmd-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
       .bmd-kpi-grid {
         display: grid; grid-template-columns: repeat(6, 1fr);
-        gap: 8px; margin-bottom: 14px;
+        gap: 6px; margin-bottom: 10px;
       }
       .bmd-kpi {
         background: rgba(15, 23, 42, .85);
         border: 1px solid rgba(99, 102, 241, .15);
-        border-radius: 8px; padding: 12px;
+        border-radius: 8px; padding: 8px 6px;
         text-align: center; transition: border-color 200ms;
       }
       .bmd-kpi:hover { border-color: #06b6d4; }
       .bmd-kpi-label {
-        font-size: 10px; color: #64748b;
+        font-size: 9px; color: #64748b;
         text-transform: uppercase; letter-spacing: .06em;
-        font-weight: 600; margin-bottom: 6px;
+        font-weight: 600; margin-bottom: 3px;
       }
       .bmd-kpi-val {
         font-family: 'Space Grotesk', sans-serif;
-        font-size: 20px; font-weight: 800; color: #e2e8f0;
-        margin-bottom: 4px; line-height: 1.1;
+        font-size: 16px; font-weight: 800; color: #e2e8f0;
+        margin-bottom: 2px; line-height: 1.1;
       }
       .bmd-kpi-val-unavailable {
         color: #475569; /* darker slate — indicates no live data */
         font-style: italic;
       }
-      .bmd-kpi-change { font-size: 11px; font-weight: 700; }
+      .bmd-kpi-change { font-size: 10px; font-weight: 700; }
       .bmd-kpi-change.up { color: #10b981; }
       .bmd-kpi-change.down { color: #ef4444; }
       .bmd-skeleton {
@@ -168,50 +168,51 @@
       }
       @keyframes bmd-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
       .bmd-chart-grid {
-        display: grid; grid-template-columns: 1fr 1fr;
-        gap: 10px; margin-bottom: 14px;
+        display: grid; grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px; margin-bottom: 10px;
       }
       .bmd-chart-card {
         background: rgba(15, 23, 42, .85);
         border: 1px solid rgba(99, 102, 241, .15);
-        border-radius: 10px; padding: 14px;
+        border-radius: 8px; padding: 10px;
       }
       .bmd-chart-card.bmd-wide { grid-column: 1 / -1; }
+      .bmd-chart-card.bmd-wide-2 { grid-column: span 2; }
       .bmd-chart-title {
-        font-size: 13px; font-weight: 600; color: #e2e8f0;
-        margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+        font-size: 11px; font-weight: 600; color: #e2e8f0;
+        margin-bottom: 6px; display: flex; align-items: center; gap: 4px;
       }
-      .bmd-chart-title i { color: #06b6d4; font-size: 11px; }
-      .bmd-chart-title .bmd-src { margin-left: auto; font-size: 9px; color: #64748b; font-weight: 400; }
-      .bmd-chart-body { width: 100%; height: 240px; }
-      .bmd-chart-body.bmd-tall { height: 320px; }
+      .bmd-chart-title i { color: #06b6d4; font-size: 10px; }
+      .bmd-chart-title .bmd-src { margin-left: auto; font-size: 8px; color: #64748b; font-weight: 400; }
+      .bmd-chart-body { width: 100%; height: 160px; }
+      .bmd-chart-body.bmd-tall { height: 200px; }
       .bmd-ai-brief {
         background: linear-gradient(135deg, rgba(99,102,241,.06), rgba(6,182,212,.04));
         border: 1px solid rgba(99, 102, 241, .15);
-        border-radius: 10px; padding: 18px;
-        margin-bottom: 14px;
+        border-radius: 8px; padding: 10px;
+        margin-bottom: 8px;
       }
-      .bmd-ai-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+      .bmd-ai-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
       .bmd-ai-icon {
-        width: 28px; height: 28px; border-radius: 8px;
+        width: 22px; height: 22px; border-radius: 6px;
         display: grid; place-items: center;
         background: linear-gradient(135deg, #6366f1, #06b6d4);
-        color: #fff; font-size: 12px;
+        color: #fff; font-size: 10px;
       }
-      .bmd-ai-title { font-size: 14px; font-weight: 700; color: #e2e8f0; }
-      .bmd-ai-sub { font-size: 10px; color: #64748b; }
-      .bmd-ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .bmd-ai-title { font-size: 12px; font-weight: 700; color: #e2e8f0; }
+      .bmd-ai-sub { font-size: 9px; color: #64748b; }
+      .bmd-ai-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
       .bmd-ai-cell {
         background: rgba(15, 23, 42, .5);
         border: 1px solid rgba(99, 102, 241, .15);
-        border-radius: 8px; padding: 12px;
+        border-radius: 6px; padding: 8px;
       }
       .bmd-ai-cell-label {
-        font-size: 9px; font-weight: 700; text-transform: uppercase;
-        letter-spacing: .08em; color: #06b6d4; margin-bottom: 6px;
+        font-size: 8px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .08em; color: #06b6d4; margin-bottom: 4px;
       }
       .bmd-ai-cell-text {
-        font-size: 12px; line-height: 1.6; color: #cbd5e1;
+        font-size: 10px; line-height: 1.4; color: #cbd5e1;
       }
       .bmd-shimmer {
         background: linear-gradient(90deg, rgba(99,102,241,.1) 25%, rgba(99,102,241,.25) 50%, rgba(99,102,241,.1) 75%);
@@ -220,7 +221,8 @@
       }
       @media (max-width: 1024px) {
         .bmd-kpi-grid { grid-template-columns: repeat(3, 1fr); }
-        .bmd-chart-grid { grid-template-columns: 1fr; }
+        .bmd-chart-grid { grid-template-columns: 1fr 1fr; }
+        .bmd-ai-grid { grid-template-columns: 1fr 1fr; }
       }
       @media (max-width: 640px) {
         .bmd-kpi-grid { grid-template-columns: repeat(2, 1fr); }
