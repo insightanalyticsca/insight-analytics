@@ -652,9 +652,13 @@
       renderFX();
     }
 
-    // Always re-render crypto chart (uses live prices if available, demo fallback otherwise)
+    // Always re-render crypto/commodities chart (swaps based on what's live)
     if (charts.crypto) { try { charts.crypto.dispose(); } catch (_) {} }
     renderCrypto();
+
+    // Re-render futures chart with live commodity prices (now fetched via Yahoo proxy)
+    if (charts.futures) { try { charts.futures.dispose(); } catch (_) {} }
+    renderFutures();
 
     // Re-render trends if Binance data available (for BTC overlay)
     if (binanceOk && charts.trends) {
