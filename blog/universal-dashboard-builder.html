@@ -59,6 +59,8 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="../css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" defer></script>
+  <script src="../js/blog-markets-dashboard.js" defer></script>
 
   <style>
     .article-hero { padding: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 60px) 0 40px; text-align: center; background: linear-gradient(180deg, rgba(99,102,241,0.04) 0%, transparent 100%); border-bottom: 1px solid var(--border); }
@@ -177,16 +179,8 @@
           <i class="fas fa-expand"></i>
         </button>
       </div>
-      <div class="browser-frame" style="height: 920px;">
-        <iframe
-          src="https://insightanalyticsca.github.io/markets-dashboard/"
-          title="Markets & Finance Dashboard — live interactive demo"
-          style="width: 100%; height: 100%; border: 0; display: block; min-height: 700px;"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          allow="fullscreen"
-          id="markets-iframe"
-        ></iframe>
+      <div class="browser-frame" style="height: auto !important; padding: 0;">
+        <div id="markets-dashboard-mount"></div>
       </div>
     </div>
 
