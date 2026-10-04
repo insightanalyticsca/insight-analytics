@@ -154,6 +154,10 @@
         font-size: 20px; font-weight: 800; color: #e2e8f0;
         margin-bottom: 4px; line-height: 1.1;
       }
+      .bmd-kpi-val-demo {
+        color: #64748b; /* muted slate — indicates demo/not-live data */
+        font-style: italic;
+      }
       .bmd-kpi-change { font-size: 11px; font-weight: 700; }
       .bmd-kpi-change.up { color: #10b981; }
       .bmd-kpi-change.down { color: #ef4444; }
@@ -302,8 +306,14 @@
       var d = k.data || k.demo;
       var chg = d.change || 0;
       var dir = chg >= 0 ? 'up' : 'down';
+      // Show the value normally — DON'T apply skeleton class on demo data.
+      // Skeleton is only for the initial "waiting for first fetch" state,
+      // which is handled by the static HTML in buildSkeleton().
+      // Apply a subtle 'demo' class to indicate when live data isn't available.
+      var valClass = 'bmd-kpi-val';
+      if (!k.data) valClass += ' bmd-kpi-val-demo';
       return '<div class="bmd-kpi"><div class="bmd-kpi-label">' + k.label + '</div>' +
-        '<div class="bmd-kpi-val' + (k.data ? '' : ' bmd-skeleton') + '">' + k.prefix + k.fmt(d.price) + '</div>' +
+        '<div class="' + valClass + '">' + k.prefix + k.fmt(d.price) + '</div>' +
         '<div class="bmd-kpi-change ' + dir + '">' + (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%</div></div>';
     }).join('');
     var grid = document.getElementById('bmd-kpi-grid');
@@ -381,24 +391,29 @@
     if (!el) return;
     charts.crypto = echarts.init(el);
     var series = [], dates = [];
-    if (liveData.btc) {
-      var p = liveData.btc.price, hist = [];
-      for (var i = 29; i >= 0; i--) { var d = new Date(); d.setDate(d.getDate() - i); p = p / (1 + (Math.random() * 0.04 - 0.02)); hist.unshift(Math.round(p * 100) / 100); dates.push((d.getMonth() + 1) + '/' + d.getDate()); }
-      hist[hist.length - 1] = liveData.btc.price;
-      series.push({ name: 'BTC', type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: '#f59e0b', width: 2 } });
-    }
-    if (liveData.eth) {
-      var p = liveData.eth.price, hist = [];
-      for (var i = 29; i >= 0; i--) { p = p / (1 + (Math.random() * 0.05 - 0.025)); hist.unshift(Math.round(p * 100) / 100); }
-      hist[hist.length - 1] = liveData.eth.price;
-      series.push({ name: 'ETH', type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: '#6366f1', width: 2 } });
-    }
-    if (liveData.sol) {
-      var p = liveData.sol.price, hist = [];
-      for (var i = 29; i >= 0; i--) { p = p / (1 + (Math.random() * 0.06 - 0.03)); hist.unshift(Math.round(p * 100) / 100); }
-      hist[hist.length - 1] = liveData.sol.price;
-      series.push({ name: 'SOL', type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: '#10b981', width: 2 } });
-    }
+    // Use live prices if available, otherwise fall back to demo values
+    // so the chart ALWAYS renders (not stuck on "loading…")
+    var btcPrice = liveData.btc ? liveData.btc.price : 85000;
+    var ethPrice = liveData.eth ? liveData.eth.price : 3200;
+    var solPrice = liveData.sol ? liveData.sol.price : 180;
+
+    // BTC
+    var p = btcPrice, hist = [];
+    for (var i = 29; i >= 0; i--) { var d = new Date(); d.setDate(d.getDate() - i); p = p / (1 + (Math.random() * 0.04 - 0.02)); hist.unshift(Math.round(p * 100) / 100); dates.push((d.getMonth() + 1) + '/' + d.getDate()); }
+    hist[hist.length - 1] = btcPrice;
+    series.push({ name: 'BTC', type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: '#f59e0b', width: 2 } });
+
+    // ETH
+    p = ethPrice; hist = [];
+    for (var i = 29; i >= 0; i--) { p = p / (1 + (Math.random() * 0.05 - 0.025)); hist.unshift(Math.round(p * 100) / 100); }
+    hist[hist.length - 1] = ethPrice;
+    series.push({ name: 'ETH', type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: '#6366f1', width: 2 } });
+
+    // SOL
+    p = solPrice; hist = [];
+    for (var i = 29; i >= 0; i--) { p = p / (1 + (Math.random() * 0.06 - 0.03)); hist.unshift(Math.round(p * 100) / 100); }
+    hist[hist.length - 1] = solPrice;
+    series.push({ name: 'SOL', type: 'line', data: hist, smooth: true, symbol: 'none', lineStyle: { color: '#10b981', width: 2 } });
     charts.crypto.setOption({
       backgroundColor: 'transparent',
       tooltip: { trigger: 'axis' },
@@ -546,11 +561,14 @@
       renderFX();
     }
 
-    // Re-render trends + crypto chart with live BTC data
-    if (binanceOk) {
-      if (charts.trends) { try { charts.trends.dispose(); } catch (_) {} renderTrends(); }
-      if (charts.crypto) { try { charts.crypto.dispose(); } catch (_) {} }
-      renderCrypto();
+    // Always re-render crypto chart (uses live prices if available, demo fallback otherwise)
+    if (charts.crypto) { try { charts.crypto.dispose(); } catch (_) {} }
+    renderCrypto();
+
+    // Re-render trends if Binance data available (for BTC overlay)
+    if (binanceOk && charts.trends) {
+      try { charts.trends.dispose(); } catch (_) {}
+      renderTrends();
     }
 
     // Stream AI brief
