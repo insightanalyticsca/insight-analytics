@@ -565,7 +565,7 @@
   // so 60s polling is plenty. The Netlify proxy has a 60s server-side cache,
   // so we won't hammer upstream APIs. AI brief re-streams every 5 min (it's
   // expensive + the underlying data only changes every few min).
-  var POLL_INTERVAL_MS = 60 * 1000;          // 60s for KPIs + charts
+  var POLL_INTERVAL_MS = 30 * 1000;          // 30s for KPIs + charts
   var AI_BRIF_INTERVAL_MS = 5 * 60 * 1000;   // 5 min for AI brief
   var pollTimer = null;
   var aiBriefTimer = null;
