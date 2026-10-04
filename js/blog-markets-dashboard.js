@@ -555,6 +555,74 @@
 
     // Stream AI brief
     fetchAIBrief();
+
+    // Start 60-second polling for live data
+    startPolling();
+  }
+
+  // ─── Polling: refresh live data every 60 seconds ─────────────────────────
+  // Binance crypto is real-time. Yahoo indices are delayed 10-15 min anyway,
+  // so 60s polling is plenty. The Netlify proxy has a 60s server-side cache,
+  // so we won't hammer upstream APIs. AI brief re-streams every 5 min (it's
+  // expensive + the underlying data only changes every few min).
+  var POLL_INTERVAL_MS = 60 * 1000;          // 60s for KPIs + charts
+  var AI_BRIF_INTERVAL_MS = 5 * 60 * 1000;   // 5 min for AI brief
+  var pollTimer = null;
+  var aiBriefTimer = null;
+  var lastAIBriefTime = 0;
+
+  async function pollLiveData() {
+    var binanceOk = false, indicesOk = false, fxOk = false;
+    try { binanceOk = await fetchCrypto(); } catch (e) {}
+    try { indicesOk = await fetchIndices(); } catch (e) {}
+    try { fxOk = await fetchFX(); } catch (e) {}
+
+    // Update status badge
+    var liveSources = [];
+    if (indicesOk) liveSources.push('indices');
+    if (binanceOk) liveSources.push('crypto');
+    if (fxOk) liveSources.push('FX');
+    var statusText = liveSources.length ? ('Live: ' + liveSources.join(' · ')) : 'Demo data';
+    var statusEl = document.getElementById('bmd-live-status');
+    if (statusEl) statusEl.textContent = statusText;
+
+    // Re-render KPIs with fresh data
+    renderKPIs(binanceOk);
+
+    // Re-render crypto chart if Binance data fresh
+    if (binanceOk && charts.crypto) {
+      try { charts.crypto.dispose(); } catch (_) {}
+      renderCrypto();
+    }
+
+    // Re-render FX chart if Frankfurter data fresh
+    if (fxOk && charts.fx) {
+      try { charts.fx.dispose(); } catch (_) {}
+      renderFX();
+    }
+
+    // Re-stream AI brief every 5 min (not every poll — too expensive)
+    var now = Date.now();
+    if (now - lastAIBriefTime > AI_BRIEF_INTERVAL_MS) {
+      lastAIBriefTime = now;
+      fetchAIBrief();
+    }
+  }
+
+  function startPolling() {
+    if (pollTimer) return; // already polling
+    lastAIBriefTime = Date.now(); // initial brief just fetched in boot()
+    pollTimer = setInterval(pollLiveData, POLL_INTERVAL_MS);
+
+    // Pause polling when tab is hidden (saves battery + API quota)
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      } else {
+        startPolling(); // resume + immediately refresh on return
+        pollLiveData();
+      }
+    });
   }
 
   // ─── Resize handler ──────────────────────────────────────────────────────
