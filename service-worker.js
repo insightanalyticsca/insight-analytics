@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v3.9.0-20261005-layout-fixes-ai-parsing';
+const VERSION = 'v3.9.1-20261005-ai-paragraph-split';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 

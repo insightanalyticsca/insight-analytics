@@ -608,56 +608,40 @@
 
   function parseBrief(text, streaming) {
     if (!text) return;
-    // Strip markdown bold markers (** **) — they break parsing + look ugly
-    var clean = text.replace(/\*\*/g, '').replace(/\*/g, '').trim();
+    // Strip markdown bold/italic markers
+    var clean = text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/^#+\s*/gm, '').trim();
+    var ids = ['bmd-ai-happened', 'bmd-ai-why', 'bmd-ai-expect', 'bmd-ai-do'];
 
-    // Try multiple split strategies to handle different AI response formats:
-    // Strategy 1: "1: WHAT HAPPENED" format (number prefix)
-    // Strategy 2: "WHAT HAPPENED:" format (header colon)
-    // Strategy 3: "## What Happened" format (markdown header)
+    // Strategy 1: Search for section headers by name
     var sections = [
       { names: ['what happened', 'whathappened'], id: 'bmd-ai-happened' },
       { names: ['why it matters', 'whyitmatters'], id: 'bmd-ai-why' },
       { names: ['what to expect', 'whattoexpect'], id: 'bmd-ai-expect' },
       { names: ['what to do', 'whattodo'], id: 'bmd-ai-do' }
     ];
-
-    // Find each section by name in the text, extract content between headers
     var lowerClean = clean.toLowerCase();
     var positions = [];
-
     sections.forEach(function (sec) {
       sec.names.forEach(function (name) {
         var idx = lowerClean.indexOf(name);
-        if (idx >= 0) {
-          positions.push({ start: idx + name.length, name: name, sectionId: sec.id });
-        }
+        if (idx >= 0) positions.push({ start: idx + name.length, name: name, sectionId: sec.id });
       });
     });
-
-    // Sort by position in text
     positions.sort(function (a, b) { return a.start - b.start; });
-
-    // Remove duplicate section matches (keep first occurrence of each section)
     var seen = {};
     var uniquePositions = [];
     positions.forEach(function (p) {
       var sec = sections.find(function (s) { return s.id === p.sectionId; });
-      if (sec && !seen[p.sectionId]) {
-        seen[p.sectionId] = true;
-        uniquePositions.push(p);
-      }
+      if (sec && !seen[p.sectionId]) { seen[p.sectionId] = true; uniquePositions.push(p); }
     });
 
-    if (uniquePositions.length >= 2) {
+    if (uniquePositions.length >= 3) {
       // Extract content between each section header and the next
       uniquePositions.forEach(function (pos, i) {
         var contentStart = pos.start;
-        // Skip past any colon or newline after the header name
         while (contentStart < clean.length && /[:\-\n\r\s]/.test(clean[contentStart])) contentStart++;
         var contentEnd = (i + 1 < uniquePositions.length) ? uniquePositions[i + 1].start - uniquePositions[i + 1].name.length : clean.length;
         var content = clean.substring(contentStart, contentEnd).trim();
-        // Clean up the content — remove leading header text if duplicated
         content = content.replace(/^(what happened|why it matters|what to expect|what to do)[:\-\s]*/i, '').trim();
         if (content) {
           var el = document.getElementById(pos.sectionId);
@@ -667,23 +651,24 @@
       return;
     }
 
-    // Fallback: try the old "N: " split strategy
-    var parts = clean.split(/\n?\d[:.\)]\s*/).filter(function (s) { return s.trim(); });
-    if (parts.length >= 4) {
-      var ids = ['bmd-ai-happened', 'bmd-ai-why', 'bmd-ai-expect', 'bmd-ai-do'];
-      parts.forEach(function (p, i) {
-        if (i < ids.length && p.trim()) {
-          var el = document.getElementById(ids[i]);
-          if (el) { el.classList.remove('bmd-shimmer'); el.textContent = p.trim().slice(0, 300); }
-        }
+    // Strategy 2: Split by double-newline (paragraph breaks) — the AI often
+    // returns 4 paragraphs without explicit headers
+    var paragraphs = clean.split(/\n\s*\n/).map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 20; });
+
+    if (paragraphs.length >= 4) {
+      // Assign each paragraph to a cell in order
+      paragraphs.slice(0, 4).forEach(function (p, i) {
+        var el = document.getElementById(ids[i]);
+        if (el) { el.classList.remove('bmd-shimmer'); el.textContent = p.slice(0, 300); }
       });
       return;
     }
 
-    // If streaming and we have some text, put it all in the first cell
-    if (streaming && parts.length > 0) {
-      var el0 = document.getElementById('bmd-ai-happened');
-      if (el0) { el0.classList.remove('bmd-shimmer'); el0.textContent = parts[0].trim().slice(0, 300); }
+    // Strategy 3: If streaming and we have some text but < 4 paragraphs yet,
+    // put what we have in the first cell (will update as more streams in)
+    if (streaming && paragraphs.length > 0) {
+      var el0 = document.getElementById(ids[0]);
+      if (el0) { el0.classList.remove('bmd-shimmer'); el0.textContent = paragraphs[0].slice(0, 300); }
     }
   }
 
