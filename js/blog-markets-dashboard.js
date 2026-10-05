@@ -146,7 +146,7 @@
         color: #06b6d4;
         transform: rotate(15deg);
       }
-      [data-theme="light"] .bmd-theme-toggle {
+      [data-bmd-theme="light"] .bmd-theme-toggle {
         color: #64748b;
         border-color: rgba(99, 102, 241, .15);
       }
@@ -257,41 +257,41 @@
       }
 
       /* ═══ LIGHT THEME OVERRIDES — when [data-theme="light"] on <html> ═══ */
-      [data-theme="light"] .bmd-app {
+      [data-bmd-theme="light"] .bmd-app {
         background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
         color: #1e293b;
       }
-      [data-theme="light"] .bmd-bn { color: #1e293b; }
-      [data-theme="light"] .bmd-bs { color: #64748b; }
-      [data-theme="light"] .bmd-kpi {
+      [data-bmd-theme="light"] .bmd-bn { color: #1e293b; }
+      [data-bmd-theme="light"] .bmd-bs { color: #64748b; }
+      [data-bmd-theme="light"] .bmd-kpi {
         background: rgba(255, 255, 255, .9);
         border-color: rgba(99, 102, 241, .15);
       }
-      [data-theme="light"] .bmd-kpi:hover { border-color: #06b6d4; }
-      [data-theme="light"] .bmd-kpi-label { color: #64748b; }
-      [data-theme="light"] .bmd-kpi-val { color: #0f172a; }
-      [data-theme="light"] .bmd-kpi-val-unavailable { color: #94a3b8; }
-      [data-theme="light"] .bmd-kpi-skeleton {
+      [data-bmd-theme="light"] .bmd-kpi:hover { border-color: #06b6d4; }
+      [data-bmd-theme="light"] .bmd-kpi-label { color: #64748b; }
+      [data-bmd-theme="light"] .bmd-kpi-val { color: #0f172a; }
+      [data-bmd-theme="light"] .bmd-kpi-val-unavailable { color: #94a3b8; }
+      [data-bmd-theme="light"] .bmd-kpi-skeleton {
         background: linear-gradient(90deg, rgba(99,102,241,.1) 25%, rgba(255,255,255,1) 50%, rgba(99,102,241,.1) 75%);
       }
-      [data-theme="light"] .bmd-chart-card {
+      [data-bmd-theme="light"] .bmd-chart-card {
         background: rgba(255, 255, 255, .9);
         border-color: rgba(99, 102, 241, .12);
       }
-      [data-theme="light"] .bmd-chart-title { color: #1e293b; }
-      [data-theme="light"] .bmd-chart-title .bmd-src { color: #94a3b8; }
-      [data-theme="light"] .bmd-ai-brief {
+      [data-bmd-theme="light"] .bmd-chart-title { color: #1e293b; }
+      [data-bmd-theme="light"] .bmd-chart-title .bmd-src { color: #94a3b8; }
+      [data-bmd-theme="light"] .bmd-ai-brief {
         background: linear-gradient(135deg, rgba(99,102,241,.04), rgba(6,182,212,.03));
         border-color: rgba(99, 102, 241, .12);
       }
-      [data-theme="light"] .bmd-ai-title { color: #1e293b; }
-      [data-theme="light"] .bmd-ai-sub { color: #64748b; }
-      [data-theme="light"] .bmd-ai-cell {
+      [data-bmd-theme="light"] .bmd-ai-title { color: #1e293b; }
+      [data-bmd-theme="light"] .bmd-ai-sub { color: #64748b; }
+      [data-bmd-theme="light"] .bmd-ai-cell {
         background: rgba(255, 255, 255, .7);
         border-color: rgba(99, 102, 241, .1);
       }
-      [data-theme="light"] .bmd-ai-cell-text { color: #475569; }
-      [data-theme="light"] .bmd-shimmer {
+      [data-bmd-theme="light"] .bmd-ai-cell-text { color: #475569; }
+      [data-bmd-theme="light"] .bmd-shimmer {
         background: linear-gradient(90deg, rgba(99,102,241,.08) 25%, rgba(99,102,241,.15) 50%, rgba(99,102,241,.08) 75%);
       }
       </style>
@@ -302,9 +302,14 @@
   // Netlify markets-proxy endpoint (server-side fetch of Yahoo + Frankfurter)
   var MARKETS_PROXY = 'https://startling-belekoy-b0ec70.netlify.app/markets-proxy';
 
-  // ─── Theme helper — returns 'light' or 'dark' based on <html data-theme> ──
+  // ─── Dashboard-local theme — uses data-bmd-theme on #markets-dashboard-mount ──
+  // Does NOT touch <html data-theme> — the blog page's own theme is independent.
+  var dashboardTheme = 'dark'; // default
+
   function getTheme() {
-    return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    var mount = document.getElementById('markets-dashboard-mount');
+    if (mount) return mount.getAttribute('data-bmd-theme') === 'light' ? 'light' : 'dark';
+    return dashboardTheme;
   }
   // ECharts axis colors per theme
   function axisLabelColor() { return getTheme() === 'dark' ? '#64748b' : '#94a3b8'; }
@@ -313,12 +318,14 @@
   function tooltipTextColor() { return getTheme() === 'dark' ? '#e2e8f0' : '#1e293b'; }
   function tooltipBorderColor() { return getTheme() === 'dark' ? 'rgba(99,102,241,.2)' : 'rgba(99,102,241,.15)'; }
 
-  // Re-render all charts when theme changes (MutationObserver on <html data-theme>)
+  // Re-render all charts when the DASHBOARD theme changes (not the page theme)
   function watchThemeChanges() {
+    var mount = document.getElementById('markets-dashboard-mount');
+    if (!mount) return;
     var observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (m) {
-        if (m.attributeName === 'data-theme') {
-          // Update the dashboard's theme toggle icon to match
+        if (m.attributeName === 'data-bmd-theme') {
+          // Update the dashboard's theme toggle icon
           var bmdIcon = document.getElementById('bmd-theme-icon');
           if (bmdIcon) bmdIcon.className = getTheme() === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
           // Dispose + re-render all charts with new theme colors
@@ -333,7 +340,7 @@
         }
       });
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    observer.observe(mount, { attributes: true, attributeFilter: ['data-bmd-theme'] });
   }
 
   // ─── Fetch LIVE indices + gold + commodities via Netlify proxy (Yahoo server-side) ───
@@ -772,24 +779,19 @@
     injectStyles();
     buildSkeleton(mount);
 
-    // Dashboard theme toggle — toggles <html data-theme> which triggers
-    // the MutationObserver to re-render all charts with new theme colors
+    // Dashboard theme toggle — toggles data-bmd-theme on #markets-dashboard-mount ONLY
+    // Does NOT touch <html data-theme> — the blog page's theme stays independent
     var bmdToggle = document.getElementById('bmd-theme-toggle');
     var bmdIcon = document.getElementById('bmd-theme-icon');
     if (bmdToggle) {
-      // Set initial icon based on current theme
-      if (bmdIcon) bmdIcon.className = getTheme() === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+      // Set initial icon + mount attribute based on default theme (dark)
+      mount.setAttribute('data-bmd-theme', 'dark');
+      if (bmdIcon) bmdIcon.className = 'fas fa-moon';
       bmdToggle.addEventListener('click', function () {
-        var current = document.documentElement.getAttribute('data-theme') || 'light';
+        var current = mount.getAttribute('data-bmd-theme') || 'dark';
         var next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        if (bmdIcon) bmdIcon.className = next === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-        // Also sync the page navbar's theme toggle (if it exists)
-        var pageToggle = document.getElementById('theme-toggle');
-        var pageIcon = document.getElementById('theme-icon');
-        if (pageIcon) pageIcon.className = next === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-        var pageLabel = document.getElementById('theme-label');
-        if (pageLabel) pageLabel.textContent = next === 'dark' ? 'Dark' : 'Light';
+        mount.setAttribute('data-bmd-theme', next);
+        // The MutationObserver will handle re-rendering charts + updating the icon
       });
     }
 
