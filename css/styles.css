@@ -505,66 +505,47 @@ ul {
 
 .menu-toggle {
   display: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border-strong);
-  background: color-mix(in srgb, var(--surface-2) 60%, var(--bg));
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
   color: var(--text);
-  font-size: 1rem;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 180ms ease;
+  transition: opacity 180ms ease;
   flex-shrink: 0;
+  opacity: 0.5;
 }
 .menu-toggle:hover {
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+  opacity: 1;
 }
-.menu-toggle i {
-  color: var(--text);
-}
-/* CSS-only hamburger — no Font Awesome dependency.
-   Three bars drawn with pseudo-elements. */
+/* CSS-only hamburger — sleek 3-bar icon, no Font Awesome. */
 .menu-toggle-bars {
   position: relative;
-  width: 18px;
-  height: 14px;
+  width: 16px;
+  height: 10px;
   display: block;
 }
 .menu-toggle-bars::before,
 .menu-toggle-bars::after,
-.menu-toggle-bars > * {
+.menu-toggle-bars > span {
   content: '';
   position: absolute;
   left: 0;
   width: 100%;
-  height: 2px;
-  background: var(--text);
-  border-radius: 2px;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 1px;
   transition: transform 250ms var(--ease), opacity 200ms ease, top 250ms var(--ease);
 }
 .menu-toggle-bars::before { top: 0; }
-.menu-toggle-bars::after  { top: 6px; }
-.menu-toggle-bars > span,
-.menu-toggle-bars::before { content: ''; }
-/* Middle bar via inner span — but since we used ::before/::after for top/bottom,
-   we draw the middle bar as a child element. Simpler: use 3 pseudo-bars. */
-.menu-toggle.is-open .menu-toggle-bars::before { top: 6px; transform: rotate(45deg); }
-.menu-toggle.is-open .menu-toggle-bars::after  { top: 6px; transform: rotate(-45deg); }
-/* The middle bar — drawn as a child element */
-.menu-toggle-bars span {
-  position: absolute;
-  left: 0;
-  top: 12px;
-  width: 100%;
-  height: 2px;
-  background: var(--text);
-  border-radius: 2px;
-  transition: opacity 200ms ease;
-}
-.menu-toggle.is-open .menu-toggle-bars span { opacity: 0; }
+.menu-toggle-bars > span  { top: 4px; }
+.menu-toggle-bars::after  { top: 8px; }
+.menu-toggle.is-open .menu-toggle-bars::before { top: 4px; transform: rotate(45deg); }
+.menu-toggle.is-open .menu-toggle-bars::after  { top: 4px; transform: rotate(-45deg); }
+.menu-toggle.is-open .menu-toggle-bars span    { opacity: 0; }
 
 .mobile-menu {
   position: fixed;
