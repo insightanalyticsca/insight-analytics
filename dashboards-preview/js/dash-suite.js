@@ -81,35 +81,32 @@
 
         const type = String(format || 'number').toLowerCase();
 
-        // Currency and ordinary numeric values use full comma-grouped integers.
-        // Examples: 0, 950, 1,234, 12,345. No CA$, $, decimals, K, or M.
+        // All metric cards render in "000.00" format — always 2 decimal places
+        // (e.g. 0.00, 1,234.50, 12,345.99). Currency, plain numbers, and
+        // decimals all share this 2-decimal display so the metric tiles line
+        // up cleanly and the reader can scan values without re-parsing.
         if (type === 'currency' || type === 'currency2' ||
-            type === 'number' || type === 'decimal' || type === 'decimal2') {
+            type === 'number'  || type === 'decimal'  || type === 'decimal2') {
             return n.toLocaleString(undefined, {
                 useGrouping: true,
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
             });
         }
 
-        if (type === 'percent') {
-            return n.toLocaleString(undefined, {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1
-            }) + '%';
-        }
-
-        if (type === 'percent2') {
+        // Percent values: same 2-decimal rule (e.g. 12.34%, 4.70%).
+        if (type === 'percent' || type === 'percent2') {
             return n.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }) + '%';
         }
 
+        // Fallback: any future format string — still 2 decimals for consistency.
         return n.toLocaleString(undefined, {
             useGrouping: true,
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
         });
     }
 
@@ -117,7 +114,8 @@
         const n = number(value);
         if (n === null) return '—';
         const sign = n > 0 ? '+' : '';
-        return sign + n.toFixed(1) + (String(mode).toLowerCase() === 'points' ? ' pts' : '%');
+        // 2-decimal delta (matches metric value formatting) — e.g. +4.70%, -2.30 pts
+        return sign + n.toFixed(2) + (String(mode).toLowerCase() === 'points' ? ' pts' : '%');
     }
 
     function deltaTone(value, positiveIsGood) {
