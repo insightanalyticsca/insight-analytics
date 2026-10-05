@@ -168,11 +168,13 @@
       .bmd-bs { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: .06em; }
       .bmd-live-badge {
         display: inline-flex; align-items: center; gap: 4px;
-        padding: 2px 7px; border-radius: 999px;
+        padding: 2px 8px; border-radius: 999px;
         background: rgba(16,185,129,.08);
         border: 1px solid rgba(16,185,129,.15);
         font-size: 8px; font-weight: 600; color: #10b981;
         text-transform: none; letter-spacing: 0;
+        white-space: nowrap;
+        flex-shrink: 0;
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
       }
@@ -1534,10 +1536,12 @@
     // Re-render KPIs with live data
     renderKPIs(binanceOk);
 
-    // Re-render FX chart with live data (if Frankfurter succeeded via proxy)
-    if (fxOk) {
-      if (charts.fx) { try { charts.fx.dispose(); } catch (_) {} }
-      renderFX();
+    // Update FX chart data via setOption (NO dispose — keeps the same
+    // ECharts instance so resize/orientation works correctly. Disposing
+    // + re-creating every poll broke rotation resize — the new instance's
+    // canvas was stuck at the pre-rotation width.)
+    if (fxOk && charts.fx) {
+      try { renderFX(); } catch (e) {}
     }
 
     // Always re-render crypto/commodities chart (swaps based on what's live)
@@ -1547,10 +1551,9 @@
     // Re-render futures cards with live prices (HTML cards, no ECharts)
     renderFutures();
 
-    // Re-render trends if Binance data available (for BTC overlay)
+    // Update trends chart data via setOption (NO dispose — same reason as FX)
     if (binanceOk && charts.trends) {
-      try { charts.trends.dispose(); } catch (_) {}
-      renderTrends();
+      try { renderTrends(); } catch (e) {}
     }
 
     // Stream AI brief
@@ -1662,14 +1665,12 @@
       renderCrypto();
     }
 
-    // Always re-render futures chart (uses live commodity prices now)
     // Re-render futures cards (HTML, no ECharts dispose needed)
     renderFutures();
 
-    // Re-render FX chart if Frankfurter data fresh
+    // Update FX chart data via setOption (NO dispose — rotation fix)
     if (fxOk && charts.fx) {
-      try { charts.fx.dispose(); } catch (_) {}
-      renderFX();
+      try { renderFX(); } catch (e) {}
     }
 
     // Re-stream AI brief every 5 min (not every poll — too expensive)
