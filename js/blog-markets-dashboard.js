@@ -83,7 +83,7 @@
         </div>
         <div class="bmd-chart-grid bmd-grid-row2">
           <div class="bmd-chart-card bmd-sectors-card">
-            <div class="bmd-chart-title"><i class="fas fa-th"></i> Sector Performance <span class="bmd-src">computed</span></div>
+            <div class="bmd-chart-title"><i class="fas fa-th"></i> Sector Performance <span class="bmd-src" id="bmd-src-sectors">loading…</span></div>
             <div class="bmd-chart-body" id="bmd-chart-sectors"></div>
           </div>
           <div class="bmd-chart-card">
@@ -797,6 +797,14 @@
     } catch (e) { /* static JSON not available */ }
   }
 
+  // Fetch scraped sector ETF returns (1D/1W/1M from real Yahoo data)
+  async function fetchHistoricalSectors() {
+    try {
+      var r = await fetch('/data/historical/sectors.json');
+      if (r.ok) { liveData.sectorsHistory = await r.json(); }
+    } catch (e) { /* static JSON not available */ }
+  }
+
   function renderTrends() {
     var el = document.getElementById('bmd-chart-trends');
     if (!el) return;
@@ -923,7 +931,27 @@
     var sectors = ['Tech', 'Finance', 'Energy', 'Health', 'Consumer', 'Industrials', 'Materials', 'Utilities', 'REIT', 'Comms', 'Staples'];
     var metrics = ['1D%', '1W%', '1M%'];
     var heatData = [];
-    sectors.forEach(function (s, si) { metrics.forEach(function (m, mi) { heatData.push([mi, si, (Math.random() * 8 - 3).toFixed(2)]); }); });
+    // REAL scraped sector ETF returns (from Yahoo, saved as static JSON).
+    // No Math.random() — uses 1D/1W/1M returns computed from actual
+    // sector ETF daily closes (XLK, XLF, XLE, XLV, etc.).
+    var sectorData = liveData.sectorsHistory || {};
+    var sectorsList = sectorData.sectors || [];
+
+    sectors.forEach(function (s, si) {
+      var sd = sectorsList.find(function (x) { return x.name === s; }) || {};
+      metrics.forEach(function (m, mi) {
+        var key = m.replace('%', '');
+        var val = sd[key];
+        if (val != null) {
+          heatData.push([mi, si, parseFloat(val)]);
+        } else {
+          heatData.push({ value: [mi, si, null], itemStyle: { color: chartBgColor() } });
+        }
+      });
+    });
+
+    var hasData = sectorsList.length > 0;
+    setSrcLabel('bmd-src-sectors', hasData ? 'Yahoo live' : 'no data', hasData);
     charts.sectors.setOption({
       backgroundColor: 'transparent',
       tooltip: {
@@ -1480,6 +1508,7 @@
 
     // Fetch historical index data (static JSON scraped from Yahoo) then render
     await fetchHistoricalIndices();
+    await fetchHistoricalSectors();
     // Render static charts (trends uses historical JSON + will re-render after live data loads)
     renderTrends();
     renderSectors();
