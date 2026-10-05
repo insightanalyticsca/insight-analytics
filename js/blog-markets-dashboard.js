@@ -868,6 +868,26 @@
     // Stream AI brief
     fetchAIBrief();
 
+    // Force all charts to resize to their final container dimensions.
+    // ECharts canvases render at the INITIAL container size (which may be
+    // squished if the CSS flex/grid layout hasn't settled yet). After all
+    // data fetches + re-renders complete, the containers have their final
+    // size — calling .resize() here ensures all canvases match.
+    function resizeAllCharts() {
+      Object.keys(charts).forEach(function (k) {
+        try { charts[k].resize(); } catch (e) {}
+      });
+    }
+    // Multiple resize calls — the layout can take a few frames to settle
+    requestAnimationFrame(function () {
+      resizeAllCharts();
+      requestAnimationFrame(function () {
+        resizeAllCharts();
+        setTimeout(resizeAllCharts, 100);
+        setTimeout(resizeAllCharts, 300);
+      });
+    });
+
     // Start 60-second polling for live data
     startPolling();
 
@@ -928,6 +948,14 @@
       lastAIBriefTime = now;
       fetchAIBrief();
     }
+
+    // Force resize ALL charts after poll re-renders — ensures canvases
+    // match their container dimensions (not squished)
+    requestAnimationFrame(function () {
+      Object.keys(charts).forEach(function (k) {
+        try { charts[k].resize(); } catch (e) {}
+      });
+    });
   }
 
   function startPolling() {
