@@ -771,7 +771,10 @@
       }
     }); });
     charts.fx.setOption({
-      backgroundColor: 'transparent',
+      // Match the chart-card's dark slate gradient background so empty cells
+      // (the diagonal — currency paired with itself) blend in instead of
+      // showing as whitish. The visualMap still colors cells with data.
+      backgroundColor: 'rgba(15,23,42,0.92)',
       tooltip: {
         backgroundColor: 'rgba(15,23,42,0.92)',
         borderColor: 'rgba(6,182,212,0.35)',
