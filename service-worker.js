@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.25.0-20261005-add-dow-russell-fullwidth-mobile';
+const VERSION = 'v4.26.0-20261005-skip-blog-from-sw';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,12 +19,12 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.25.0',
-  './js/app.js?v=4.25.0',
-  './js/hero-animation.js?v=4.25.0',
-  './js/pull-to-refresh.js?v=4.25.0',
-  './js/assistant.js?v=4.25.0',
-  './js/blog-markets-dashboard.js?v=4.25.0',
+  './css/styles.css?v=4.26.0',
+  './js/app.js?v=4.26.0',
+  './js/hero-animation.js?v=4.26.0',
+  './js/pull-to-refresh.js?v=4.26.0',
+  './js/assistant.js?v=4.26.0',
+  './js/blog-markets-dashboard.js?v=4.26.0',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
@@ -89,6 +89,18 @@ self.addEventListener('fetch', (event) => {
   // requests bypass the SW entirely, the iframe behaves like a normal same-origin
   // resource load and renders reliably on every browser.
   if (url.pathname.indexOf('/dashboards-preview/') === 0) return;
+
+  // CRITICAL: Skip /blog/ entirely too — the blog dashboard (markets dashboard)
+  // updates frequently (new futures, heatmap fixes, live data changes). The SW's
+  // stale-while-revalidate strategy was serving old cached JS in PWA standalone
+  // mode, so users couldn't see the latest changes even after a deploy. By
+  // bypassing the SW for blog assets, the browser always fetches from network.
+  if (url.pathname.indexOf('/blog/') === 0) return;
+
+  // Same for blog asset requests (JS, CSS, data) that might be resolved
+  // without the /blog/ prefix (e.g. /js/blog-markets-dashboard.js).
+  if (url.pathname.indexOf('/js/blog-') === 0) return;
+  if (url.pathname.indexOf('/data/historical/') === 0) return;
 
   // Same for the dashboard data files (in case the dashboard's relative path
   // resolves outside /dashboards-preview/, e.g. legacy paths).
