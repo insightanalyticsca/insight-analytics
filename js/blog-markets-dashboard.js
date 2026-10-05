@@ -278,7 +278,7 @@
         0%, 100% { opacity: 0.6; transform: scale(0.9); }
         50% { opacity: 1; transform: scale(1.15); }
       }
-      .bmd-chart-body { width: 100%; height: 22vh; min-height: 140px; }
+      .bmd-chart-body { width: 100%; height: 22vh; min-height: 140px; min-width: 0; overflow: hidden; }
       .bmd-chart-body.bmd-tall { height: 28vh; min-height: 170px; }
       /* AI Brief — matches the executive dashboard's polished styling:
          glassmorphism, gradient title, top sheen, per-section accent strips,
