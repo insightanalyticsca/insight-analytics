@@ -89,17 +89,42 @@
 
         <div class="bmd-ai-brief">
           <div class="bmd-ai-head">
-            <div class="bmd-ai-icon"><i class="fas fa-robot"></i></div>
-            <div>
-              <div class="bmd-ai-title">AI Market Brief</div>
-              <div class="bmd-ai-sub">Streaming narrative · grounded in live dashboard data</div>
+            <div class="bmd-ai-spark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6m0 8v6m10-10h-6m-8 0H2m13.5-5.5l-2.5 2.5m-6 6l-2.5 2.5m11 0l-2.5-2.5m-6-6L4.5 4.5"/></svg></div>
+            <div class="bmd-ai-title">AI Market Brief</div>
+            <div class="bmd-ai-badge">
+              <span class="bmd-ai-dot"></span>
+              <span class="bmd-ai-badge-text">AI-wired</span>
             </div>
           </div>
           <div class="bmd-ai-grid">
-            <div class="bmd-ai-cell"><div class="bmd-ai-cell-label">What Happened</div><div class="bmd-ai-cell-text bmd-shimmer" id="bmd-ai-happened">Loading…</div></div>
-            <div class="bmd-ai-cell"><div class="bmd-ai-cell-label">Why It Matters</div><div class="bmd-ai-cell-text bmd-shimmer" id="bmd-ai-why">Loading…</div></div>
-            <div class="bmd-ai-cell"><div class="bmd-ai-cell-label">What to Expect</div><div class="bmd-ai-cell-text bmd-shimmer" id="bmd-ai-expect">Loading…</div></div>
-            <div class="bmd-ai-cell"><div class="bmd-ai-cell-label">What to Do</div><div class="bmd-ai-cell-text bmd-shimmer" id="bmd-ai-do">Loading…</div></div>
+            <div class="bmd-ai-cell bmd-ai-what">
+              <div class="bmd-ai-cell-head">
+                <div class="bmd-ai-cell-icon">✓</div>
+                <div class="bmd-ai-cell-label">What Happened</div>
+              </div>
+              <div class="bmd-ai-cell-text bmd-shimmer" id="bmd-ai-happened">Loading…</div>
+            </div>
+            <div class="bmd-ai-cell bmd-ai-why">
+              <div class="bmd-ai-cell-head">
+                <div class="bmd-ai-cell-icon">?</div>
+                <div class="bmd-ai-cell-label">Why It Matters</div>
+              </div>
+              <div class="bmd-ai-cell-text bmd-shimmer" id="bmd-ai-why">Loading…</div>
+            </div>
+            <div class="bmd-ai-cell bmd-ai-next">
+              <div class="bmd-ai-cell-head">
+                <div class="bmd-ai-cell-icon">→</div>
+                <div class="bmd-ai-cell-label">What to Expect</div>
+              </div>
+              <div class="bmd-ai-cell-text bmd-shimmer" id="bmd-ai-expect">Loading…</div>
+            </div>
+            <div class="bmd-ai-cell bmd-ai-do">
+              <div class="bmd-ai-cell-head">
+                <div class="bmd-ai-cell-icon">⊕</div>
+                <div class="bmd-ai-cell-label">What to Do</div>
+              </div>
+              <div class="bmd-ai-cell-text bmd-shimmer" id="bmd-ai-do">Loading…</div>
+            </div>
           </div>
         </div>
       </div>
@@ -227,38 +252,123 @@
       .bmd-chart-title .bmd-src { margin-left: auto; font-size: 8px; color: #64748b; font-weight: 400; }
       .bmd-chart-body { width: 100%; height: 22vh; min-height: 140px; }
       .bmd-chart-body.bmd-tall { height: 28vh; min-height: 170px; }
+      /* AI Brief — matches the executive dashboard's polished styling:
+         glassmorphism, gradient title, top sheen, per-section accent strips,
+         cell icons with gradient backgrounds, hover lift effect. */
       .bmd-ai-brief {
-        background: linear-gradient(135deg, rgba(99,102,241,.08), rgba(6,182,212,.05));
-        border: 1px solid rgba(99,102,241,.12);
-        border-radius: 12px; padding: 12px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid rgba(99,102,241,0.18);
+        background:
+          linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(6,182,212,0.04) 50%, rgba(139,92,246,0.05) 100%),
+          rgba(15,23,42,0.6);
+        backdrop-filter: blur(12px) saturate(160%);
+        -webkit-backdrop-filter: blur(12px) saturate(160%);
+        box-shadow: 0 4px 18px rgba(99,102,241,0.10), 0 1px 0 rgba(255,255,255,0.04) inset;
         margin-bottom: 8px;
-        backdrop-filter: blur(10px) saturate(120%);
-        -webkit-backdrop-filter: blur(10px) saturate(120%);
-        box-shadow: 0 2px 12px -4px rgba(0,0,0,.3);
+        position: relative;
+        overflow: hidden;
       }
-      .bmd-ai-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-      .bmd-ai-icon {
-        width: 22px; height: 22px; border-radius: 6px;
+      /* Subtle top sheen line */
+      .bmd-ai-brief::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.45) 20%, rgba(6,182,212,0.45) 50%, rgba(139,92,246,0.45) 80%, transparent 100%);
+      }
+      .bmd-ai-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+      .bmd-ai-spark {
         display: grid; place-items: center;
-        background: linear-gradient(135deg, #6366f1, #06b6d4);
-        color: #fff; font-size: 10px;
+        color: #6366f1;
+        animation: bmdAiSparkSpin 4s ease-in-out infinite;
       }
-      .bmd-ai-title { font-size: 12px; font-weight: 700; color: #e2e8f0; }
-      .bmd-ai-sub { font-size: 9px; color: #64748b; }
-      .bmd-ai-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
+      @keyframes bmdAiSparkSpin {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(180deg) scale(1.1); }
+      }
+      .bmd-ai-title {
+        font-size: 13px; font-weight: 800;
+        letter-spacing: 0.02em;
+        background: linear-gradient(135deg, #6366f1 0%, #06b6d4 50%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+      }
+      .bmd-ai-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px 3px 7px;
+        border-radius: 12px;
+        border: 1px solid rgba(16,185,129,0.35);
+        background: rgba(16,185,129,0.10);
+        color: #10b981;
+        font-size: 9px; font-weight: 700;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        margin-left: auto;
+      }
+      .bmd-ai-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: currentColor;
+        box-shadow: 0 0 8px currentColor;
+        animation: bmdAiPulse 1.8s ease-in-out infinite;
+      }
+      @keyframes bmdAiPulse {
+        0%, 100% { opacity: 0.7; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.25); }
+      }
+      .bmd-ai-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
       .bmd-ai-cell {
-        background: rgba(15,23,42,.4);
-        border: 1px solid rgba(99,102,241,.08);
-        border-radius: 8px; padding: 10px;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
+        position: relative;
+        padding: 10px 12px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(99,102,241,0.10);
+        background: rgba(15,23,42,0.4);
+        overflow: hidden;
+        transition: transform 200ms cubic-bezier(.22,1,.36,1), box-shadow 200ms;
       }
+      .bmd-ai-cell:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(99,102,241,0.14);
+      }
+      /* Section accent strip on top */
+      .bmd-ai-cell::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        opacity: 0.85;
+      }
+      .bmd-ai-what::before  { background: linear-gradient(90deg, #10b981, #06b6d4); }
+      .bmd-ai-why::before   { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+      .bmd-ai-next::before  { background: linear-gradient(90deg, #06b6d4, #6366f1); }
+      .bmd-ai-do::before    { background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+      .bmd-ai-cell-head {
+        display: flex; align-items: center; gap: 6px;
+        margin-bottom: 6px;
+      }
+      .bmd-ai-cell-icon {
+        display: grid; place-items: center;
+        width: 18px; height: 18px;
+        border-radius: 6px;
+        font-size: 10px; font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .bmd-ai-what .bmd-ai-cell-icon { background: linear-gradient(135deg, #10b981, #06b6d4); }
+      .bmd-ai-why  .bmd-ai-cell-icon { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+      .bmd-ai-next .bmd-ai-cell-icon { background: linear-gradient(135deg, #06b6d4, #6366f1); }
+      .bmd-ai-do   .bmd-ai-cell-icon { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
       .bmd-ai-cell-label {
-        font-size: 8px; font-weight: 700; text-transform: uppercase;
-        letter-spacing: .08em; color: #06b6d4; margin-bottom: 4px;
+        font-size: 9px; font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
       }
       .bmd-ai-cell-text {
-        font-size: 10px; line-height: 1.4; color: #cbd5e1;
+        font-size: 11px; line-height: 1.5;
+        color: #cbd5e1;
+        word-wrap: break-word;
       }
       .bmd-shimmer {
         background: linear-gradient(90deg, rgba(99,102,241,.1) 25%, rgba(99,102,241,.25) 50%, rgba(99,102,241,.1) 75%);
@@ -376,18 +486,20 @@
       [data-bmd-theme="light"] .bmd-chart-title { color: #1e293b; }
       [data-bmd-theme="light"] .bmd-chart-title .bmd-src { color: #94a3b8; }
       [data-bmd-theme="light"] .bmd-ai-brief {
-        background: linear-gradient(135deg, rgba(99,102,241,.05), rgba(6,182,212,.03));
-        border-color: rgba(99,102,241,.1);
-        backdrop-filter: blur(10px) saturate(120%);
-        -webkit-backdrop-filter: blur(10px) saturate(120%);
+        background:
+          linear-gradient(135deg, rgba(99,102,241,0.04) 0%, rgba(6,182,212,0.03) 50%, rgba(139,92,246,0.03) 100%),
+          rgba(255,255,255,0.85);
+        border-color: rgba(99,102,241,0.15);
+        backdrop-filter: blur(12px) saturate(160%);
+        -webkit-backdrop-filter: blur(12px) saturate(160%);
       }
-      [data-bmd-theme="light"] .bmd-ai-title { color: #1e293b; }
-      [data-bmd-theme="light"] .bmd-ai-sub { color: #64748b; }
+      /* Title stays gradient in both themes */
       [data-bmd-theme="light"] .bmd-ai-cell {
-        background: rgba(255, 255, 255, .7);
-        border-color: rgba(99, 102, 241, .1);
+        background: rgba(255,255,255,0.7);
+        border-color: rgba(99,102,241,0.10);
       }
       [data-bmd-theme="light"] .bmd-ai-cell-text { color: #475569; }
+      [data-bmd-theme="light"] .bmd-ai-cell-label { color: #64748b; }
       [data-bmd-theme="light"] .bmd-shimmer {
         background: linear-gradient(90deg, rgba(99,102,241,.08) 25%, rgba(99,102,241,.15) 50%, rgba(99,102,241,.08) 75%);
       }
