@@ -588,7 +588,13 @@
     if (hasIndices) {
       var spPrev = sp.price != null && sp.change != null ? sp.price / (1 + sp.change / 100) : null;
       var nsPrev = ns.price != null && ns.change != null ? ns.price / (1 + ns.change / 100) : null;
-      for (var i = 0; i < 28; i++) { spData.push(null); nsData.push(null); volData.push(0); }
+      // Pad ALL arrays (data + x-axis labels) to 30 points so ECharts can
+      // map data[i] → days[i]. First 28 are null/placeholder, last 2 are live.
+      for (var i = 0; i < 28; i++) {
+        spData.push(null); nsData.push(null); volData.push(0);
+        var pd = new Date(); pd.setDate(pd.getDate() - (29 - i));
+        days.push((pd.getMonth() + 1) + '/' + pd.getDate());
+      }
       var yd = new Date(); yd.setDate(yd.getDate() - 1);
       var td = new Date();
       days.push((yd.getMonth() + 1) + '/' + yd.getDate());
