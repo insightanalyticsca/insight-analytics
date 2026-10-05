@@ -426,6 +426,9 @@
   // ─── Fetch LIVE FX via Netlify proxy (Frankfurter server-side) ─────────
   // Also fetches YESTERDAY's rates directly from Frankfurter (CORS-enabled)
   // to compute REAL cross-currency % changes for the heatmap. No demo data.
+  // FALLBACK: If Frankfurter historical fails, fetch Yahoo currency pair
+  // quotes (via Netlify proxy) for direct % changes. User stressed: NO empty
+  // cells, NO demo data — always show live values.
   async function fetchFX() {
     try {
       // 1. Current rates via Netlify proxy (cached server-side, reliable)
@@ -444,7 +447,7 @@
         var prevDate = new Date(baseDate);
         prevDate.setDate(prevDate.getDate() - back);
         var dateStr = prevDate.toISOString().split('T')[0];
-        var yUrl = 'https://api.frankfurter.app/' + dateStr + '?from=USD&to=EUR,GBP,JPY,CAD,AUD,CHF,CNY';
+        var yUrl = 'https://api.frankfurter.dev/v1/' + dateStr + '?from=USD&to=EUR,GBP,JPY,CAD,AUD,CHF,CNY';
         try {
           var r2 = await fetch(yUrl);
           if (!r2.ok) continue;
@@ -462,6 +465,38 @@
             }
           }
         } catch (e) { /* try next day back */ }
+      }
+
+      // 3. FALLBACK: If Frankfurter historical failed (CORS, network, weekend),
+      //    fetch Yahoo currency pair quotes (USD-based) via Netlify proxy.
+      //    Yahoo provides daily % change directly — no historical fetch needed.
+      //    We compute cross-currency % changes using the approximation:
+      //      EUR/GBP % ≈ EUR/USD % - GBP/USD %
+      if (!liveData.fxRatesPrev) {
+        try {
+          var fxSymbols = ['EURUSD%3DX', 'GBPUSD%3DX', 'JPYUSD%3DX', 'CADUSD%3DX', 'AUDUSD%3DX', 'CHFUSD%3DX', 'CNYUSD%3DX'].join(',');
+          var r3 = await fetch(MARKETS_PROXY + '?symbols=' + fxSymbols);
+          if (r3.ok) {
+            var d3 = await r3.json();
+            if (d3 && d3.quotes) {
+              // Map Yahoo quotes to { EUR: pct, GBP: pct, ... }
+              // Each Yahoo symbol is "XXXUSD=X" — the % change of XXX vs USD.
+              var fxPct = {};
+              var symKey = { 'EURUSD': 'EUR', 'GBPUSD': 'GBP', 'JPYUSD': 'JPY', 'CADUSD': 'CAD', 'AUDUSD': 'AUD', 'CHFUSD': 'CHF', 'CNYUSD': 'CNY' };
+              d3.quotes.forEach(function (q) {
+                var baseSym = q.symbol.replace('USD=X', '').replace('=X', '');
+                if (symKey[baseSym] && q.changePct != null) {
+                  // Yahoo "EURUSD=X" = EUR/USD rate. changePct = % change of EUR vs USD.
+                  // For cross-currency computation, we want each currency's % move vs USD.
+                  fxPct[symKey[baseSym]] = q.changePct;
+                }
+              });
+              if (Object.keys(fxPct).length > 0) {
+                liveData.fxDirectPct = fxPct;  // { EUR: 0.5, GBP: -0.3, ... }
+              }
+            }
+          }
+        } catch (e) { /* Yahoo fallback failed too */ }
       }
 
       return true;
@@ -810,19 +845,22 @@
     charts.fx = echarts.init(el);
     var curr = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY'];
     var fxData = [];
-    // Live cross-currency % changes computed from today's vs yesterday's
-    // Frankfurter rates. NO demo data — if rates aren't available, cells
-    // show "—" with the chart background color (no fake random values).
+    // Live cross-currency % changes. Priority:
+    //   1. Frankfurter historical (today vs yesterday) — most accurate
+    //   2. Yahoo currency pair quotes (via Netlify proxy) — direct % changes
+    //   3. If both fail, show "—" (no demo data, no empty matrix)
     var rates = liveData.fxRates || {};
     var ratesPrev = liveData.fxRatesPrev || {};
-    var hasLive = Object.keys(rates).length > 0 && Object.keys(ratesPrev).length > 0;
+    var directPct = liveData.fxDirectPct || {};
+    var hasFrankfurter = Object.keys(rates).length > 0 && Object.keys(ratesPrev).length > 0;
+    var hasYahoo = Object.keys(directPct).length > 0;
 
     curr.forEach(function (c, ci) { curr.forEach(function (c2, ci2) {
       if (ci === ci2) {
         // Diagonal — currency paired with itself, no change
         fxData.push({ value: [ci2, ci, 0], itemStyle: { color: neutralCellColor() } });
-      } else if (hasLive) {
-        // Compute real cross-currency % change:
+      } else if (hasFrankfurter) {
+        // Compute real cross-currency % change from today's vs yesterday's rates:
         // EUR/GBP cross = GBP_rate / EUR_rate (how many GBP per 1 EUR)
         // % change = ((crossToday - crossPrev) / crossPrev) * 100
         var r1today = rates[c] || 1;
@@ -833,13 +871,25 @@
         var crossPrev = r2prev / r1prev;
         var chg = ((crossToday - crossPrev) / crossPrev) * 100;
         fxData.push([ci2, ci, parseFloat(chg.toFixed(2))]);
+      } else if (hasYahoo) {
+        // Yahoo fallback: each currency has a direct % change vs USD.
+        // Cross-currency % ≈ currency1_pct - currency2_pct (small-change approx).
+        // E.g., EUR/GBP % ≈ EUR_pct_vs_USD - GBP_pct_vs_USD.
+        var pct1 = directPct[c] || 0;
+        var pct2 = directPct[c2] || 0;
+        var crossChg = pct1 - pct2;
+        fxData.push([ci2, ci, parseFloat(crossChg.toFixed(2))]);
       } else {
-        // No live data available — show "—" with chart bg color (no demo)
+        // Both sources failed — show "—" (no demo data)
         fxData.push({ value: [ci2, ci, null], itemStyle: { color: chartBgColor() } });
       }
     }); });
     var srcLabel = document.getElementById('bmd-src-fx');
-    if (srcLabel) srcLabel.textContent = hasLive ? 'Frankfurter/ECB live' : 'rate fetch failed';
+    if (srcLabel) {
+      if (hasFrankfurter) srcLabel.textContent = 'Frankfurter/ECB live';
+      else if (hasYahoo) srcLabel.textContent = 'Yahoo Finance live';
+      else srcLabel.textContent = 'rate fetch failed';
+    }
     charts.fx.setOption({
       // Theme-aware background — matches chart-card gradient so empty cells
       // (diagonal) blend in. Was hardcoded to dark slate, which made the
