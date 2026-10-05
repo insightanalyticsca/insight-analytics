@@ -758,7 +758,15 @@
     charts.fx = echarts.init(el);
     var curr = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY'];
     var fxData = [];
-    curr.forEach(function (c, ci) { curr.forEach(function (c2, ci2) { if (ci !== ci2) fxData.push([ci2, ci, (Math.random() * 3 - 1.5).toFixed(2)]); }); });
+    // Include diagonal cells (currency paired with itself) with value 0 so
+    // the visualMap renders them as the neutral slate color instead of
+    // leaving them as empty whitish cells (the "whitish band" the user saw
+    // across the middle of the matrix). The label formatter below shows "—"
+    // for diagonal cells since a currency vs itself has no meaningful change.
+    curr.forEach(function (c, ci) { curr.forEach(function (c2, ci2) {
+      if (ci === ci2) { fxData.push([ci2, ci, 0]); }
+      else { fxData.push([ci2, ci, (Math.random() * 3 - 1.5).toFixed(2)]); }
+    }); });
     charts.fx.setOption({
       backgroundColor: 'transparent',
       tooltip: {
@@ -801,7 +809,12 @@
           color: '#e2e8f0',
           textShadowColor: 'rgba(0,0,0,0.55)',
           textShadowBlur: 2,
-          formatter: function (p) { return p.value[2]; } 
+          formatter: function (p) {
+            // Diagonal cells (currency paired with itself) show "—" — no
+            // meaningful change for EUR/EUR etc. Off-diagonal shows the %.
+            if (p.value[0] === p.value[1]) return '—';
+            return p.value[2];
+          } 
         }, 
         // Same glassy tile treatment as sectors — rounded corners, breathing
         // gaps, soft glow on cells + stronger glow on hover.

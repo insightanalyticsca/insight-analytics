@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.12.3-20261005-visible-translucency';
+const VERSION = 'v4.13.0-20261005-fix-fx-diagonal-band';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,12 +19,12 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.12.3',
-  './js/app.js?v=4.12.3',
-  './js/hero-animation.js?v=4.12.3',
-  './js/pull-to-refresh.js?v=4.12.3',
-  './js/assistant.js?v=4.12.3',
-  './js/blog-markets-dashboard.js?v=4.12.3',
+  './css/styles.css?v=4.13.0',
+  './js/app.js?v=4.13.0',
+  './js/hero-animation.js?v=4.13.0',
+  './js/pull-to-refresh.js?v=4.13.0',
+  './js/assistant.js?v=4.13.0',
+  './js/blog-markets-dashboard.js?v=4.13.0',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
