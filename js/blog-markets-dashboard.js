@@ -578,12 +578,14 @@
       xAxis: { 
         type: 'category', data: metrics, 
         axisLabel: { color: '#cbd5e1', fontSize: 10, fontWeight: 600, margin: 12 }, 
-        axisLine: { show: false }, axisTick: { show: false } 
+        axisLine: { show: false }, axisTick: { show: false },
+        splitLine: { show: false }
       },
       yAxis: { 
         type: 'category', data: sectors, 
         axisLabel: { color: '#cbd5e1', fontSize: 10, fontWeight: 500, margin: 14 }, 
-        axisLine: { show: false }, axisTick: { show: false } 
+        axisLine: { show: false }, axisTick: { show: false },
+        splitLine: { show: false }
       },
       // Modern color scale: rich red → rose → coral → amber → mint → emerald → deep emerald
       // Avoids harsh pure red/green; richer gradient stops make the heatmap feel
@@ -807,13 +809,15 @@
         type: 'category', data: curr, 
         axisLabel: { color: '#cbd5e1', fontSize: 10, fontWeight: 600, margin: 10 }, 
         axisLine: { show: false }, axisTick: { show: false },
-        splitArea: { show: false }
+        splitArea: { show: false },
+        splitLine: { show: false }
       },
       yAxis: { 
         type: 'category', data: curr, 
         axisLabel: { color: '#cbd5e1', fontSize: 10, fontWeight: 600, margin: 10 }, 
         axisLine: { show: false }, axisTick: { show: false },
-        splitArea: { show: false }
+        splitArea: { show: false },
+        splitLine: { show: false }
       },
       // FX color scale: rose → amber → dark slate (neutral) → mint → emerald.
       // Passing through slate as the neutral keeps the matrix readable when most
