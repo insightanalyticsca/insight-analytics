@@ -275,10 +275,13 @@
         .bmd-kpi-grid { grid-template-columns: repeat(2, 1fr); }
         .bmd-ai-grid { grid-template-columns: 1fr; }
         .bmd-chart-body { height: 260px; }
-      /* Futures cards grid — like KPI tiles but for futures contracts */
+      }
+
+      /* Futures cards grid — like KPI tiles but for futures contracts.
+         Top-level (all viewports). Mobile portrait overrides below. */
       .bmd-futures-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
         gap: 6px;
         min-height: 140px;
       }
@@ -326,6 +329,17 @@
       [data-bmd-theme="light"] .bmd-future-card {
         background: linear-gradient(135deg, rgba(99,102,241,.04), rgba(6,182,212,.03));
       }
+
+      /* Mobile portrait: 4 columns × 2 rows (8 visible + 2 wrap) */
+      @media (max-width: 640px) {
+        .bmd-futures-grid {
+          grid-template-columns: repeat(4, 1fr) !important;
+          gap: 4px;
+        }
+        .bmd-future-card { padding: 6px 3px; }
+        .bmd-future-name { font-size: 8px; }
+        .bmd-future-price { font-size: 11px; }
+        .bmd-future-chg { font-size: 8px; }
       }
 
       /* ═══ LIGHT THEME OVERRIDES — when [data-theme="light"] on <html> ═══ */
