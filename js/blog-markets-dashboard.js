@@ -128,10 +128,12 @@
       .bmd-live-badge {
         display: inline-flex; align-items: center; gap: 5px;
         padding: 4px 10px; border-radius: 999px;
-        background: rgba(16, 185, 129, .12);
-        border: 1px solid rgba(16, 185, 129, .25);
+        background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(16,185,129,.06));
+        border: 1px solid rgba(16,185,129,.2);
         font-size: 10px; font-weight: 700; color: #10b981;
-        text-transform: uppercase; letter-spacing: .05em;
+        text-transform: uppercase; letter-spacing: .06em;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
       }
       .bmd-theme-toggle {
         width: 28px; height: 28px; border-radius: 6px;
@@ -160,12 +162,17 @@
         gap: 6px; margin-bottom: 10px;
       }
       .bmd-kpi {
-        background: rgba(15, 23, 42, .85);
-        border: 1px solid rgba(99, 102, 241, .15);
-        border-radius: 8px; padding: 8px 6px;
-        text-align: center; transition: border-color 200ms;
+        background: linear-gradient(145deg, rgba(30,41,59,.9), rgba(15,23,42,.95));
+        border: 1px solid rgba(99,102,241,.12);
+        border-radius: 12px; padding: 10px 8px;
+        text-align: center; transition: all 250ms cubic-bezier(.4,0,.2,1);
+        box-shadow: 0 2px 8px -2px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.03);
       }
-      .bmd-kpi:hover { border-color: #06b6d4; }
+      .bmd-kpi:hover {
+        border-color: rgba(6,182,212,.4);
+        box-shadow: 0 4px 16px -4px rgba(6,182,212,.15), inset 0 1px 0 rgba(255,255,255,.05);
+        transform: translateY(-1px);
+      }
       .bmd-kpi-label {
         font-size: 9px; color: #64748b;
         text-transform: uppercase; letter-spacing: .06em;
@@ -173,7 +180,8 @@
       }
       .bmd-kpi-val {
         font-family: 'Space Grotesk', sans-serif;
-        font-size: 16px; font-weight: 800; color: #e2e8f0;
+        font-size: 17px; font-weight: 700; color: #f1f5f9;
+        letter-spacing: -.02em;
         margin-bottom: 2px; line-height: 1.1;
       }
       .bmd-kpi-val-unavailable {
@@ -193,9 +201,10 @@
         display: grid; gap: 8px; margin-bottom: 8px;
       }
       .bmd-chart-card {
-        background: rgba(15, 23, 42, .85);
-        border: 1px solid rgba(99, 102, 241, .15);
-        border-radius: 8px; padding: 10px;
+        background: linear-gradient(145deg, rgba(30,41,59,.85), rgba(15,23,42,.9));
+        border: 1px solid rgba(99,102,241,.1);
+        border-radius: 12px; padding: 12px;
+        box-shadow: 0 2px 10px -3px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.02);
       }
       .bmd-chart-card.bmd-wide { grid-column: 1 / -1; }
       .bmd-chart-card.bmd-wide-2 { grid-column: span 2; }
@@ -212,10 +221,13 @@
       .bmd-chart-body { width: 100%; height: 22vh; min-height: 140px; }
       .bmd-chart-body.bmd-tall { height: 28vh; min-height: 170px; }
       .bmd-ai-brief {
-        background: linear-gradient(135deg, rgba(99,102,241,.06), rgba(6,182,212,.04));
-        border: 1px solid rgba(99, 102, 241, .15);
-        border-radius: 8px; padding: 10px;
+        background: linear-gradient(135deg, rgba(99,102,241,.08), rgba(6,182,212,.05));
+        border: 1px solid rgba(99,102,241,.12);
+        border-radius: 12px; padding: 12px;
         margin-bottom: 8px;
+        backdrop-filter: blur(10px) saturate(120%);
+        -webkit-backdrop-filter: blur(10px) saturate(120%);
+        box-shadow: 0 2px 12px -4px rgba(0,0,0,.3);
       }
       .bmd-ai-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
       .bmd-ai-icon {
@@ -228,9 +240,11 @@
       .bmd-ai-sub { font-size: 9px; color: #64748b; }
       .bmd-ai-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
       .bmd-ai-cell {
-        background: rgba(15, 23, 42, .5);
-        border: 1px solid rgba(99, 102, 241, .15);
-        border-radius: 6px; padding: 8px;
+        background: rgba(15,23,42,.4);
+        border: 1px solid rgba(99,102,241,.08);
+        border-radius: 8px; padding: 10px;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
       }
       .bmd-ai-cell-label {
         font-size: 8px; font-weight: 700; text-transform: uppercase;
@@ -264,10 +278,14 @@
       [data-bmd-theme="light"] .bmd-bn { color: #1e293b; }
       [data-bmd-theme="light"] .bmd-bs { color: #64748b; }
       [data-bmd-theme="light"] .bmd-kpi {
-        background: rgba(255, 255, 255, .9);
-        border-color: rgba(99, 102, 241, .15);
+        background: linear-gradient(145deg, rgba(255,255,255,.95), rgba(248,250,252,.9));
+        border-color: rgba(99,102,241,.12);
+        box-shadow: 0 2px 8px -2px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.5);
       }
-      [data-bmd-theme="light"] .bmd-kpi:hover { border-color: #06b6d4; }
+      [data-bmd-theme="light"] .bmd-kpi:hover {
+        border-color: rgba(6,182,212,.3);
+        box-shadow: 0 4px 16px -4px rgba(6,182,212,.1);
+      }
       [data-bmd-theme="light"] .bmd-kpi-label { color: #64748b; }
       [data-bmd-theme="light"] .bmd-kpi-val { color: #0f172a; }
       [data-bmd-theme="light"] .bmd-kpi-val-unavailable { color: #94a3b8; }
@@ -275,14 +293,17 @@
         background: linear-gradient(90deg, rgba(99,102,241,.1) 25%, rgba(255,255,255,1) 50%, rgba(99,102,241,.1) 75%);
       }
       [data-bmd-theme="light"] .bmd-chart-card {
-        background: rgba(255, 255, 255, .9);
-        border-color: rgba(99, 102, 241, .12);
+        background: linear-gradient(145deg, rgba(255,255,255,.95), rgba(248,250,252,.9));
+        border-color: rgba(99,102,241,.1);
+        box-shadow: 0 2px 10px -3px rgba(0,0,0,.06), inset 0 1px 0 rgba(255,255,255,.5);
       }
       [data-bmd-theme="light"] .bmd-chart-title { color: #1e293b; }
       [data-bmd-theme="light"] .bmd-chart-title .bmd-src { color: #94a3b8; }
       [data-bmd-theme="light"] .bmd-ai-brief {
-        background: linear-gradient(135deg, rgba(99,102,241,.04), rgba(6,182,212,.03));
-        border-color: rgba(99, 102, 241, .12);
+        background: linear-gradient(135deg, rgba(99,102,241,.05), rgba(6,182,212,.03));
+        border-color: rgba(99,102,241,.1);
+        backdrop-filter: blur(10px) saturate(120%);
+        -webkit-backdrop-filter: blur(10px) saturate(120%);
       }
       [data-bmd-theme="light"] .bmd-ai-title { color: #1e293b; }
       [data-bmd-theme="light"] .bmd-ai-sub { color: #64748b; }
@@ -470,14 +491,16 @@
       tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
       legend: { data: ['S&P 500', 'NASDAQ', 'Volume (B)'].concat(btcSeries ? ['BTC ($)'] : []), textStyle: { color: '#94a3b8', fontSize: 10 }, top: 0 },
       grid: { left: 60, right: 70, top: 30, bottom: 30 },
+      xAxis: { type: 'category', data: days, axisLabel: { color: axisLabelColor(), fontSize: 9, rotate: 45 }, axisLine: { lineStyle: { color: 'rgba(99,102,241,.1)' } }, axisTick: { show: false } },
+      yAxis: { type: 'value', axisLabel: { color: axisLabelColor(), fontSize: 9 }, splitLine: { lineStyle: { color: 'rgba(99,102,241,.06)', type: 'dashed' } }, axisLine: { show: false }, axisTick: { show: false } },
       xAxis: { type: 'category', data: days, axisLabel: { color: '#64748b', fontSize: 9, rotate: 45 } },
       yAxis: [
         { type: 'value', position: 'left', axisLabel: { color: '#64748b', fontSize: 9 } },
         { type: 'value', position: 'right', axisLabel: { color: '#64748b', fontSize: 9 }, name: 'BTC $', nameTextStyle: { color: '#f59e0b', fontSize: 9 } }
       ],
       series: [
-        { name: 'S&P 500', type: 'line', data: sp, smooth: true, symbol: 'none', lineStyle: { color: '#6366f1', width: 2 }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(99,102,241,0.15)' }, { offset: 1, color: 'rgba(99,102,241,0)' }] } } },
-        { name: 'NASDAQ', type: 'line', data: ns, smooth: true, symbol: 'none', lineStyle: { color: '#06b6d4', width: 2 } },
+        { name: 'S&P 500', type: 'line', data: sp, smooth: true, symbol: 'none', lineStyle: { color: '#6366f1', width: 2.5, shadowColor: 'rgba(99,102,241,.3)', shadowBlur: 8 }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(99,102,241,0.15)' }, { offset: 1, color: 'rgba(99,102,241,0)' }] } } },
+        { name: 'NASDAQ', type: 'line', data: ns, smooth: true, symbol: 'none', lineStyle: { color: '#06b6d4', width: 2.5, shadowColor: 'rgba(6,182,212,.3)', shadowBlur: 8 } },
         { name: 'Volume (B)', type: 'bar', data: vol, itemStyle: { color: 'rgba(99,102,241,0.15)' } }
       ].concat(btcSeries ? [btcSeries] : [])
     });
@@ -497,6 +520,7 @@
       backgroundColor: 'transparent',
       tooltip: { formatter: function (p) { return sectors[p.value[1]] + ' ' + metrics[p.value[0]] + ': ' + p.value[2] + '%'; } },
       grid: { left: 80, right: 20, top: 10, bottom: 30 },
+      splitLine: { show: false },
       xAxis: { type: 'category', data: metrics, axisLabel: { color: '#64748b', fontSize: 10 } },
       yAxis: { type: 'category', data: sectors, axisLabel: { color: '#94a3b8', fontSize: 10 } },
       visualMap: { min: -3, max: 5, calculable: false, show: false, inRange: { color: ['#ef4444', '#f59e0b', '#10b981'] } },
@@ -570,6 +594,7 @@
       tooltip: { trigger: 'axis' },
       legend: { data: series.map(function (s) { return s.name; }), textStyle: { color: '#94a3b8', fontSize: 10 }, top: 0, type: 'scroll' },
       grid: { left: 55, right: 20, top: 30, bottom: 30 },
+      yAxis: { type: 'value', axisLabel: { color: axisLabelColor(), fontSize: 9 }, splitLine: { lineStyle: { color: 'rgba(99,102,241,.06)', type: 'dashed' } }, axisLine: { show: false }, axisTick: { show: false } },
       xAxis: { type: 'category', data: dates, axisLabel: { color: '#64748b', fontSize: 8, interval: 9 } },
       yAxis: { type: 'value', axisLabel: { color: '#64748b', fontSize: 9 } },
       series: series
@@ -608,6 +633,7 @@
       backgroundColor: 'transparent',
       tooltip: { trigger: 'axis' },
       grid: { left: 50, right: 20, top: 20, bottom: 30 },
+      splitLine: { show: false },
       xAxis: { type: 'category', data: names, axisLabel: { color: '#94a3b8', fontSize: 9, rotate: 30 } },
       yAxis: { type: 'value', axisLabel: { color: '#64748b', fontSize: 9 } },
       series: [{ type: 'bar', data: barData, barWidth: '60%', label: { show: true, position: 'top', color: '#94a3b8', fontSize: 9, formatter: function (p) { return '$' + p.value; } } }]
