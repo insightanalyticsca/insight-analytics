@@ -1591,8 +1591,7 @@ ul {
 .blocks-note { font-size: 12px !important; color: var(--muted); font-style: italic; }
 
 /* ============================ BROWSER MAXIMIZE BUTTON + FULLSCREEN ============================ */
-.browser-maximize,
-.browser-open {
+.browser-maximize {
   border: 0;
   background: transparent;
   color: var(--text-soft);
@@ -1604,8 +1603,7 @@ ul {
   place-items: center;
   transition: all 180ms ease;
 }
-.browser-maximize:hover,
-.browser-open:hover {
+.browser-maximize:hover {
   background: var(--border);
   color: var(--text);
 }
@@ -1669,8 +1667,7 @@ ul {
   padding: 8px 16px;
   /* Make the restore button hit-target larger on mobile for easier collapse */
 }
-.browser-mock.is-maximized .browser-maximize,
-.browser-mock.is-maximized .browser-open {
+.browser-mock.is-maximized .browser-maximize {
   padding: 10px 14px; /* larger tap target */
   font-size: 16px;
   background: var(--surface-2);
@@ -1823,21 +1820,8 @@ ul {
    dashboard's `100vh` resolves to the iframe's 1080px height, so the
    canvas min-height becomes 960px (its design height) — visuals
    render at their natural, readable size.
-
-   We also surface the "Open in new tab" button prominently on mobile
-   as an escape hatch for users who'd rather view the dashboard's
-   native responsive layout in a separate browser tab.
    ------------------------------------------------------------------ */
 @media (max-width: 768px) {
-  /* Always show the open-in-new-tab button on mobile (it's the
-     recommended path for phones) — make it visually prominent. */
-  .browser-open {
-    padding: 6px 10px;
-    font-size: 15px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-  }
-
   /* When maximized on mobile: render dashboard at desktop dimensions,
      allow bidirectional panning. */
   .browser-mock.is-maximized .browser-frame {

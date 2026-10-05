@@ -306,24 +306,12 @@
    * ------------------------------------------------------------------ */
   const browserMock = document.getElementById("browserMock");
   const maximizeBtn = document.getElementById("browserMaximize");
-  const openBtn = document.getElementById("browserOpen");
   // Reuses showcaseFrame (the iframe element) declared above in this scope.
 
   // Create backdrop element
   const backdrop = document.createElement("div");
   backdrop.className = "browser-backdrop";
   document.body.appendChild(backdrop);
-
-  // "Open in new tab" — escape hatch for mobile users (and anyone who'd
-  // rather view the dashboard's native responsive layout directly).
-  if (openBtn) {
-    openBtn.addEventListener("click", function () {
-      const src = showcaseFrame && (showcaseFrame.getAttribute("data-src") || showcaseFrame.src);
-      if (src) {
-        window.open(src, "_blank", "noopener,noreferrer");
-      }
-    });
-  }
 
   if (browserMock && maximizeBtn) {
     maximizeBtn.addEventListener("click", function () {
