@@ -81,7 +81,7 @@
             <div class="bmd-chart-title"><i class="fas fa-coins"></i> Crypto Comparison <span class="bmd-src" id="bmd-src-crypto">loading…</span></div>
             <div class="bmd-chart-body" id="bmd-chart-crypto"></div>
           </div>
-          <div class="bmd-chart-card">
+          <div class="bmd-chart-card bmd-futures-card">
             <div class="bmd-chart-title"><i class="fas fa-chart-bar"></i> Futures <span class="bmd-src" id="bmd-src-futures">loading…</span></div>
             <div class="bmd-futures-grid" id="bmd-futures-grid"></div>
           </div>
@@ -330,10 +330,12 @@
         background: linear-gradient(135deg, rgba(99,102,241,.04), rgba(6,182,212,.03));
       }
 
-      /* Mobile: 4 columns × 2 rows (8 visible + 2 wrap).
-         Covers both portrait AND landscape on phones, plus PWA standalone
-         mode where the viewport width may differ from the browser. */
-      @media (max-width: 900px) {
+      /* Mobile: 4 columns × 2 rows (8 visible + 4 wrap).
+         Futures card spans full viewport width on mobile. */
+      @media (max-width: 1024px) {
+        .bmd-grid-row2 .bmd-futures-card {
+          grid-column: 1 / -1; /* span all columns — full width */
+        }
         .bmd-futures-grid {
           grid-template-columns: repeat(4, 1fr) !important;
           gap: 4px;
@@ -933,6 +935,8 @@
     var futuresList = [
       { key: 'esFuture', symbol: 'ES=F', name: 'S&P 500', prefix: '' },
       { key: 'nqFuture', symbol: 'NQ=F', name: 'NASDAQ', prefix: '' },
+      { key: 'ymFuture', symbol: 'YM=F', name: 'Dow Jones', prefix: '' },
+      { key: 'rtyFuture', symbol: 'RTY=F', name: 'Russell', prefix: '' },
       { key: 'crudeOil', symbol: 'CL=F', name: 'Crude Oil', prefix: '$' },
       { key: 'gold', symbol: 'GC=F', name: 'Gold', prefix: '$' },
       { key: 'silver', symbol: 'SI=F', name: 'Silver', prefix: '$' },
@@ -969,12 +973,12 @@
   // Fetch live futures quotes via Netlify proxy
   async function fetchFutures() {
     try {
-      var symbols = ['ES%3DF', 'NQ%3DF', 'CL%3DF', 'GC%3DF', 'SI%3DF', 'HG%3DF', 'NG%3DF', 'ZW%3DF', 'ZC%3DF', 'ZS%3DF'].join(',');
+      var symbols = ['ES%3DF', 'NQ%3DF', 'YM%3DF', 'RTY%3DF', 'CL%3DF', 'GC%3DF', 'SI%3DF', 'HG%3DF', 'NG%3DF', 'ZW%3DF', 'ZC%3DF', 'ZS%3DF'].join(',');
       var r = await fetch(MARKETS_PROXY + '?symbols=' + symbols);
       if (!r.ok) return false;
       var d = await r.json();
       if (!d || !d.quotes) return false;
-      var keyMap = { 'ES=F': 'esFuture', 'NQ=F': 'nqFuture', 'CL=F': 'crudeOil', 'GC=F': 'gold', 'SI=F': 'silver', 'HG=F': 'copper', 'NG=F': 'natGas', 'ZW=F': 'wheat', 'ZC=F': 'corn', 'ZS=F': 'soybean' };
+      var keyMap = { 'ES=F': 'esFuture', 'NQ=F': 'nqFuture', 'YM=F': 'ymFuture', 'RTY=F': 'rtyFuture', 'CL=F': 'crudeOil', 'GC=F': 'gold', 'SI=F': 'silver', 'HG=F': 'copper', 'NG=F': 'natGas', 'ZW=F': 'wheat', 'ZC=F': 'corn', 'ZS=F': 'soybean' };
       d.quotes.forEach(function (q) {
         if (keyMap[q.symbol] && q.price != null) {
           liveData[keyMap[q.symbol]] = { price: q.price, change: q.changePct };
