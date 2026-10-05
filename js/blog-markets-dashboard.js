@@ -189,8 +189,8 @@
       }
       .bmd-chart-title i { color: #06b6d4; font-size: 10px; }
       .bmd-chart-title .bmd-src { margin-left: auto; font-size: 8px; color: #64748b; font-weight: 400; }
-      .bmd-chart-body { width: 100%; height: 140px; }
-      .bmd-chart-body.bmd-tall { height: 170px; }
+      .bmd-chart-body { width: 100%; height: 22vh; min-height: 140px; }
+      .bmd-chart-body.bmd-tall { height: 28vh; min-height: 170px; }
       .bmd-ai-brief {
         background: linear-gradient(135deg, rgba(99,102,241,.06), rgba(6,182,212,.04));
         border: 1px solid rgba(99, 102, 241, .15);
