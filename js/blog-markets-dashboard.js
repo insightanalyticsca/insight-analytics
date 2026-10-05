@@ -937,29 +937,40 @@
     if (!el) return;
     charts.sectors = echarts.init(el);
     var sectors = ['Tech', 'Finance', 'Energy', 'Health', 'Consumer', 'Industrials', 'Materials', 'Utilities', 'REIT', 'Comms', 'Staples'];
+    var sectorSymbols = ['XLK','XLF','XLE','XLV','XLY','XLI','XLB','XLU','VNQ','XLC','XLP'];
     var metrics = ['1D%', '1W%', '1M%'];
     var heatData = [];
-    // REAL scraped sector ETF returns (from Yahoo, saved as static JSON).
-    // No Math.random() — uses 1D/1W/1M returns computed from actual
-    // sector ETF daily closes (XLK, XLF, XLE, XLV, etc.).
+    // 1D% = LIVE from Yahoo proxy (updates every 30s during poll)
+    // 1W% + 1M% = from static scrape (historical, updated periodically)
     var sectorData = liveData.sectorsHistory || {};
     var sectorsList = sectorData.sectors || [];
+    var sectorLive = liveData.sectorLive || {};  // { XLK: {price, change}, ... }
 
     sectors.forEach(function (s, si) {
       var sd = sectorsList.find(function (x) { return x.name === s; }) || {};
+      var sym = sectorSymbols[si];
+      var live = sectorLive[sym];
       metrics.forEach(function (m, mi) {
         var key = m.replace('%', '');
-        var val = sd[key];
+        var val;
+        if (key === '1D' && live && live.change != null) {
+          // LIVE daily change from Yahoo proxy (intraday)
+          val = parseFloat(live.change);
+        } else {
+          // Static scrape for 1W/1M
+          val = sd[key] != null ? parseFloat(sd[key]) : null;
+        }
         if (val != null) {
-          heatData.push([mi, si, parseFloat(val)]);
+          heatData.push([mi, si, val]);
         } else {
           heatData.push({ value: [mi, si, null], itemStyle: { color: chartBgColor() } });
         }
       });
     });
 
-    var hasData = sectorsList.length > 0;
-    setSrcLabel('bmd-src-sectors', hasData ? 'Yahoo live' : 'no data', hasData);
+    var hasLive = Object.keys(sectorLive).length > 0;
+    var hasHist = sectorsList.length > 0;
+    setSrcLabel('bmd-src-sectors', hasLive ? 'Yahoo live' : (hasHist ? 'Yahoo history' : 'no data'), hasLive || hasHist);
     charts.sectors.setOption({
       backgroundColor: 'transparent',
       tooltip: {
@@ -1177,6 +1188,25 @@
       d.quotes.forEach(function (q) {
         if (keyMap[q.symbol] && q.price != null) {
           liveData[keyMap[q.symbol]] = { price: q.price, change: q.changePct };
+        }
+      });
+      return true;
+    } catch (e) { return false; }
+  }
+
+  // Fetch LIVE sector ETF quotes via Yahoo proxy — updates the 1D% column
+  // of the sector heatmap every 30 seconds. 1W%/1M% stay from static scrape.
+  async function fetchSectors() {
+    try {
+      var symbols = 'XLK,XLF,XLE,XLV,XLY,XLI,XLB,XLU,VNQ,XLC,XLP';
+      var r = await fetch(MARKETS_PROXY + '?symbols=' + symbols);
+      if (!r.ok) return false;
+      var d = await r.json();
+      if (!d || !d.quotes) return false;
+      if (!liveData.sectorLive) liveData.sectorLive = {};
+      d.quotes.forEach(function (q) {
+        if (q.price != null) {
+          liveData.sectorLive[q.symbol] = { price: q.price, change: q.changePct };
         }
       });
       return true;
@@ -1521,14 +1551,16 @@
     renderTrends();
     renderSectors();
     renderFutures();
+    renderSectors();
     renderFX();
 
     // Fetch all live data sources in parallel: Binance + Netlify proxy (indices + FX + futures)
-    var binanceOk = false, indicesOk = false, fxOk = false, futuresOk = false;
+    var binanceOk = false, indicesOk = false, fxOk = false, futuresOk = false, sectorsOk = false;
     try { binanceOk = await fetchCrypto(); } catch (e) {}
     try { indicesOk = await fetchIndices(); } catch (e) {}
     try { fxOk = await fetchFX(); } catch (e) {}
     try { futuresOk = await fetchFutures(); } catch (e) {}
+    try { sectorsOk = await fetchSectors(); } catch (e) {}
 
     // Build status string showing exactly what's live
     var liveSources = [];
@@ -1647,11 +1679,12 @@
   var lastAIBriefTime = 0;
 
   async function pollLiveData() {
-    var binanceOk = false, indicesOk = false, fxOk = false, futuresOk = false;
+    var binanceOk = false, indicesOk = false, fxOk = false, futuresOk = false, sectorsOk = false;
     try { binanceOk = await fetchCrypto(); } catch (e) {}
     try { indicesOk = await fetchIndices(); } catch (e) {}
     try { fxOk = await fetchFX(); } catch (e) {}
     try { futuresOk = await fetchFutures(); } catch (e) {}
+    try { sectorsOk = await fetchSectors(); } catch (e) {}
 
     // Update status badge
     var liveSources = [];
@@ -1673,6 +1706,11 @@
 
     // Re-render futures cards (HTML, no ECharts dispose needed)
     renderFutures();
+
+    // Update sectors heatmap with live 1D% data (no dispose — same instance)
+    if (sectorsOk && charts.sectors) {
+      try { renderSectors(); } catch (e) {}
+    }
 
     // Update FX chart data via setOption (NO dispose — rotation fix)
     if (fxOk && charts.fx) {
