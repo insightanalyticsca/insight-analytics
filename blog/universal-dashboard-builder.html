@@ -93,35 +93,28 @@
     .article-back i { font-size: 0.78rem; }
     [data-theme="dark"] .article-body code { color: #a5b4fc; }
     [data-theme="dark"] .article-body th { background: rgba(30,41,59,0.6); }
+    /* Widen the article body for this blog post so the dashboard has room */
+    .article-body { max-width: 1400px !important; }
     .browser-mock {
       margin: 32px 0;
-      /* Break out of the 720px article-body max-width — use full viewport width */
-      width: 100vw;
-      max-width: 100vw;
-      margin-left: calc(50% - 50vw);
-      margin-right: calc(50% - 50vw);
+      width: 100%;
     }
     .browser-frame {
       height: auto !important;
-      min-height: calc(100vh - 180px) !important; /* fill viewport minus blog header + browser chrome bar */
-    }
-    /* Make the dashboard mount fill the full available height */
-    #markets-dashboard-mount {
       min-height: calc(100vh - 200px) !important;
     }
-    /* Make the dashboard app fill its container */
-    #markets-dashboard-mount .bmd-app {
+    #markets-dashboard-mount {
       min-height: calc(100vh - 220px) !important;
+    }
+    #markets-dashboard-mount .bmd-app {
+      min-height: calc(100vh - 240px) !important;
       display: flex;
       flex-direction: column;
     }
-    /* Let the chart grid grow to fill available vertical space */
     #markets-dashboard-mount .bmd-chart-grid {
       flex: 1;
     }
-    /* Charts fill their containers — no wasted internal space */
-    #markets-dashboard-mount .bmd-chart-body,
-    #markets-dashboard-mount .bmd-chart-body canvas {
+    #markets-dashboard-mount .bmd-chart-body {
       width: 100% !important;
     }
   </style>
