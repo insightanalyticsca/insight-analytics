@@ -41,6 +41,9 @@
             </div>
           </div>
           <div class="bmd-live-badge"><span class="bmd-live-dot"></span><span id="bmd-live-status">Loading live data…</span></div>
+          <button class="bmd-theme-toggle" id="bmd-theme-toggle" type="button" aria-label="Toggle dark/light theme" title="Toggle theme">
+            <i class="fas fa-sun" id="bmd-theme-icon" aria-hidden="true"></i>
+          </button>
         </div>
 
         <div class="bmd-kpi-grid" id="bmd-kpi-grid">
@@ -129,6 +132,23 @@
         border: 1px solid rgba(16, 185, 129, .25);
         font-size: 10px; font-weight: 700; color: #10b981;
         text-transform: uppercase; letter-spacing: .05em;
+      }
+      .bmd-theme-toggle {
+        width: 28px; height: 28px; border-radius: 6px;
+        display: grid; place-items: center;
+        background: transparent;
+        border: 1px solid rgba(99, 102, 241, .2);
+        color: #94a3b8; cursor: pointer; font-size: 12px;
+        transition: all 0.2s ease;
+      }
+      .bmd-theme-toggle:hover {
+        background: rgba(99, 102, 241, .1);
+        color: #06b6d4;
+        transform: rotate(15deg);
+      }
+      [data-theme="light"] .bmd-theme-toggle {
+        color: #64748b;
+        border-color: rgba(99, 102, 241, .15);
       }
       .bmd-live-dot {
         width: 6px; height: 6px; border-radius: 50%;
@@ -298,6 +318,9 @@
     var observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (m) {
         if (m.attributeName === 'data-theme') {
+          // Update the dashboard's theme toggle icon to match
+          var bmdIcon = document.getElementById('bmd-theme-icon');
+          if (bmdIcon) bmdIcon.className = getTheme() === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
           // Dispose + re-render all charts with new theme colors
           Object.keys(charts).forEach(function (k) {
             try { charts[k].dispose(); } catch (e) {}
@@ -748,6 +771,27 @@
     if (!mount) return;
     injectStyles();
     buildSkeleton(mount);
+
+    // Dashboard theme toggle — toggles <html data-theme> which triggers
+    // the MutationObserver to re-render all charts with new theme colors
+    var bmdToggle = document.getElementById('bmd-theme-toggle');
+    var bmdIcon = document.getElementById('bmd-theme-icon');
+    if (bmdToggle) {
+      // Set initial icon based on current theme
+      if (bmdIcon) bmdIcon.className = getTheme() === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+      bmdToggle.addEventListener('click', function () {
+        var current = document.documentElement.getAttribute('data-theme') || 'light';
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        if (bmdIcon) bmdIcon.className = next === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        // Also sync the page navbar's theme toggle (if it exists)
+        var pageToggle = document.getElementById('theme-toggle');
+        var pageIcon = document.getElementById('theme-icon');
+        if (pageIcon) pageIcon.className = next === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        var pageLabel = document.getElementById('theme-label');
+        if (pageLabel) pageLabel.textContent = next === 'dark' ? 'Dark' : 'Light';
+      });
+    }
 
     // Render static charts immediately (instant visual feedback — no "loading" delay)
     renderTrends();

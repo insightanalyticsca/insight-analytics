@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.3.0-20261005-dark-light-themes';
+const VERSION = 'v4.4.0-20261005-dashboard-theme-toggle';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
