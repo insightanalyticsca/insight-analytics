@@ -763,8 +763,10 @@
     // leaving them as empty whitish cells (the "whitish band" the user saw
     // across the middle of the matrix). The label formatter below shows "—"
     // for diagonal cells since a currency vs itself has no meaningful change.
+    // NOTE: value 0.0001 (not exactly 0) because ECharts visualMap skips
+    // coloring cells whose value is exactly 0 (treats 0 as falsy/empty).
     curr.forEach(function (c, ci) { curr.forEach(function (c2, ci2) {
-      if (ci === ci2) { fxData.push([ci2, ci, 0]); }
+      if (ci === ci2) { fxData.push([ci2, ci, 0.0001]); }
       else { fxData.push([ci2, ci, (Math.random() * 3 - 1.5).toFixed(2)]); }
     }); });
     charts.fx.setOption({
