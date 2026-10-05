@@ -345,6 +345,19 @@
   function tooltipBgColor() { return getTheme() === 'dark' ? 'rgba(15,23,42,.9)' : 'rgba(255,255,255,.95)'; }
   function tooltipTextColor() { return getTheme() === 'dark' ? '#e2e8f0' : '#1e293b'; }
   function tooltipBorderColor() { return getTheme() === 'dark' ? 'rgba(99,102,241,.2)' : 'rgba(99,102,241,.15)'; }
+  // Chart background — matches the chart-card's gradient bg per theme.
+  // Used as ECharts backgroundColor + visualMap outOfRange color so empty/
+  // uncolored cells (e.g. diagonal of currency matrix, value-0 cells the
+  // visualMap refuses to color) blend into the chart background instead of
+  // showing as default light gray (#e6e6e6).
+  function chartBgColor() {
+    return getTheme() === 'dark' ? 'rgba(15,23,42,0.92)' : 'rgba(248,250,252,0.92)';
+  }
+  // Neutral cell color for diagonal cells (currency paired with itself).
+  // Matches the visualMap midpoint (slate in dark, light slate in light).
+  function neutralCellColor() {
+    return getTheme() === 'dark' ? 'rgba(30,41,59,0.78)' : 'rgba(203,213,225,0.78)';
+  }
 
   // Re-render all charts when the DASHBOARD theme changes (not the page theme)
   function watchThemeChanges() {
@@ -765,16 +778,16 @@
     // The label formatter below shows "—" for diagonal cells.
     curr.forEach(function (c, ci) { curr.forEach(function (c2, ci2) {
       if (ci === ci2) {
-        fxData.push({ value: [ci2, ci, 0], itemStyle: { color: 'rgba(30,41,59,0.78)' } });
+        fxData.push({ value: [ci2, ci, 0], itemStyle: { color: neutralCellColor() } });
       } else {
         fxData.push([ci2, ci, (Math.random() * 3 - 1.5).toFixed(2)]);
       }
     }); });
     charts.fx.setOption({
-      // Match the chart-card's dark slate gradient background so empty cells
-      // (the diagonal — currency paired with itself) blend in instead of
-      // showing as whitish. The visualMap still colors cells with data.
-      backgroundColor: 'rgba(15,23,42,0.92)',
+      // Theme-aware background — matches chart-card gradient so empty cells
+      // (diagonal) blend in. Was hardcoded to dark slate, which made the
+      // matrix stay dark even in light theme.
+      backgroundColor: chartBgColor(),
       tooltip: {
         backgroundColor: 'rgba(15,23,42,0.92)',
         borderColor: 'rgba(6,182,212,0.35)',
@@ -807,7 +820,7 @@
       visualMap: { 
         min: -1.5, max: 1.5, calculable: false, show: false, 
         inRange: { color: ['#be123c', '#fb923c', '#fbbf24', '#1e293b', '#34d399', '#10b981', '#047857'] },
-        outOfRange: { color: 'rgba(15,23,42,0.92)' }
+        outOfRange: { color: chartBgColor() }
       },
       series: [{ 
         type: 'heatmap', 
