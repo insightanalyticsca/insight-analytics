@@ -595,7 +595,7 @@
           borderWidth: 0,
           shadowBlur: 10,
           shadowColor: 'rgba(0,0,0,0.32)',
-          opacity: 0.88
+          opacity: 0.78
         },
         emphasis: {
           itemStyle: {
@@ -811,7 +811,7 @@
           borderWidth: 0,
           shadowBlur: 8,
           shadowColor: 'rgba(0,0,0,0.32)',
-          opacity: 0.88
+          opacity: 0.78
         },
         emphasis: {
           itemStyle: {

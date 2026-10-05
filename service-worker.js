@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.12.2-20261005-stronger-dazzle';
+const VERSION = 'v4.12.3-20261005-visible-translucency';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,12 +19,12 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.12.2',
-  './js/app.js?v=4.12.2',
-  './js/hero-animation.js?v=4.12.2',
-  './js/pull-to-refresh.js?v=4.12.2',
-  './js/assistant.js?v=4.12.2',
-  './js/blog-markets-dashboard.js?v=4.12.2',
+  './css/styles.css?v=4.12.3',
+  './js/app.js?v=4.12.3',
+  './js/hero-animation.js?v=4.12.3',
+  './js/pull-to-refresh.js?v=4.12.3',
+  './js/assistant.js?v=4.12.3',
+  './js/blog-markets-dashboard.js?v=4.12.3',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
