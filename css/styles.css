@@ -509,11 +509,21 @@ ul {
   height: 36px;
   border-radius: 10px;
   border: 1px solid var(--border-strong);
-  background: var(--surface-2);
+  background: color-mix(in srgb, var(--surface-2) 60%, var(--bg));
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 1rem;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all 180ms ease;
+  flex-shrink: 0;
+}
+.menu-toggle:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+}
+.menu-toggle i {
+  color: var(--text);
 }
 
 .mobile-menu {
