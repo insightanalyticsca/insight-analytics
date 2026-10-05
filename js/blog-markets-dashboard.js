@@ -248,6 +248,12 @@
         border: 1px solid rgba(99,102,241,.1);
         border-radius: 12px; padding: 12px;
         box-shadow: 0 2px 10px -3px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.02);
+        min-width: 0; /* CSS grid item fix — allows card to shrink below
+                         canvas intrinsic width on rotation. Without this,
+                         the grid item stays at landscape width (844px)
+                         even in portrait (390px) because min-width:auto
+                         prevents shrinking. */
+        overflow: hidden;
       }
       .bmd-chart-card.bmd-wide { grid-column: 1 / -1; }
       .bmd-chart-card.bmd-wide-2 { grid-column: span 2; }
