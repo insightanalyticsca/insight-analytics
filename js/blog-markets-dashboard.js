@@ -330,8 +330,10 @@
         background: linear-gradient(135deg, rgba(99,102,241,.04), rgba(6,182,212,.03));
       }
 
-      /* Mobile portrait: 4 columns × 2 rows (8 visible + 2 wrap) */
-      @media (max-width: 640px) {
+      /* Mobile: 4 columns × 2 rows (8 visible + 2 wrap).
+         Covers both portrait AND landscape on phones, plus PWA standalone
+         mode where the viewport width may differ from the browser. */
+      @media (max-width: 900px) {
         .bmd-futures-grid {
           grid-template-columns: repeat(4, 1fr) !important;
           gap: 4px;
