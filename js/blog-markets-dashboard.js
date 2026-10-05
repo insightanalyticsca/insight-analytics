@@ -516,7 +516,7 @@
         { 
           type: 'value', position: 'left', 
           axisLabel: { color: axisLabelColor(), fontSize: 9 }, 
-          splitLine: { lineStyle: { color: 'rgba(99,102,241,.08)', type: 'dashed' } },
+          splitLine: { lineStyle: { color: 'rgba(148,163,184,.2)' } },
           axisLine: { show: false }, axisTick: { show: false }
         },
         { 
@@ -587,22 +587,24 @@
           textShadowBlur: 3,
           formatter: function (p) { return p.value[2] + '%'; } 
         }, 
-        // Cells touch — no borders, no radius, no per-cell shadow.
-        //        Any shadow blur or corner radius creates dark halos/gaps
-        //        that read as a grid. Cells are solid color blocks.
-        itemStyle: { 
-          borderRadius: 0, 
-          borderColor: 'transparent', 
+        // Glassy tile feel — rounded corners + soft glow + slight translucency.
+        //        borderWidth stays 0 (no harsh grid lines). The glow provides
+        //        depth without competing with the data.
+        itemStyle: {
+          borderRadius: 6,
+          borderColor: 'transparent',
           borderWidth: 0,
-          shadowBlur: 0,
-          shadowColor: 'transparent'
+          shadowBlur: 6,
+          shadowColor: 'rgba(0,0,0,0.22)',
+          opacity: 0.92
         },
         emphasis: {
           itemStyle: {
             shadowBlur: 18,
             shadowColor: 'rgba(99,102,241,0.7)',
             borderColor: 'rgba(99,102,241,0.85)',
-            borderWidth: 2
+            borderWidth: 2,
+            opacity: 1
           },
           label: {
             fontSize: 12,
@@ -684,7 +686,7 @@
       yAxis: { 
         type: 'value', 
         axisLabel: { color: axisLabelColor(), fontSize: 9 }, 
-        splitLine: { lineStyle: { color: 'rgba(99,102,241,.08)', type: 'dashed' } },
+        splitLine: { lineStyle: { color: 'rgba(148,163,184,.2)' } },
         axisLine: { show: false }, axisTick: { show: false }
       },
       xAxis: { 
@@ -804,19 +806,21 @@
         }, 
         // Same glassy tile treatment as sectors — rounded corners, breathing
         // gaps, soft glow on cells + stronger glow on hover.
-        itemStyle: { 
-          borderRadius: 0, 
-          borderColor: 'transparent', 
+        itemStyle: {
+          borderRadius: 5,
+          borderColor: 'transparent',
           borderWidth: 0,
-          shadowBlur: 0,
-          shadowColor: 'transparent'
+          shadowBlur: 5,
+          shadowColor: 'rgba(0,0,0,0.22)',
+          opacity: 0.92
         },
         emphasis: {
           itemStyle: {
             shadowBlur: 18,
             shadowColor: 'rgba(6,182,212,0.7)',
             borderColor: 'rgba(6,182,212,0.85)',
-            borderWidth: 2
+            borderWidth: 2,
+            opacity: 1
           }
         }
       }]
