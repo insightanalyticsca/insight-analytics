@@ -93,18 +93,17 @@
    * ------------------------------------------------------------------ */
   const menuToggle = document.getElementById("menu-toggle");
   const mobileMenu = document.getElementById("mobile-menu");
-  const menuIcon = document.getElementById("menu-icon");
 
   function openMobileMenu() {
     if (!mobileMenu) return;
     mobileMenu.classList.add("is-open");
-    if (menuIcon) menuIcon.className = "fas fa-times";
+    if (menuToggle) menuToggle.classList.add("is-open");
     document.body.style.overflow = "hidden";
   }
   function closeMobileMenu() {
     if (!mobileMenu) return;
     mobileMenu.classList.remove("is-open");
-    if (menuIcon) menuIcon.className = "fas fa-bars";
+    if (menuToggle) menuToggle.classList.remove("is-open");
     document.body.style.overflow = "";
   }
   function toggleMobileMenu() {

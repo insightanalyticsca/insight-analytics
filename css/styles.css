@@ -525,6 +525,46 @@ ul {
 .menu-toggle i {
   color: var(--text);
 }
+/* CSS-only hamburger — no Font Awesome dependency.
+   Three bars drawn with pseudo-elements. */
+.menu-toggle-bars {
+  position: relative;
+  width: 18px;
+  height: 14px;
+  display: block;
+}
+.menu-toggle-bars::before,
+.menu-toggle-bars::after,
+.menu-toggle-bars > * {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform 250ms var(--ease), opacity 200ms ease, top 250ms var(--ease);
+}
+.menu-toggle-bars::before { top: 0; }
+.menu-toggle-bars::after  { top: 6px; }
+.menu-toggle-bars > span,
+.menu-toggle-bars::before { content: ''; }
+/* Middle bar via inner span — but since we used ::before/::after for top/bottom,
+   we draw the middle bar as a child element. Simpler: use 3 pseudo-bars. */
+.menu-toggle.is-open .menu-toggle-bars::before { top: 6px; transform: rotate(45deg); }
+.menu-toggle.is-open .menu-toggle-bars::after  { top: 6px; transform: rotate(-45deg); }
+/* The middle bar — drawn as a child element */
+.menu-toggle-bars span {
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 100%;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: opacity 200ms ease;
+}
+.menu-toggle.is-open .menu-toggle-bars span { opacity: 0; }
 
 .mobile-menu {
   position: fixed;
