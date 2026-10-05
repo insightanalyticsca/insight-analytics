@@ -498,12 +498,34 @@
       tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
       legend: { data: ['S&P 500', 'NASDAQ', 'Volume (B)'].concat(btcSeries ? ['BTC ($)'] : []), textStyle: { color: '#94a3b8', fontSize: 10 }, top: 0 },
       grid: { left: 60, right: 70, top: 30, bottom: 30 },
-      xAxis: { type: 'category', data: days, axisLabel: { color: axisLabelColor(), fontSize: 9, rotate: 45 }, axisLine: { lineStyle: { color: 'rgba(99,102,241,.1)' } }, axisTick: { show: false } },
-      yAxis: { type: 'value', axisLabel: { color: axisLabelColor(), fontSize: 9 }, splitLine: { lineStyle: { color: 'rgba(99,102,241,.06)', type: 'dashed' } }, axisLine: { show: false }, axisTick: { show: false } },
-      xAxis: { type: 'category', data: days, axisLabel: { color: '#64748b', fontSize: 9, rotate: 45 } },
+      // Single xAxis declaration — previous code had a duplicate that overrode
+      // the styled version, and the second copy didn't carry the axisLine color.
+      xAxis: { 
+        type: 'category', data: days, 
+        axisLabel: { color: axisLabelColor(), fontSize: 9, rotate: 45 }, 
+        axisLine: { lineStyle: { color: 'rgba(99,102,241,.1)' } }, 
+        axisTick: { show: false },
+        splitLine: { show: false }
+      },
+      // Single yAxis declaration (array form for dual-axis: left = S&P/NASDAQ,
+      // right = BTC). Both axes get subtle dashed splitLines — previous code
+      // declared yAxis twice; the second declaration (an array) overrode the
+      // first WITHOUT any splitLine config, so ECharts fell back to its
+      // default thick solid white horizontal grid lines that the user saw.
       yAxis: [
-        { type: 'value', position: 'left', axisLabel: { color: '#64748b', fontSize: 9 } },
-        { type: 'value', position: 'right', axisLabel: { color: '#64748b', fontSize: 9 }, name: 'BTC $', nameTextStyle: { color: '#f59e0b', fontSize: 9 } }
+        { 
+          type: 'value', position: 'left', 
+          axisLabel: { color: axisLabelColor(), fontSize: 9 }, 
+          splitLine: { lineStyle: { color: 'rgba(99,102,241,.08)', type: 'dashed' } },
+          axisLine: { show: false }, axisTick: { show: false }
+        },
+        { 
+          type: 'value', position: 'right', 
+          axisLabel: { color: axisLabelColor(), fontSize: 9 }, 
+          name: 'BTC $', nameTextStyle: { color: '#f59e0b', fontSize: 9 },
+          splitLine: { show: false },  // right axis doesn't need its own grid
+          axisLine: { show: false }, axisTick: { show: false }
+        }
       ],
       series: [
         { name: 'S&P 500', type: 'line', data: sp, smooth: true, symbol: 'none', lineStyle: { color: '#6366f1', width: 2.5, shadowColor: 'rgba(99,102,241,.3)', shadowBlur: 8 }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(99,102,241,0.15)' }, { offset: 1, color: 'rgba(99,102,241,0)' }] } } },
@@ -657,9 +679,21 @@
       tooltip: { trigger: 'axis' },
       legend: { data: series.map(function (s) { return s.name; }), textStyle: { color: '#94a3b8', fontSize: 10 }, top: 0, type: 'scroll' },
       grid: { left: 55, right: 20, top: 30, bottom: 30 },
-      yAxis: { type: 'value', axisLabel: { color: axisLabelColor(), fontSize: 9 }, splitLine: { lineStyle: { color: 'rgba(99,102,241,.06)', type: 'dashed' } }, axisLine: { show: false }, axisTick: { show: false } },
-      xAxis: { type: 'category', data: dates, axisLabel: { color: '#64748b', fontSize: 8, interval: 9 } },
-      yAxis: { type: 'value', axisLabel: { color: '#64748b', fontSize: 9 } },
+      // Single yAxis declaration — the duplicate (without splitLine config)
+      // was overriding this one and falling back to thick white grid lines.
+      yAxis: { 
+        type: 'value', 
+        axisLabel: { color: axisLabelColor(), fontSize: 9 }, 
+        splitLine: { lineStyle: { color: 'rgba(99,102,241,.08)', type: 'dashed' } },
+        axisLine: { show: false }, axisTick: { show: false }
+      },
+      xAxis: { 
+        type: 'category', data: dates, 
+        axisLabel: { color: axisLabelColor(), fontSize: 8, interval: 9 },
+        axisLine: { lineStyle: { color: 'rgba(99,102,241,.1)' } },
+        axisTick: { show: false },
+        splitLine: { show: false }
+      },
       series: series
     });
   }
@@ -696,9 +730,21 @@
       backgroundColor: 'transparent',
       tooltip: { trigger: 'axis' },
       grid: { left: 50, right: 20, top: 20, bottom: 30 },
-      splitLine: { show: false },
-      xAxis: { type: 'category', data: names, axisLabel: { color: '#94a3b8', fontSize: 9, rotate: 30 } },
-      yAxis: { type: 'value', axisLabel: { color: '#64748b', fontSize: 9 } },
+      xAxis: { 
+        type: 'category', data: names, 
+        axisLabel: { color: axisLabelColor(), fontSize: 9, rotate: 30 },
+        axisLine: { lineStyle: { color: 'rgba(99,102,241,.1)' } },
+        axisTick: { show: false },
+        splitLine: { show: false }
+      },
+      // Hide y-axis splitLines on the bar chart — they're not useful here
+      // and were showing as thick white grid lines in dark theme.
+      yAxis: { 
+        type: 'value', 
+        axisLabel: { color: axisLabelColor(), fontSize: 9 }, 
+        splitLine: { show: false },
+        axisLine: { show: false }, axisTick: { show: false }
+      },
       series: [{ type: 'bar', data: barData, barWidth: '60%', label: { show: true, position: 'top', color: '#94a3b8', fontSize: 9, formatter: function (p) { return '$' + p.value; } } }]
     });
     var srcLabel = el.closest('.bmd-chart-card').querySelector('.bmd-src');
