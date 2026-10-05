@@ -481,7 +481,7 @@
             var fxPct = {};
             var symKey = { 'EURUSD': 'EUR', 'GBPUSD': 'GBP', 'JPYUSD': 'JPY', 'CADUSD': 'CAD', 'AUDUSD': 'AUD', 'CHFUSD': 'CHF', 'CNYUSD': 'CNY' };
             d3.quotes.forEach(function (q) {
-              var baseSym = q.symbol.replace('USD=X', '').replace('=X', '');
+              var baseSym = q.symbol.replace('=X', '');
               if (symKey[baseSym] && q.changePct != null) {
                 fxPct[symKey[baseSym]] = q.changePct;
               }
