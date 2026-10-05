@@ -82,8 +82,8 @@
             <div class="bmd-chart-body" id="bmd-chart-crypto"></div>
           </div>
           <div class="bmd-chart-card">
-            <div class="bmd-chart-title"><i class="fas fa-oil-can"></i> Futures Curve <span class="bmd-src">computed</span></div>
-            <div class="bmd-chart-body" id="bmd-chart-futures"></div>
+            <div class="bmd-chart-title"><i class="fas fa-chart-bar"></i> Futures <span class="bmd-src" id="bmd-src-futures">loading…</span></div>
+            <div class="bmd-futures-grid" id="bmd-futures-grid"></div>
           </div>
         </div>
 
@@ -275,6 +275,57 @@
         .bmd-kpi-grid { grid-template-columns: repeat(2, 1fr); }
         .bmd-ai-grid { grid-template-columns: 1fr; }
         .bmd-chart-body { height: 260px; }
+      /* Futures cards grid — like KPI tiles but for futures contracts */
+      .bmd-futures-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+        gap: 6px;
+        min-height: 140px;
+      }
+      .bmd-future-card {
+        background: linear-gradient(135deg, rgba(99,102,241,.06), rgba(6,182,212,.04));
+        border: 1px solid rgba(99,102,241,.1);
+        border-radius: 8px;
+        padding: 8px 6px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        transition: all 180ms ease;
+      }
+      .bmd-future-card:hover {
+        border-color: rgba(99,102,241,.3);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px -4px rgba(99,102,241,.2);
+      }
+      .bmd-future-name {
+        font-size: 9px;
+        font-weight: 700;
+        color: var(--bmd-text-soft, #94a3b8);
+        text-transform: uppercase;
+        letter-spacing: .03em;
+      }
+      .bmd-future-price {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--bmd-text, #e2e8f0);
+        font-family: 'Space Grotesk', monospace;
+        line-height: 1.2;
+      }
+      .bmd-future-chg {
+        font-size: 9px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+      }
+      .bmd-future-chg.up { color: #10b981; }
+      .bmd-future-chg.down { color: #ef4444; }
+      [data-bmd-theme="light"] .bmd-future-name { color: #64748b; }
+      [data-bmd-theme="light"] .bmd-future-price { color: #0f172a; }
+      [data-bmd-theme="light"] .bmd-future-card {
+        background: linear-gradient(135deg, rgba(99,102,241,.04), rgba(6,182,212,.03));
+      }
       }
 
       /* ═══ LIGHT THEME OVERRIDES — when [data-theme="light"] on <html> ═══ */
@@ -859,56 +910,62 @@
   }
 
   function renderFutures() {
-    var el = document.getElementById('bmd-chart-futures');
-    if (!el) return;
-    charts.futures = echarts.init(el);
-    // Use LIVE commodity prices from Yahoo (via Netlify proxy) — no hardcoded values
-    var commodities = [
-      { key: 'crudeOil', name: 'Crude Oil', color: '#ef4444' },
-      { key: 'natGas', name: 'Nat Gas', color: '#f59e0b' },
-      { key: 'gold', name: 'Gold', color: '#06b6d4' },
-      { key: 'silver', name: 'Silver', color: '#94a3b8' },
-      { key: 'copper', name: 'Copper', color: '#8b5cf6' },
-      { key: 'wheat', name: 'Wheat', color: '#10b981' },
-      { key: 'corn', name: 'Corn', color: '#eab308' },
-      { key: 'soybean', name: 'Soybean', color: '#6366f1' }
+    var grid = document.getElementById('bmd-futures-grid');
+    if (!grid) return;
+    // Live futures from Yahoo via Netlify proxy. Include index futures
+    // (ES=F S&P 500, NQ=F NASDAQ) + commodity futures.
+    var futuresList = [
+      { key: 'esFuture', symbol: 'ES=F', name: 'S&P 500', prefix: '' },
+      { key: 'nqFuture', symbol: 'NQ=F', name: 'NASDAQ', prefix: '' },
+      { key: 'crudeOil', symbol: 'CL=F', name: 'Crude Oil', prefix: '$' },
+      { key: 'gold', symbol: 'GC=F', name: 'Gold', prefix: '$' },
+      { key: 'silver', symbol: 'SI=F', name: 'Silver', prefix: '$' },
+      { key: 'copper', symbol: 'HG=F', name: 'Copper', prefix: '$' },
+      { key: 'natGas', symbol: 'NG=F', name: 'Nat Gas', prefix: '$' },
+      { key: 'wheat', symbol: 'ZW=F', name: 'Wheat', prefix: '$' },
+      { key: 'corn', symbol: 'ZC=F', name: 'Corn', prefix: '$' },
+      { key: 'soybean', symbol: 'ZS=F', name: 'Soybean', prefix: '$' }
     ];
-    var names = [], barData = [];
-    commodities.forEach(function (c) {
-      var live = liveData[c.key];
-      if (live) {
-        names.push(c.name);
-        barData.push({ value: live.price, itemStyle: { color: c.color } });
+    var html = futuresList.map(function (f) {
+      var live = liveData[f.key];
+      if (live && live.price != null) {
+        var chg = live.change || 0;
+        var dir = chg >= 0 ? 'up' : 'down';
+        var arrow = chg >= 0 ? '▲' : '▼';
+        var price = f.prefix + Number(live.price).toFixed(2);
+        return '<div class="bmd-future-card">' +
+          '<div class="bmd-future-name">' + f.name + '</div>' +
+          '<div class="bmd-future-price">' + price + '</div>' +
+          '<div class="bmd-future-chg ' + dir + '">' + arrow + ' ' + Math.abs(chg).toFixed(2) + '%</div>' +
+          '</div>';
+      } else {
+        return '<div class="bmd-future-card"><div class="bmd-future-name">' + f.name + '</div><div class="bmd-future-price" style="opacity:.3">—</div><div class="bmd-future-chg">—</div></div>';
       }
-    });
-    if (!barData.length) {
-      var src = el.closest('.bmd-chart-card').querySelector('.bmd-src');
-      if (src) src.textContent = 'waiting for Yahoo…';
-      return;
+    }).join('');
+    grid.innerHTML = html;
+    var srcEl = document.getElementById('bmd-src-futures');
+    if (srcEl) {
+      var anyLive = futuresList.some(function (f) { return liveData[f.key] && liveData[f.key].price != null; });
+      srcEl.textContent = anyLive ? 'Yahoo live' : 'waiting for Yahoo…';
     }
-    charts.futures.setOption({
-      backgroundColor: 'transparent',
-      tooltip: { trigger: 'axis' },
-      grid: { left: 50, right: 20, top: 20, bottom: 30 },
-      xAxis: { 
-        type: 'category', data: names, 
-        axisLabel: { color: axisLabelColor(), fontSize: 9, rotate: 30 },
-        axisLine: { lineStyle: { color: 'rgba(99,102,241,.1)' } },
-        axisTick: { show: false },
-        splitLine: { show: false }
-      },
-      // Hide y-axis splitLines on the bar chart — they're not useful here
-      // and were showing as thick white grid lines in dark theme.
-      yAxis: { 
-        type: 'value', 
-        axisLabel: { color: axisLabelColor(), fontSize: 9 }, 
-        splitLine: { show: false },
-        axisLine: { show: false }, axisTick: { show: false }
-      },
-      series: [{ type: 'bar', data: barData, barWidth: '60%', label: { show: true, position: 'top', color: '#94a3b8', fontSize: 9, formatter: function (p) { return '$' + p.value; } } }]
-    });
-    var srcLabel = el.closest('.bmd-chart-card').querySelector('.bmd-src');
-    if (srcLabel) srcLabel.textContent = 'Yahoo live';
+  }
+
+  // Fetch live futures quotes via Netlify proxy
+  async function fetchFutures() {
+    try {
+      var symbols = ['ES%3DF', 'NQ%3DF', 'CL%3DF', 'GC%3DF', 'SI%3DF', 'HG%3DF', 'NG%3DF', 'ZW%3DF', 'ZC%3DF', 'ZS%3DF'].join(',');
+      var r = await fetch(MARKETS_PROXY + '?symbols=' + symbols);
+      if (!r.ok) return false;
+      var d = await r.json();
+      if (!d || !d.quotes) return false;
+      var keyMap = { 'ES=F': 'esFuture', 'NQ=F': 'nqFuture', 'CL=F': 'crudeOil', 'GC=F': 'gold', 'SI=F': 'silver', 'HG=F': 'copper', 'NG=F': 'natGas', 'ZW=F': 'wheat', 'ZC=F': 'corn', 'ZS=F': 'soybean' };
+      d.quotes.forEach(function (q) {
+        if (keyMap[q.symbol] && q.price != null) {
+          liveData[keyMap[q.symbol]] = { price: q.price, change: q.changePct };
+        }
+      });
+      return true;
+    } catch (e) { return false; }
   }
 
   function renderFX() {
@@ -1220,11 +1277,12 @@
     renderFutures();
     renderFX();
 
-    // Fetch all live data sources in parallel: Binance + Netlify proxy (indices + FX)
-    var binanceOk = false, indicesOk = false, fxOk = false;
+    // Fetch all live data sources in parallel: Binance + Netlify proxy (indices + FX + futures)
+    var binanceOk = false, indicesOk = false, fxOk = false, futuresOk = false;
     try { binanceOk = await fetchCrypto(); } catch (e) {}
     try { indicesOk = await fetchIndices(); } catch (e) {}
     try { fxOk = await fetchFX(); } catch (e) {}
+    try { futuresOk = await fetchFutures(); } catch (e) {}
 
     // Build status string showing exactly what's live
     var liveSources = [];
@@ -1248,8 +1306,7 @@
     if (charts.crypto) { try { charts.crypto.dispose(); } catch (_) {} }
     renderCrypto();
 
-    // Re-render futures chart with live commodity prices (now fetched via Yahoo proxy)
-    if (charts.futures) { try { charts.futures.dispose(); } catch (_) {} }
+    // Re-render futures cards with live prices (HTML cards, no ECharts)
     renderFutures();
 
     // Re-render trends if Binance data available (for BTC overlay)
@@ -1386,10 +1443,11 @@
   var lastAIBriefTime = 0;
 
   async function pollLiveData() {
-    var binanceOk = false, indicesOk = false, fxOk = false;
+    var binanceOk = false, indicesOk = false, fxOk = false, futuresOk = false;
     try { binanceOk = await fetchCrypto(); } catch (e) {}
     try { indicesOk = await fetchIndices(); } catch (e) {}
     try { fxOk = await fetchFX(); } catch (e) {}
+    try { futuresOk = await fetchFutures(); } catch (e) {}
 
     // Update status badge
     var liveSources = [];
@@ -1410,10 +1468,8 @@
     }
 
     // Always re-render futures chart (uses live commodity prices now)
-    if (charts.futures) {
-      try { charts.futures.dispose(); } catch (_) {}
-      renderFutures();
-    }
+    // Re-render futures cards (HTML, no ECharts dispose needed)
+    renderFutures();
 
     // Re-render FX chart if Frankfurter data fresh
     if (fxOk && charts.fx) {

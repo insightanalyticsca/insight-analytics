@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.23.0-20261005-scraped-historical-indices';
+const VERSION = 'v4.24.0-20261005-futures-cards-btc-history';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,12 +19,12 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.23.0',
-  './js/app.js?v=4.23.0',
-  './js/hero-animation.js?v=4.23.0',
-  './js/pull-to-refresh.js?v=4.23.0',
-  './js/assistant.js?v=4.23.0',
-  './js/blog-markets-dashboard.js?v=4.23.0',
+  './css/styles.css?v=4.24.0',
+  './js/app.js?v=4.24.0',
+  './js/hero-animation.js?v=4.24.0',
+  './js/pull-to-refresh.js?v=4.24.0',
+  './js/assistant.js?v=4.24.0',
+  './js/blog-markets-dashboard.js?v=4.24.0',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
