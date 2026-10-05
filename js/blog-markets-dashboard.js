@@ -252,7 +252,10 @@
       /* Row 1: trends (narrower) + FX heatmap (wider) — 55/45 split */
       .bmd-grid-row1 { grid-template-columns: 1.1fr 1.4fr; }
       /* Row 2: sectors (wider) + crypto + futures — 1.5/1/1 split */
-      .bmd-grid-row2 { grid-template-columns: 1.6fr 1fr 1fr; }
+      /* Row 2: sectors + crypto on row 1, futures full-width below.
+         User requested this layout for ALL viewports (was 3-col on desktop). */
+      .bmd-grid-row2 { grid-template-columns: 1fr 1fr; }
+      .bmd-grid-row2 .bmd-futures-card { grid-column: 1 / -1; }
       .bmd-chart-title {
         font-size: 11px; font-weight: 600; color: #e2e8f0;
         margin-bottom: 6px; display: flex; align-items: center; gap: 4px;
@@ -416,7 +419,9 @@
       @media (max-width: 640px) {
         .bmd-kpi-grid { grid-template-columns: repeat(2, 1fr); }
         .bmd-ai-grid { grid-template-columns: 1fr; }
-        .bmd-chart-body { height: 260px; }
+        .bmd-chart-body { height: 24vh; min-height: 160px; }
+        .bmd-grid-row2 { grid-template-columns: 1fr; }
+        .bmd-grid-row2 .bmd-futures-card { grid-column: 1 / -1; }
       }
 
       /* Futures cards grid — like KPI tiles but for futures contracts.
@@ -472,12 +477,8 @@
         background: linear-gradient(135deg, rgba(99,102,241,.04), rgba(6,182,212,.03));
       }
 
-      /* Mobile: 4 columns × 2 rows (8 visible + 4 wrap).
-         Futures card spans full viewport width on mobile. */
+      /* Mobile: futures grid 4 columns, smaller fonts */
       @media (max-width: 1024px) {
-        .bmd-grid-row2 .bmd-futures-card {
-          grid-column: 1 / -1; /* span all columns — full width */
-        }
         .bmd-futures-grid {
           grid-template-columns: repeat(4, 1fr) !important;
           gap: 4px;
@@ -1503,7 +1504,11 @@
     // size — calling .resize() here ensures all canvases match.
     function resizeAllCharts() {
       Object.keys(charts).forEach(function (k) {
-        try { charts[k].resize(); } catch (e) {}
+        try {
+          // Skip disposed instances (charts are disposed + re-created in the poll)
+          if (charts[k] && typeof charts[k].isDisposed === 'function' && charts[k].isDisposed()) return;
+          charts[k].resize();
+        } catch (e) {}
       });
     }
     // Multiple resize calls — the layout can take a few frames to settle
@@ -1516,21 +1521,28 @@
       });
     });
 
-    // ─── Robust first-load resize: cover all the timing paths that leave
-    //     charts squished on initial render ──────────────────────────────
-    // The dashboard's wrapper has `.reveal reveal-scale` (opacity:0 +
-    // transform:scale(0.96)) which is removed by IntersectionObserver when
-    // the section scrolls into view. The boot() resize calls above all fire
-    // BEFORE that reveal happens — and even though `transform` doesn't
-    // affect offsetWidth/Height, ECharts' internal canvas sometimes fails
-    // to pick up the post-reveal dimensions on its own. The watchers below
-    // catch every path that changes container dimensions:
-    //
-    //   (a) ResizeObserver       — fires whenever ANY chart container's
-    //                               width or height changes (layout settling,
-    //                               viewport resize, font swap, theme change).
-    //   (b) IntersectionObserver — fires when the dashboard scrolls into
-    //                               view (the reveal moment); kicks a resize.
+    // ─── Robust resize: ResizeObserver + IntersectionObserver + orientation ─
+    var ro = null;
+    function setupResizeObserver() {
+      if (typeof ResizeObserver === 'undefined') return;
+      if (ro) { try { ro.disconnect(); } catch (_) {} }
+      ro = new ResizeObserver(function () {
+        if (ro._raf) cancelAnimationFrame(ro._raf);
+        ro._raf = requestAnimationFrame(function () {
+          ro._raf = null;
+          resizeAllCharts();
+        });
+      });
+      Object.keys(charts).forEach(function (k) {
+        var chart = charts[k];
+        if (chart && typeof chart.isDisposed === 'function' && chart.isDisposed()) return;
+        if (chart && chart.getDom) {
+          var dom = chart.getDom();
+          if (dom) ro.observe(dom);
+        }
+      });
+    }
+    setupResizeObserver();
     //   (c) window 'load'         — fires after all sub-resources (images,
     //                               stylesheets, fonts) are fully loaded.
     //   (d) document.fonts.ready  — fires when webfonts swap from fallback
@@ -1662,12 +1674,12 @@
       fetchAIBrief();
     }
 
-    // Force resize ALL charts after poll re-renders — ensures canvases
-    // match their container dimensions (not squished)
+    // Force resize ALL charts after poll re-renders + re-setup ResizeObserver
+    // for the new chart instances (poll disposes + re-creates charts, so the
+    // old ResizeObserver targets are gone).
     requestAnimationFrame(function () {
-      Object.keys(charts).forEach(function (k) {
-        try { charts[k].resize(); } catch (e) {}
-      });
+      resizeAllCharts();
+      setupResizeObserver();
     });
   }
 
@@ -1707,8 +1719,8 @@
     [50, 150, 300, 600, 1000, 1500].forEach(function (delay) {
       setTimeout(function () {
         window.dispatchEvent(new Event('resize'));
-        // Also call resize directly (bypasses the debounce for instant effect)
-        Object.keys(charts).forEach(function (k) { try { charts[k].resize(); } catch (e) {} });
+        resizeAllCharts();
+        setupResizeObserver();
       }, delay);
     });
   }
