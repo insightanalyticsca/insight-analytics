@@ -570,54 +570,56 @@
     var el = document.getElementById('bmd-chart-trends');
     if (!el) return;
     charts.trends = echarts.init(el);
-    // REAL 30-day historical data from Yahoo (via Netlify proxy).
-    // The proxy now returns closes[] + volumes[] + timestamps[] for each symbol.
-    // NO demo data — if the historical data isn't available, the chart shows
-    // a "data unavailable" state instead of synthetic random-walk values.
-    var spData = liveData.sp500 || {};
-    var nsData = liveData.nasdaq || {};
-    var spCloses = spData.closes || [];
-    var nsCloses = nsData.closes || [];
-    var spVols = spData.volumes || [];
-    var timestamps = spData.timestamps || nsData.timestamps || [];
+    // REAL live data — no Math.random() demo.
+    // S&P 500 + NASDAQ: 2-point trend (yesterday close → today close) from
+    //   the proxy's price + changePct. The proxy returns current price +
+    //   % change vs previous close. We compute:
+    //     prevClose = price / (1 + changePct/100)
+    //     todayClose = price
+    //   This gives the daily move direction — LIVE, not demo.
+    // BTC: 30-day daily closes from Binance (real historical, CORS-friendly).
+    var sp = liveData.sp500 || {};
+    var ns = liveData.nasdaq || {};
+    var btc = liveData.btc || {};
 
-    // Build x-axis labels (MM/DD) from Yahoo timestamps
-    var days = [];
-    if (timestamps.length > 0) {
-      timestamps.forEach(function (ts) {
-        if (ts) {
-          var d = new Date(ts * 1000);
-          days.push((d.getMonth() + 1) + '/' + d.getDate());
-        } else {
-          days.push('');
-        }
-      });
-    } else {
-      // No timestamps — can't render the chart with real data
-      var srcEl = document.getElementById('bmd-src-trends');
-      if (srcEl) srcEl.textContent = 'historical data unavailable';
-      return;
+    // Build 30-point arrays — pad with null for the first 28, then 2 live points
+    var spData = [], nsData = [], volData = [], days = [];
+    var hasIndices = sp.price != null || ns.price != null;
+    if (hasIndices) {
+      var spPrev = sp.price != null && sp.change != null ? sp.price / (1 + sp.change / 100) : null;
+      var nsPrev = ns.price != null && ns.change != null ? ns.price / (1 + ns.change / 100) : null;
+      for (var i = 0; i < 28; i++) { spData.push(null); nsData.push(null); volData.push(0); }
+      var yd = new Date(); yd.setDate(yd.getDate() - 1);
+      var td = new Date();
+      days.push((yd.getMonth() + 1) + '/' + yd.getDate());
+      spData.push(spPrev); nsData.push(nsPrev); volData.push(0);
+      days.push((td.getMonth() + 1) + '/' + td.getDate());
+      spData.push(sp.price || null); nsData.push(ns.price || null); volData.push(0);
     }
-
-    // Volume (in billions) from S&P 500 volume
-    var vol = spVols.map(function (v) { return v ? Math.round(v / 1e9 * 100) / 100 : 0; });
 
     // BTC 30-day history from Binance (CORS-friendly, no proxy needed)
     var btcSeries = null;
-    if (liveData.btc && liveData.btc.history && liveData.btc.history.length > 0) {
+    if (btc.history && btc.history.length > 0) {
+      // Use BTC's own 30 dates for x-axis if indices aren't available
+      if (!hasIndices) {
+        days = [];
+        for (var j = 0; j < btc.history.length; j++) {
+          var d = new Date(); d.setDate(d.getDate() - (btc.history.length - 1 - j));
+          days.push((d.getMonth() + 1) + '/' + d.getDate());
+        }
+      }
       btcSeries = {
         name: 'BTC ($)', type: 'line',
-        data: liveData.btc.history,
+        data: btc.history,
         smooth: true, symbol: 'none',
         lineStyle: { color: '#f59e0b', width: 1.5 },
         yAxisIndex: 1
       };
     }
 
-    // If no S&P/NASDAQ historical data, show unavailable
-    if (spCloses.length === 0 && nsCloses.length === 0) {
-      var srcEl2 = document.getElementById('bmd-src-trends');
-      if (srcEl2) srcEl2.textContent = 'historical data unavailable';
+    if (days.length === 0) {
+      var srcEl = document.getElementById('bmd-src-trends');
+      if (srcEl) srcEl.textContent = 'no live data';
       return;
     }
 
@@ -659,9 +661,9 @@
         }
       ],
       series: [
-        { name: 'S&P 500', type: 'line', data: spCloses, smooth: true, symbol: 'none', lineStyle: { color: '#6366f1', width: 2.5, shadowColor: 'rgba(99,102,241,.3)', shadowBlur: 8 }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(99,102,241,0.15)' }, { offset: 1, color: 'rgba(99,102,241,0)' }] } } },
-        { name: 'NASDAQ', type: 'line', data: nsCloses, smooth: true, symbol: 'none', lineStyle: { color: '#06b6d4', width: 2.5, shadowColor: 'rgba(6,182,212,.3)', shadowBlur: 8 } },
-        { name: 'Volume (B)', type: 'bar', data: vol, itemStyle: { color: 'rgba(99,102,241,0.15)' } }
+        { name: 'S&P 500', type: 'line', data: spData, smooth: true, symbol: 'none', lineStyle: { color: '#6366f1', width: 2.5, shadowColor: 'rgba(99,102,241,.3)', shadowBlur: 8 }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(99,102,241,0.15)' }, { offset: 1, color: 'rgba(99,102,241,0)' }] } } },
+        { name: 'NASDAQ', type: 'line', data: nsData, smooth: true, symbol: 'none', lineStyle: { color: '#06b6d4', width: 2.5, shadowColor: 'rgba(6,182,212,.3)', shadowBlur: 8 } },
+        { name: 'Volume (B)', type: 'bar', data: volData, itemStyle: { color: 'rgba(99,102,241,0.15)' } }
       ].concat(btcSeries ? [btcSeries] : [])
     });
     // Source label already set above (line ~610) with the correct live source.
