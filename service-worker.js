@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.40.0-20261005-fix-hamburger-visibility
+const VERSION = 'v4.40.0-20261005-fix-hamburger-visibility';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
