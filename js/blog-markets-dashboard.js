@@ -350,8 +350,12 @@
   // uncolored cells (e.g. diagonal of currency matrix, value-0 cells the
   // visualMap refuses to color) blend into the chart background instead of
   // showing as default light gray (#e6e6e6).
+  // FULLY OPAQUE (opacity 1.0) — previous 0.92 opacity let the chart-card's
+  // gradient show through, creating a visible 'glare' band in the middle of
+  // the heatmap on mobile portrait (where the chart is shorter and the
+  // gradient midpoint is more visible).
   function chartBgColor() {
-    return getTheme() === 'dark' ? 'rgba(15,23,42,0.92)' : 'rgba(248,250,252,0.92)';
+    return getTheme() === 'dark' ? 'rgb(15,23,42)' : 'rgb(248,250,252)';
   }
   // Neutral cell color for diagonal cells (currency paired with itself).
   // Matches the visualMap midpoint (slate in dark, light slate in light).
