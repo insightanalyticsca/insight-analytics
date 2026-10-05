@@ -337,6 +337,23 @@
         }
         if (hint) hint.classList.remove("is-hidden");
       }
+
+      // Force charts to resize after the maximize/restore transition.
+      // The ResizeObserver in blog-markets-dashboard.js watches the chart
+      // containers, but when restoring from maximized the CSS transition
+      // can take ~300ms and the observer fires DURING the transition
+      // (when the container is at an intermediate size). Charts end up
+      // sized to the wrong dimensions and stay "stretched" to the old
+      // (maximized) width even after the restore completes.
+      // Dispatching window 'resize' events at multiple intervals AFTER
+      // the transition settles ensures charts re-render at the final
+      // container dimensions. The blog dashboard's window resize listener
+      // catches these and calls chart.resize() on every chart.
+      [50, 200, 400, 700].forEach(function (delay) {
+        setTimeout(function () {
+          window.dispatchEvent(new Event('resize'));
+        }, delay);
+      });
     });
   }
 
@@ -406,6 +423,10 @@
       maximizeBtn.title = "Maximize to full screen";
     }
     document.body.style.overflow = "";
+    // Force charts to resize after restore (see comment in maximize handler)
+    [50, 200, 400, 700].forEach(function (delay) {
+      setTimeout(function () { window.dispatchEvent(new Event('resize')); }, delay);
+    });
   });
 
   // ESC to restore
@@ -424,6 +445,10 @@
         maximizeBtn.title = "Maximize to full screen";
       }
       document.body.style.overflow = "";
+      // Force charts to resize after restore (see comment in maximize handler)
+      [50, 200, 400, 700].forEach(function (delay) {
+        setTimeout(function () { window.dispatchEvent(new Event('resize')); }, delay);
+      });
     }
   });
 
