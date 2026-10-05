@@ -758,16 +758,17 @@
     charts.fx = echarts.init(el);
     var curr = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY'];
     var fxData = [];
-    // Include diagonal cells (currency paired with itself) with value 0 so
-    // the visualMap renders them as the neutral slate color instead of
-    // leaving them as empty whitish cells (the "whitish band" the user saw
-    // across the middle of the matrix). The label formatter below shows "—"
-    // for diagonal cells since a currency vs itself has no meaningful change.
-    // NOTE: value 0.0001 (not exactly 0) because ECharts visualMap skips
-    // coloring cells whose value is exactly 0 (treats 0 as falsy/empty).
+    // Include diagonal cells (currency paired with itself). The visualMap
+    // wasn't coloring value-0 cells (ECharts treats 0 as falsy/empty), so
+    // we push them as data objects with an EXPLICIT itemStyle.color that
+    // matches the neutral slate midpoint of the visualMap gradient.
+    // The label formatter below shows "—" for diagonal cells.
     curr.forEach(function (c, ci) { curr.forEach(function (c2, ci2) {
-      if (ci === ci2) { fxData.push([ci2, ci, 0.0001]); }
-      else { fxData.push([ci2, ci, (Math.random() * 3 - 1.5).toFixed(2)]); }
+      if (ci === ci2) {
+        fxData.push({ value: [ci2, ci, 0], itemStyle: { color: 'rgba(30,41,59,0.78)' } });
+      } else {
+        fxData.push([ci2, ci, (Math.random() * 3 - 1.5).toFixed(2)]);
+      }
     }); });
     charts.fx.setOption({
       backgroundColor: 'transparent',
