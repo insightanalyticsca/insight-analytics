@@ -666,7 +666,7 @@
           color: '#ffffff',
           textShadowColor: 'rgba(0,0,0,0.55)',
           textShadowBlur: 3,
-          formatter: function (p) { return p.value[2] + '%'; } 
+          formatter: function (p) { return Number(p.value[2]).toFixed(2) + '%'; } 
         }, 
         // Glassy tile feel — pronounced rounded corners + visible glow +
         //        translucency. borderWidth stays 0 so no harsh grid lines.
@@ -900,7 +900,7 @@
         padding: [8, 12],
         textStyle: { color: '#e2e8f0', fontSize: 11, fontFamily: 'Inter, sans-serif' },
         extraCssText: 'backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 10px; box-shadow: 0 8px 24px -8px rgba(0,0,0,.5);',
-        formatter: function (p) { return '<b style="color:#fff">' + curr[p.value[1]] + '/' + curr[p.value[0]] + '</b><br><b style="color:#06b6d4">' + p.value[2] + '%</b>'; }
+        formatter: function (p) { return '<b style="color:#fff">' + curr[p.value[1]] + '/' + curr[p.value[0]] + '</b><br><b style="color:#06b6d4">' + (p.value[2] === null || p.value[2] === undefined ? '—' : Number(p.value[2]).toFixed(2) + '%') + '</b>'; }
       },
       grid: { left: 56, right: 22, top: 14, bottom: 32, containLabel: false },
       splitLine: { show: false },
@@ -945,7 +945,8 @@
             if (p.value[0] === p.value[1]) return '—';
             // Null values (rate fetch failed) also show "—"
             if (p.value[2] === null || p.value[2] === undefined) return '—';
-            return p.value[2];
+            // Always 2 decimal places (00.00 format)
+            return Number(p.value[2]).toFixed(2);
           } 
         }, 
         // Same glassy tile treatment as sectors — rounded corners, breathing
