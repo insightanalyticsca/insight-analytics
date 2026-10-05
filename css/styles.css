@@ -1731,33 +1731,11 @@ ul {
 /* Edge-fade indicators — visual cue that there's more content in each
    direction. Fades are positioned at the inner edges of the browser-frame
    and only show when there's scroll overflow on that side. */
-.browser-mock.is-maximized .browser-frame::before,
-.browser-mock.is-maximized .browser-frame::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  z-index: 5;
-  transition: opacity 200ms ease;
-  opacity: 0;
-}
-.browser-mock.is-maximized .browser-frame::before {
-  /* Right edge fade — visible when there's content to the right */
-  top: 0;
-  right: 0;
-  bottom: 12px;            /* leave room for horizontal scrollbar */
-  width: 36px;
-  background: linear-gradient(to left, var(--bg, #0f172a), transparent);
-}
-.browser-mock.is-maximized .browser-frame::after {
-  /* Bottom edge fade — visible when there's content below */
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 36px;
-  background: linear-gradient(to top, var(--bg, #0f172a), transparent);
-}
-.browser-mock.is-maximized .browser-frame.can-scroll-right::before { opacity: 0.85; }
-.browser-mock.is-maximized .browser-frame.can-scroll-down::after  { opacity: 0.85; }
+/* Edge-fade indicators REMOVED — they used var(--bg) which resolves to
+   WHITE in light theme / blog context, creating a visible white horizontal
+   band across the chart on mobile portrait maximized. The edge fades
+   were a nice-to-have but not worth the visual artifact. Scrollbars +
+   the visible content are enough indication of scrollability. */
 
 /* Floating "drag to pan" hint pill — appears centered over the iframe,
    auto-hides after the first scroll gesture. Touch devices only. */
