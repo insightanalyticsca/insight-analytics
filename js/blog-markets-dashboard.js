@@ -565,21 +565,21 @@
           textShadowBlur: 3,
           formatter: function (p) { return p.value[2] + '%'; } 
         }, 
-        // Cells touch — no borders, no gaps. Previous borders (even 1px)
-        //        left dark slivers between cells that read as a grid.
-        //        Subtle shadow + tiny corner radius give depth without gaps.
+        // Cells touch — no borders, no radius, no per-cell shadow.
+        //        Any shadow blur or corner radius creates dark halos/gaps
+        //        that read as a grid. Cells are solid color blocks.
         itemStyle: { 
-          borderRadius: 3, 
+          borderRadius: 0, 
           borderColor: 'transparent', 
           borderWidth: 0,
-          shadowBlur: 4,
-          shadowColor: 'rgba(0,0,0,0.18)'
+          shadowBlur: 0,
+          shadowColor: 'transparent'
         },
         emphasis: {
           itemStyle: {
             shadowBlur: 18,
-            shadowColor: 'rgba(99,102,241,0.6)',
-            borderColor: 'rgba(99,102,241,0.65)',
+            shadowColor: 'rgba(99,102,241,0.7)',
+            borderColor: 'rgba(99,102,241,0.85)',
             borderWidth: 2
           },
           label: {
@@ -759,17 +759,17 @@
         // Same glassy tile treatment as sectors — rounded corners, breathing
         // gaps, soft glow on cells + stronger glow on hover.
         itemStyle: { 
-          borderRadius: 3, 
+          borderRadius: 0, 
           borderColor: 'transparent', 
           borderWidth: 0,
-          shadowBlur: 4,
-          shadowColor: 'rgba(0,0,0,0.18)'
+          shadowBlur: 0,
+          shadowColor: 'transparent'
         },
         emphasis: {
           itemStyle: {
             shadowBlur: 18,
-            shadowColor: 'rgba(6,182,212,0.6)',
-            borderColor: 'rgba(6,182,212,0.65)',
+            shadowColor: 'rgba(6,182,212,0.7)',
+            borderColor: 'rgba(6,182,212,0.85)',
             borderWidth: 2
           }
         }
