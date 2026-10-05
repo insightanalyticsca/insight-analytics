@@ -306,11 +306,24 @@
    * ------------------------------------------------------------------ */
   const browserMock = document.getElementById("browserMock");
   const maximizeBtn = document.getElementById("browserMaximize");
+  const openBtn = document.getElementById("browserOpen");
+  // Reuses showcaseFrame (the iframe element) declared above in this scope.
 
   // Create backdrop element
   const backdrop = document.createElement("div");
   backdrop.className = "browser-backdrop";
   document.body.appendChild(backdrop);
+
+  // "Open in new tab" — escape hatch for mobile users (and anyone who'd
+  // rather view the dashboard's native responsive layout directly).
+  if (openBtn) {
+    openBtn.addEventListener("click", function () {
+      const src = showcaseFrame && (showcaseFrame.getAttribute("data-src") || showcaseFrame.src);
+      if (src) {
+        window.open(src, "_blank", "noopener,noreferrer");
+      }
+    });
+  }
 
   if (browserMock && maximizeBtn) {
     maximizeBtn.addEventListener("click", function () {
@@ -319,12 +332,86 @@
       maximizeBtn.setAttribute("aria-label", isMax ? "Restore dashboard" : "Maximize to full screen");
       maximizeBtn.title = isMax ? "Restore" : "Maximize to full screen";
       document.body.style.overflow = isMax ? "hidden" : "";
+
+      // Reset the pan-hint pill and edge-fade indicators each time we
+      // toggle maximize. The scroll listener below will re-evaluate
+      // edge fades on the next scroll event.
+      const frame = browserMock.querySelector(".browser-frame");
+      const hint  = document.getElementById("panHint");
+      if (isMax) {
+        if (frame) updateEdgeFades(frame);
+        if (hint) hint.classList.remove("is-hidden");
+      } else {
+        if (frame) {
+          frame.classList.remove("can-scroll-right", "can-scroll-down");
+          frame.scrollTop = 0;
+          frame.scrollLeft = 0;
+        }
+        if (hint) hint.classList.remove("is-hidden");
+      }
     });
+  }
+
+  /* ------------------------------------------------------------------
+   * Edge-fade indicators + pan-hint auto-hide
+   *
+   * On mobile (and desktop) we want users to see at a glance that
+   * there's more dashboard content off-screen. We add `can-scroll-right`
+   * and `can-scroll-down` classes to the browser-frame so the CSS can
+   * show edge gradient fades. We also hide the floating "drag to pan"
+   * pill after the first scroll gesture.
+   * ------------------------------------------------------------------ */
+  function updateEdgeFades(frame) {
+    if (!frame) return;
+    const canRight = frame.scrollLeft + frame.clientWidth  < frame.scrollWidth  - 2;
+    const canDown  = frame.scrollTop  + frame.clientHeight < frame.scrollHeight - 2;
+    frame.classList.toggle("can-scroll-right", canRight);
+    frame.classList.toggle("can-scroll-down",  canDown);
+  }
+
+  if (browserMock) {
+    const frame = browserMock.querySelector(".browser-frame");
+    const hint  = document.getElementById("panHint");
+    let hintHidden = false;
+    if (frame) {
+      // Re-evaluate edge fades whenever the user scrolls OR the iframe
+      // finishes loading (the dashboard's content height changes once
+      // charts render, so what was "no overflow" can become "overflow").
+      const onScroll = function () {
+        updateEdgeFades(frame);
+        if (!hintHidden && hint) {
+          hint.classList.add("is-hidden");
+          hintHidden = true;
+        }
+      };
+      frame.addEventListener("scroll", onScroll, { passive: true });
+      // Also re-evaluate after the iframe loads + a delay for ECharts
+      // to finish rendering charts (which changes the body height).
+      if (showcaseFrame) {
+        showcaseFrame.addEventListener("load", function () {
+          setTimeout(function () { updateEdgeFades(frame); }, 800);
+          setTimeout(function () { updateEdgeFades(frame); }, 2000);
+        });
+      }
+      // Re-evaluate on viewport resize (orientation change, browser
+      // chrome show/hide on mobile, etc.)
+      window.addEventListener("resize", function () { updateEdgeFades(frame); });
+      // Initial evaluation (in case the section starts maximized)
+      updateEdgeFades(frame);
+    }
   }
 
   // Click backdrop to restore
   backdrop.addEventListener("click", function () {
-    if (browserMock) browserMock.classList.remove("is-maximized");
+    if (browserMock) {
+      browserMock.classList.remove("is-maximized");
+      const f = browserMock.querySelector(".browser-frame");
+      if (f) {
+        f.classList.remove("can-scroll-right", "can-scroll-down");
+        f.scrollTop = 0;
+        f.scrollLeft = 0;
+      }
+    }
     backdrop.classList.remove("is-visible");
     if (maximizeBtn) {
       maximizeBtn.setAttribute("aria-label", "Maximize to full screen");
@@ -337,6 +424,12 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && browserMock && browserMock.classList.contains("is-maximized")) {
       browserMock.classList.remove("is-maximized");
+      const f = browserMock.querySelector(".browser-frame");
+      if (f) {
+        f.classList.remove("can-scroll-right", "can-scroll-down");
+        f.scrollTop = 0;
+        f.scrollLeft = 0;
+      }
       backdrop.classList.remove("is-visible");
       if (maximizeBtn) {
         maximizeBtn.setAttribute("aria-label", "Maximize to full screen");

@@ -9,19 +9,21 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.8.0-20261005-fix-maximize-scroll';
+const VERSION = 'v4.9.0-20261005-visible-scroll-pan-hint';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
 // App shell — the bare-minimum assets to render the page offline.
+// Query strings match the cache-busting ?v=… strings in index.html so the
+// SW precaches the same URLs the page actually requests.
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css',
-  './js/app.js',
-  './js/hero-animation.js',
-  './js/pull-to-refresh.js',
-  './js/assistant.js',
+  './css/styles.css?v=4.9.0',
+  './js/app.js?v=4.9.0',
+  './js/hero-animation.js?v=4.9.0',
+  './js/pull-to-refresh.js?v=4.9.0',
+  './js/assistant.js?v=4.9.0',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
