@@ -235,6 +235,45 @@
         .bmd-ai-grid { grid-template-columns: 1fr; }
         .bmd-chart-body { height: 260px; }
       }
+
+      /* ═══ LIGHT THEME OVERRIDES — when [data-theme="light"] on <html> ═══ */
+      [data-theme="light"] .bmd-app {
+        background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+        color: #1e293b;
+      }
+      [data-theme="light"] .bmd-bn { color: #1e293b; }
+      [data-theme="light"] .bmd-bs { color: #64748b; }
+      [data-theme="light"] .bmd-kpi {
+        background: rgba(255, 255, 255, .9);
+        border-color: rgba(99, 102, 241, .15);
+      }
+      [data-theme="light"] .bmd-kpi:hover { border-color: #06b6d4; }
+      [data-theme="light"] .bmd-kpi-label { color: #64748b; }
+      [data-theme="light"] .bmd-kpi-val { color: #0f172a; }
+      [data-theme="light"] .bmd-kpi-val-unavailable { color: #94a3b8; }
+      [data-theme="light"] .bmd-kpi-skeleton {
+        background: linear-gradient(90deg, rgba(99,102,241,.1) 25%, rgba(255,255,255,1) 50%, rgba(99,102,241,.1) 75%);
+      }
+      [data-theme="light"] .bmd-chart-card {
+        background: rgba(255, 255, 255, .9);
+        border-color: rgba(99, 102, 241, .12);
+      }
+      [data-theme="light"] .bmd-chart-title { color: #1e293b; }
+      [data-theme="light"] .bmd-chart-title .bmd-src { color: #94a3b8; }
+      [data-theme="light"] .bmd-ai-brief {
+        background: linear-gradient(135deg, rgba(99,102,241,.04), rgba(6,182,212,.03));
+        border-color: rgba(99, 102, 241, .12);
+      }
+      [data-theme="light"] .bmd-ai-title { color: #1e293b; }
+      [data-theme="light"] .bmd-ai-sub { color: #64748b; }
+      [data-theme="light"] .bmd-ai-cell {
+        background: rgba(255, 255, 255, .7);
+        border-color: rgba(99, 102, 241, .1);
+      }
+      [data-theme="light"] .bmd-ai-cell-text { color: #475569; }
+      [data-theme="light"] .bmd-shimmer {
+        background: linear-gradient(90deg, rgba(99,102,241,.08) 25%, rgba(99,102,241,.15) 50%, rgba(99,102,241,.08) 75%);
+      }
       </style>
     `;
     document.head.insertAdjacentHTML('beforeend', css);
@@ -242,6 +281,37 @@
 
   // Netlify markets-proxy endpoint (server-side fetch of Yahoo + Frankfurter)
   var MARKETS_PROXY = 'https://startling-belekoy-b0ec70.netlify.app/markets-proxy';
+
+  // ─── Theme helper — returns 'light' or 'dark' based on <html data-theme> ──
+  function getTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  }
+  // ECharts axis colors per theme
+  function axisLabelColor() { return getTheme() === 'dark' ? '#64748b' : '#94a3b8'; }
+  function legendTextColor() { return getTheme() === 'dark' ? '#94a3b8' : '#64748b'; }
+  function tooltipBgColor() { return getTheme() === 'dark' ? 'rgba(15,23,42,.9)' : 'rgba(255,255,255,.95)'; }
+  function tooltipTextColor() { return getTheme() === 'dark' ? '#e2e8f0' : '#1e293b'; }
+  function tooltipBorderColor() { return getTheme() === 'dark' ? 'rgba(99,102,241,.2)' : 'rgba(99,102,241,.15)'; }
+
+  // Re-render all charts when theme changes (MutationObserver on <html data-theme>)
+  function watchThemeChanges() {
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        if (m.attributeName === 'data-theme') {
+          // Dispose + re-render all charts with new theme colors
+          Object.keys(charts).forEach(function (k) {
+            try { charts[k].dispose(); } catch (e) {}
+          });
+          renderTrends();
+          renderSectors();
+          renderFutures();
+          renderFX();
+          renderCrypto();
+        }
+      });
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  }
 
   // ─── Fetch LIVE indices + gold + commodities via Netlify proxy (Yahoo server-side) ───
   async function fetchIndices() {
@@ -728,6 +798,9 @@
 
     // Start 60-second polling for live data
     startPolling();
+
+    // Watch for theme changes (dark ↔ light) and re-render charts
+    watchThemeChanges();
   }
 
   // ─── Polling: refresh live data every 60 seconds ─────────────────────────
