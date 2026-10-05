@@ -1627,6 +1627,8 @@ ul {
   flex: 1;
   height: auto !important;
   min-height: 0;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
 }
 .browser-mock.is-maximized .browser-frame iframe {
   /* When maximized to fullscreen, drop the scaling — show the dashboard at its
