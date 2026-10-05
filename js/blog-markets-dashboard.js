@@ -21,10 +21,14 @@
   };
   var charts = {};
 
+  // All metric cards render in "000.00" format — always 2 decimal places.
+  // The `dec` argument is kept for backward-compat with existing call sites
+  // but is intentionally ignored so every KPI (indexes, gold, oil, BTC, etc.)
+  // lines up with the same 2-decimal display.
   function fmt(n, dec) {
     return Number(n).toLocaleString('en-US', {
-      minimumFractionDigits: dec || 2,
-      maximumFractionDigits: dec || 2
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     });
   }
 
