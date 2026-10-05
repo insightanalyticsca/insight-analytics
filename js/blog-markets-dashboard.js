@@ -587,22 +587,21 @@
           textShadowBlur: 3,
           formatter: function (p) { return p.value[2] + '%'; } 
         }, 
-        // Glassy tile feel — rounded corners + soft glow + slight translucency.
-        //        borderWidth stays 0 (no harsh grid lines). The glow provides
-        //        depth without competing with the data.
+        // Glassy tile feel — pronounced rounded corners + visible glow +
+        //        translucency. borderWidth stays 0 so no harsh grid lines.
         itemStyle: {
-          borderRadius: 6,
+          borderRadius: 8,
           borderColor: 'transparent',
           borderWidth: 0,
-          shadowBlur: 6,
-          shadowColor: 'rgba(0,0,0,0.22)',
-          opacity: 0.92
+          shadowBlur: 10,
+          shadowColor: 'rgba(0,0,0,0.32)',
+          opacity: 0.88
         },
         emphasis: {
           itemStyle: {
-            shadowBlur: 18,
-            shadowColor: 'rgba(99,102,241,0.7)',
-            borderColor: 'rgba(99,102,241,0.85)',
+            shadowBlur: 20,
+            shadowColor: 'rgba(99,102,241,0.75)',
+            borderColor: 'rgba(99,102,241,0.9)',
             borderWidth: 2,
             opacity: 1
           },
@@ -807,18 +806,18 @@
         // Same glassy tile treatment as sectors — rounded corners, breathing
         // gaps, soft glow on cells + stronger glow on hover.
         itemStyle: {
-          borderRadius: 5,
+          borderRadius: 6,
           borderColor: 'transparent',
           borderWidth: 0,
-          shadowBlur: 5,
-          shadowColor: 'rgba(0,0,0,0.22)',
-          opacity: 0.92
+          shadowBlur: 8,
+          shadowColor: 'rgba(0,0,0,0.32)',
+          opacity: 0.88
         },
         emphasis: {
           itemStyle: {
-            shadowBlur: 18,
-            shadowColor: 'rgba(6,182,212,0.7)',
-            borderColor: 'rgba(6,182,212,0.85)',
+            shadowBlur: 20,
+            shadowColor: 'rgba(6,182,212,0.75)',
+            borderColor: 'rgba(6,182,212,0.9)',
             borderWidth: 2,
             opacity: 1
           }
