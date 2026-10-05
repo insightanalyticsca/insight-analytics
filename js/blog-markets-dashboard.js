@@ -20,6 +20,9 @@
     fxRates: {}
   };
   var charts = {};
+  // Module-scope flag — true once we've wired the window 'load' resize
+  // handler, so re-booting (e.g. HMR or a re-render) doesn't double-bind.
+  var bmdLoadWired = false;
 
   // All metric cards render in "000.00" format — always 2 decimal places.
   // The `dec` argument is kept for backward-compat with existing call sites
@@ -891,6 +894,92 @@
         setTimeout(resizeAllCharts, 300);
       });
     });
+
+    // ─── Robust first-load resize: cover all the timing paths that leave
+    //     charts squished on initial render ──────────────────────────────
+    // The dashboard's wrapper has `.reveal reveal-scale` (opacity:0 +
+    // transform:scale(0.96)) which is removed by IntersectionObserver when
+    // the section scrolls into view. The boot() resize calls above all fire
+    // BEFORE that reveal happens — and even though `transform` doesn't
+    // affect offsetWidth/Height, ECharts' internal canvas sometimes fails
+    // to pick up the post-reveal dimensions on its own. The watchers below
+    // catch every path that changes container dimensions:
+    //
+    //   (a) ResizeObserver       — fires whenever ANY chart container's
+    //                               width or height changes (layout settling,
+    //                               viewport resize, font swap, theme change).
+    //   (b) IntersectionObserver — fires when the dashboard scrolls into
+    //                               view (the reveal moment); kicks a resize.
+    //   (c) window 'load'         — fires after all sub-resources (images,
+    //                               stylesheets, fonts) are fully loaded.
+    //   (d) document.fonts.ready  — fires when webfonts swap from fallback
+    //                               to display fonts (reflows container).
+    // --------------------------------------------------------------------
+
+    // (a) ResizeObserver — one observer watching all chart containers.
+    if (typeof ResizeObserver !== 'undefined') {
+      var ro = new ResizeObserver(function () {
+        // Debounce via rAF so multiple simultaneous resize events coalesce
+        // into a single chart.resize() pass.
+        if (ro._raf) cancelAnimationFrame(ro._raf);
+        ro._raf = requestAnimationFrame(function () {
+          ro._raf = null;
+          resizeAllCharts();
+        });
+      });
+      Object.keys(charts).forEach(function (k) {
+        var chart = charts[k];
+        if (chart && chart.getDom) {
+          var dom = chart.getDom();
+          if (dom) ro.observe(dom);
+        }
+      });
+    }
+
+    // (b) IntersectionObserver on the dashboard mount — fires when the
+    // section becomes visible (i.e. when `.reveal` is removed). At that
+    // point, kick a sequence of resize calls to make sure ECharts picks
+    // up the final post-reveal dimensions.
+    var mountEl = document.getElementById('markets-dashboard-mount');
+    if (mountEl && typeof IntersectionObserver !== 'undefined') {
+      var io = new IntersectionObserver(function (entries) {
+        var entry = entries[0];
+        if (entry && entry.isIntersecting) {
+          // Section just entered the viewport — kick resizes over the next
+          // ~1s to catch the post-reveal reflow + transitions.
+          resizeAllCharts();
+          requestAnimationFrame(function () {
+            resizeAllCharts();
+            setTimeout(resizeAllCharts, 200);
+            setTimeout(resizeAllCharts, 600);
+            setTimeout(resizeAllCharts, 1000);
+          });
+          // Only need to fire once — disconnect after first reveal.
+          io.disconnect();
+        }
+      }, { threshold: 0.05 });
+      io.observe(mountEl);
+    }
+
+    // (c) window 'load' — fires after all sub-resources are fully loaded.
+    if (!bmdLoadWired) {
+      bmdLoadWired = true;
+      window.addEventListener('load', function () {
+        resizeAllCharts();
+        setTimeout(resizeAllCharts, 200);
+        setTimeout(resizeAllCharts, 600);
+      });
+    }
+
+    // (d) document.fonts.ready — fires when webfonts have swapped. The
+    // fallback-to-display-font swap changes text dimensions, which can
+    // reflow chart containers (especially the title rows above each chart).
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        resizeAllCharts();
+        setTimeout(resizeAllCharts, 100);
+      });
+    }
 
     // Start 60-second polling for live data
     startPolling();
