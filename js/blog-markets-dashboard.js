@@ -971,8 +971,9 @@
         }
       }]
     });
-    var src = document.getElementById('bmd-src-fx');
-    if (src) src.textContent = 'demo (ECB fallback)';
+    // Label already set above (line ~887) with the correct source:
+    //   'Frankfurter/ECB live' | 'Yahoo Finance live' | 'rate fetch failed'
+    // (The old 'demo (ECB fallback)' label was overriding it here.)
   }
 
   // ─── AI Brief (Groq streaming) ──────────────────────────────────────────
