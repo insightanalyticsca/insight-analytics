@@ -423,7 +423,7 @@
          Top-level (all viewports). Mobile portrait overrides below. */
       .bmd-futures-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+        grid-template-columns: repeat(6, 1fr);
         gap: 6px;
         min-height: 140px;
       }
@@ -1006,7 +1006,7 @@
 
     if (hasCrypto) {
       // Show crypto comparison (BTC/ETH/SOL) from Binance
-      if (chartTitleEl) chartTitleEl.innerHTML = '<i class="fas fa-coins"></i> Crypto Comparison <span class="bmd-src" id="bmd-src-crypto">Binance live</span>';
+      if (chartTitleEl) chartTitleEl.innerHTML = '<i class="fas fa-coins"></i> Crypto Comparison <span class="bmd-src" id="bmd-src-crypto" data-live>Binance live</span>';
       var coins = [
         { key: 'btc', name: 'BTC', color: '#f59e0b', vol: 0.04 },
         { key: 'eth', name: 'ETH', color: '#6366f1', vol: 0.05 },
@@ -1026,7 +1026,7 @@
       });
     } else {
       // Binance failed — show commodities futures comparison instead
-      if (chartTitleEl) chartTitleEl.innerHTML = '<i class="fas fa-oil-can"></i> Commodities Comparison <span class="bmd-src" id="bmd-src-crypto">Yahoo futures</span>';
+      if (chartTitleEl) chartTitleEl.innerHTML = '<i class="fas fa-oil-can"></i> Commodities Comparison <span class="bmd-src" id="bmd-src-crypto" data-live>Yahoo futures</span>';
       var commodities = [
         { key: 'crudeOil', name: 'Crude Oil', color: '#ef4444', vol: 0.03 },
         { key: 'natGas', name: 'Nat Gas', color: '#f59e0b', vol: 0.04 },
@@ -1697,18 +1697,32 @@
   }
   window.addEventListener('resize', doResize);
 
-  // Phone rotation (portrait ↔ landscape) — fires AFTER the rotation
-  // transition completes. Dispatch multiple resize events at staggered
-  // intervals to catch the final container dimensions after the CSS
-  // transition settles. Without this, heatmaps stay "stretched" to the
-  // previous orientation's dimensions.
-  window.addEventListener('orientationchange', function () {
-    [100, 300, 600, 1000].forEach(function (delay) {
+  // Phone rotation (portrait ↔ landscape) — dispatches resize events at
+  // staggered intervals after the rotation to catch the final container
+  // dimensions. Uses BOTH 'orientationchange' (older API, fires after
+  // rotation completes) AND screen.orientation change (modern API).
+  // Also uses matchMedia('(orientation: landscape/portrait)') listener
+  // which fires reliably on iOS Safari + PWA.
+  function onOrientChange() {
+    [50, 150, 300, 600, 1000, 1500].forEach(function (delay) {
       setTimeout(function () {
         window.dispatchEvent(new Event('resize'));
+        // Also call resize directly (bypasses the debounce for instant effect)
+        Object.keys(charts).forEach(function (k) { try { charts[k].resize(); } catch (e) {} });
       }, delay);
     });
-  });
+  }
+  window.addEventListener('orientationchange', onOrientChange);
+  if (screen.orientation) {
+    screen.orientation.addEventListener('change', onOrientChange);
+  }
+  // matchMedia — fires when orientation actually changes, reliable on iOS
+  var orientMQ = window.matchMedia('(orientation: landscape)');
+  if (orientMQ.addEventListener) {
+    orientMQ.addEventListener('change', onOrientChange);
+  } else if (orientMQ.addListener) {
+    orientMQ.addListener(onOrientChange);  // iOS < 14 fallback
+  }
 
   // ─── Start when DOM + ECharts ready ──────────────────────────────────────
   function tryStart() {
