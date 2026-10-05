@@ -167,14 +167,14 @@
       .bmd-bn { font-size: 14px; font-weight: 700; color: #e2e8f0; }
       .bmd-bs { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: .06em; }
       .bmd-live-badge {
-        display: inline-flex; align-items: center; gap: 5px;
-        padding: 4px 10px; border-radius: 999px;
-        background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(16,185,129,.06));
-        border: 1px solid rgba(16,185,129,.2);
-        font-size: 10px; font-weight: 700; color: #10b981;
-        text-transform: uppercase; letter-spacing: .06em;
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 2px 7px; border-radius: 999px;
+        background: rgba(16,185,129,.08);
+        border: 1px solid rgba(16,185,129,.15);
+        font-size: 8px; font-weight: 600; color: #10b981;
+        text-transform: none; letter-spacing: 0;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
       }
       .bmd-theme-toggle {
         width: 28px; height: 28px; border-radius: 6px;
