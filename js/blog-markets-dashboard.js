@@ -1426,6 +1426,36 @@
   }
 
   // ─── Boot ────────────────────────────────────────────────────────────────
+  // ─── IIFE-level resize functions (accessible from doResize + onOrientChange) ─
+  var ro = null;
+  function resizeAllCharts() {
+    Object.keys(charts).forEach(function (k) {
+      try {
+        if (charts[k] && typeof charts[k].isDisposed === 'function' && charts[k].isDisposed()) return;
+        charts[k].resize();
+      } catch (e) {}
+    });
+  }
+  function setupResizeObserver() {
+    if (typeof ResizeObserver === 'undefined') return;
+    if (ro) { try { ro.disconnect(); } catch (_) {} }
+    ro = new ResizeObserver(function () {
+      if (ro._raf) cancelAnimationFrame(ro._raf);
+      ro._raf = requestAnimationFrame(function () {
+        ro._raf = null;
+        resizeAllCharts();
+      });
+    });
+    Object.keys(charts).forEach(function (k) {
+      var chart = charts[k];
+      if (chart && typeof chart.isDisposed === 'function' && chart.isDisposed()) return;
+      if (chart && chart.getDom) {
+        var dom = chart.getDom();
+        if (dom) ro.observe(dom);
+      }
+    });
+  }
+
   async function boot() {
     var mount = document.getElementById('markets-dashboard-mount');
     if (!mount) return;
@@ -1502,16 +1532,8 @@
     // squished if the CSS flex/grid layout hasn't settled yet). After all
     // data fetches + re-renders complete, the containers have their final
     // size — calling .resize() here ensures all canvases match.
-    function resizeAllCharts() {
-      Object.keys(charts).forEach(function (k) {
-        try {
-          // Skip disposed instances (charts are disposed + re-created in the poll)
-          if (charts[k] && typeof charts[k].isDisposed === 'function' && charts[k].isDisposed()) return;
-          charts[k].resize();
-        } catch (e) {}
-      });
-    }
-    // Multiple resize calls — the layout can take a few frames to settle
+    // NOTE: resizeAllCharts + setupResizeObserver are at IIFE level (outside
+    // boot) so onOrientChange + doResize can call them.
     requestAnimationFrame(function () {
       resizeAllCharts();
       requestAnimationFrame(function () {
@@ -1521,53 +1543,7 @@
       });
     });
 
-    // ─── Robust resize: ResizeObserver + IntersectionObserver + orientation ─
-    var ro = null;
-    function setupResizeObserver() {
-      if (typeof ResizeObserver === 'undefined') return;
-      if (ro) { try { ro.disconnect(); } catch (_) {} }
-      ro = new ResizeObserver(function () {
-        if (ro._raf) cancelAnimationFrame(ro._raf);
-        ro._raf = requestAnimationFrame(function () {
-          ro._raf = null;
-          resizeAllCharts();
-        });
-      });
-      Object.keys(charts).forEach(function (k) {
-        var chart = charts[k];
-        if (chart && typeof chart.isDisposed === 'function' && chart.isDisposed()) return;
-        if (chart && chart.getDom) {
-          var dom = chart.getDom();
-          if (dom) ro.observe(dom);
-        }
-      });
-    }
     setupResizeObserver();
-    //   (c) window 'load'         — fires after all sub-resources (images,
-    //                               stylesheets, fonts) are fully loaded.
-    //   (d) document.fonts.ready  — fires when webfonts swap from fallback
-    //                               to display fonts (reflows container).
-    // --------------------------------------------------------------------
-
-    // (a) ResizeObserver — one observer watching all chart containers.
-    if (typeof ResizeObserver !== 'undefined') {
-      var ro = new ResizeObserver(function () {
-        // Debounce via rAF so multiple simultaneous resize events coalesce
-        // into a single chart.resize() pass.
-        if (ro._raf) cancelAnimationFrame(ro._raf);
-        ro._raf = requestAnimationFrame(function () {
-          ro._raf = null;
-          resizeAllCharts();
-        });
-      });
-      Object.keys(charts).forEach(function (k) {
-        var chart = charts[k];
-        if (chart && chart.getDom) {
-          var dom = chart.getDom();
-          if (dom) ro.observe(dom);
-        }
-      });
-    }
 
     // (b) IntersectionObserver on the dashboard mount — fires when the
     // section becomes visible (i.e. when `.reveal` is removed). At that
@@ -1704,7 +1680,7 @@
   function doResize() {
     if (resizeTimer) clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
-      Object.keys(charts).forEach(function (k) { try { charts[k].resize(); } catch (e) {} });
+      resizeAllCharts();
     }, 150);
   }
   window.addEventListener('resize', doResize);
