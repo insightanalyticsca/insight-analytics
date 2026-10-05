@@ -424,13 +424,46 @@
   }
 
   // ─── Fetch LIVE FX via Netlify proxy (Frankfurter server-side) ─────────
+  // Also fetches YESTERDAY's rates directly from Frankfurter (CORS-enabled)
+  // to compute REAL cross-currency % changes for the heatmap. No demo data.
   async function fetchFX() {
     try {
+      // 1. Current rates via Netlify proxy (cached server-side, reliable)
       var r = await fetch(MARKETS_PROXY + '?fx=1');
       if (!r.ok) return false;
       var d = await r.json();
       if (!d || !d.rates) return false;
       liveData.fxRates = d.rates;
+
+      // 2. Fetch yesterday's (or most recent prior business day's) rates
+      //    directly from Frankfurter to compute real daily % changes.
+      //    Try up to 5 days back to skip weekends/holidays (FX markets
+      //    closed Sat/Sun, so Sunday's "yesterday" is actually Friday).
+      var baseDate = new Date();
+      for (var back = 1; back <= 5; back++) {
+        var prevDate = new Date(baseDate);
+        prevDate.setDate(prevDate.getDate() - back);
+        var dateStr = prevDate.toISOString().split('T')[0];
+        var yUrl = 'https://api.frankfurter.app/' + dateStr + '?from=USD&to=EUR,GBP,JPY,CAD,AUD,CHF,CNY';
+        try {
+          var r2 = await fetch(yUrl);
+          if (!r2.ok) continue;
+          var d2 = await r2.json();
+          if (d2 && d2.rates) {
+            // Verify rates are different from today's (avoid 0% everywhere
+            // if Frankfurter returns same-day rates for a weekend date)
+            var allSame = true;
+            for (var k in d2.rates) {
+              if (Math.abs((d2.rates[k] || 0) - (d.rates[k] || 0)) > 0.0001) { allSame = false; break; }
+            }
+            if (!allSame) {
+              liveData.fxRatesPrev = d2.rates;
+              break;
+            }
+          }
+        } catch (e) { /* try next day back */ }
+      }
+
       return true;
     } catch (e) { return false; }
   }
@@ -777,18 +810,36 @@
     charts.fx = echarts.init(el);
     var curr = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY'];
     var fxData = [];
-    // Include diagonal cells (currency paired with itself). The visualMap
-    // wasn't coloring value-0 cells (ECharts treats 0 as falsy/empty), so
-    // we push them as data objects with an EXPLICIT itemStyle.color that
-    // matches the neutral slate midpoint of the visualMap gradient.
-    // The label formatter below shows "—" for diagonal cells.
+    // Live cross-currency % changes computed from today's vs yesterday's
+    // Frankfurter rates. NO demo data — if rates aren't available, cells
+    // show "—" with the chart background color (no fake random values).
+    var rates = liveData.fxRates || {};
+    var ratesPrev = liveData.fxRatesPrev || {};
+    var hasLive = Object.keys(rates).length > 0 && Object.keys(ratesPrev).length > 0;
+
     curr.forEach(function (c, ci) { curr.forEach(function (c2, ci2) {
       if (ci === ci2) {
+        // Diagonal — currency paired with itself, no change
         fxData.push({ value: [ci2, ci, 0], itemStyle: { color: neutralCellColor() } });
+      } else if (hasLive) {
+        // Compute real cross-currency % change:
+        // EUR/GBP cross = GBP_rate / EUR_rate (how many GBP per 1 EUR)
+        // % change = ((crossToday - crossPrev) / crossPrev) * 100
+        var r1today = rates[c] || 1;
+        var r2today = rates[c2] || 1;
+        var r1prev = ratesPrev[c] || r1today;
+        var r2prev = ratesPrev[c2] || r2today;
+        var crossToday = r2today / r1today;
+        var crossPrev = r2prev / r1prev;
+        var chg = ((crossToday - crossPrev) / crossPrev) * 100;
+        fxData.push([ci2, ci, parseFloat(chg.toFixed(2))]);
       } else {
-        fxData.push([ci2, ci, (Math.random() * 3 - 1.5).toFixed(2)]);
+        // No live data available — show "—" with chart bg color (no demo)
+        fxData.push({ value: [ci2, ci, null], itemStyle: { color: chartBgColor() } });
       }
     }); });
+    var srcLabel = document.getElementById('bmd-src-fx');
+    if (srcLabel) srcLabel.textContent = hasLive ? 'Frankfurter/ECB live' : 'rate fetch failed';
     charts.fx.setOption({
       // Theme-aware background — matches chart-card gradient so empty cells
       // (diagonal) blend in. Was hardcoded to dark slate, which made the
@@ -842,8 +893,10 @@
           textShadowBlur: 2,
           formatter: function (p) {
             // Diagonal cells (currency paired with itself) show "—" — no
-            // meaningful change for EUR/EUR etc. Off-diagonal shows the %.
+            // meaningful change for EUR/EUR etc.
             if (p.value[0] === p.value[1]) return '—';
+            // Null values (rate fetch failed) also show "—"
+            if (p.value[2] === null || p.value[2] === undefined) return '—';
             return p.value[2];
           } 
         }, 
