@@ -35,6 +35,15 @@
     });
   }
 
+  // Set source label with green live dot when source is live
+  function setSrcLabel(id, text, isLive) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    if (isLive) el.setAttribute('data-live', '');
+    else el.removeAttribute('data-live');
+  }
+
   // ─── Build the dashboard HTML skeleton ───────────────────────────────────
   function buildSkeleton(mount) {
     mount.innerHTML = `
@@ -249,7 +258,21 @@
         margin-bottom: 6px; display: flex; align-items: center; gap: 4px;
       }
       .bmd-chart-title i { color: #06b6d4; font-size: 10px; }
-      .bmd-chart-title .bmd-src { margin-left: auto; font-size: 8px; color: #64748b; font-weight: 400; }
+      .bmd-chart-title .bmd-src { margin-left: auto; font-size: 8px; color: #64748b; font-weight: 400; display: inline-flex; align-items: center; gap: 4px; }
+      /* Green live dot before source label — indicates data is live */
+      .bmd-src[data-live]::before {
+        content: '';
+        width: 6px; height: 6px; border-radius: 50%;
+        background: #10b981;
+        display: inline-block;
+        box-shadow: 0 0 6px #10b981, 0 0 2px #10b981;
+        animation: bmdLivePulse 2s ease-in-out infinite;
+        flex-shrink: 0;
+      }
+      @keyframes bmdLivePulse {
+        0%, 100% { opacity: 0.6; transform: scale(0.9); }
+        50% { opacity: 1; transform: scale(1.15); }
+      }
       .bmd-chart-body { width: 100%; height: 22vh; min-height: 140px; }
       .bmd-chart-body.bmd-tall { height: 28vh; min-height: 170px; }
       /* AI Brief — matches the executive dashboard's polished styling:
@@ -837,14 +860,17 @@
 
     if (days.length === 0) {
       var srcEl = document.getElementById('bmd-src-trends');
-      if (srcEl) srcEl.textContent = 'no live data';
+      setSrcLabel('bmd-src-trends', 'no live data', false);
       return;
     }
 
     var srcEl3 = document.getElementById('bmd-src-trends');
-    if (srcEl3) srcEl3.textContent = hasHist
-      ? (btcSeries ? 'S&P/NASDAQ: Yahoo history+live · BTC: Binance live' : 'Yahoo history+live')
-      : (btcSeries ? 'S&P/NASDAQ: Yahoo live · BTC: Binance live' : 'Yahoo live');
+    setSrcLabel('bmd-src-trends',
+      hasHist
+        ? (btcSeries ? 'S&P/NASDAQ: Yahoo history+live · BTC: Binance live' : 'Yahoo history+live')
+        : (btcSeries ? 'S&P/NASDAQ: Yahoo live · BTC: Binance live' : 'Yahoo live'),
+      true
+    );
 
     charts.trends.setOption({
       backgroundColor: 'transparent',
@@ -1026,7 +1052,7 @@
 
     if (!series.length) {
       var src = document.getElementById('bmd-src-crypto');
-      if (src) src.textContent = 'waiting for data…';
+      setSrcLabel('bmd-src-crypto', 'waiting for data…', false);
       return;
     }
     charts.crypto.setOption({
@@ -1098,7 +1124,7 @@
     var srcEl = document.getElementById('bmd-src-futures');
     if (srcEl) {
       var anyLive = futuresList.some(function (f) { return liveData[f.key] && liveData[f.key].price != null; });
-      srcEl.textContent = anyLive ? 'Yahoo live' : 'waiting for Yahoo…';
+      setSrcLabel('bmd-src-futures', anyLive ? 'Yahoo live' : 'waiting for Yahoo…', anyLive);
     }
   }
 
@@ -1171,9 +1197,9 @@
     }); });
     var srcLabel = document.getElementById('bmd-src-fx');
     if (srcLabel) {
-      if (hasYahoo) srcLabel.textContent = 'Yahoo Finance live';
-      else if (hasFrankfurter) srcLabel.textContent = 'Frankfurter/ECB live';
-      else srcLabel.textContent = 'rate fetch failed';
+      if (hasYahoo) setSrcLabel('bmd-src-fx', 'Yahoo Finance live', true);
+      else if (hasFrankfurter) setSrcLabel('bmd-src-fx', 'Frankfurter/ECB live', true);
+      else setSrcLabel('bmd-src-fx', 'rate fetch failed', false);
     }
     charts.fx.setOption({
       // Theme-aware background — matches chart-card gradient so empty cells
@@ -1663,11 +1689,25 @@
 
   // ─── Resize handler ──────────────────────────────────────────────────────
   var resizeTimer = null;
-  window.addEventListener('resize', function () {
+  function doResize() {
     if (resizeTimer) clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
       Object.keys(charts).forEach(function (k) { try { charts[k].resize(); } catch (e) {} });
     }, 150);
+  }
+  window.addEventListener('resize', doResize);
+
+  // Phone rotation (portrait ↔ landscape) — fires AFTER the rotation
+  // transition completes. Dispatch multiple resize events at staggered
+  // intervals to catch the final container dimensions after the CSS
+  // transition settles. Without this, heatmaps stay "stretched" to the
+  // previous orientation's dimensions.
+  window.addEventListener('orientationchange', function () {
+    [100, 300, 600, 1000].forEach(function (delay) {
+      setTimeout(function () {
+        window.dispatchEvent(new Event('resize'));
+      }, delay);
+    });
   });
 
   // ─── Start when DOM + ECharts ready ──────────────────────────────────────
