@@ -370,6 +370,15 @@
         color: #cbd5e1;
         word-wrap: break-word;
       }
+      /* Value-change glow — brief flash when a card's value updates */
+      @keyframes bmd-value-flash {
+        0%   { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+        15%  { box-shadow: 0 0 16px 2px rgba(99,102,241,0.45); border-color: rgba(99,102,241,0.5); }
+        100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+      }
+      .bmd-flash {
+        animation: bmd-value-flash 1.4s ease-out;
+      }
       .bmd-shimmer {
         background: linear-gradient(90deg, rgba(99,102,241,.1) 25%, rgba(99,102,241,.25) 50%, rgba(99,102,241,.1) 75%);
         background-size: 200% 100%; animation: bmd-shimmer 1.5s infinite;
@@ -711,9 +720,10 @@
   }
 
   // ─── Render KPIs ──────────────────────────────────────────────────────────
+  // Track previous KPI prices to detect changes for the flash glow
+  var prevKPIPrices = {};
+
   function renderKPIs(binanceOk) {
-    // If Binance crypto works → show BTC/USD as the 5th KPI
-    // If Binance fails → show Crude Oil (CL=F from Yahoo) as the 5th KPI instead
     var fifthKpi;
     if (liveData.btc) {
       fifthKpi = { label: 'BTC/USD', data: { price: liveData.btc.price, change: liveData.btc.change }, fmt: function (v) { return fmt(v, 0); }, prefix: '$' };
@@ -732,11 +742,15 @@
       if (k.data) {
         var chg = k.data.change || 0;
         var dir = chg >= 0 ? 'up' : 'down';
-        return '<div class="bmd-kpi"><div class="bmd-kpi-label">' + k.label + '</div>' +
+        // Check if price changed since last render → add flash class
+        var prev = prevKPIPrices[k.label];
+        var changed = prev !== undefined && prev !== k.data.price;
+        var flash = changed ? ' bmd-flash' : '';
+        prevKPIPrices[k.label] = k.data.price;
+        return '<div class="bmd-kpi' + flash + '"><div class="bmd-kpi-label">' + k.label + '</div>' +
           '<div class="bmd-kpi-val">' + k.prefix + k.fmt(k.data.price) + '</div>' +
           '<div class="bmd-kpi-change ' + dir + '">' + (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%</div></div>';
       } else {
-        // NO demo values — show em dash when live data unavailable
         return '<div class="bmd-kpi"><div class="bmd-kpi-label">' + k.label + '</div>' +
           '<div class="bmd-kpi-val bmd-kpi-val-unavailable">—</div>' +
           '<div class="bmd-kpi-change">—</div></div>';
@@ -1039,11 +1053,12 @@
     });
   }
 
+  // Track previous futures prices to detect changes for the flash glow
+  var prevFuturesPrices = {};
+
   function renderFutures() {
     var grid = document.getElementById('bmd-futures-grid');
     if (!grid) return;
-    // Live futures from Yahoo via Netlify proxy. Include index futures
-    // (ES=F S&P 500, NQ=F NASDAQ) + commodity futures.
     var futuresList = [
       { key: 'esFuture', symbol: 'ES=F', name: 'S&P 500', prefix: '' },
       { key: 'nqFuture', symbol: 'NQ=F', name: 'NASDAQ', prefix: '' },
@@ -1065,7 +1080,12 @@
         var dir = chg >= 0 ? 'up' : 'down';
         var arrow = chg >= 0 ? '▲' : '▼';
         var price = f.prefix + Number(live.price).toFixed(2);
-        return '<div class="bmd-future-card">' +
+        // Check if price changed since last render → add flash class
+        var prev = prevFuturesPrices[f.key];
+        var changed = prev !== undefined && prev !== live.price;
+        var flash = changed ? ' bmd-flash' : '';
+        prevFuturesPrices[f.key] = live.price;
+        return '<div class="bmd-future-card' + flash + '">' +
           '<div class="bmd-future-name">' + f.name + '</div>' +
           '<div class="bmd-future-price">' + price + '</div>' +
           '<div class="bmd-future-chg ' + dir + '">' + arrow + ' ' + Math.abs(chg).toFixed(2) + '%</div>' +
