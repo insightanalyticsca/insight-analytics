@@ -566,11 +566,12 @@
           formatter: function (p) { return p.value[2] + '%'; } 
         }, 
         // Rounded translucent cells with breathing-room gaps + soft glow.
-        // borderRadius + shadowBlur give the glassy "tile" feel.
+        // Thin separator + soft shadow for depth — previous 3px border was too
+        // thick and looked like a competing grid in dark theme.
         itemStyle: { 
           borderRadius: 8, 
-          borderColor: 'rgba(15,23,42,0.55)', 
-          borderWidth: 3,
+          borderColor: 'rgba(15,23,42,0.18)', 
+          borderWidth: 1,
           shadowBlur: 10,
           shadowColor: 'rgba(0,0,0,0.28)'
         },
@@ -579,7 +580,7 @@
             shadowBlur: 22,
             shadowColor: 'rgba(99,102,241,0.65)',
             borderColor: 'rgba(99,102,241,0.5)',
-            borderWidth: 3
+            borderWidth: 1
           },
           label: {
             fontSize: 12,
@@ -759,8 +760,8 @@
         // gaps, soft glow on cells + stronger glow on hover.
         itemStyle: { 
           borderRadius: 6, 
-          borderColor: 'rgba(15,23,42,0.55)', 
-          borderWidth: 3,
+          borderColor: 'rgba(15,23,42,0.18)', 
+          borderWidth: 1,
           shadowBlur: 8,
           shadowColor: 'rgba(0,0,0,0.25)'
         },
@@ -769,7 +770,7 @@
             shadowBlur: 20,
             shadowColor: 'rgba(6,182,212,0.65)',
             borderColor: 'rgba(6,182,212,0.5)',
-            borderWidth: 3
+            borderWidth: 1
           }
         }
       }]
