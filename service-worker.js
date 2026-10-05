@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.13.3-20261005-fx-bg-dark-slate';
+const VERSION = 'v4.13.4-20261005-visualMap-outOfRange';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,12 +19,12 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.13.3',
-  './js/app.js?v=4.13.3',
-  './js/hero-animation.js?v=4.13.3',
-  './js/pull-to-refresh.js?v=4.13.3',
-  './js/assistant.js?v=4.13.3',
-  './js/blog-markets-dashboard.js?v=4.13.3',
+  './css/styles.css?v=4.13.4',
+  './js/app.js?v=4.13.4',
+  './js/hero-animation.js?v=4.13.4',
+  './js/pull-to-refresh.js?v=4.13.4',
+  './js/assistant.js?v=4.13.4',
+  './js/blog-markets-dashboard.js?v=4.13.4',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',

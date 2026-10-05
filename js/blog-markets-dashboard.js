@@ -801,9 +801,13 @@
       // FX color scale: rose → amber → dark slate (neutral) → mint → emerald.
       // Passing through slate as the neutral keeps the matrix readable when most
       // pairs are near 0% change — the eye is drawn to the few colorful cells.
+      // outOfRange color matches the chart background so any cell the visualMap
+      // refuses to color (e.g. value 0, treated as falsy by ECharts) blends in
+      // instead of showing as default light gray (#e6e6e6).
       visualMap: { 
         min: -1.5, max: 1.5, calculable: false, show: false, 
-        inRange: { color: ['#be123c', '#fb923c', '#fbbf24', '#1e293b', '#34d399', '#10b981', '#047857'] } 
+        inRange: { color: ['#be123c', '#fb923c', '#fbbf24', '#1e293b', '#34d399', '#10b981', '#047857'] },
+        outOfRange: { color: 'rgba(15,23,42,0.92)' }
       },
       series: [{ 
         type: 'heatmap', 
