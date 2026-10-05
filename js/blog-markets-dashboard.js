@@ -565,22 +565,22 @@
           textShadowBlur: 3,
           formatter: function (p) { return p.value[2] + '%'; } 
         }, 
-        // Rounded translucent cells with breathing-room gaps + soft glow.
-        // Thin separator + soft shadow for depth — previous 3px border was too
-        // thick and looked like a competing grid in dark theme.
+        // Cells touch — no borders, no gaps. Previous borders (even 1px)
+        //        left dark slivers between cells that read as a grid.
+        //        Subtle shadow + tiny corner radius give depth without gaps.
         itemStyle: { 
-          borderRadius: 8, 
-          borderColor: 'rgba(15,23,42,0.18)', 
-          borderWidth: 1,
-          shadowBlur: 10,
-          shadowColor: 'rgba(0,0,0,0.28)'
+          borderRadius: 3, 
+          borderColor: 'transparent', 
+          borderWidth: 0,
+          shadowBlur: 4,
+          shadowColor: 'rgba(0,0,0,0.18)'
         },
         emphasis: {
           itemStyle: {
-            shadowBlur: 22,
-            shadowColor: 'rgba(99,102,241,0.65)',
-            borderColor: 'rgba(99,102,241,0.5)',
-            borderWidth: 1
+            shadowBlur: 18,
+            shadowColor: 'rgba(99,102,241,0.6)',
+            borderColor: 'rgba(99,102,241,0.65)',
+            borderWidth: 2
           },
           label: {
             fontSize: 12,
@@ -759,18 +759,18 @@
         // Same glassy tile treatment as sectors — rounded corners, breathing
         // gaps, soft glow on cells + stronger glow on hover.
         itemStyle: { 
-          borderRadius: 6, 
-          borderColor: 'rgba(15,23,42,0.18)', 
-          borderWidth: 1,
-          shadowBlur: 8,
-          shadowColor: 'rgba(0,0,0,0.25)'
+          borderRadius: 3, 
+          borderColor: 'transparent', 
+          borderWidth: 0,
+          shadowBlur: 4,
+          shadowColor: 'rgba(0,0,0,0.18)'
         },
         emphasis: {
           itemStyle: {
-            shadowBlur: 20,
-            shadowColor: 'rgba(6,182,212,0.65)',
-            borderColor: 'rgba(6,182,212,0.5)',
-            borderWidth: 1
+            shadowBlur: 18,
+            shadowColor: 'rgba(6,182,212,0.6)',
+            borderColor: 'rgba(6,182,212,0.65)',
+            borderWidth: 2
           }
         }
       }]
