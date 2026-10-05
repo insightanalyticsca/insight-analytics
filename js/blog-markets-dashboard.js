@@ -566,35 +566,60 @@
   }
 
   // ─── Render charts (ECharts) ─────────────────────────────────────────────
+  // Fetch scraped historical index data (static JSON, scraped from Yahoo
+  // server-side and committed to the repo). Union with live current price
+  // from the proxy for the most recent data point.
+  async function fetchHistoricalIndices() {
+    try {
+      var spR = await fetch('/data/historical/sp500.json');
+      var nsR = await fetch('/data/historical/nasdaq.json');
+      if (spR.ok) { liveData.sp500History = await spR.json(); }
+      if (nsR.ok) { liveData.nasdaqHistory = await nsR.json(); }
+    } catch (e) { /* static JSON not available */ }
+  }
+
   function renderTrends() {
     var el = document.getElementById('bmd-chart-trends');
     if (!el) return;
     charts.trends = echarts.init(el);
-    // REAL live data — no Math.random() demo.
-    // S&P 500 + NASDAQ: 2-point trend (yesterday close → today close) from
-    //   the proxy's price + changePct. The proxy returns current price +
-    //   % change vs previous close. We compute:
-    //     prevClose = price / (1 + changePct/100)
-    //     todayClose = price
-    //   This gives the daily move direction — LIVE, not demo.
+    // REAL data — no Math.random() demo.
+    // S&P 500 + NASDAQ: scraped 20-day historical closes (static JSON from
+    //   Yahoo, committed to repo) UNIONED with live current price from the
+    //   proxy. Gives a real 20+ point trend chart, not a 2-point line.
     // BTC: 30-day daily closes from Binance (real historical, CORS-friendly).
     var sp = liveData.sp500 || {};
     var ns = liveData.nasdaq || {};
     var btc = liveData.btc || {};
+    var spHist = liveData.sp500History || {};
+    var nsHist = liveData.nasdaqHistory || {};
 
-    // Build 30-point arrays — pad with null for the first 28, then 2 live points
     var spData = [], nsData = [], volData = [], days = [];
-    var hasIndices = sp.price != null || ns.price != null;
-    if (hasIndices) {
+    var hasHist = (spHist.closes && spHist.closes.length > 0) || (nsHist.closes && nsHist.closes.length > 0);
+    var hasLive = sp.price != null || ns.price != null;
+
+    if (hasHist) {
+      days = (spHist.days || nsHist.days || []).slice();
+      spData = (spHist.closes || []).slice();
+      nsData = (nsHist.closes || []).slice();
+      volData = (spHist.volumes || []).map(function (v) { return v || 0; });
+      // Union: append or replace last point with live current price
+      if (hasLive && sp.price != null) {
+        var today = new Date();
+        var todayLabel = (today.getMonth() + 1) + '/' + today.getDate();
+        if (days[days.length - 1] !== todayLabel) {
+          days.push(todayLabel);
+          spData.push(sp.price);
+          nsData.push(ns.price || nsData[nsData.length - 1] || null);
+          volData.push(0);
+        } else {
+          spData[spData.length - 1] = sp.price;
+          if (ns.price != null) nsData[nsData.length - 1] = ns.price;
+        }
+      }
+    } else if (hasLive) {
+      // Fallback: 2-point live trend (yesterday → today)
       var spPrev = sp.price != null && sp.change != null ? sp.price / (1 + sp.change / 100) : null;
       var nsPrev = ns.price != null && ns.change != null ? ns.price / (1 + ns.change / 100) : null;
-      // Pad ALL arrays (data + x-axis labels) to 30 points so ECharts can
-      // map data[i] → days[i]. First 28 are null/placeholder, last 2 are live.
-      for (var i = 0; i < 28; i++) {
-        spData.push(null); nsData.push(null); volData.push(0);
-        var pd = new Date(); pd.setDate(pd.getDate() - (29 - i));
-        days.push((pd.getMonth() + 1) + '/' + pd.getDate());
-      }
       var yd = new Date(); yd.setDate(yd.getDate() - 1);
       var td = new Date();
       days.push((yd.getMonth() + 1) + '/' + yd.getDate());
@@ -603,24 +628,16 @@
       spData.push(sp.price || null); nsData.push(ns.price || null); volData.push(0);
     }
 
-    // BTC 30-day history from Binance (CORS-friendly, no proxy needed)
+    // BTC 30-day history from Binance
     var btcSeries = null;
     if (btc.history && btc.history.length > 0) {
-      // Use BTC's own 30 dates for x-axis if indices aren't available
-      if (!hasIndices) {
-        days = [];
+      if (days.length === 0) {
         for (var j = 0; j < btc.history.length; j++) {
           var d = new Date(); d.setDate(d.getDate() - (btc.history.length - 1 - j));
           days.push((d.getMonth() + 1) + '/' + d.getDate());
         }
       }
-      btcSeries = {
-        name: 'BTC ($)', type: 'line',
-        data: btc.history,
-        smooth: true, symbol: 'none',
-        lineStyle: { color: '#f59e0b', width: 1.5 },
-        yAxisIndex: 1
-      };
+      btcSeries = { name: 'BTC ($)', type: 'line', data: btc.history, smooth: true, symbol: 'none', lineStyle: { color: '#f59e0b', width: 1.5 }, yAxisIndex: 1 };
     }
 
     if (days.length === 0) {
@@ -630,7 +647,9 @@
     }
 
     var srcEl3 = document.getElementById('bmd-src-trends');
-    if (srcEl3) srcEl3.textContent = btcSeries ? 'S&P/NASDAQ: Yahoo live · BTC: Binance live' : 'Yahoo live';
+    if (srcEl3) srcEl3.textContent = hasHist
+      ? (btcSeries ? 'S&P/NASDAQ: Yahoo history+live · BTC: Binance live' : 'Yahoo history+live')
+      : (btcSeries ? 'S&P/NASDAQ: Yahoo live · BTC: Binance live' : 'Yahoo live');
 
     charts.trends.setOption({
       backgroundColor: 'transparent',
@@ -1193,7 +1212,9 @@
       });
     }
 
-    // Render static charts immediately (instant visual feedback — no "loading" delay)
+    // Fetch historical index data (static JSON scraped from Yahoo) then render
+    await fetchHistoricalIndices();
+    // Render static charts (trends uses historical JSON + will re-render after live data loads)
     renderTrends();
     renderSectors();
     renderFutures();
