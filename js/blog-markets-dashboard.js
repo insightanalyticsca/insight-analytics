@@ -525,13 +525,68 @@
     sectors.forEach(function (s, si) { metrics.forEach(function (m, mi) { heatData.push([mi, si, (Math.random() * 8 - 3).toFixed(2)]); }); });
     charts.sectors.setOption({
       backgroundColor: 'transparent',
-      tooltip: { formatter: function (p) { return sectors[p.value[1]] + ' ' + metrics[p.value[0]] + ': ' + p.value[2] + '%'; } },
-      grid: { left: 80, right: 20, top: 10, bottom: 30 },
+      tooltip: {
+        backgroundColor: 'rgba(15,23,42,0.92)',
+        borderColor: 'rgba(99,102,241,0.35)',
+        borderWidth: 1,
+        padding: [8, 12],
+        textStyle: { color: '#e2e8f0', fontSize: 11, fontFamily: 'Inter, sans-serif' },
+        extraCssText: 'backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 10px; box-shadow: 0 8px 24px -8px rgba(0,0,0,.5);',
+        formatter: function (p) { return '<b style="color:#fff">' + sectors[p.value[1]] + '</b> &nbsp;<span style="color:#94a3b8">' + metrics[p.value[0]] + '</span><br><b style="color:#06b6d4">' + p.value[2] + '%</b>'; }
+      },
+      grid: { left: 86, right: 22, top: 14, bottom: 32, containLabel: false },
       splitLine: { show: false },
-      xAxis: { type: 'category', data: metrics, axisLabel: { color: '#64748b', fontSize: 10 } },
-      yAxis: { type: 'category', data: sectors, axisLabel: { color: '#94a3b8', fontSize: 10 } },
-      visualMap: { min: -3, max: 5, calculable: false, show: false, inRange: { color: ['#ef4444', '#f59e0b', '#10b981'] } },
-      series: [{ type: 'heatmap', data: heatData, label: { show: true, fontSize: 10, color: '#fff', formatter: function (p) { return p.value[2] + '%'; } }, itemStyle: { borderColor: 'rgba(15,23,42,0.5)', borderWidth: 2 } }]
+      xAxis: { 
+        type: 'category', data: metrics, 
+        axisLabel: { color: '#cbd5e1', fontSize: 10, fontWeight: 600, margin: 12 }, 
+        axisLine: { show: false }, axisTick: { show: false } 
+      },
+      yAxis: { 
+        type: 'category', data: sectors, 
+        axisLabel: { color: '#cbd5e1', fontSize: 10, fontWeight: 500, margin: 14 }, 
+        axisLine: { show: false }, axisTick: { show: false } 
+      },
+      // Modern color scale: rich red → rose → coral → amber → mint → emerald → deep emerald
+      // Avoids harsh pure red/green; richer gradient stops make the heatmap feel
+      // designed rather than binary "good vs bad".
+      visualMap: { 
+        min: -3, max: 5, calculable: false, show: false, 
+        inRange: { color: ['#be123c', '#fb7185', '#fb923c', '#fbbf24', '#34d399', '#10b981', '#047857'] } 
+      },
+      series: [{ 
+        type: 'heatmap', 
+        data: heatData, 
+        label: { 
+          show: true, 
+          fontSize: 11, 
+          fontWeight: 700, 
+          color: '#ffffff',
+          textShadowColor: 'rgba(0,0,0,0.55)',
+          textShadowBlur: 3,
+          formatter: function (p) { return p.value[2] + '%'; } 
+        }, 
+        // Rounded translucent cells with breathing-room gaps + soft glow.
+        // borderRadius + shadowBlur give the glassy "tile" feel.
+        itemStyle: { 
+          borderRadius: 8, 
+          borderColor: 'rgba(15,23,42,0.55)', 
+          borderWidth: 3,
+          shadowBlur: 10,
+          shadowColor: 'rgba(0,0,0,0.28)'
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 22,
+            shadowColor: 'rgba(99,102,241,0.65)',
+            borderColor: 'rgba(99,102,241,0.5)',
+            borderWidth: 3
+          },
+          label: {
+            fontSize: 12,
+            fontWeight: 800
+          }
+        }
+      }]
     });
   }
 
@@ -658,12 +713,66 @@
     curr.forEach(function (c, ci) { curr.forEach(function (c2, ci2) { if (ci !== ci2) fxData.push([ci2, ci, (Math.random() * 3 - 1.5).toFixed(2)]); }); });
     charts.fx.setOption({
       backgroundColor: 'transparent',
-      tooltip: { formatter: function (p) { return curr[p.value[1]] + '/' + curr[p.value[0]] + ': ' + p.value[2] + '%'; } },
-      grid: { left: 50, right: 20, top: 10, bottom: 30 },
-      xAxis: { type: 'category', data: curr, axisLabel: { color: '#64748b', fontSize: 10 } },
-      yAxis: { type: 'category', data: curr, axisLabel: { color: '#64748b', fontSize: 10 } },
-      visualMap: { min: -1.5, max: 1.5, calculable: false, show: false, inRange: { color: ['#ef4444', '#1e293b', '#10b981'] } },
-      series: [{ type: 'heatmap', data: fxData, label: { show: true, fontSize: 8, color: '#94a3b8', formatter: function (p) { return p.value[2]; } }, itemStyle: { borderColor: 'rgba(15,23,42,0.5)', borderWidth: 2 } }]
+      tooltip: {
+        backgroundColor: 'rgba(15,23,42,0.92)',
+        borderColor: 'rgba(6,182,212,0.35)',
+        borderWidth: 1,
+        padding: [8, 12],
+        textStyle: { color: '#e2e8f0', fontSize: 11, fontFamily: 'Inter, sans-serif' },
+        extraCssText: 'backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 10px; box-shadow: 0 8px 24px -8px rgba(0,0,0,.5);',
+        formatter: function (p) { return '<b style="color:#fff">' + curr[p.value[1]] + '/' + curr[p.value[0]] + '</b><br><b style="color:#06b6d4">' + p.value[2] + '%</b>'; }
+      },
+      grid: { left: 56, right: 22, top: 14, bottom: 32, containLabel: false },
+      splitLine: { show: false },
+      xAxis: { 
+        type: 'category', data: curr, 
+        axisLabel: { color: '#cbd5e1', fontSize: 10, fontWeight: 600, margin: 10 }, 
+        axisLine: { show: false }, axisTick: { show: false },
+        splitArea: { show: false }
+      },
+      yAxis: { 
+        type: 'category', data: curr, 
+        axisLabel: { color: '#cbd5e1', fontSize: 10, fontWeight: 600, margin: 10 }, 
+        axisLine: { show: false }, axisTick: { show: false },
+        splitArea: { show: false }
+      },
+      // FX color scale: rose → amber → dark slate (neutral) → mint → emerald.
+      // Passing through slate as the neutral keeps the matrix readable when most
+      // pairs are near 0% change — the eye is drawn to the few colorful cells.
+      visualMap: { 
+        min: -1.5, max: 1.5, calculable: false, show: false, 
+        inRange: { color: ['#be123c', '#fb923c', '#fbbf24', '#1e293b', '#34d399', '#10b981', '#047857'] } 
+      },
+      series: [{ 
+        type: 'heatmap', 
+        data: fxData, 
+        label: { 
+          show: true, 
+          fontSize: 9, 
+          fontWeight: 700, 
+          color: '#e2e8f0',
+          textShadowColor: 'rgba(0,0,0,0.55)',
+          textShadowBlur: 2,
+          formatter: function (p) { return p.value[2]; } 
+        }, 
+        // Same glassy tile treatment as sectors — rounded corners, breathing
+        // gaps, soft glow on cells + stronger glow on hover.
+        itemStyle: { 
+          borderRadius: 6, 
+          borderColor: 'rgba(15,23,42,0.55)', 
+          borderWidth: 3,
+          shadowBlur: 8,
+          shadowColor: 'rgba(0,0,0,0.25)'
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 20,
+            shadowColor: 'rgba(6,182,212,0.65)',
+            borderColor: 'rgba(6,182,212,0.5)',
+            borderWidth: 3
+          }
+        }
+      }]
     });
     var src = document.getElementById('bmd-src-fx');
     if (src) src.textContent = 'demo (ECB fallback)';
