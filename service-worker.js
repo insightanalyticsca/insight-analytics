@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.33.0-20261005-smaller-live-badge';
+const VERSION = 'v4.33.1-20261005-retrigger-build';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,12 +19,12 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.33.0',
-  './js/app.js?v=4.33.0',
-  './js/hero-animation.js?v=4.33.0',
-  './js/pull-to-refresh.js?v=4.33.0',
-  './js/assistant.js?v=4.33.0',
-  './js/blog-markets-dashboard.js?v=4.33.0',
+  './css/styles.css?v=4.33.1',
+  './js/app.js?v=4.33.1',
+  './js/hero-animation.js?v=4.33.1',
+  './js/pull-to-refresh.js?v=4.33.1',
+  './js/assistant.js?v=4.33.1',
+  './js/blog-markets-dashboard.js?v=4.33.1',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
@@ -149,3 +149,4 @@ self.addEventListener('message', (event) => {
   if (event.data === 'skipWaiting') self.skipWaiting();
 });
 
+// build trigger
