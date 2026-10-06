@@ -1137,19 +1137,7 @@ ul {
   background: linear-gradient(135deg, var(--indigo), var(--cyan));
   color: #fff;
   box-shadow: 0 4px 12px -6px rgba(99, 102, 241, 0.55);
-  margin-bottom: 6px;
-}
-.transform-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  font-size: 1.15rem;
-  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.08));
-  border: 1px solid var(--border);
-  color: var(--text);
-  margin-bottom: 6px;
+  margin-bottom: 10px;
 }
 .transform-card h3 {
   font-family: var(--font-head);
