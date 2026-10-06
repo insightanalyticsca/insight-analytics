@@ -50,7 +50,7 @@
       <div class="bmd-app">
         <div class="bmd-topbar">
           <div class="bmd-brand">
-            <div class="bmd-bm"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGradBmd" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="100%" stop-color="#00b0ff"/></linearGradient></defs><rect x="8" y="15" width="20" height="70" fill="url(#iaGradBmd)" rx="3"/><path d="M35 85 L62 15 L89 85 Z" fill="url(#iaGradBmd)"/></svg></div>
+            <div class="bmd-bm"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGradBmd" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="100%" stop-color="#00b0ff"/></linearGradient></defs><rect x="8" y="15" width="20" height="70" fill="url(#iaGradBmd)" rx="3"/><polygon points="38,90 48,90 67,10 57,10" fill="url(#iaGradBmd)"/><polygon points="82,90 92,90 67,10 77,10" fill="url(#iaGradBmd)"/></svg></div>
             <div>
               <div class="bmd-bn">Markets &amp; Finance Dashboard</div>
               <div class="bmd-bs">Indexes · Crypto · Gold · AI Narrative</div>
