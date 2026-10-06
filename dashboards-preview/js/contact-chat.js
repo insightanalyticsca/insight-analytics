@@ -26,9 +26,9 @@
   var IA_FACTS = [
     '═══ CORE PLATFORM ═══',
     'Insight Analytics builds corporate dashboard platforms for utilities, telecom, and operations sectors.',
-    'Core product: a static site (HTML5 + vanilla JS + ECharts 5) — free hosting, no server required.',
+    'Core product: a static site (HTML5 + vanilla JS + ECharts 5) — free hosting, no proprietary runtime required.',
     'Original platform was a .NET MVC Core app; the deployed demo is a faithful static clone of that app\'s logic, look, and feel (not a reimplementation — the .NET cshtml templates were converted to static HTML shells that load shared JS).',
-    'JSON file backend: data/executive/*.json + data/versions/*.json. No database, no API server — every "query" is a fetch against a static JSON file.',
+    'Three deployment topologies — pick the one that matches where the pipeline already lands: (1) backend-less: static JSON files in /data/executive/*.json + /data/versions/*.json, served by GitHub Pages — every "query" is a fetch against a static file. Right for daily/weekly snapshots, internal reports, public demos. This is the topology the public demo on insight-analytics.ca runs on. (2) Production: thin API in front of the client\'s existing SQL backend (SQL Server / Postgres / Snowflake / BigQuery). Same dashboard, same KPIs — just a connection string swap. This is where most client engagements live. (3) Hybrid: managed warehouse (Supabase / Neon / Cloudflare D1 / Turso) + serverless API (Workers / Edge / Vercel) for teams without a warehouse yet. Zero ops, fully managed. The dashboard itself does not change between topologies — only the data source behind it.',
     'Source repo: not publicly disclosed',
 
     '═══ DASHBOARD SECTORS ═══',

@@ -107,7 +107,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn7TZv2Dl3Jp2s1Lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Site styles -->
-  <link rel="stylesheet" href="./css/styles.css?v=4.50.1" />
+  <link rel="stylesheet" href="./css/styles.css?v=4.51.0" />
 
   <!-- Prevent theme flash -->
   <script>
@@ -813,6 +813,40 @@
             </div>
           </div>
         </div>
+
+        <div class="topology-block reveal">
+          <div class="topology-head">
+            <h3>Three deployment topologies — pick the one your pipeline already lands in</h3>
+            <p>Real data pipelines have to land their output somewhere queryable. We don't pick your backend for you. Pick the shape that matches where your data already lives — the same dashboards, same AI brief, same semantic layer, all three ways.</p>
+          </div>
+          <div class="topology-grid" data-stagger>
+            <article class="card topology-card" data-stagger-item>
+              <span class="topology-tag">Option 1</span>
+              <div class="topology-icon" aria-hidden="true"><i class="fas fa-folder-tree"></i></div>
+              <h4>Backend-less (static JSON)</h4>
+              <p class="topology-where"><strong>Right for:</strong> live dashboards refreshed on a daily or weekly cadence, internal snapshots, public demos, and any case where you'd rather commit a JSON file to git than run a database.</p>
+              <p class="topology-how"><strong>How it works:</strong> the pipeline writes the aggregated result as JSON files into the repo. GitHub Pages (or any static host) serves them. The dashboard fetches a static file — no API, no DB connection, no auth handshake on every page load. Loads in under 2 seconds.</p>
+              <p class="topology-when"><em>This is what the demo on this page runs on.</em> It's a legitimate production option, not just an evaluation mode — for low-frequency internal reporting, it's often the right one.</p>
+            </article>
+            <article class="card topology-card" data-stagger-item>
+              <span class="topology-tag">Option 2</span>
+              <div class="topology-icon" aria-hidden="true"><i class="fas fa-database"></i></div>
+              <h4>Your existing SQL backend</h4>
+              <p class="topology-where"><strong>Right for:</strong> production engagements where the pipeline already lands in SQL Server, Postgres, Snowflake, BigQuery, or a warehouse. This is where most client work lives.</p>
+              <p class="topology-how"><strong>How it works:</strong> we deploy a thin API in front of your existing database — same SQL you already trust, same security model, same audit trail. The dashboard queries it the same way it queries the static JSON in Option 1. One connection string swap and you're live.</p>
+              <p class="topology-when"><em>No rip-and-replace.</em> The warehouse you already pay for keeps doing its job. We add the dashboard + AI brief + semantic layer on top, not a parallel system.</p>
+            </article>
+            <article class="card topology-card" data-stagger-item>
+              <span class="topology-tag">Option 3</span>
+              <div class="topology-icon" aria-hidden="true"><i class="fas fa-cloud"></i></div>
+              <h4>Managed warehouse + serverless API</h4>
+              <p class="topology-where"><strong>Right for:</strong> teams that don't have a warehouse yet, or want to keep BI workloads off the production OLTP database. Provisioned in a day, fully managed.</p>
+              <p class="topology-how"><strong>How it works:</strong> Supabase, Neon, Cloudflare D1, Turso — pick one, the pipeline lands there, a serverless function (Cloudflare Workers, Netlify Edge, Vercel) serves the dashboard. Zero ops on your side. Backend exists, but it's managed, not yours to run.</p>
+              <p class="topology-when"><em>Right when you've outgrown static JSON</em> but a hosted warehouse is overkill. The same dashboard that runs backend-less in Option 1 runs indexed-and-scaled here.</p>
+            </article>
+          </div>
+          <p class="topology-note">The dashboard itself doesn't change between topologies — only the data source behind it. Start backend-less for evaluation, swap to your SQL backend for production, move to a managed warehouse if you outgrow both. Same code, same KPI definitions, same AI brief.</p>
+        </div>
       </div>
     </section>
 
@@ -963,10 +997,10 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="./js/app.js?v=4.50.1" defer></script>
-  <script src="./js/hero-animation.js?v=4.50.1" defer></script>
-  <script src="./js/pull-to-refresh.js?v=4.50.1" defer></script>
-  <script src="./js/assistant.js?v=4.50.1" defer></script>
+  <script src="./js/app.js?v=4.51.0" defer></script>
+  <script src="./js/hero-animation.js?v=4.51.0" defer></script>
+  <script src="./js/pull-to-refresh.js?v=4.51.0" defer></script>
+  <script src="./js/assistant.js?v=4.51.0" defer></script>
 
   <!-- Register service worker for PWA (installable + offline cache) -->
   <script>
