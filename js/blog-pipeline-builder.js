@@ -225,7 +225,17 @@
         }
         if (e.message && e.message.indexOf('AI service') === 0) throw e;
         if (e.message && e.message.indexOf('Demo rate limit') === 0) throw e;
-        // Network / DNS / proxy down
+        // Network / DNS / CORS error. Browsers report CORS failures as
+        // generic TypeError("Failed to fetch") — the only signal we get.
+        // Surface a hint that's actionable: this is most likely a stale
+        // deployed Netlify edge function whose CORS list doesn't include
+        // the current origin, not a network outage or a rate limit.
+        if (e.name === 'TypeError' || (e.message && e.message.indexOf('Failed to fetch') >= 0)) {
+          throw new Error('Couldn\u2019t reach the AI service (CORS or network error). ' +
+            'This usually means the deployed Netlify Groq proxy needs a redeploy to refresh its allowed-origins list. ' +
+            'Try again in a minute — if the problem persists, the proxy at dashboards-groq-proxy.netlify.app needs to be redeployed via the deploy_groq_proxy.py script.');
+        }
+        // Other unexpected errors
         throw new Error('Couldn\u2019t reach the AI service. Please try again — if the problem persists, the demo may be rate-limited.');
       });
   }
