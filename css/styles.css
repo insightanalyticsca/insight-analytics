@@ -410,19 +410,16 @@ ul {
 .brand:hover { color: var(--text); }
 
 .brand-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: var(--gradient);
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
-  font-family: var(--font-head);
-  font-weight: 800;
-  font-size: 1.05rem;
-  color: #fff;
-  letter-spacing: 0.02em;
-  box-shadow: 0 8px 20px -6px rgba(99, 102, 241, 0.7), inset 0 1px 0 rgba(255,255,255,0.3);
   flex-shrink: 0;
+}
+.brand-mark svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 12px rgba(0, 176, 255, 0.35));
 }
 
 .brand-name {
@@ -431,7 +428,7 @@ ul {
   letter-spacing: -0.01em;
   white-space: nowrap;
 }
-.brand-name b { color: var(--navy-text); font-weight: 800; }
+.brand-name b { color: #00d4ff; font-weight: 800; }
 
 .nav-links {
   display: flex;
