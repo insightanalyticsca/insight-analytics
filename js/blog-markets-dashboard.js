@@ -163,7 +163,7 @@
         display: grid; place-items: center;
         flex-shrink: 0;
       }
-      .bmd-bm svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 8px rgba(0,176,255,0.3)); }
+      .bmd-bm svg { width: 100%; height: 100%;  }
       .bmd-bn { font-size: 14px; font-weight: 700; color: #e2e8f0; }
       .bmd-bs { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: .06em; }
       .bmd-live-badge {
