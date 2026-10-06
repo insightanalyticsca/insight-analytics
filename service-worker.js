@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.60.0-20261007-fix-nan-summarize-column-case';
+const VERSION = 'v4.61.0-20261007-pdf-sample-template';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,13 +19,13 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.60.0',
-  './js/app.js?v=4.60.0',
-  './js/hero-animation.js?v=4.60.0',
-  './js/pull-to-refresh.js?v=4.60.0',
-  './js/assistant.js?v=4.60.0',
-  './js/blog-markets-dashboard.js?v=4.60.0',
-  './js/blog-pipeline-builder.js?v=4.60.0',
+  './css/styles.css?v=4.61.0',
+  './js/app.js?v=4.61.0',
+  './js/hero-animation.js?v=4.61.0',
+  './js/pull-to-refresh.js?v=4.61.0',
+  './js/assistant.js?v=4.61.0',
+  './js/blog-markets-dashboard.js?v=4.61.0',
+  './js/blog-pipeline-builder.js?v=4.61.0',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
@@ -106,6 +106,13 @@ self.addEventListener('fetch', (event) => {
   // Same for the dashboard data files (in case the dashboard's relative path
   // resolves outside /dashboards-preview/, e.g. legacy paths).
   if (url.pathname.indexOf('/data/executive/') === 0) return;
+
+  // Bypass the sample PDF too — it's fetched by the pipeline-builder demo
+  // on demand (when the user clicks the "Sales Report (PDF)" sample button).
+  // The PDF content is parsed by pdf.js + the demo's detectPDFTable() at
+  // fetch time — caching it in the SW's runtime cache would just bloat
+  // storage for a 5KB file that's already cheap to re-fetch.
+  if (url.pathname.indexOf('/data/sample-sales-report.pdf') === 0) return;
 
   // For the navigation request (the HTML page itself), network-first so users
   // always get the latest deployed content on a hard refresh / pull-to-refresh.

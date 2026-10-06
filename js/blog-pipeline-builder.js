@@ -385,7 +385,8 @@
     return rows;
   }
 
-  // Sample-button registry — name, icon, row count, generator, columns.
+  // Sample-button registry — name, icon, row count, generator (or async loader
+  // for PDF samples that need fetch + pdf.js parse), columns.
   var SAMPLE_TEMPLATES = [
     {
       key: 'sales', name: 'Regional Sales Q3', icon: 'fa-chart-line',
@@ -401,6 +402,18 @@
       key: 'invoices', name: 'Invoice Aging', icon: 'fa-file-invoice-dollar',
       rowCount: 40, columns: ['invoice_id','customer','issue_date','due_date','amount','days_outstanding','status'],
       generate: genInvoiceAging
+    },
+    {
+      // PDF sample — fetched + parsed by pdf.js at click time (no inline data).
+      // The PDF lives at /data/sample-sales-report.pdf (committed to the repo)
+      // and contains a 30-row Q3 2026 regional sales report laid out as a real
+      // table widget so pdf.js's text extraction + the demo's detectPDFTable()
+      // heuristic produce clean rows. Lets users try the full NL → pipeline →
+      // execute → email flow on a PDF (not just Excel).
+      key: 'pdf', name: 'Sales Report (PDF)', icon: 'fa-file-pdf',
+      rowCount: 30, columns: ['Date','Region','Product','Qty','Revenue','Channel'],
+      isPDF: true,
+      url: '/data/sample-sales-report.pdf'
     }
   ];
 
@@ -728,14 +741,39 @@
     return Promise.reject(new Error('Unsupported file type. Accepted: .xlsx, .xls, .docx, .pdf, .csv'));
   }
 
-  // Load a sample template directly (no file upload — no library needed).
+  // Load a sample template. For Excel-style samples this is synchronous
+  // (returns a doc object directly). For PDF samples it's async — fetches
+  // the PDF file and parses it via pdf.js (which is loaded lazily on first
+  // use). Returns a Promise<doc> in either case for unified handling.
   function loadSample(tpl) {
+    if (tpl.isPDF) {
+      // Async path: fetch the PDF, wrap it as a File, hand off to parsePDF.
+      // Same parser path as a user-uploaded PDF, so detectPDFTable() runs
+      // against the real text positioning extracted by pdf.js.
+      return fetch(tpl.url, { cache: 'no-cache' }).then(function (r) {
+        if (!r.ok) throw new Error('Couldn\u2019t load the sample PDF (' + r.status + '). The file may not be deployed yet.');
+        return r.arrayBuffer();
+      }).then(function (buf) {
+        // Wrap as a File so parsePDF's FileReader.readAsArrayBuffer works.
+        var filename = tpl.url.split('/').pop();
+        var file = new File([buf], filename, { type: 'application/pdf' });
+        return parsePDF(file);
+      }).then(function (doc) {
+        // Tag the doc as a sample so the UI can show "sample dataset" hint
+        // and so the analysis step knows it's a synthetic demo PDF.
+        doc.name = tpl.name + ' (sample)';
+        if (!doc.warnings) doc.warnings = [];
+        doc.warnings.unshift('This is a committed sample PDF — no file was uploaded.');
+        return doc;
+      });
+    }
+    // Sync path: existing Excel-style generator
     var rows = tpl.generate();
-    return makeDoc({
+    return Promise.resolve(makeDoc({
       type: 'excel', name: tpl.name + ' (sample)', fileSize: 0,
       rows: rows, columns: tpl.columns.slice(),
       warnings: ['This is a generated sample dataset — no file was uploaded.']
-    });
+    }));
   }
 
   // ─── Groq auto-analysis ────────────────────────────────────────────────────
@@ -1300,6 +1338,8 @@
 [data-theme="dark"] .pb-warn { color: #fcd34d; }\
 \
 .pb-loading { display: flex; align-items: center; gap: 10px; color: var(--text-soft); font-size: 0.88rem; padding: 14px 0; }\
+.pb-loading-block { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 32px 16px; text-align: center; color: var(--text-soft); font-size: 0.95rem; }\
+.pb-loading-sub { font-size: 0.78rem; color: var(--text-soft); opacity: 0.7; }\
 .pb-spinner {\
   width: 16px; height: 16px; border: 2px solid var(--border-strong); border-top-color: var(--indigo);\
   border-radius: 50%; animation: pb-spin 0.8s linear infinite; flex-shrink: 0;\
@@ -1783,12 +1823,37 @@
   function renderUploadCard() {
     var slot = $('pb-upload-slot');
     if (!slot) return;
+    // Loading state — sample is being fetched + parsed (especially the PDF
+    // sample which needs pdf.js). Show a spinner instead of the buttons so
+    // the user knows something is happening.
+    if (state.sampleLoading) {
+      slot.innerHTML = '\
+        <div class="pb-card">\
+          <div class="pb-loading-block">\
+            <div class="pb-spinner"></div>\
+            <div>Loading sample\u2026</div>\
+            <div class="pb-loading-sub">Fetching and parsing the sample document.</div>\
+          </div>\
+        </div>';
+      return;
+    }
+    // Error loading the sample
+    if (state.sampleLoadingError) {
+      slot.innerHTML = '\
+        <div class="pb-card">\
+          <div class="pb-error"><i class="fas fa-triangle-exclamation"></i> ' + esc(state.sampleLoadingError) + '</div>\
+          <button class="pb-link" id="pb-retry-sample" type="button">Back to samples</button>\
+        </div>';
+      return;
+    }
     if (state.document) { slot.innerHTML = ''; return; }
     var samples = SAMPLE_TEMPLATES.map(function (t) {
+      // PDF samples show a PDF icon + "PDF · 30 rows" instead of "generated"
+      var meta = t.isPDF ? (t.rowCount + ' rows \u00b7 PDF') : (t.rowCount + ' rows \u00b7 generated');
       return '<button class="pb-sample" data-pb-sample="' + t.key + '" type="button">' +
         '<div class="pb-sample-icon"><i class="fas ' + t.icon + '"></i></div>' +
         '<div class="pb-sample-name">' + esc(t.name) + '</div>' +
-        '<div class="pb-sample-meta">' + t.rowCount + ' rows \u00b7 generated</div>' +
+        '<div class="pb-sample-meta">' + meta + '</div>' +
       '</button>';
     }).join('');
     slot.innerHTML = '\
@@ -2111,23 +2176,33 @@
   function onSampleClick(key) {
     var tpl = SAMPLE_TEMPLATES.filter(function (t) { return t.key === key; })[0];
     if (!tpl) return;
-    var doc = loadSample(tpl);
-    // Reset downstream state.
-    state.document = doc;
+    // Show loading state immediately (especially for the PDF sample which
+    // needs fetch + pdf.js parse — takes ~500ms on first load).
+    state.document = null;
     state.analysis = null; state.analysisLoading = false; state.analysisError = null;
     state.pipeline = null; state.pipelineError = null; state.pipelineLoading = false;
     state.result = null; state.resultError = null;
     state.visibleRows = 25;
     if (state.chart) { try { state.chart.dispose(); } catch (e) {} state.chart = null; }
+    state.sampleLoading = true;
+    state.sampleLoadingError = null;
     render();
-    state.analysisLoading = true;
-    renderSlot('document');
-    analyzeDocument(doc).then(function (analysis) {
+    loadSample(tpl).then(function (doc) {
+      state.sampleLoading = false;
+      state.document = doc;
+      render();
+      // Auto-analyze the document (same as onFileUploaded).
+      state.analysisLoading = true;
+      renderSlot('document');
+      return analyzeDocument(doc);
+    }).then(function (analysis) {
       state.analysis = analysis; state.analysisLoading = false;
       renderSlot('document');
     }).catch(function (e) {
-      state.analysisLoading = false; state.analysisError = e.message || 'Analysis failed.';
-      renderSlot('document');
+      state.sampleLoading = false;
+      state.analysisLoading = false;
+      state.sampleLoadingError = e.message || 'Couldn\u2019t load the sample.';
+      render();
     });
   }
 
@@ -2295,6 +2370,7 @@
       if (t.closest('#pb-edit-instruction')) { var ta = $('pb-instruction'); if (ta) { ta.focus(); } var is = $('pb-instruction-slot'); if (is && is.scrollIntoView) is.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
       if (t.closest('#pb-replace-doc'))  { resetDocument(); return; }
       if (t.closest('#pb-retry-analysis')) { retryAnalysis(); return; }
+      if (t.closest('#pb-retry-sample'))  { state.sampleLoadingError = null; renderSlot('upload'); return; }
       if (t.closest('#pb-toggle-json'))   { state.showSpecJson = !state.showSpecJson; renderSlot('pipeline'); return; }
       // Load more rows in the results table.
       if (t.closest('#pb-load-more'))    { state.visibleRows += 25; renderSlot('results'); return; }
