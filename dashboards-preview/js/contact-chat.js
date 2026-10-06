@@ -51,7 +51,7 @@
 
     '═══ NETLIFY PROXY ARCHITECTURE (key never reaches client) ═══',
     'The Groq API key is held server-side as the GROQ_API_KEY environment variable on a Netlify Edge Function (Deno runtime).',
-    'The static site on GitHub Pages calls the proxy URL (https://dashboards-groq-proxy.netlify.app/groq-proxy) instead of api.groq.com directly — the key never appears in client JS, never lives in the GitHub repo, never gets blocked by GitHub secret scanning.',
+    'The static site on GitHub Pages calls the proxy URL (https://startling-belekoy-b0ec70.netlify.app/groq-proxy) instead of api.groq.com directly — the key never appears in client JS, never lives in the GitHub repo, never gets blocked by GitHub secret scanning.',
     'The proxy streams SSE pass-through (ReadableStream) so token-by-token streaming still works in the browser.',
     'CORS restricted to the GitHub Pages origin + localhost for dev.',
     'Bonus: GET /groq-proxy?op=models endpoint forwards to Groq /v1/models for listing available models from the browser.',

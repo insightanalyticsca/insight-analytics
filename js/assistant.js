@@ -3,9 +3,9 @@
  *
  * Architecture:
  *  - Reuses the same Netlify Edge Function Groq proxy as the dashboards site:
- *    https://dashboards-groq-proxy.netlify.app/groq-proxy
+ *    https://startling-belekoy-b0ec70.netlify.app/groq-proxy
  *    The proxy holds the GROQ_API_KEY server-side; the browser only sees the
- *    proxy URL. CORS already allows insightanalyticsca.github.io.
+ *    proxy URL. CORS already allows insight-analytics.ca + insightanalyticsca.github.io.
  *  - Groq model: qwen/qwen3.8-27b (streaming, max 800 tokens per turn)
  *  - System prompt is hardcoded with the site's full content so the bot is
  *    "trained" to answer questions about: site content, automated pipelines,

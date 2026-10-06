@@ -45,7 +45,7 @@
   // ─── Constants ────────────────────────────────────────────────────────────
 
   var MOUNT_ID         = 'pipeline-builder-mount';
-  var GROQ_PROXY       = 'https://dashboards-groq-proxy.netlify.app/groq-proxy';
+  var GROQ_PROXY       = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
   var GROQ_MODEL       = 'qwen/qwen3.8-27b';
   var STORAGE_KEY      = 'pipelineBuilder.saved';
   var RATE_KEY         = 'pipelineBuilder.rate';
@@ -232,8 +232,8 @@
         // the current origin, not a network outage or a rate limit.
         if (e.name === 'TypeError' || (e.message && e.message.indexOf('Failed to fetch') >= 0)) {
           throw new Error('Couldn\u2019t reach the AI service (CORS or network error). ' +
-            'This usually means the deployed Netlify Groq proxy needs a redeploy to refresh its allowed-origins list. ' +
-            'Try again in a minute — if the problem persists, the proxy at dashboards-groq-proxy.netlify.app needs to be redeployed via the deploy_groq_proxy.py script.');
+            'The Groq proxy may be cold-starting — please try again in a few seconds. ' +
+            'If the problem persists, please let us know via the Contact form.');
         }
         // Other unexpected errors
         throw new Error('Couldn\u2019t reach the AI service. Please try again — if the problem persists, the demo may be rate-limited.');
