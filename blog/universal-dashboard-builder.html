@@ -235,7 +235,7 @@
 
     <h3>Layer 1 — Data Ingestion</h3>
     <p>The platform connects to your data sources — SQL Server, Oracle, PostgreSQL, Excel, SaaS APIs, operational systems. It extracts the data into structured JSON payloads that define: KPI tiles (label, value, format, trend), chart series (type, data, axis configuration), and table definitions (columns, rows, formatting).</p>
-    <p>No data warehouse required. No ETL pipeline to build first. The platform reads what you have and normalizes it into the format the rendering engine expects.</p>
+    <p>No rip-and-replace. The platform reads what you have and normalizes it into the format the rendering engine expects. If you already have a warehouse (SQL Server, Snowflake, BigQuery), the pipeline lands its aggregated output there and the dashboard queries it through a thin API. If you don't, the pipeline can write JSON files directly and the dashboard fetches them — see <em>Deployment Topologies</em> below for the three options.</p>
 
     <h3>Layer 2 — Dashboard Rendering</h3>
     <p>The rendering engine is built on Apache ECharts — the same charting library used by major tech companies for their analytics products. It supports:</p>
@@ -248,7 +248,7 @@
       <li>Responsive layout (desktop, tablet, mobile)</li>
       <li>Full-screen maximize mode</li>
     </ul>
-    <p>Every dashboard is a static HTML page — no server required. Deploy on your intranet, your IIS server, or any web server. The dashboards load in under 2 seconds because there's no server-side rendering, no database query on page load, no authentication handshake.</p>
+    <p>Every dashboard renders to static HTML + a thin JSON data layer. <strong>Backend-less is one of three deployment topologies — not the only one.</strong> The same dashboard can be served three ways depending on where your pipeline already lands its output (see <em>Deployment Topologies</em> below). Load time stays under 2 seconds in all three because there's no server-side rendering, no live database query on page load, no authentication handshake — the dashboard fetches a pre-shaped JSON payload, whatever served it.</p>
 
     <h3>Layer 3 — AI-Assisted Insights</h3>
     <p>Every dashboard includes an <strong>AI Brief card</strong> — a 4-section narrative that streams live from a language model:</p>
@@ -261,6 +261,32 @@
     <p>The AI receives structured data packets (not raw SQL dumps) — KPI values, chart summaries, table snapshots — and produces an evidence-based brief that each role receives at the right altitude. Executives see the enterprise signal. Regional leaders see prioritized actions. Analysts see lineage and root-cause context.</p>
     <p>The AI is honest. If it doesn't have the data to answer, it says so. No hallucinated confidence, no invented numbers.</p>
 
+    <h2>Deployment Topologies</h2>
+    <p>Real data pipelines have to land their aggregated output somewhere queryable. We don't pick your backend for you. Pick the shape that matches where your data already lives — the same dashboard, same AI Brief, same KPI definitions, all three ways.</p>
+    <table>
+      <thead>
+        <tr><th>Topology</th><th>Right for</th><th>How it works</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Backend-less (static JSON)</strong></td>
+          <td>Live dashboards refreshed on a daily or weekly cadence, internal snapshots, public demos, and any case where you'd rather commit a JSON file to git than run a database.</td>
+          <td>The pipeline writes the aggregated result as JSON files into the repo. GitHub Pages (or any static host) serves them. The dashboard fetches a static file — no API, no DB connection, no auth handshake on every page load. This is what the markets dashboard above runs on. Legitimate production option, not just an evaluation mode — for low-frequency internal reporting, it's often the right one.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Your existing SQL backend</strong></td>
+          <td>Production engagements where the pipeline already lands in SQL Server, Postgres, Snowflake, BigQuery, or a warehouse. This is where most client work lives.</td>
+          <td>We deploy a thin API in front of your existing database — same SQL you already trust, same security model, same audit trail. The dashboard queries it the same way it queries the static JSON in Option 1. One connection string swap and you're live. No rip-and-replace — the warehouse you already pay for keeps doing its job.</td>
+        </tr>
+        <tr>
+          <td><strong>3. Managed warehouse + serverless API</strong></td>
+          <td>Teams that don't have a warehouse yet, or want to keep BI workloads off the production OLTP database. Provisioned in a day, fully managed.</td>
+          <td>Supabase, Neon, Cloudflare D1, Turso — pick one, the pipeline lands there, a serverless function (Cloudflare Workers, Netlify Edge, Vercel) serves the dashboard. Zero ops on your side. Backend exists, but it's managed, not yours to run.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The dashboard itself doesn't change between topologies — only the data source behind it. Start backend-less for evaluation, swap to your SQL backend for production, move to a managed warehouse if you outgrow both. Same code, same KPI definitions, same AI Brief.</p>
+
     <h2>What Makes This Different</h2>
     <table>
       <thead>
@@ -268,9 +294,9 @@
       </thead>
       <tbody>
         <tr><td>Forces you into their data model</td><td>Adapts to YOUR data model</td></tr>
-        <tr><td>Requires a data warehouse first</td><td>Reads from existing sources directly</td></tr>
+        <tr><td>Requires their warehouse or none at all</td><td>Three deployment topologies — backend-less, your existing SQL backend, or managed warehouse</td></tr>
         <tr><td>Licensing per user, per month</td><td>One-time build, no per-user licensing</td></tr>
-        <tr><td>Server-side rendering (slow, needs infrastructure)</td><td>Static HTML (fast, deploys anywhere)</td></tr>
+        <tr><td>Server-side rendering (slow, needs infrastructure)</td><td>Static HTML fetches a pre-shaped JSON payload (fast, deploys anywhere)</td></tr>
         <tr><td>AI is a bolt-on feature (if it exists)</td><td>AI Brief is built into every dashboard</td></tr>
         <tr><td>Theme customization requires developer + licensing</td><td>Full theme system, dark/light toggle built-in</td></tr>
         <tr><td>Mobile experience is often an afterthought</td><td>Responsive + installable as a PWA</td></tr>
@@ -296,7 +322,7 @@
       <li><strong>KPI definition workshop</strong> — we sit with your team to define the exact KPI calculations, formats, and thresholds that match your operating model</li>
       <li><strong>Dashboard build</strong> — we build the JSON payloads + render the dashboards. First dashboard is typically ready within 1-2 weeks</li>
       <li><strong>AI Brief configuration</strong> — we configure the AI Brief to produce the 4-section narrative your executives need each morning</li>
-      <li><strong>Deployment</strong> — the dashboards are deployed on your infrastructure (IIS, internal web server, or GitHub Pages for public-facing demos)</li>
+      <li><strong>Deployment</strong> — pick the topology that matches your pipeline: backend-less (static JSON + GitHub Pages / intranet), thin API in front of your existing SQL backend (SQL Server / Postgres / warehouse), or managed warehouse + serverless API (Supabase / Neon / D1 / Turso). Same dashboard, same KPIs, all three ways.</li>
       <li><strong>Handoff</strong> — your team receives the JSON payload generator + the rendering engine + documentation. You can build future dashboards yourself</li>
     </ol>
     <p>The first engagement typically takes 2-4 weeks from data assessment to deployed dashboard with AI Brief. Subsequent dashboards (using the same data pipeline) take days, not weeks.</p>
