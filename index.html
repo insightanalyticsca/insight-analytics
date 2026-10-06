@@ -107,7 +107,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn7TZv2Dl3Jp2s1Lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Site styles -->
-  <link rel="stylesheet" href="./css/styles.css?v=4.54.0" />
+  <link rel="stylesheet" href="./css/styles.css?v=4.55.0" />
 
   <!-- Prevent theme flash -->
   <script>
@@ -997,10 +997,10 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="./js/app.js?v=4.54.0" defer></script>
-  <script src="./js/hero-animation.js?v=4.54.0" defer></script>
-  <script src="./js/pull-to-refresh.js?v=4.54.0" defer></script>
-  <script src="./js/assistant.js?v=4.54.0" defer></script>
+  <script src="./js/app.js?v=4.55.0" defer></script>
+  <script src="./js/hero-animation.js?v=4.55.0" defer></script>
+  <script src="./js/pull-to-refresh.js?v=4.55.0" defer></script>
+  <script src="./js/assistant.js?v=4.55.0" defer></script>
 
   <!-- Register service worker for PWA (installable + offline cache) -->
   <script>
@@ -1013,7 +1013,15 @@
           scope: './',
           updateViaCache: 'none'
         })
-          .then(function (reg) { console.log('[PWA] Service worker registered with scope:', reg.scope); })
+          .then(function (reg) {
+            console.log('[PWA] Service worker registered with scope:', reg.scope);
+            // Force an immediate check for a new SW on every page load. Browsers
+            // throttle automatic SW update checks (typically once per 24h via the
+            // navigation event), so without this manual call a user could open
+            // the PWA minutes after a deploy and still get the old SW for hours.
+            // registration.update() bypasses the throttle and checks NOW.
+            reg.update();
+          })
           .catch(function (err) { console.warn('[PWA] Service worker registration failed:', err); });
 
         // When a new SW takes over (skipWaiting + clients.claim), reload the
@@ -1025,6 +1033,62 @@
           refreshing = true;
           window.location.reload();
         });
+
+        // Show a visible "Update ready" prompt when a new SW has installed
+        // but is waiting to activate. With skipWaiting() this rarely happens,
+        // but if it does (e.g., registration.update() found a new SW while
+        // the old one was still mid-request), the user gets a clear cue
+        // instead of being stuck on stale content.
+        navigator.serviceWorker.addEventListener('updatefound', function () {
+          var newWorker = navigator.serviceWorker.reg && navigator.serviceWorker.reg.installing;
+          if (!newWorker) {
+            // Fall back to a fresh registration lookup if .reg isn't cached
+            navigator.serviceWorker.getRegistration().then(function (reg) {
+              if (reg && reg.installing) watchNewWorker(reg.installing);
+            });
+          } else {
+            watchNewWorker(newWorker);
+          }
+        });
+        function watchNewWorker(worker) {
+          worker.addEventListener('statechange', function () {
+            if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+              // There's already a controlling SW — this means a new SW just
+              // installed. Show the update prompt.
+              showUpdateToast();
+            }
+          });
+        }
+        function showUpdateToast() {
+          // Don't show multiple toasts
+          if (document.getElementById('sw-update-toast')) return;
+          var toast = document.createElement('div');
+          toast.id = 'sw-update-toast';
+          toast.style.cssText = [
+            'position:fixed','bottom:24px','left:50%','transform:translateX(-50%)',
+            'background:linear-gradient(135deg,#4338ca,#0e7490)','color:#fff',
+            'padding:12px 20px','border-radius:12px','box-shadow:0 12px 32px -8px rgba(67,56,202,0.55)',
+            'font-family:Inter,system-ui,sans-serif','font-size:14px','font-weight:600',
+            'z-index:99999','cursor:pointer','display:flex','align-items:center','gap:10px',
+            'max-width:calc(100vw - 32px)'
+          ].join(';');
+          toast.innerHTML = '<span>\u2728 Site updated — tap to reload</span>';
+          toast.onclick = function () {
+            // Force the waiting SW to skip waiting, then reload on controllerchange
+            navigator.serviceWorker.getRegistration().then(function (reg) {
+              if (reg && reg.waiting) {
+                reg.waiting.postMessage('skipWaiting');
+              } else {
+                window.location.reload();
+              }
+            });
+          };
+          document.body.appendChild(toast);
+          // Auto-dismiss after 15s if user ignores it
+          setTimeout(function () {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+          }, 15000);
+        }
       });
     }
   </script>

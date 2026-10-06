@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.54.0-20261007-readable-pill-text';
+const VERSION = 'v4.55.0-20261007-sw-cache-no-cache-force-update';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,12 +19,12 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.54.0',
-  './js/app.js?v=4.54.0',
-  './js/hero-animation.js?v=4.54.0',
-  './js/pull-to-refresh.js?v=4.54.0',
-  './js/assistant.js?v=4.54.0',
-  './js/blog-markets-dashboard.js?v=4.54.0',
+  './css/styles.css?v=4.55.0',
+  './js/app.js?v=4.55.0',
+  './js/hero-animation.js?v=4.55.0',
+  './js/pull-to-refresh.js?v=4.55.0',
+  './js/assistant.js?v=4.55.0',
+  './js/blog-markets-dashboard.js?v=4.55.0',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
@@ -108,9 +108,14 @@ self.addEventListener('fetch', (event) => {
 
   // For the navigation request (the HTML page itself), network-first so users
   // always get the latest deployed content on a hard refresh / pull-to-refresh.
+  // CRITICAL: cache: 'no-cache' — bypasses the browser HTTP cache. GitHub
+  // Pages sets cache-control: max-age=600 (10 min) on HTML, so without this
+  // the SW would serve stale HTML referencing old ?v=X.Y.Z URLs (which the
+  // old SW had cached) → user sees old content for up to 10 min after a
+  // deploy even after the new SW activates.
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
+      fetch(request, { cache: 'no-cache' })
         .then((response) => {
           // Clone + cache the fresh HTML for offline use
           const copy = response.clone();
@@ -122,10 +127,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For same-origin static assets: stale-while-revalidate
+  // For same-origin static assets: stale-while-revalidate.
+  // The network fetch uses cache: 'no-cache' so the SW revalidates against
+  // the server on every request (lets GitHub Pages return 304 if unchanged,
+  // but always checks). Without this, the SW would trust its own cached
+  // copy for the cache-bust query string's lifetime — fine for new deploys
+  // (new URL = new cache entry = fresh fetch) but a footgun if GitHub Pages
+  // ever serves a CSS file at the same URL with different content.
   event.respondWith(
     caches.match(request).then((cached) => {
-      const fetchPromise = fetch(request)
+      const fetchPromise = fetch(request, { cache: 'no-cache' })
         .then((response) => {
           // Only cache valid same-origin responses
           if (!response || response.status !== 200 || response.type !== 'basic') {
