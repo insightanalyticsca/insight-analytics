@@ -969,16 +969,46 @@
     return function (row) { return evalAst(ast, row); };
   }
 
+  // ─── Case-insensitive column resolver ──────────────────────────────────────
+  // Groq frequently returns column names in a DIFFERENT CASE than the actual
+  // data — e.g. valueColumn: "QTY" when the data has lowercase "qty", or
+  // "Revenue" when the data has "revenue". Without a resolver, r["QTY"]
+  // returns undefined → Number(undefined) is NaN → NaN propagates through
+  // sum/avg/min/max → the entire result column shows as NaN.
+  //
+  // The resolver: exact match first, case-insensitive match second, falls
+  // back to the original name (so undefined values surface the bug visibly
+  // in the result — better than silently failing).
+  var _colLookupCache = {};
+  function resolveColumn(name, docColumns) {
+    if (!name) return name;
+    if (docColumns.indexOf(name) >= 0) return name;
+    var cacheKey = name.toLowerCase() + '\u0001' + docColumns.join('\u0001');
+    if (_colLookupCache[cacheKey]) return _colLookupCache[cacheKey];
+    var lower = name.toLowerCase();
+    for (var i = 0; i < docColumns.length; i++) {
+      if (docColumns[i].toLowerCase() === lower) {
+        _colLookupCache[cacheKey] = docColumns[i];
+        return docColumns[i];
+      }
+    }
+    _colLookupCache[cacheKey] = name;
+    return name;
+  }
+
   // ─── Pipeline executor ─────────────────────────────────────────────────────
   // Runs each step in order over a shallow-cloned row array. Each step mutates
   // the array (filter shortens, summarize reshapes, sort reorders, etc.). The
   // final shape is returned to the renderer.
   function executePipeline(doc, spec) {
     var rows = (doc.rows || []).slice();
+    var docCols = doc.columns || (rows.length ? Object.keys(rows[0]) : []);
+    _colLookupCache = {};  // reset per-execution
     (spec.steps || []).forEach(function (step) {
       if (step.type === 'filter') {
+        var fCol = resolveColumn(step.column, docCols);
         rows = rows.filter(function (r) {
-          var v = r[step.column];
+          var v = r[fCol];
           switch (step.operator) {
             case '==':  return String(v) == String(step.value);
             case '!=':  return String(v) != String(step.value);
@@ -992,16 +1022,19 @@
           }
         });
       } else if (step.type === 'summarize') {
-        var groupBy = step.groupBy && step.groupBy.length ? step.groupBy : [];
+        var groupByRaw = step.groupBy && step.groupBy.length ? step.groupBy : [];
+        var groupBy = groupByRaw.map(function (c) { return resolveColumn(c, docCols); });
+        var valCol = step.valueColumn ? resolveColumn(step.valueColumn, docCols) : null;
         var groups = {};
         var order = [];
         rows.forEach(function (r) {
           var key = groupBy.map(function (c) { return r[c]; }).join(' | ');
           if (!groups[key]) { groups[key] = { count: 0, sum: 0, min: Infinity, max: -Infinity }; order.push(key); }
           var g = groups[key];
-          var val = step.valueColumn ? Number(r[step.valueColumn]) : 0;
+          var val = valCol ? Number(r[valCol]) : 0;
+          if (isNaN(val)) val = 0;  // guard against NaN propagation
           g.count++;
-          if (step.valueColumn) {
+          if (valCol) {
             g.sum += val;
             g.min = Math.min(g.min, val);
             g.max = Math.max(g.max, val);
@@ -1012,33 +1045,35 @@
           var parts = key.split(' | ');
           var row = {};
           groupBy.forEach(function (c, i) { row[c] = parts[i]; });
-          if (step.valueColumn) {
+          if (valCol) {
             var agg = step.aggregation || 'sum';
-            row[agg + '_of_' + step.valueColumn] =
+            row[agg + '_of_' + valCol] =
               agg === 'sum'   ? g.sum :
               agg === 'count' ? g.count :
               agg === 'avg'   ? (g.count ? g.sum / g.count : 0) :
-              agg === 'min'   ? g.min :
-              agg === 'max'   ? g.max : null;
+              agg === 'min'   ? (g.min === Infinity ? 0 : g.min) :
+              agg === 'max'   ? (g.max === -Infinity ? 0 : g.max) : null;
           } else {
             row.count = g.count;
           }
           return row;
         });
       } else if (step.type === 'sort') {
-        var col = step.column, order2 = step.order === 'desc' ? -1 : 1;
+        var sCol = resolveColumn(step.column, docCols);
+        var order2 = step.order === 'desc' ? -1 : 1;
         rows.sort(function (a, b) {
-          var av = a[col], bv = b[col];
+          var av = a[sCol], bv = b[sCol];
           if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * order2;
           return order2 * String(av).localeCompare(String(bv));
         });
       } else if (step.type === 'limit') {
         rows = rows.slice(0, Math.max(0, step.count | 0));
       } else if (step.type === 'select') {
-        var cols = step.columns || [];
+        var selColsRaw = step.columns || [];
+        var selCols = selColsRaw.map(function (c) { return resolveColumn(c, docCols); });
         rows = rows.map(function (r) {
           var o = {};
-          cols.forEach(function (c) { o[c] = r[c]; });
+          selCols.forEach(function (c) { o[c] = r[c]; });
           return o;
         });
       } else if (step.type === 'transform') {
