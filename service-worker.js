@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.61.0-20261007-pdf-sample-template';
+const VERSION = 'v4.62.0-20261007-ai-text-tasks-summary-bullets-qa';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,13 +19,13 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.61.0',
-  './js/app.js?v=4.61.0',
-  './js/hero-animation.js?v=4.61.0',
-  './js/pull-to-refresh.js?v=4.61.0',
-  './js/assistant.js?v=4.61.0',
-  './js/blog-markets-dashboard.js?v=4.61.0',
-  './js/blog-pipeline-builder.js?v=4.61.0',
+  './css/styles.css?v=4.62.0',
+  './js/app.js?v=4.62.0',
+  './js/hero-animation.js?v=4.62.0',
+  './js/pull-to-refresh.js?v=4.62.0',
+  './js/assistant.js?v=4.62.0',
+  './js/blog-markets-dashboard.js?v=4.62.0',
+  './js/blog-pipeline-builder.js?v=4.62.0',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',

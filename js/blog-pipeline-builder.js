@@ -794,9 +794,11 @@
       '  "summary": "one-sentence description of what\'s in the data",\n' +
       '  "keyColumns": ["which columns look most important for analysis"],\n' +
       '  "suggestedActions": [\n' +
-      '    "3-5 natural-language suggested actions, each a one-sentence instruction like \'Summarize total revenue by region\'",\n' +
-      '    "Make them specific to this data, not generic",\n' +
-      '    "Vary the difficulty — easy (sort), medium (summarize), advanced (filter+summarize)"\n' +
+      '    "4-6 natural-language suggested actions, each a one-sentence instruction",\n' +
+      '    "Include a MIX of: tabular tasks (e.g. \'Summarize total revenue by region\', \'Top 5 products by qty\', \'Filter to Ontario and sort by revenue desc\') AND text tasks (e.g. \'Summarize this document in plain English\', \'What are the main points?\', \'Ask a question about this report\')",\n' +
+      '    "For text-heavy documents (PDF/Word with little tabular data), lean toward text tasks",\n' +
+      '    "For row-based documents (Excel/CSV with many rows), lean toward tabular tasks but include at least one text task",\n' +
+      '    "Make them specific to this data, not generic"\n' +
       '  ],\n' +
       '  "detectedFormulas": ["any formulas or derived columns you notice (e.g. \'revenue = qty \u00d7 price\')"],\n' +
       '  "dataQualityNotes": ["any issues — missing values, outliers, etc."]\n' +
@@ -834,23 +836,44 @@
       '      // transform: { "newColumn": "...", "expression": "qty * price" } }\n' +
       '    }\n' +
       '  ],\n' +
-      '  "output": { "format": "html_table"|"csv"|"excel"|"pdf", "emailSubject": "subject line", "emailBodyIntro": "one-sentence intro" }\n' +
-      '}';
+      '  "output": { "format": "html_table"|"csv"|"excel"|"pdf"|"html_text", "emailSubject": "subject line", "emailBodyIntro": "one-sentence intro" }\n' +
+      '}\n\n' +
+      'CRITICAL DISPATCH RULE:\n' +
+      '  - If the instruction is a TABULAR operation (filter, summarize, aggregate, sort, count, group, top N, etc.) -> return spec with "steps[]"\n' +
+      '  - If the instruction is a TEXT TASK (summarize the document, main points, key takeaways, what does this report say, ask a question, explain, describe) -> return spec with "aiTask{}" instead of "steps[]"\n' +
+      '  - DO NOT include both. Pick one based on the instruction wording.\n\n' +
+      'aiTask shape (only when the instruction is a text task):\n' +
+      '  "aiTask": {\n' +
+      '    "type": "summary" | "bullet_points" | "qa",\n' +
+      '    "question": "...",          // ONLY for type="qa" — restate the user\'s question\n' +
+      '    "length": "short" | "medium" | "long",   // optional, only for type="summary"\n' +
+      '    "count": 5                  // optional, only for type="bullet_points" — how many points to extract\n' +
+      '  }\n' +
+      '  output.format for aiTask = "html_text"\n' +
+      '  Leave "steps" OUT of the JSON entirely when aiTask is present.';
     return callGroq(
       [{ role: 'system', content: 'You are a pipeline spec generator that outputs only raw JSON.' },
        { role: 'user', content: prompt }],
       { temperature: 0.2, max_tokens: 1000 }
     ).then(function (content) {
       var spec = extractJson(content);
-      if (!spec.steps || !Array.isArray(spec.steps) || !spec.steps.length) {
-        throw new Error('The AI didn\u2019t produce any pipeline steps. Try rephrasing your instruction.');
+      // Accept EITHER steps[] (tabular) OR aiTask{} (text task).
+      // Groq decides which path based on the instruction wording.
+      var hasAiTask = spec.aiTask && typeof spec.aiTask === 'object' && typeof spec.aiTask.type === 'string';
+      var hasSteps = spec.steps && Array.isArray(spec.steps) && spec.steps.length;
+      if (!hasAiTask && !hasSteps) {
+        throw new Error('The AI didn\u2019t produce a pipeline or an AI task. Try rephrasing your instruction.');
       }
-      // Light validation — strip obviously bad step types so the executor doesn't choke.
-      spec.steps = spec.steps.filter(function (s) { return s && typeof s.type === 'string'; });
-      if (!spec.steps.length) {
-        throw new Error('The AI returned an unexpected response. Try rephrasing your instruction.');
+      if (hasSteps && !hasAiTask) {
+        // Tabular path — strip obviously bad step types so the executor doesn't choke.
+        spec.steps = spec.steps.filter(function (s) { return s && typeof s.type === 'string'; });
+        if (!spec.steps.length) {
+          throw new Error('The AI returned an unexpected response. Try rephrasing your instruction.');
+        }
       }
-      if (!spec.output || typeof spec.output !== 'object') spec.output = { format: 'html_table' };
+      if (!spec.output || typeof spec.output !== 'object') {
+        spec.output = { format: hasAiTask ? 'html_text' : 'html_table' };
+      }
       return spec;
     });
   }
@@ -1032,6 +1055,76 @@
     }
     _colLookupCache[cacheKey] = name;
     return name;
+  }
+
+  // ─── AI text-task executor (summary / bullet_points / Q&A) ────────────────
+  // Used when the spec has `aiTask` instead of `steps[]`. Calls Groq with a
+  // task-specific prompt, using the document content as context. Returns a
+  // string (the AI-generated summary / bulleted list / answer).
+  //
+  // Document content passed to Groq:
+  //   - For row-based docs (Excel/CSV): first 30 rows as JSON
+  //   - For text docs (PDF/Word): first 4000 chars of rawText
+  //   - For PDFs with detected tables: both the raw text AND the first 30 rows
+  function executeAITask(doc, aiTask) {
+    var docContent;
+    if (doc.rows && doc.rows.length) {
+      docContent = 'First 30 rows of the document (JSON):\n' +
+        JSON.stringify(doc.rows.slice(0, 30));
+      if (doc.rawText && doc.rawText.length > 10) {
+        docContent += '\n\nAdditional document text (first 2000 chars):\n' +
+          doc.rawText.slice(0, 2000);
+      }
+    } else if (doc.rawText) {
+      docContent = 'Document text (first 4000 chars):\n' + doc.rawText.slice(0, 4000);
+    } else {
+      docContent = '(empty document — no extractable content)';
+    }
+
+    var taskType = aiTask.type || 'summary';
+    var systemPrompt, userPrompt;
+
+    if (taskType === 'qa') {
+      var question = aiTask.question || 'What is this document about?';
+      systemPrompt = 'You are an analyst answering questions about a document. ' +
+        'Answer using only information from the document. Be specific. ' +
+        'If the document does not contain the answer, say so honestly. ' +
+        '2-4 sentences, plain text, no markdown, no headers.';
+      userPrompt = 'Document: ' + doc.name + ' (' + doc.type + ')\n\n' +
+        docContent + '\n\n' +
+        'Question: ' + question + '\n\n' +
+        'Answer:';
+    } else if (taskType === 'bullet_points') {
+      var count = aiTask.count || 6;
+      systemPrompt = 'You are an analyst extracting main points from a document. ' +
+        'List ' + count + ' main points as a bulleted list. ' +
+        'Each point: one sentence, a specific fact / trend / insight from the document. ' +
+        'Output: one bullet per line, each starting with \u2022 (a bullet character). ' +
+        'No markdown headers, no intro paragraph, just the bulleted list.';
+      userPrompt = 'Document: ' + doc.name + ' (' + doc.type + ')\n\n' +
+        docContent + '\n\n' +
+        'List ' + count + ' main points:';
+    } else {
+      // summary (default)
+      var lengthHint = aiTask.length === 'short' ? '1 paragraph (3-4 sentences)' :
+                       aiTask.length === 'long' ? '3-4 paragraphs' :
+                       '2 paragraphs (4-6 sentences total)';
+      systemPrompt = 'You are an analyst writing a plain-English summary of a document. ' +
+        'Capture the document\'s purpose, key data points, notable patterns, and any anomalies. ' +
+        'Write ' + lengthHint + '. ' +
+        'Plain text, no markdown, no headers, just paragraphs.';
+      userPrompt = 'Document: ' + doc.name + ' (' + doc.type + ')\n\n' +
+        docContent + '\n\n' +
+        'Summary:';
+    }
+
+    return callGroq(
+      [{ role: 'system', content: systemPrompt },
+       { role: 'user', content: userPrompt }],
+      { temperature: 0.3, max_tokens: 800 }
+    ).then(function (content) {
+      return (content || '').trim();
+    });
   }
 
   // ─── Pipeline executor ─────────────────────────────────────────────────────
@@ -1345,6 +1438,10 @@
   border-radius: 50%; animation: pb-spin 0.8s linear infinite; flex-shrink: 0;\
 }\
 @keyframes pb-spin { to { transform: rotate(360deg); } }\
+\
+.pb-ai-result-card { padding: 20px 24px; border-radius: var(--radius); background: linear-gradient(135deg, rgba(99,102,241,0.04), rgba(6,182,212,0.03)); border: 1px solid var(--border); margin-top: 8px; }\
+.pb-ai-result-text { font-size: 0.98rem; line-height: 1.75; color: var(--text); white-space: normal; }\
+.pb-ai-result-text br + br { margin-top: 8px; }\
 \
 .pb-saved-list { list-style: none; padding: 0; margin: 0; }\
 .pb-saved-item {\
@@ -2011,12 +2108,33 @@
   function renderResultsCard() {
     var slot = $('pb-results-slot');
     if (!slot) return;
-    if (!state.result && !state.resultError) { slot.innerHTML = ''; return; }
+    // Three render branches: AI text result (state.aiResult), tabular result
+    // (state.result), or loading/error state.
+    var hasAi = !!state.aiResult;
+    var hasTab = !!state.result;
+    var loading = !!state.aiLoading;
+    if (!hasAi && !hasTab && !state.resultError && !loading) { slot.innerHTML = ''; return; }
     var err = state.resultError
       ? '<div class="pb-error"><i class="fas fa-triangle-exclamation"></i> ' + esc(state.resultError) + '</div>'
       : '';
     var body = '';
-    if (state.result) {
+    if (loading) {
+      body = '<div class="pb-loading-block"><div class="pb-spinner"></div><div>AI is generating the response\u2026</div><div class="pb-loading-sub">This may take a few seconds for long documents.</div></div>';
+    } else if (hasAi) {
+      // AI text result — render as a styled text card. Convert newlines to <br>,
+      // preserve bullet characters, escape HTML.
+      var textHTML = esc(state.aiResult).replace(/\r?\n/g, '<br>');
+      body = '\
+        <div class="pb-ai-result-card">\
+          <div class="pb-ai-result-text">' + textHTML + '</div>\
+        </div>\
+        <div class="pb-download-row">\
+          <button class="btn btn-ghost pb-btn-sm" data-pb-download="txt" type="button"><i class="fas fa-file-lines"></i> Download as text</button>\
+          <div class="pb-spacer"></div>\
+          <button class="btn btn-ghost pb-btn-sm" id="pb-save-pipeline" type="button"><i class="fas fa-bookmark"></i> Save pipeline</button>\
+          <button class="btn btn-primary pb-btn-sm" id="pb-email-results" type="button"><i class="fas fa-envelope"></i> Email results</button>\
+        </div>';
+    } else if (hasTab) {
       var r = state.result;
       body = '\
         <p class="pb-result-summary">' + r.rows.length + ' rows \u00d7 ' + r.columns.length + ' columns</p>\
@@ -2042,7 +2160,7 @@
         ' + err + '\
         ' + body + '\
       </div>';
-    if (state.result) renderChart(slot);
+    if (hasTab) renderChart(slot);
   }
 
   function renderSavedPipelinesCard() {
@@ -2128,7 +2246,7 @@
     state.document = null;
     state.analysis = null; state.analysisLoading = false; state.analysisError = null;
     state.pipeline = null; state.pipelineError = null; state.pipelineLoading = false;
-    state.result = null; state.resultError = null;
+    state.result = null; state.resultError = null; state.aiResult = null; state.aiLoading = false;
     state.visibleRows = 25;
     if (state.chart) { try { state.chart.dispose(); } catch (e) {} state.chart = null; }
     render();
@@ -2181,7 +2299,7 @@
     state.document = null;
     state.analysis = null; state.analysisLoading = false; state.analysisError = null;
     state.pipeline = null; state.pipelineError = null; state.pipelineLoading = false;
-    state.result = null; state.resultError = null;
+    state.result = null; state.resultError = null; state.aiResult = null; state.aiLoading = false;
     state.visibleRows = 25;
     if (state.chart) { try { state.chart.dispose(); } catch (e) {} state.chart = null; }
     state.sampleLoading = true;
@@ -2216,7 +2334,7 @@
       return;
     }
     state.pipelineLoading = true; state.pipelineError = null; state.pipeline = null;
-    state.result = null; state.resultError = null;
+    state.result = null; state.resultError = null; state.aiResult = null; state.aiLoading = false;
     if (state.chart) { try { state.chart.dispose(); } catch (e) {} state.chart = null; }
     renderSlot('instruction'); renderSlot('pipeline'); renderSlot('results');
     generatePipelineSpec(state.document, instruction).then(function (spec) {
@@ -2231,18 +2349,49 @@
 
   function onRunClick() {
     if (!state.document || !state.pipeline) return;
-    try {
-      var res = executePipeline(state.document, state.pipeline);
-      state.result = res; state.resultError = null;
-      state.visibleRows = 25;
+    var spec = state.pipeline;
+    // Dispatch: AI text task vs tabular pipeline. Groq picked which path
+    // based on the instruction wording — we just route.
+    if (spec.aiTask) {
+      state.aiLoading = true; state.aiResult = null; state.resultError = null;
+      state.result = null;  // clear any prior tabular result
       renderSlot('results');
-    } catch (e) {
-      state.result = null; state.resultError = e.message || 'Pipeline execution failed.';
-      renderSlot('results');
+      executeAITask(state.document, spec.aiTask).then(function (text) {
+        state.aiLoading = false;
+        state.aiResult = text;
+        renderSlot('results');
+      }).catch(function (e) {
+        state.aiLoading = false;
+        state.aiResult = null;
+        state.resultError = e.message || 'AI task failed.';
+        renderSlot('results');
+      });
+    } else {
+      try {
+        var res = executePipeline(state.document, spec);
+        state.result = res; state.resultError = null;
+        state.aiResult = null;  // clear any prior AI result
+        state.visibleRows = 25;
+        renderSlot('results');
+      } catch (e) {
+        state.result = null; state.resultError = e.message || 'Pipeline execution failed.';
+        renderSlot('results');
+      }
     }
   }
 
   function onDownloadClick(kind) {
+    // 'txt' is for AI text-task results — download the AI output as a plain-text file.
+    if (kind === 'txt' && state.aiResult != null) {
+      var blob = new Blob([state.aiResult], { type: 'text/plain;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = (state.pipeline && state.pipeline.name ? state.pipeline.name.replace(/[^a-z0-9]+/gi, '_').toLowerCase() : 'ai_result') + '.txt';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      return;
+    }
     if (!state.result) return;
     var rows = state.result.rows, cols = state.result.columns;
     if (kind === 'csv')   downloadCSV(rows, cols);
@@ -2285,8 +2434,44 @@
   }
 
   function onEmailClick() {
-    if (!state.result || !state.pipeline) return;
-    openEmailPreview(state.pipeline, state.result.rows, state.result.columns);
+    if (!state.pipeline) return;
+    // For AI text results, the email body is the AI output directly (no table).
+    // For tabular results, build the table-formatted body.
+    if (state.aiResult != null) {
+      openEmailPreviewForText(state.pipeline, state.aiResult);
+    } else if (state.result) {
+      openEmailPreview(state.pipeline, state.result.rows, state.result.columns);
+    }
+  }
+
+  function openEmailPreviewForText(spec, aiText) {
+    var subject = (spec && spec.output && spec.output.emailSubject) ||
+      ('AI result: ' + (spec ? spec.name : 'untitled'));
+    var intro = (spec && spec.output && spec.output.emailBodyIntro) ||
+      ('Here is the AI-generated result for: ' + (spec ? spec.name : ''));
+    var body = intro + '\n\n' + aiText;
+    openModal('Email preview', '\
+      <div class="pb-analysis-section">\
+        <p class="pb-analysis-label">Subject</p>\
+        <div class="pb-modal-pre">' + esc(subject) + '</div>\
+      </div>\
+      <div class="pb-analysis-section" style="margin-top:14px;">\
+        <p class="pb-analysis-label">Body</p>\
+        <div class="pb-modal-pre">' + esc(body) + '</div>\
+      </div>\
+      <div class="pb-analysis-section" style="margin-top:14px;">\
+        <p class="pb-analysis-label">Recipient</p>\
+        <input class="pb-input" id="pb-email-recipient" type="email" placeholder="recipient@example.com" />\
+      </div>',
+      [
+        { label: 'Open in email client', primary: true, action: function () {
+          var to = ($('pb-email-recipient') || {}).value || '';
+          var url = 'mailto:' + encodeURIComponent(to).replace(/%40/, '@') +
+            '?subject=' + encodeURIComponent(subject) +
+            '&body=' + encodeURIComponent(body);
+          window.location.href = url;
+        } }
+      ]);
   }
 
   function onLoadSaved(id) {
@@ -2294,7 +2479,7 @@
     if (!p) return;
     state.pipeline = p.spec;
     state.showSpecJson = false;
-    state.result = null; state.resultError = null;
+    state.result = null; state.resultError = null; state.aiResult = null; state.aiLoading = false;
     if (state.chart) { try { state.chart.dispose(); } catch (e) {} state.chart = null; }
     state.instruction = p.spec.description || p.spec.name || '';
     renderSlot('instruction'); renderSlot('pipeline'); renderSlot('results');
@@ -2433,7 +2618,7 @@
     state.document = null;
     state.analysis = null; state.analysisLoading = false; state.analysisError = null;
     state.pipeline = null; state.pipelineError = null; state.pipelineLoading = false;
-    state.result = null; state.resultError = null;
+    state.result = null; state.resultError = null; state.aiResult = null; state.aiLoading = false;
     state.instruction = '';
     state.visibleRows = 25;
     if (state.chart) { try { state.chart.dispose(); } catch (e) {} state.chart = null; }
