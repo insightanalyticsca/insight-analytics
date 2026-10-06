@@ -410,8 +410,8 @@ ul {
 .brand:hover { color: var(--text); }
 
 .brand-mark {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -474,8 +474,8 @@ ul {
 /* (nav-pill rules removed — Platform-Agnostic + Agile now live as .meta-link inside .hero-meta) */
 
 .theme-toggle {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1px solid var(--border-strong);
   background: var(--surface-2);
@@ -494,7 +494,7 @@ ul {
 .nav-cta {
   padding: 8px 14px;
   font-size: 0.82rem;
-  height: 36px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
@@ -671,7 +671,7 @@ ul {
 }
 .hero-meta .meta-divider {
   width: 1px;
-  height: 36px;
+  height: 28px;
   background: var(--border-strong);
 }
 
@@ -1431,8 +1431,8 @@ ul {
   gap: 12px;
 }
 .footer-bottom .social a {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -1951,8 +1951,8 @@ ul {
 .assistant-btn {
   display: inline-grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: 1px solid var(--border);
   border-radius: 50%;
@@ -2087,8 +2087,8 @@ ul {
   gap: 10px;
 }
 .assistant-avatar {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: grid;
   place-items: center;

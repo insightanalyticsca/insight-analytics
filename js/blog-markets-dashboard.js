@@ -159,7 +159,7 @@
       }
       .bmd-brand { display: flex; align-items: center; gap: 10px; }
       .bmd-bm {
-        width: 28px; height: 28px;
+        width: 22px; height: 22px;
         display: grid; place-items: center;
         flex-shrink: 0;
       }
@@ -179,7 +179,7 @@
         -webkit-backdrop-filter: blur(4px);
       }
       .bmd-theme-toggle {
-        width: 28px; height: 28px; border-radius: 6px;
+        width: 22px; height: 22px; border-radius: 6px;
         display: grid; place-items: center;
         background: transparent;
         border: 1px solid rgba(99, 102, 241, .2);
