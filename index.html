@@ -107,7 +107,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn7TZv2Dl3Jp2s1Lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Site styles -->
-  <link rel="stylesheet" href="./css/styles.css?v=4.58.0" />
+  <link rel="stylesheet" href="./css/styles.css?v=4.59.0" />
 
   <!-- Prevent theme flash -->
   <script>
@@ -997,14 +997,27 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="./js/app.js?v=4.58.0" defer></script>
-  <script src="./js/hero-animation.js?v=4.58.0" defer></script>
-  <script src="./js/pull-to-refresh.js?v=4.58.0" defer></script>
-  <script src="./js/assistant.js?v=4.58.0" defer></script>
+  <script src="./js/app.js?v=4.59.0" defer></script>
+  <script src="./js/hero-animation.js?v=4.59.0" defer></script>
+  <script src="./js/pull-to-refresh.js?v=4.59.0" defer></script>
+  <script src="./js/assistant.js?v=4.59.0" defer></script>
 
   <!-- Register service worker for PWA (installable + offline cache) -->
   <script>
     if ('serviceWorker' in navigator) {
+      // Track the active registration in a closure so the updatefound
+      // listener can access reg.installing without re-fetching the
+      // registration (which has a race condition: by the time
+      // getRegistration() resolves, reg.installing may have already
+      // moved to reg.waiting or reg.active — especially with skipWaiting).
+      var activeReg = null;
+      // Embed the expected SW version from the build. If the running SW
+      // has a different VERSION constant, the page knows it's stale and
+      // can force a cache wipe + reload to escape the chicken-and-egg
+      // trap where the OLD SW keeps returning OLD cached HTML that
+      // references OLD ?v=X URLs.
+      var EXPECTED_SW_VERSION = 'v4.59.0-20261007-force-refresh-escape-hatch';
+
       window.addEventListener('load', function () {
         // updateViaCache: 'none' — never use HTTP cache for the SW script itself,
         // so byte-level changes to service-worker.js are picked up on every
@@ -1014,19 +1027,35 @@
           updateViaCache: 'none'
         })
           .then(function (reg) {
+            activeReg = reg;
             console.log('[PWA] Service worker registered with scope:', reg.scope);
-            // Force an immediate check for a new SW on every page load. Browsers
-            // throttle automatic SW update checks (typically once per 24h via the
-            // navigation event), so without this manual call a user could open
-            // the PWA minutes after a deploy and still get the old SW for hours.
-            // registration.update() bypasses the throttle and checks NOW.
+            // Force an immediate check for a new SW on every page load.
+            // Browsers throttle automatic SW update checks (typically
+            // once per 24h via navigation), so without this manual call
+            // a user could open the PWA minutes after a deploy and still
+            // get the old SW for hours.
             reg.update();
+
+            // Wire the updatefound listener NOW that we have the registration
+            // captured in the closure — avoids the race condition where
+            // getRegistration() resolves after reg.installing has moved on.
+            reg.addEventListener('updatefound', function () {
+              var newWorker = reg.installing;
+              if (!newWorker) return;
+              newWorker.addEventListener('statechange', function () {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // A new SW has installed while another SW is controlling
+                  // the page. Show the update prompt.
+                  showUpdateToast();
+                }
+              });
+            });
           })
           .catch(function (err) { console.warn('[PWA] Service worker registration failed:', err); });
 
-        // When a new SW takes over (skipWaiting + clients.claim), reload the
-        // page once so the user immediately gets the new HTML/CSS/JS instead
-        // of being stuck on the previously-cached versions until next visit.
+        // When a new SW takes over (skipWaiting + clients.claim), reload
+        // the page once so the user immediately gets the new HTML/CSS/JS.
+        // Guard against infinite reload loops with the `refreshing` flag.
         var refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', function () {
           if (refreshing) return;
@@ -1034,33 +1063,84 @@
           window.location.reload();
         });
 
-        // Show a visible "Update ready" prompt when a new SW has installed
-        // but is waiting to activate. With skipWaiting() this rarely happens,
-        // but if it does (e.g., registration.update() found a new SW while
-        // the old one was still mid-request), the user gets a clear cue
-        // instead of being stuck on stale content.
-        navigator.serviceWorker.addEventListener('updatefound', function () {
-          var newWorker = navigator.serviceWorker.reg && navigator.serviceWorker.reg.installing;
-          if (!newWorker) {
-            // Fall back to a fresh registration lookup if .reg isn't cached
-            navigator.serviceWorker.getRegistration().then(function (reg) {
-              if (reg && reg.installing) watchNewWorker(reg.installing);
-            });
-          } else {
-            watchNewWorker(newWorker);
+        // ─── Force-refresh escape hatch ───────────────────────────────────
+        // Adds a small floating button (bottom-right) that wipes ALL SW
+        // caches + unregisters ALL service workers + reloads the page.
+        // This is the user-facing escape hatch for the chicken-and-egg
+        // trap where an OLD SW keeps returning OLD cached HTML that
+        // references OLD ?v=X URLs — without this button, the user is
+        // stuck until the browser's automatic SW update check (24h)
+        // picks up the new SW + the new SW's controllerchange listener
+        // reloads the page. With the button, the user can escape
+        // immediately on demand.
+        function addForceRefreshButton() {
+          if (document.getElementById('pb-force-refresh')) return;
+          var btn = document.createElement('button');
+          btn.id = 'pb-force-refresh';
+          btn.type = 'button';
+          btn.setAttribute('aria-label', 'Force refresh — clear all cached content and reload');
+          btn.title = 'Stuck on an old version? Click to clear cache and reload.';
+          // Inline-styled so it doesn't depend on external CSS loading first.
+          btn.style.cssText = [
+            'position:fixed','bottom:20px','right:20px','z-index:99998',
+            'display:inline-flex','align-items:center','gap:6px',
+            'padding:8px 14px','border-radius:999px','cursor:pointer',
+            'font-family:Inter,system-ui,sans-serif','font-size:12px','font-weight:600',
+            'color:#fff','border:1px solid rgba(255,255,255,0.18)',
+            'background:linear-gradient(135deg,#4338ca,#0e7490)',
+            'box-shadow:0 8px 24px -8px rgba(67,56,202,0.55)',
+            'transition:transform 180ms ease, box-shadow 180ms ease',
+            'backdrop-filter:blur(8px)','-webkit-backdrop-filter:blur(8px)'
+          ].join(';');
+          btn.innerHTML = '<i class="fas fa-rotate" aria-hidden="true" style="font-size:11px"></i><span>Force refresh</span>';
+          btn.addEventListener('mouseenter', function () {
+            btn.style.transform = 'translateY(-2px)';
+            btn.style.boxShadow = '0 12px 28px -10px rgba(67,56,202,0.65)';
+          });
+          btn.addEventListener('mouseleave', function () {
+            btn.style.transform = '';
+            btn.style.boxShadow = '0 8px 24px -8px rgba(67,56,202,0.55)';
+          });
+          btn.addEventListener('click', forceRefresh);
+          document.body.appendChild(btn);
+        }
+
+        function forceRefresh() {
+          var btn = document.getElementById('pb-force-refresh');
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true" style="font-size:11px"></i><span>Clearing…</span>';
           }
-        });
-        function watchNewWorker(worker) {
-          worker.addEventListener('statechange', function () {
-            if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-              // There's already a controlling SW — this means a new SW just
-              // installed. Show the update prompt.
-              showUpdateToast();
-            }
+          // Step 1: wipe ALL service worker caches (whatever the OLD SW precached).
+          var wipeCaches = caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (k) {
+              console.log('[Force refresh] deleting cache:', k);
+              return caches.delete(k);
+            }));
+          });
+          // Step 2: unregister ALL service workers (forces the browser to
+          // re-register from scratch on next load, picking up the latest SW).
+          var wipeSW = navigator.serviceWorker.getRegistrations().then(function (regs) {
+            return Promise.all(regs.map(function (r) {
+              console.log('[Force refresh] unregistering SW:', r.scope);
+              return r.unregister();
+            }));
+          });
+          // Step 3: hard reload (no SW intercept, no HTTP cache).
+          Promise.all([wipeCaches, wipeSW]).then(function () {
+            // Use a cache-busting query string to force the browser to
+            // bypass its HTTP cache too — not just the SW cache.
+            var url = new URL(window.location.href);
+            url.searchParams.set('pb-refresh', Date.now().toString());
+            window.location.href = url.toString();
+          }).catch(function (e) {
+            console.error('[Force refresh] failed:', e);
+            // Reload anyway so the user gets feedback
+            window.location.reload();
           });
         }
+
         function showUpdateToast() {
-          // Don't show multiple toasts
           if (document.getElementById('sw-update-toast')) return;
           var toast = document.createElement('div');
           toast.id = 'sw-update-toast';
@@ -1074,7 +1154,6 @@
           ].join(';');
           toast.innerHTML = '<span>\u2728 Site updated — tap to reload</span>';
           toast.onclick = function () {
-            // Force the waiting SW to skip waiting, then reload on controllerchange
             navigator.serviceWorker.getRegistration().then(function (reg) {
               if (reg && reg.waiting) {
                 reg.waiting.postMessage('skipWaiting');
@@ -1084,11 +1163,14 @@
             });
           };
           document.body.appendChild(toast);
-          // Auto-dismiss after 15s if user ignores it
           setTimeout(function () {
             if (toast.parentNode) toast.parentNode.removeChild(toast);
           }, 15000);
         }
+
+        // Add the force-refresh button once the DOM is ready.
+        // Use a small delay so it doesn't compete with initial paint.
+        setTimeout(addForceRefreshButton, 800);
       });
     }
   </script>
