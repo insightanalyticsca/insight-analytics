@@ -313,11 +313,13 @@
   document.body.appendChild(backdrop);
 
   if (browserMock && maximizeBtn) {
+    const maximizeLabel = maximizeBtn.querySelector(".maximize-label");
     maximizeBtn.addEventListener("click", function () {
       const isMax = browserMock.classList.toggle("is-maximized");
       backdrop.classList.toggle("is-visible", isMax);
       maximizeBtn.setAttribute("aria-label", isMax ? "Restore dashboard" : "Maximize to full screen");
       maximizeBtn.title = isMax ? "Restore" : "Maximize to full screen";
+      if (maximizeLabel) maximizeLabel.textContent = isMax ? "Restore" : "Maximize";
       document.body.style.overflow = isMax ? "hidden" : "";
 
       // Reset the pan-hint pill and edge-fade indicators each time we
@@ -420,6 +422,8 @@
     if (maximizeBtn) {
       maximizeBtn.setAttribute("aria-label", "Maximize to full screen");
       maximizeBtn.title = "Maximize to full screen";
+      const lbl = maximizeBtn.querySelector(".maximize-label");
+      if (lbl) lbl.textContent = "Maximize";
     }
     document.body.style.overflow = "";
     // Force charts to resize after restore (see comment in maximize handler)
@@ -442,6 +446,8 @@
       if (maximizeBtn) {
         maximizeBtn.setAttribute("aria-label", "Maximize to full screen");
         maximizeBtn.title = "Maximize to full screen";
+        const lbl = maximizeBtn.querySelector(".maximize-label");
+        if (lbl) lbl.textContent = "Maximize";
       }
       document.body.style.overflow = "";
       // Force charts to resize after restore (see comment in maximize handler)

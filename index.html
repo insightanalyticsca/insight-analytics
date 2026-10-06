@@ -107,7 +107,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn7TZv2Dl3Jp2s1Lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Site styles -->
-  <link rel="stylesheet" href="./css/styles.css?v=4.49.0" />
+  <link rel="stylesheet" href="./css/styles.css?v=4.50.0" />
 
   <!-- Prevent theme flash -->
   <script>
@@ -184,6 +184,17 @@
           the story to leadership.
         </p>
 
+        <div class="hero-cta reveal reveal-left">
+          <a href="#dashboard" class="btn btn-primary" data-nav="dashboard">
+            <i class="fas fa-chart-line" aria-hidden="true"></i>
+            <span>Try the live dashboard</span>
+          </a>
+          <a href="#services" class="btn btn-ghost" data-nav="services">
+            <i class="fas fa-list-ol" aria-hidden="true"></i>
+            <span>See the 8-step methodology</span>
+          </a>
+        </div>
+
         <div class="hero-meta">
           <div class="meta-item">
             <span class="meta-num"><span class="grad">8</span></span>
@@ -219,26 +230,35 @@
         <div class="section-head reveal">
           <span class="eyebrow"><span class="dot"></span> The Problem</span>
           <h2 class="section-title" id="problem-title">Leadership spends more time <span class="grad">finding</span> answers than acting on them</h2>
-          <p class="section-sub">Three patterns repeat inside nearly every organization we work with — and each one quietly drains executive time.</p>
+          <p class="section-sub">This is not a critique. It's a description. The data exists. The executive can't see it. Most organizations don't have a strategy problem — they have a data-plumbing problem dressed up as one.</p>
         </div>
 
         <div class="problem-grid" data-stagger>
           <article class="card problem-card" data-stagger-item>
             <div class="problem-icon" aria-hidden="true"><i class="fas fa-network-wired"></i></div>
             <h3>Scattered Across Systems</h3>
-            <p>Databases, spreadsheets, presentations, operational updates. People spend hours collecting, reconciling, and interpreting before a decision can be made.</p>
+            <p>Databases, spreadsheets, presentations, operational updates — the information is there, scattered across systems. People spend hours collecting, reconciling, and interpreting before a decision can be made. Knowledge workers spend roughly <strong>30% of the workday searching for information</strong> (IDC), and <strong>58% lose 10+ hours per week</strong> to searching, context-switching, and manual repetition (AWS, 2024).</p>
           </article>
           <article class="card problem-card" data-stagger-item>
             <div class="problem-icon" aria-hidden="true"><i class="fas fa-hourglass-half"></i></div>
             <h3>Hours Wasted Collecting</h3>
-            <p>Routine collection and preparation happen manually. Recurring reports begin with someone gathering files and rebuilding the same calculations.</p>
+            <p>Routine collection and preparation happen manually. The work that produces the deck is repetitive, manual, and error-prone. <strong>40%+ of workers spend at least a quarter of their week</strong> on manual repetitive tasks — email, data collection, data entry (Smartsheet). The analyst who should be doing strategy is doing data plumbing.</p>
           </article>
           <article class="card problem-card" data-stagger-item>
             <div class="problem-icon" aria-hidden="true"><i class="fas fa-code-branch"></i></div>
             <h3>Competing Versions of Truth</h3>
-            <p>The same trusted numbers should feed dashboards, reports, Excel, PowerPoint, and AI. Without a shared reporting layer, everyone has their own version.</p>
+            <p>The same trusted numbers should feed dashboards, reports, Excel, PowerPoint, and AI. Without a shared reporting layer, everyone has their own version. <strong>94% of business spreadsheets contain errors</strong> (Poon et al., 2024). Three teams maintain three different versions of "revenue" — and the CFO and head of sales argue about the same number for two years.</p>
           </article>
         </div>
+
+        <div class="problem-stats reveal">
+          <div class="problem-stats-lead">
+            <h3>The decision cadence is slower than the market.</h3>
+            <p>McKinsey is unambiguous: companies with high decision velocity and quality generate <strong>2.5× the growth and 2× the profit</strong> of slower peers. Top performers make <strong>6× more bold strategic moves</strong> per year than the rest. The bottleneck is rarely the executive. It's the pipeline that feeds them.</p>
+          </div>
+        </div>
+
+        <p class="section-tail reveal">Insight Analytics exists because executives deserve a different operating model.</p>
       </div>
     </section>
 
@@ -315,6 +335,58 @@
             </div>
             <h3>Close the Loop</h3>
             <p>Alerts, approvals, notifications, workflow rules. Route the issue, update the system of record, record the response.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ WHAT INSIGHT ANALYTICS DOES ============================ -->
+    <section class="section" id="what-we-do" aria-labelledby="what-we-do-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow"><span class="dot"></span> What We Do</span>
+          <h2 class="section-title" id="what-we-do-title">Three moves that <span class="grad">replace the pipeline</span></h2>
+          <p class="section-sub">Most "business intelligence" software sits on top of the same broken spreadsheet pipelines. It prettifies the same numbers, with the same delays, sourced from the same silos. Insight Analytics is not a prettier dashboard on top of an uglier pipeline — it replaces the pipeline.</p>
+        </div>
+
+        <div class="what-grid" data-stagger>
+          <article class="card what-card" data-stagger-item>
+            <div class="what-step">01</div>
+            <div class="what-icon" aria-hidden="true"><i class="fas fa-file-circle-check"></i></div>
+            <h3>From Friday decks to live truth</h3>
+            <p class="what-pain"><strong>The pain:</strong> The CEO reads Friday's deck describing last month's numbers, sourced from spreadsheets that took an analyst four days to assemble.</p>
+            <p class="what-do"><strong>What IA does:</strong> A single governed data layer that updates as the source updates. No deck. No refresh cycle. No five-day delay. The CEO opens a browser and sees what's true now — on any device, from any office, in any time zone.</p>
+            <p class="what-outcome"><strong>The outcome:</strong> Decisions get made on this week, not last month. The Monday review becomes a working session, not a presentation.</p>
+            <a class="what-concept" href="/blog/universal-dashboard-builder.html">
+              <span class="what-concept-label">Concept</span>
+              <span class="what-concept-name">Universal Dashboard Builder →</span>
+            </a>
+          </article>
+
+          <article class="card what-card" data-stagger-item>
+            <div class="what-step">02</div>
+            <div class="what-icon" aria-hidden="true"><i class="fas fa-database"></i></div>
+            <h3>From spreadsheet chaos to governed truth</h3>
+            <p class="what-pain"><strong>The pain:</strong> 94% of spreadsheets contain errors. Three teams maintain three different versions of "revenue." The CFO and the head of sales have been arguing about the same number for two years.</p>
+            <p class="what-do"><strong>What IA does:</strong> Replace fragile spreadsheet chains with a governed semantic layer — one definition of "revenue," one of "customer," one of "churn." Every metric is sourced, versioned, audited, and explained. Excel becomes a consumer of truth, not a producer of it.</p>
+            <p class="what-outcome"><strong>The outcome:</strong> Numbers stop arguing with each other. The three teams stop defending three versions of the truth. The CEO stops second-guessing the deck.</p>
+            <a class="what-concept" href="/blog/database-archaeology.html">
+              <span class="what-concept-label">Concept</span>
+              <span class="what-concept-name">Database Archaeology →</span>
+            </a>
+          </article>
+
+          <article class="card what-card" data-stagger-item>
+            <div class="what-step">03</div>
+            <div class="what-icon" aria-hidden="true"><i class="fas fa-wand-magic-sparkles"></i></div>
+            <h3>From repetitive tasks to automated flow</h3>
+            <p class="what-pain"><strong>The pain:</strong> 40% of workers spend a quarter of the week on manual repetitive tasks. 19% of working hours go to information hunting. 28% disappears into email. The analyst who should be doing strategy is doing data plumbing.</p>
+            <p class="what-do"><strong>What IA does:</strong> The repetitive work — pulling, joining, formatting, distributing — gets automated end-to-end. Reports build themselves. Exceptions surface themselves. People do the work only people can do: judgment, strategy, decisions.</p>
+            <p class="what-outcome"><strong>The outcome:</strong> A five-person analytics team produces what a fifteen-person team used to. Hours return to the week. Errors drop because machines don't have bad days.</p>
+            <a class="what-concept" href="/blog/universal-time-series-prediction.html">
+              <span class="what-concept-label">Concept</span>
+              <span class="what-concept-name">Universal Time Series Prediction →</span>
+            </a>
           </article>
         </div>
       </div>
@@ -586,8 +658,9 @@
               <i class="fas fa-rotate-right"></i>
               <i class="fas fa-ellipsis"></i>
             </div>
-            <button class="browser-maximize" id="browserMaximize" type="button" aria-label="Maximize dashboard" title="Maximize to full screen">
+            <button class="browser-maximize" id="browserMaximize" type="button" aria-label="Maximize dashboard to full screen" title="Maximize to full screen">
               <i class="fas fa-expand"></i>
+              <span class="maximize-label">Maximize</span>
             </button>
           </div>
           <div class="browser-frame">
@@ -612,6 +685,40 @@
         </div>
 
         <p class="dashboard-caption reveal"><b>Components already in production.</b> Customized to your data, your KPIs, your workflows.</p>
+      </div>
+    </section>
+
+    <!-- ============================ FOUR NUMBERS WORTH REMEMBERING ============================ -->
+    <section class="section section-quiet" id="numbers" aria-labelledby="numbers-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow"><span class="dot"></span> The Numbers</span>
+          <h2 class="section-title" id="numbers-title">Four numbers <span class="grad">worth remembering</span></h2>
+          <p class="section-sub">Insight Analytics was built to move a company from the right column to the left.</p>
+        </div>
+
+        <div class="numbers-grid" data-stagger>
+          <article class="numbers-card" data-stagger-item>
+            <div class="numbers-stat">94<span class="numbers-suffix">%</span></div>
+            <div class="numbers-desc">Business spreadsheets containing errors</div>
+            <div class="numbers-source">Poon et al., 2024</div>
+          </article>
+          <article class="numbers-card" data-stagger-item>
+            <div class="numbers-stat">30<span class="numbers-suffix">%</span></div>
+            <div class="numbers-desc">Workday spent searching for information</div>
+            <div class="numbers-source">IDC</div>
+          </article>
+          <article class="numbers-card" data-stagger-item>
+            <div class="numbers-stat">58<span class="numbers-suffix">%</span></div>
+            <div class="numbers-desc">Knowledge workers losing 10+ hours per week</div>
+            <div class="numbers-source">AWS, 2024</div>
+          </article>
+          <article class="numbers-card" data-stagger-item>
+            <div class="numbers-stat">2.5<span class="numbers-suffix">×</span></div>
+            <div class="numbers-desc">Top-quartile decision velocity yields, vs slower peers — 2.5× growth, 2× profit</div>
+            <div class="numbers-source">McKinsey</div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -705,6 +812,41 @@
               <p>Same design scales from a focused process to enterprise-scale information flow. Start small, extend fast.</p>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ WHAT CHANGES — DAY 1 / 30 / 90 ============================ -->
+    <section class="section section-quiet" id="transformation" aria-labelledby="transformation-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow"><span class="dot"></span> What Changes</span>
+          <h2 class="section-title" id="transformation-title">Day 1, Day 30, <span class="grad">Day 90</span></h2>
+          <p class="section-sub">Not a multi-year program. A focused engagement with visible change inside the first quarter.</p>
+        </div>
+
+        <div class="transformation-grid" data-stagger>
+          <article class="card transform-card" data-stagger-item>
+            <div class="transform-day">Day 1</div>
+            <div class="transform-icon" aria-hidden="true"><i class="fas fa-eye"></i></div>
+            <h3>Live truth on the CEO's screen</h3>
+            <p>The CEO opens a browser. Sees the company. Live. No deck to read. No "as of last Friday" footnote. No three versions of the truth.</p>
+            <p class="transform-quote">The first reaction is usually: <em>"Wait — that number is wrong."</em> The second reaction, after the analyst confirms it's not, is: <em>"What else have I been reading wrong?"</em></p>
+          </article>
+          <article class="card transform-card" data-stagger-item>
+            <div class="transform-day">Day 30</div>
+            <div class="transform-icon" aria-hidden="true"><i class="fas fa-file-excel"></i></div>
+            <h3>The spreadsheets start disappearing</h3>
+            <p>The top five reports the CEO reads every week are no longer decks. They are pages. The top five spreadsheets behind those reports are no longer maintained by hand. They are sourced.</p>
+            <p>The teams that built them stop being data plumbers and start being data analysts.</p>
+          </article>
+          <article class="card transform-card" data-stagger-item>
+            <div class="transform-day">Day 90</div>
+            <div class="transform-icon" aria-hidden="true"><i class="fas fa-rocket"></i></div>
+            <h3>Decisions move faster</h3>
+            <p>The Monday review becomes a working session on this week's numbers, not a presentation of last week's. The CEO starts asking questions the company couldn't answer before — because the answer used to take three days to compile.</p>
+            <p>Strategic moves happen on a 30-day cadence, not a 90-day one. McKinsey's research says that's the difference between top-quartile performance and the rest.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -812,6 +954,8 @@
         </nav>
       </div>
       <div class="footer-bottom">
+        <span class="footer-tagline">Insight Analytics · <em>Live truth on every desk, leadership included.</em></span>
+        <span class="footer-sep" aria-hidden="true">·</span>
         <span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span>
         <div class="social">
           <a href="mailto:dev@insight-analytics.ca" aria-label="Email"><i class="fas fa-envelope"></i></a>
@@ -822,10 +966,10 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="./js/app.js?v=4.49.0" defer></script>
-  <script src="./js/hero-animation.js?v=4.49.0" defer></script>
-  <script src="./js/pull-to-refresh.js?v=4.49.0" defer></script>
-  <script src="./js/assistant.js?v=4.49.0" defer></script>
+  <script src="./js/app.js?v=4.50.0" defer></script>
+  <script src="./js/hero-animation.js?v=4.50.0" defer></script>
+  <script src="./js/pull-to-refresh.js?v=4.50.0" defer></script>
+  <script src="./js/assistant.js?v=4.50.0" defer></script>
 
   <!-- Register service worker for PWA (installable + offline cache) -->
   <script>

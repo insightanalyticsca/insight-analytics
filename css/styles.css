@@ -467,8 +467,8 @@ ul {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-left: 8px;
+  gap: 14px;
+  margin-left: 12px;
 }
 
 /* (nav-pill rules removed — Platform-Agnostic + Agile now live as .meta-link inside .hero-meta) */
@@ -492,23 +492,26 @@ ul {
 }
 
 .nav-cta {
-  padding: 5px 10px;
-  font-size: 0.72rem;
-  height: 26px;
-  min-height: 26px;
-  gap: 5px;
-  letter-spacing: 0.02em;
+  padding: 4px 9px;
+  font-size: 0.68rem;
+  height: 22px;
+  min-height: 22px;
+  gap: 4px;
+  letter-spacing: 0.03em;
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
+  font-weight: 600;
+  /* Visually subordinate to other nav controls — smaller, tighter, less glow */
+  box-shadow: 0 4px 14px -8px rgba(99, 102, 241, 0.55);
 }
-.nav-cta .fas { font-size: 0.7rem; }
+.nav-cta .fas { font-size: 0.62rem; }
 
 /* On narrower viewports, drop the calendar icon so the pill stays compact
    and never crowds the theme toggle / Ask AI button / hamburger. */
-@media (max-width: 1100px) {
+@media (max-width: 1180px) {
   .nav-cta .fas { display: none; }
-  .nav-cta { padding: 5px 11px; }
+  .nav-cta { padding: 4px 10px; }
 }
 
 .menu-toggle {
@@ -649,7 +652,23 @@ ul {
   line-height: 1.7;
 }
 
-/* .hero-cta removed — CTAs now live only in the top nav menu */
+/* .hero-cta: dual CTA row inside the hero, between hero-sub and hero-meta.
+   Primary (gradient pill) jumps to the live dashboard; ghost variant
+   scrolls to the 8-step methodology. */
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+  margin-bottom: 28px;
+}
+.hero-cta .btn { min-height: 42px; padding: 11px 22px; font-size: 0.92rem; }
+.hero-cta .btn .fas { font-size: 0.85rem; }
+@media (max-width: 640px) {
+  .hero-cta { gap: 10px; }
+  .hero-cta .btn { flex: 1 1 100%; min-height: 40px; padding: 10px 16px; }
+}
 .hero-meta {
   display: flex;
   flex-wrap: wrap;
@@ -843,6 +862,327 @@ ul {
   font-size: 0.98rem;
   line-height: 1.7;
   margin: 0;
+}
+
+/* Inline research-stats band beneath the problem cards. Highlights the
+   McKinsey decision-velocity argument as the "so what" of the section. */
+.problem-stats {
+  margin-top: 36px;
+  padding: 28px 32px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.07), rgba(6,182,212,0.04));
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.problem-stats::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 0% 0%, rgba(99,102,241,0.08), transparent 50%);
+  pointer-events: none;
+}
+.problem-stats-lead {
+  position: relative;
+  max-width: 880px;
+}
+.problem-stats-lead h3 {
+  font-family: var(--font-head);
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.problem-stats-lead p {
+  color: var(--text-muted);
+  font-size: 1.02rem;
+  line-height: 1.75;
+  margin: 0;
+}
+.problem-stats-lead strong {
+  color: var(--text);
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+/* Tail line beneath the stats band — single-sentence punchline */
+.section-tail {
+  margin-top: 28px;
+  text-align: center;
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  font-style: italic;
+}
+@media (max-width: 768px) {
+  .problem-stats { padding: 22px 20px; margin-top: 24px; }
+  .section-tail { font-size: 1rem; }
+}
+
+/* ------------------------------------------------------------------
+   9a. What We Do — three moves cards
+   ------------------------------------------------------------------ */
+.what-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.what-card {
+  position: relative;
+  padding: 32px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+}
+.what-card .what-step {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  font-family: var(--font-head);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--text-soft);
+  opacity: 0.7;
+}
+.what-card .what-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.05rem;
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  color: #fff;
+  box-shadow: 0 6px 14px -8px rgba(99, 102, 241, 0.45);
+  margin-bottom: 4px;
+}
+.what-card h3 {
+  font-family: var(--font-head);
+  font-size: 1.22rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0 0 4px;
+  color: var(--text);
+}
+.what-card p {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+.what-card p strong {
+  color: var(--text);
+  font-weight: 700;
+}
+.what-card .what-pain strong    { color: #f43f5e; }
+.what-card .what-do strong      { color: var(--indigo); }
+.what-card .what-outcome strong { color: var(--cyan); }
+
+.what-concept {
+  margin-top: auto;
+  padding-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+  border-top: 1px dashed var(--border);
+  margin-top: 18px;
+  padding-top: 16px;
+  transition: all 200ms ease;
+}
+.what-concept:hover { padding-left: 4px; }
+.what-concept-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+.what-concept-name {
+  font-family: var(--font-head);
+  font-size: 0.98rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+@media (max-width: 980px) {
+  .what-grid { grid-template-columns: 1fr; }
+}
+
+/* ------------------------------------------------------------------
+   9b. Four Numbers — stat grid
+   ------------------------------------------------------------------ */
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+.numbers-card {
+  padding: 32px 24px 24px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.numbers-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(99,102,241,0.10), transparent 55%);
+  pointer-events: none;
+  opacity: 0.6;
+}
+.numbers-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent, #06B6D4);
+  box-shadow: 0 16px 32px -16px rgba(99, 102, 241, 0.45);
+}
+.numbers-stat {
+  font-family: var(--font-head);
+  font-size: clamp(2.4rem, 5vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 14px;
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  position: relative;
+}
+.numbers-suffix {
+  font-size: 0.55em;
+  margin-left: 1px;
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.numbers-desc {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text);
+  font-weight: 500;
+  margin-bottom: 12px;
+  position: relative;
+}
+.numbers-source {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  position: relative;
+}
+@media (max-width: 980px) { .numbers-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .numbers-grid { grid-template-columns: 1fr; } }
+
+/* section-quiet — slightly subdued background so the stat cards pop */
+.section-quiet {
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+}
+
+/* ------------------------------------------------------------------
+   9c. Day 1 / Day 30 / Day 90 — transformation timeline cards
+   ------------------------------------------------------------------ */
+.transformation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  position: relative;
+}
+.transformation-grid::before {
+  /* Connector line behind the cards */
+  content: "";
+  position: absolute;
+  top: 60px;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--border-strong) 12%, var(--border-strong) 88%, transparent 100%);
+  z-index: 0;
+}
+.transform-card {
+  position: relative;
+  z-index: 1;
+  padding: 36px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: visible;
+}
+.transform-day {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-family: var(--font-head);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  color: #fff;
+  box-shadow: 0 4px 12px -6px rgba(99, 102, 241, 0.55);
+  margin-bottom: 6px;
+}
+.transform-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.08));
+  border: 1px solid var(--border);
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.transform-card h3 {
+  font-family: var(--font-head);
+  font-size: 1.22rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text);
+  margin: 0 0 4px;
+}
+.transform-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.transform-card p.transform-quote {
+  margin-top: 4px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(99, 102, 241, 0.05);
+  border-left: 3px solid var(--indigo);
+  font-size: 0.92rem;
+  color: var(--text-soft);
+  font-style: italic;
+}
+.transform-card p.transform-quote em {
+  color: var(--text);
+  font-style: italic;
+  font-weight: 500;
+}
+@media (max-width: 980px) {
+  .transformation-grid { grid-template-columns: 1fr; }
+  .transformation-grid::before { display: none; }
 }
 
 /* ------------------------------------------------------------------
@@ -1437,6 +1777,22 @@ ul {
   font-size: 0.86rem;
   color: var(--text-soft);
 }
+.footer-tagline {
+  font-family: var(--font-head);
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.005em;
+}
+.footer-tagline em {
+  font-style: italic;
+  font-weight: 500;
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.footer-sep { color: var(--border-strong); margin: 0 4px; }
 .footer-bottom .social {
   display: flex;
   gap: 12px;
@@ -1528,7 +1884,6 @@ ul {
 
   .hero { min-height: auto; padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 48px); padding-bottom: 64px; }
   .hero h1 { font-size: clamp(2rem, 9vw, 3rem); }
-  /* .hero-cta removed — top nav holds the only CTAs */
   .hero-meta { gap: 20px; }
   .hero-meta .meta-divider { display: none; }
 
@@ -1631,20 +1986,48 @@ ul {
 
 /* ============================ BROWSER MAXIMIZE BUTTON + FULLSCREEN ============================ */
 .browser-maximize {
-  border: 0;
-  background: transparent;
-  color: var(--text-soft);
+  /* Visibly distinct: gradient accent, icon + label, clear border.
+     Was: bare transparent icon button — invisible until you knew it was there. */
+  border: 1px solid var(--border-strong);
+  background: linear-gradient(135deg, rgba(99,102,241,0.16), rgba(6,182,212,0.10));
+  color: var(--text);
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 14px;
-  display: grid;
-  place-items: center;
+  padding: 5px 12px 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-head, inherit);
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition: all 180ms ease;
+  white-space: nowrap;
 }
 .browser-maximize:hover {
-  background: var(--border);
-  color: var(--text);
+  background: linear-gradient(135deg, rgba(99,102,241,0.30), rgba(6,182,212,0.20));
+  border-color: var(--accent, #06B6D4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px -6px rgba(99,102,241,0.45);
+}
+.browser-maximize:focus-visible {
+  outline: 2px solid var(--accent, #06B6D4);
+  outline-offset: 2px;
+}
+.browser-maximize i {
+  font-size: 11px;
+  background: linear-gradient(135deg, var(--primary, #1E3A8A), var(--accent, #06B6D4));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.browser-maximize .maximize-label {
+  /* Hidden on very narrow viewports so the button doesn't wrap */
+}
+@media (max-width: 720px) {
+  .browser-maximize .maximize-label { display: none; }
+  .browser-maximize { padding: 5px 8px; }
 }
 
 /* Fullscreen / maximized state */
