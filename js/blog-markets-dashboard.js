@@ -552,6 +552,64 @@
   // Netlify markets-proxy endpoint (server-side fetch of Yahoo + Frankfurter)
   var MARKETS_PROXY = 'https://startling-belekoy-b0ec70.netlify.app/markets-proxy';
 
+  // ─── Robust fetch helpers ───────────────────────────────────────────────
+  // The currency heatmap was flaky on load: Netlify proxy cold-starts (free
+  // tier idles → first request after 15+ min idle takes 8+ s to wake, often
+  // times out before the browser gives up), Frankfurter has had API outages,
+  // and the prior serial fetch chain meant one slow source blocked the next.
+  //
+  // fetchWithTimeout: AbortController-bounded fetch so a hung endpoint can't
+  //                  block the whole dashboard. Default 9s — long enough for
+  //                  a cold Netlify warmup, short enough to fall back before
+  //                  the user thinks the page is broken.
+  // fetchWithRetry:   retries on network errors + 5xx + timeouts. Does NOT
+  //                  retry on 4xx (those are permanent). Exponential backoff
+  //                  500ms → 1000ms. Default 1 retry (so 2 attempts total).
+  function fetchWithTimeout(url, opts, timeoutMs) {
+    opts = opts || {};
+    timeoutMs = timeoutMs || 9000;
+    if (opts.signal) {
+      // caller already supplied a signal — respect it
+      return fetch(url, opts);
+    }
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, timeoutMs);
+    return fetch(url, Object.assign({}, opts, { signal: ctrl.signal }))
+      .then(function (r) {
+        clearTimeout(timer);
+        return r;
+      })
+      .catch(function (e) {
+        clearTimeout(timer);
+        throw e;
+      });
+  }
+
+  function fetchWithRetry(url, opts, cfg) {
+    cfg = cfg || {};
+    var timeoutMs = cfg.timeoutMs || 9000;
+    var retries = cfg.retries != null ? cfg.retries : 1;
+    var backoffMs = cfg.backoffMs || 500;
+    var attempt = 0;
+    function attemptOnce() {
+      attempt++;
+      return fetchWithTimeout(url, opts, timeoutMs).then(function (r) {
+        // Retry on 5xx (server error / Netlify cold start / gateway issues)
+        // Don't retry on 4xx (client error — permanent)
+        if (r.ok || (r.status >= 400 && r.status < 500)) return r;
+        if (attempt > retries) return r;  // out of retries — let caller see the bad status
+        return new Promise(function (resolve) { setTimeout(function () { resolve(attemptOnce()); }, backoffMs * attempt); });
+      }).catch(function (e) {
+        // Network error, timeout abort, DNS failure — retry
+        if (attempt > retries) throw e;
+        return new Promise(function (resolve, reject) {
+          setTimeout(function () { attemptOnce().then(resolve, reject); }, backoffMs * attempt);
+        });
+      });
+    }
+    return attemptOnce();
+  }
+
   // ─── Dashboard-local theme — uses data-bmd-theme on #markets-dashboard-mount ──
   // Does NOT touch <html data-theme> — the blog page's own theme is independent.
   var dashboardTheme = 'dark'; // default
@@ -645,78 +703,125 @@
     } catch (e) { return false; }
   }
 
-  // ─── Fetch LIVE FX via Netlify proxy (Frankfurter server-side) ─────────
-  // Also fetches YESTERDAY's rates directly from Frankfurter (CORS-enabled)
-  // to compute REAL cross-currency % changes for the heatmap. No demo data.
-  // FALLBACK: If Frankfurter historical fails, fetch Yahoo currency pair
-  // quotes (via Netlify proxy) for direct % changes. User stressed: NO empty
-  // cells, NO demo data — always show live values.
+  // ─── Fetch LIVE FX via Netlify proxy + Frankfurter + Yahoo ──────────────
+  // ROBUSTNESS: fetches all three sources IN PARALLEL using Promise.allSettled,
+  // never bails on a single source failing, never overwrites last-good data
+  // with empty fields, and uses fetchWithRetry for both timeout + 1 retry on
+  // Netlify cold-start / transient failures. No demo data.
+  //
+  // Sources (all return different shapes):
+  //   A) MARKETS_PROXY?fx=1            → Frankfurter CURRENT rates (today's snapshot)
+  //   B) api.frankfurter.dev/v1/<date> → Frankfurter HISTORICAL rates (yesterday / most recent business day)
+  //   C) MARKETS_PROXY?symbols=EURUSD=X,... → Yahoo FX pair quotes (intraday % changes)
+  //
+  // Render priority (in renderFX): Yahoo intraday % first (PRIMARY — updates
+  // every poll), Frankfurter daily % second (fallback when Yahoo fails or out
+  // of market hours). If both succeed, both are stored and renderFX picks.
   async function fetchFX() {
-    try {
-      // 1. Current rates via Netlify proxy (cached server-side, reliable)
-      var r = await fetch(MARKETS_PROXY + '?fx=1');
-      if (!r.ok) return false;
-      var d = await r.json();
-      if (!d || !d.rates) return false;
-      liveData.fxRates = d.rates;
+    // Build URLs upfront so all 3 sources can fire in parallel without serial
+    // dependency on each other's results.
+    var todayUrl = MARKETS_PROXY + '?fx=1';
+    var fxSymbols = 'EURUSD%3DX,GBPUSD%3DX,JPYUSD%3DX,CADUSD%3DX,AUDUSD%3DX,CHFUSD%3DX,CNYUSD%3DX';
+    var yahooUrl = MARKETS_PROXY + '?symbols=' + fxSymbols;
 
-      // 2. Fetch yesterday's (or most recent prior business day's) rates
-      //    directly from Frankfurter to compute real daily % changes.
-      //    Try up to 5 days back to skip weekends/holidays (FX markets
-      //    closed Sat/Sun, so Sunday's "yesterday" is actually Friday).
-      var baseDate = new Date();
-      for (var back = 1; back <= 5; back++) {
-        var prevDate = new Date(baseDate);
-        prevDate.setDate(prevDate.getDate() - back);
-        var dateStr = prevDate.toISOString().split('T')[0];
-        var yUrl = 'https://api.frankfurter.dev/v1/' + dateStr + '?from=USD&to=EUR,GBP,JPY,CAD,AUD,CHF,CNY';
+    // Build candidate historical dates (1-6 business days back, skipping
+    // weekends). Each is a separate URL — we'll try them sequentially inside
+    // one of the parallel branches.
+    var historicalUrls = [];
+    var baseDate = new Date();
+    for (var back = 1; back <= 6; back++) {
+      var prevDate = new Date(baseDate);
+      prevDate.setDate(prevDate.getDate() - back);
+      var dateStr = prevDate.toISOString().split('T')[0];
+      historicalUrls.push('https://api.frankfurter.dev/v1/' + dateStr + '?from=USD&to=EUR,GBP,JPY,CAD,AUD,CHF,CNY');
+    }
+
+    // Helper: fetch a historical URL, verify the rates are different from
+    // today's snapshot (Frankfurter sometimes returns same-day rates for
+    // weekend dates — that would produce 0% everywhere, which is worse than
+    // no historical data). `todayRates` passed in for comparison.
+    async function fetchHistorical(todayRates) {
+      for (var i = 0; i < historicalUrls.length; i++) {
         try {
-          var r2 = await fetch(yUrl);
-          if (!r2.ok) continue;
-          var d2 = await r2.json();
-          if (d2 && d2.rates) {
-            // Verify rates are different from today's (avoid 0% everywhere
-            // if Frankfurter returns same-day rates for a weekend date)
+          var r = await fetchWithRetry(historicalUrls[i], {}, { timeoutMs: 8000, retries: 1, backoffMs: 400 });
+          if (!r.ok) continue;
+          var d = await r.json();
+          if (!d || !d.rates) continue;
+          // Verify rates differ from today's snapshot
+          if (todayRates) {
             var allSame = true;
-            for (var k in d2.rates) {
-              if (Math.abs((d2.rates[k] || 0) - (d.rates[k] || 0)) > 0.0001) { allSame = false; break; }
+            for (var k in d.rates) {
+              if (Math.abs((d.rates[k] || 0) - (todayRates[k] || 0)) > 0.0001) { allSame = false; break; }
             }
-            if (!allSame) {
-              liveData.fxRatesPrev = d2.rates;
-              break;
-            }
+            if (allSame) continue;  // stale same-day data — try next date back
           }
-        } catch (e) { /* try next day back */ }
+          return d.rates;
+        } catch (e) { /* try next date back */ }
       }
+      return null;
+    }
 
-      // 3. ALWAYS fetch Yahoo currency pair quotes (USD-based) via Netlify proxy.
-      //    Yahoo is the PRIMARY source for intraday % changes — it updates
-      //    every poll (30s) during market hours, unlike Frankfurter which only
-      //    updates once daily. Frankfurter is the fallback when Yahoo fails.
-      //    Cross-currency % ≈ EUR/USD % - GBP/USD % (small-change approximation).
-      try {
-        var fxSymbols = ['EURUSD%3DX', 'GBPUSD%3DX', 'JPYUSD%3DX', 'CADUSD%3DX', 'AUDUSD%3DX', 'CHFUSD%3DX', 'CNYUSD%3DX'].join(',');
-        var r3 = await fetch(MARKETS_PROXY + '?symbols=' + fxSymbols);
-        if (r3.ok) {
-          var d3 = await r3.json();
-          if (d3 && d3.quotes) {
-            var fxPct = {};
-            var symKey = { 'EURUSD': 'EUR', 'GBPUSD': 'GBP', 'JPYUSD': 'JPY', 'CADUSD': 'CAD', 'AUDUSD': 'AUD', 'CHFUSD': 'CHF', 'CNYUSD': 'CNY' };
-            d3.quotes.forEach(function (q) {
-              var baseSym = q.symbol.replace('=X', '');
-              if (symKey[baseSym] && q.changePct != null) {
-                fxPct[symKey[baseSym]] = q.changePct;
-              }
-            });
-            if (Object.keys(fxPct).length > 0) {
-              liveData.fxDirectPct = fxPct;  // { EUR: 0.5, GBP: -0.3, ... }
-            }
-          }
+    // Fetch source A (current rates) first — we need its result to feed the
+    // historical comparison. But fire source C (Yahoo) in parallel right now
+    // so it doesn't wait on A.
+    var yahooPromise = fetchWithRetry(yahooUrl, {}, { timeoutMs: 9000, retries: 1, backoffMs: 500 })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+
+    var todayRates = null;
+    try {
+      var r1 = await fetchWithRetry(todayUrl, {}, { timeoutMs: 9000, retries: 1, backoffMs: 500 });
+      if (r1.ok) {
+        var d1 = await r1.json();
+        if (d1 && d1.rates) todayRates = d1.rates;
+      }
+    } catch (e) { /* source A failed — todayRates stays null */ }
+
+    // Now fetch historical in parallel with the Yahoo promise that's already in flight.
+    var historicalPromise = todayRates ? fetchHistorical(todayRates) : Promise.resolve(null);
+
+    var results = await Promise.allSettled([
+      Promise.resolve(todayRates),     // [0] = source A
+      historicalPromise,                // [1] = source B
+      yahooPromise                      // [2] = source C
+    ]);
+
+    // Apply results — NEVER overwrite last-good data with null/undefined
+    // on transient failures. Only assign fields that returned successfully.
+    var anyOk = false;
+
+    if (results[0].status === 'fulfilled' && results[0].value) {
+      liveData.fxRates = results[0].value;
+      anyOk = true;
+    }
+
+    if (results[1].status === 'fulfilled' && results[1].value) {
+      liveData.fxRatesPrev = results[1].value;
+      anyOk = true;
+    }
+
+    if (results[2].status === 'fulfilled' && results[2].value && results[2].value.quotes) {
+      var fxPct = {};
+      var symKey = { 'EURUSD': 'EUR', 'GBPUSD': 'GBP', 'JPYUSD': 'JPY', 'CADUSD': 'CAD', 'AUDUSD': 'AUD', 'CHFUSD': 'CHF', 'CNYUSD': 'CNY' };
+      results[2].value.quotes.forEach(function (q) {
+        var baseSym = q.symbol.replace('=X', '');
+        if (symKey[baseSym] && q.changePct != null) {
+          fxPct[symKey[baseSym]] = q.changePct;
         }
-      } catch (e) { /* Yahoo fetch failed — Frankfurter fallback if available */ }
+      });
+      if (Object.keys(fxPct).length > 0) {
+        liveData.fxDirectPct = fxPct;  // { EUR: 0.5, GBP: -0.3, ... }
+        anyOk = true;
+      }
+    }
 
-      return true;
-    } catch (e) { return false; }
+    // Track fetch health so the source-label in renderFX can show
+    // "rate fetch failed — showing last good data" if we have stale data
+    // from a previous successful poll but this poll got nothing fresh.
+    liveData._fxLastFetchOk = anyOk;
+    liveData._fxLastFetchTime = Date.now();
+
+    return anyOk;
   }
 
   // ─── Fetch LIVE crypto from Binance ──────────────────────────────────────
@@ -1264,9 +1369,21 @@
     }); });
     var srcLabel = document.getElementById('bmd-src-fx');
     if (srcLabel) {
+      // Distinguish 5 states so the user can tell what's happening:
+      //   1. loading…      — initial state, no fetch attempted yet
+      //   2. Yahoo live    — primary source, fresh intraday
+      //   3. Frankfurter/ECB live — fallback, daily reference rates
+      //   4. reconnecting… — last good data, current fetch failed but
+      //      previous data is still showing (better than blank cells)
+      //   5. rate fetch failed — no data at all, heatmap shows empty cells
+      var hasAnyData = hasYahoo || hasFrankfurter;
+      var fetchAttempted = liveData._fxLastFetchTime != null;
+      var lastFetchOk = liveData._fxLastFetchOk !== false;  // undefined → treat as ok
       if (hasYahoo) setSrcLabel('bmd-src-fx', 'Yahoo Finance live', true);
       else if (hasFrankfurter) setSrcLabel('bmd-src-fx', 'Frankfurter/ECB live', true);
-      else setSrcLabel('bmd-src-fx', 'rate fetch failed', false);
+      else if (!fetchAttempted) setSrcLabel('bmd-src-fx', 'loading…', false);
+      else if (!hasAnyData && !lastFetchOk) setSrcLabel('bmd-src-fx', 'rate fetch failed', false);
+      else setSrcLabel('bmd-src-fx', 'reconnecting…', false);
     }
     charts.fx.setOption({
       // Theme-aware background — matches chart-card gradient so empty cells
@@ -1578,7 +1695,12 @@
     // ECharts instance so resize/orientation works correctly. Disposing
     // + re-creating every poll broke rotation resize — the new instance's
     // canvas was stuck at the pre-rotation width.)
-    if (fxOk && charts.fx) {
+    // ALWAYS re-render — fetchFX never blanks out last-good data on a
+    // transient failure (it only overwrites fields that returned successfully),
+    // so even if this poll got nothing fresh, we want to surface the stale
+    // state + "reconnecting…" label rather than leaving the heatmap frozen
+    // on a prior render's status pill.
+    if (charts.fx) {
       try { renderFX(); } catch (e) {}
     }
 
@@ -1713,7 +1835,10 @@
     }
 
     // Update FX chart data via setOption (NO dispose — rotation fix)
-    if (fxOk && charts.fx) {
+    // ALWAYS re-render on poll — same reason as init path: fetchFX never
+    // blanks last-good data on transient failure, so re-render surfaces
+    // either fresh data, stale-but-good data, or the "reconnecting…" label.
+    if (charts.fx) {
       try { renderFX(); } catch (e) {}
     }
 
