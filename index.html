@@ -107,7 +107,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn7TZv2Dl3Jp2s1Lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Site styles -->
-  <link rel="stylesheet" href="./css/styles.css?v=4.62.0" />
+  <link rel="stylesheet" href="./css/styles.css?v=4.63.0" />
 
   <!-- Prevent theme flash -->
   <script>
@@ -180,18 +180,18 @@
         </h1>
         <p class="hero-sub reveal reveal-left">
           The business already has the answers. Leadership should not have to hunt for them.
-          Instead of asking leadership to find the story in the data, let the system bring
-          the story to leadership.
+          Upload a document, describe what you want in plain English, and the system builds
+          the pipeline — summarize, aggregate, sort, email — that brings the story to leadership.
         </p>
 
         <div class="hero-cta reveal reveal-left">
-          <a href="#dashboard" class="btn btn-primary" data-nav="dashboard">
-            <i class="fas fa-chart-line" aria-hidden="true"></i>
-            <span>Try the live dashboard</span>
+          <a href="/blog/personalized-power-automate" class="btn btn-primary" data-nav="pipeline">
+            <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+            <span>Try the AI pipeline constructor</span>
           </a>
-          <a href="#services" class="btn btn-ghost" data-nav="services">
-            <i class="fas fa-list-ol" aria-hidden="true"></i>
-            <span>See the 8-step methodology</span>
+          <a href="#dashboard" class="btn btn-ghost" data-nav="dashboard">
+            <i class="fas fa-chart-line" aria-hidden="true"></i>
+            <span>See the live dashboard</span>
           </a>
         </div>
 
@@ -985,7 +985,7 @@
         </nav>
       </div>
       <div class="footer-bottom">
-        <span class="footer-tagline">Insight Analytics · <em>Live truth on every desk, leadership included.</em></span>
+        <span class="footer-tagline">Insight Analytics · <em>Live truth on every desk.</em></span>
         <span class="footer-sep" aria-hidden="true">·</span>
         <span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span>
         <div class="social">
@@ -997,10 +997,10 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="./js/app.js?v=4.62.0" defer></script>
-  <script src="./js/hero-animation.js?v=4.62.0" defer></script>
-  <script src="./js/pull-to-refresh.js?v=4.62.0" defer></script>
-  <script src="./js/assistant.js?v=4.62.0" defer></script>
+  <script src="./js/app.js?v=4.63.0" defer></script>
+  <script src="./js/hero-animation.js?v=4.63.0" defer></script>
+  <script src="./js/pull-to-refresh.js?v=4.63.0" defer></script>
+  <script src="./js/assistant.js?v=4.63.0" defer></script>
 
   <!-- Register service worker for PWA (installable + offline cache) -->
   <script>
@@ -1141,6 +1141,13 @@
         }
 
         function showUpdateToast() {
+          // When a new SW has installed (updatefound + state=installed + hasController),
+          // show BOTH:
+          //   1. A persistent 'Force refresh' button (bottom-right) — the user can
+          //      click it any time to wipe caches + unregister SW + hard reload.
+          //   2. A transient toast (bottom-center, 15s) — same action via click.
+          // The button stays until the user clicks it or the page reloads.
+          addForceRefreshButton();
           if (document.getElementById('sw-update-toast')) return;
           var toast = document.createElement('div');
           toast.id = 'sw-update-toast';
@@ -1152,13 +1159,13 @@
             'z-index:99999','cursor:pointer','display:flex','align-items:center','gap:10px',
             'max-width:calc(100vw - 32px)'
           ].join(';');
-          toast.innerHTML = '<span>\u2728 Site updated — tap to reload</span>';
+          toast.innerHTML = '<span>\u2728 Site updated \u2014 tap to reload</span>';
           toast.onclick = function () {
             navigator.serviceWorker.getRegistration().then(function (reg) {
               if (reg && reg.waiting) {
                 reg.waiting.postMessage('skipWaiting');
               } else {
-                window.location.reload();
+                forceRefresh();
               }
             });
           };
@@ -1168,9 +1175,12 @@
           }, 15000);
         }
 
-        // Add the force-refresh button once the DOM is ready.
-        // Use a small delay so it doesn't compete with initial paint.
-        setTimeout(addForceRefreshButton, 800);
+        // Force-refresh button is HIDDEN on initial load — only shown when an
+        // actual SW update is pending (updatefound + state=installed + hasController).
+        // Showing it always made it look like permanent UI for no reason.
+        // addForceRefreshButton() is now called from the updatefound handler
+        // inside showUpdateToast() (replaces the toast with the button so the
+        // user has a clear, persistent 'click to refresh' affordance).
       });
     }
   </script>

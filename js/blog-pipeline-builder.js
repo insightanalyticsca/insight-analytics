@@ -1342,6 +1342,8 @@
 .pb-textarea:focus { outline: none; border-color: var(--indigo); box-shadow: var(--ring); }\
 \
 .pb-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 16px; }\
+.pb-chip-exec { background: linear-gradient(135deg, #4338ca, #0e7490); color: #fff; border-color: transparent; box-shadow: 0 4px 12px -4px rgba(67,56,202,0.45); }\
+.pb-chip-exec:hover { transform: translateY(-1px); box-shadow: 0 6px 16px -6px rgba(67,56,202,0.6); }\
 .pb-chip {\
   background: var(--bg-alt); border: 1px solid var(--border);\
   border-radius: 999px; padding: 7px 14px; cursor: pointer;\
@@ -1987,6 +1989,12 @@
         ' <button class="pb-link" id="pb-retry-analysis" type="button">Try again</button></div>';
     } else if (state.analysis) {
       var a = state.analysis;
+      // Built-in 'Generate executive summary' chip — always shown regardless of
+      // what Groq suggests. Triggers aiTask{type:'summary', length:'medium'} on
+      // the current document via a special 'exec' marker (the click handler
+      // recognizes this and bypasses the Groq-indexed suggestion lookup).
+      var execChip = '<button class="pb-chip pb-chip-exec" data-pb-suggest="exec" type="button">' +
+        '<i class="fas fa-file-signature" style="font-size:0.78rem;margin-right:4px;"></i>Generate executive summary</button>';
       var chips = (a.suggestedActions || []).map(function (s, i) {
         return '<button class="pb-chip" data-pb-suggest="' + i + '" type="button">' + esc(s) + '</button>';
       }).join('');
@@ -2001,7 +2009,7 @@
         <div class="pb-analysis-title"><i class="fas fa-wand-magic-sparkles" style="color:var(--indigo);"></i> We analyzed your ' + esc(d.type) + '</div>\
         <p class="pb-analysis-summary">' + esc(a.documentType ? (a.documentType + ' \u2014 ' + a.summary) : a.summary) + '</p>\
         ' + (keyPills ? '<div class="pb-analysis-section"><p class="pb-analysis-label">Key columns</p><div class="pb-pill-row">' + keyPills + '</div></div>' : '') + '\
-        ' + (chips ? '<div class="pb-analysis-section"><p class="pb-analysis-label">Suggested actions \u2014 click to prefill</p><div class="pb-chips">' + chips + '</div></div>' : '') + '\
+        ' + (chips ? '<div class="pb-analysis-section"><p class="pb-analysis-label">Suggested actions \u2014 click to prefill</p><div class="pb-chips">' + execChip + chips + '</div></div>' : '') + '\
         <div class="pb-analysis-section"><p class="pb-analysis-label">Detected formulas</p>' + formulas + '</div>\
         <div class="pb-analysis-section"><p class="pb-analysis-label">Data quality notes</p>' + notes + '</div>\
       </div>';
@@ -2544,8 +2552,16 @@
       // Suggested action chip.
       var chip = t.closest('[data-pb-suggest]');
       if (chip && state.analysis) {
-        var idx = parseInt(chip.getAttribute('data-pb-suggest'), 10);
-        state.instruction = state.analysis.suggestedActions[idx] || '';
+        var marker = chip.getAttribute('data-pb-suggest');
+        if (marker === 'exec') {
+          // Built-in executive-summary chip — bypass the Groq suggestion index
+          // and set a fixed instruction that Groq's spec generator will
+          // recognize as a text task (returns aiTask{type:'summary', length:'medium'}).
+          state.instruction = 'Generate an executive summary of this document';
+        } else {
+          var idx = parseInt(marker, 10);
+          state.instruction = state.analysis.suggestedActions[idx] || '';
+        }
         var ta = $('pb-instruction'); if (ta) { ta.value = state.instruction; ta.focus(); }
         return;
       }
