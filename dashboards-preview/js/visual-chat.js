@@ -351,7 +351,7 @@
   // NOTE: keep these specific to dashboard data — don't include common words
   // like "do", "why", "expect" (those are part of the 4-part brief format
   // but also appear in platform questions like "What do you do?").
-  var DASHBOARD_KEYWORDS = /\b(revenue|kpi|metric|chart|data|trend|period|mom|yoy|growth|decline|driver|happened|segment|breakdown|performance|utilization|capacity|salon|retail|store|ontario|attachment|churn|arrears|disconnects|tickets|sla)\b/i;
+  var DASHBOARD_KEYWORDS = /\b(revenue|kpi|metric|chart|data|trend|period|mom|yoy|growth|decline|driver|happened|segment|breakdown|performance|utilization|capacity|retail|site|ontario|attachment|churn|arrears|disconnects|tickets|sla)\b/i;
 
   function isPlatformQuestion(question) {
     var q = question.toLowerCase().trim();

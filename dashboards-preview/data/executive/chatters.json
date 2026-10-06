@@ -351,8 +351,8 @@
       ]
     },
     {
-      "id": "stylist-productivity",
-      "title": "Stylist Productivity: Revenue per Hour by Tier",
+      "id": "operator-productivity",
+      "title": "Operator Productivity: Revenue per Hour by Tier",
       "kind": "bar",
       "width": "third",
       "valueFormat": "currency",
@@ -572,9 +572,9 @@
     }
   ],
   "notes": [
-    "WHAT HAPPENED: Revenue +4.7% YoY, driven by retail (+7.2%). Salon services flat (+0.8%). Ontario outperformed network by 3.1pp on same-store growth.",
-    "WHY: The 7.2pp gap between retail growth (+7.2%) and salon services (+0.8%) points to a product mix shift — customers are spending more on retail goods relative to service time, likely reflecting either a successful product attachment push or a capacity ceiling on salon appointments. Ontario's 3.1pp outperformance versus the network suggests the regional merchandising or staffing model is working — the rest of the chain should be benchmarked against it. The capacity utilization heatmap (Fri–Sat saturation, Mon–Tue slack below 55%) indicates the salon softness is a capacity-allocation issue, not a demand problem — demand is showing up on peak days and being turned away, while off-peak capacity sits idle.",
-    "WHAT TO EXPECT: If the current trend continues, retail momentum should persist and salon services should remain roughly flat for the next period. A specific point forecast cannot be derived from this aggregated payload.",
-    "WHAT TO DO: Review the capacity utilization heatmap and store performance table on this dashboard to identify which segments warrant targeted action. A store-level data pull would be needed before reallocating stylist capacity or launching reactivation campaigns."
+    "WHAT HAPPENED: Revenue +4.7% YoY, driven by retail (+7.2%). Service revenue flat (+0.8%). Ontario outperformed network by 3.1pp on same-site growth.",
+    "WHY: The 7.2pp gap between retail growth (+7.2%) and service revenue (+0.8%) points to a product mix shift — customers are spending more on retail goods relative to service time, likely reflecting either a successful product attachment push or a capacity ceiling on service appointments. Ontario's 3.1pp outperformance versus the network suggests the regional merchandising or staffing model is working — the rest of the network should be benchmarked against it. The capacity utilization heatmap (Fri–Sat saturation, Mon–Tue slack below 55%) indicates the service softness is a capacity-allocation issue, not a demand problem — demand is showing up on peak days and being turned away, while off-peak capacity sits idle.",
+    "WHAT TO EXPECT: If the current trend continues, retail momentum should persist and service revenue should remain roughly flat for the next period. A specific point forecast cannot be derived from this aggregated payload.",
+    "WHAT TO DO: Review the capacity utilization heatmap and site performance table on this dashboard to identify which segments warrant targeted action. A site-level data pull would be needed before reallocating staff capacity or launching reactivation campaigns."
   ]
 }

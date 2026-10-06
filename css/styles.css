@@ -492,12 +492,23 @@ ul {
 }
 
 .nav-cta {
-  padding: 8px 14px;
-  font-size: 0.82rem;
-  height: 28px;
+  padding: 5px 10px;
+  font-size: 0.72rem;
+  height: 26px;
+  min-height: 26px;
+  gap: 5px;
+  letter-spacing: 0.02em;
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
+}
+.nav-cta .fas { font-size: 0.7rem; }
+
+/* On narrower viewports, drop the calendar icon so the pill stays compact
+   and never crowds the theme toggle / Ask AI button / hamburger. */
+@media (max-width: 1100px) {
+  .nav-cta .fas { display: none; }
+  .nav-cta { padding: 5px 11px; }
 }
 
 .menu-toggle {

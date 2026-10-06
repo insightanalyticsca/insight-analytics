@@ -77,13 +77,13 @@ The 8-Step Methodology (from raw systems to closed-loop action):
 Hero stats: 8-Step Methodology. 50+ Production Deployments.
 
 Three production case studies:
-• Utility Company — Operations Dashboard. Challenge: operations team overwhelmed by volume and lack of prioritization across daily workstreams. Outcome: AI-driven daily prioritization of operational targets with a live executive operating dashboard. Tags: Executive Dashboard, AI Brief, Operations Workflow.
-• Retail Chain — Executive Operating Dashboard. Challenge: no visibility into store-level performance; retail vs service mix unclear across the chain. Outcome: 4.7% YoY revenue growth visibility. Capacity optimization across the chain. Tags: Executive Dashboard, Capacity Heatmap, Store Analytics.
-• IT Operations — Service Health. Challenge: reactive incident management, no SLA visibility, ticket backlog growing month over month. Outcome: 60% faster incident response. SLA compliance up 23 points. Tags: Service Health, SLA Dashboard, Ticket Operations.
+• Operations Group — Executive Dashboard. Challenge: operations team overwhelmed by volume and lack of prioritization across daily workstreams. Outcome: AI-driven daily prioritization of operational targets with a live executive operating dashboard. Tags: Executive Dashboard, AI Brief, Operations Workflow.
+• Multi-Unit Retail — Executive Operating Dashboard. Challenge: no visibility into site-level performance; product vs service mix unclear across the network. Outcome: 4.7% YoY revenue growth visibility. Capacity optimization across the network. Tags: Executive Dashboard, Capacity Heatmap, Site Analytics.
+• IT Function — Service Health Dashboard. Challenge: reactive incident management, no SLA visibility, ticket backlog growing month over month. Outcome: 60% faster incident response. SLA compliance up 23 points. Tags: Service Health, SLA Dashboard, Ticket Operations.
 
 Organizational change grid — for each role, Today vs Target vs "Frees people to…":
 • Executive Leadership — Target: enterprise signal, risk and decision points. Frees people to decide and steer.
-• Region / Store / Salon — Target: prioritized actions, capacity and mix signals. Frees people to lead locally.
+• Region / Site / Field — Target: prioritized actions, capacity and mix signals. Frees people to lead locally.
 • Customer — Target: clearer next step, fewer surprises, faster resolution. Frees people to act on signal.
 • Merchandising — Target: inventory and attach signals, mix decisions. Frees people to plan with evidence.
 • Finance / Corporate Services — Target: consistent outputs, variance packs, document generation, approvals, auditable history. Frees people to advise and control.
