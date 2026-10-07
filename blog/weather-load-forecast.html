@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
+
+  <!-- SEO -->
+  <title>Weather-Driven Electricity Load Forecasting | Insight Analytics</title>
+  <meta name="description" content="Real weather data from your location, realistic load patterns, interpretable statistical model that learns the actual temperature-load relationship (not '10 MW per degree'). 14-day forecast with operational recommendations and AI explanations." />
+  <meta name="keywords" content="electricity load forecasting, weather-driven demand, OLS regression, change-point model, heating cooling degree days, Open-Meteo, operational planning, interpretable AI" />
+  <meta name="author" content="Insight Analytics" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://insight-analytics.ca/blog/weather-load-forecast" />
+
+  <!-- PWA / Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="../icons/favicon.ico" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Weather-Driven Electricity Load Forecasting" />
+  <meta property="og:description" content="Real weather from your location + interpretable model that learns the actual temperature-load relationship. 14-day forecast with operational recommendations + AI explanations." />
+  <meta property="og:url" content="https://insight-analytics.ca/blog/weather-load-forecast" />
+  <meta property="og:site_name" content="Insight Analytics" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="article:published_time" content="2026-10-07T00:00:00Z" />
+  <meta property="article:author" content="Insight Analytics" />
+  <meta property="article:section" content="Energy Analytics" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Weather-Driven Electricity Load Forecasting" />
+  <meta name="twitter:description" content="Real weather from your location + interpretable model + 14-day forecast + operational recommendations + AI explanations." />
+
+  <!-- Article structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Weather-Driven Electricity Load Forecasting & Operational Planning",
+    "description": "Real weather data from the user's location, realistic load patterns, interpretable statistical model, 14-day forecast with operational recommendations and AI explanations.",
+    "author": { "@type": "Organization", "name": "Insight Analytics", "url": "https://insight-analytics.ca/" },
+    "publisher": { "@type": "Organization", "name": "Insight Analytics", "logo": { "@type": "ImageObject", "url": "https://insight-analytics.ca/icons/icon-512.png" } },
+    "datePublished": "2026-10-07",
+    "dateModified": "2026-10-07",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://insight-analytics.ca/blog/weather-load-forecast" },
+    "articleSection": "Energy Analytics",
+    "keywords": ["load forecasting", "weather-driven demand", "OLS regression", "change-point", "heating cooling degree days", "Open-Meteo"]
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="../css/styles.css?v=4.71.0" />
+  <script src="../js/blog-load-forecast.js?v=4.71.0" defer></script>
+
+  <style>
+    .article-hero { padding: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 60px) 0 40px; text-align: center; background: linear-gradient(180deg, rgba(99,102,241,0.04) 0%, transparent 100%); border-bottom: 1px solid var(--border); }
+    .article-hero .container { max-width: 760px; }
+    .article-eyebrow { font-family: var(--font-head); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .article-hero h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 20px; }
+    .article-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .article-meta .sep { opacity: 0.4; }
+    .article-body { max-width: 720px; margin: 0 auto; padding: 48px 24px 32px; }
+    .article-body h2 { font-family: var(--font-head); font-size: 1.5rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    .article-body h2:first-child { margin-top: 0; }
+    .article-body h3 { font-family: var(--font-head); font-size: 1.15rem; font-weight: 600; margin: 32px 0 12px; }
+    .article-body p { font-size: 1.02rem; line-height: 1.75; color: var(--text-muted); margin: 0 0 20px; }
+    .article-body strong { color: var(--text); font-weight: 600; }
+    .article-body em { color: var(--text); font-style: italic; }
+    .article-body ul, .article-body ol { padding-left: 24px; margin: 0 0 20px; }
+    .article-body li { font-size: 1rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 6px; }
+    .article-body li strong { color: var(--text); }
+    .article-body table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 0.92rem; }
+    .article-body th { text-align: left; padding: 10px 12px; background: var(--surface-2); font-weight: 700; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+    .article-body td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); line-height: 1.5; }
+    .article-body td:first-child { color: var(--text-muted); }
+    .article-back { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 0.88rem; font-weight: 600; color: var(--text-muted); text-decoration: none; margin-bottom: 32px; transition: color 180ms ease; }
+    .article-back:hover { color: var(--accent); }
+    .article-back i { font-size: 0.78rem; }
+    .article-cta { margin: 48px auto 0; max-width: 720px; padding: 32px; border-radius: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04)); border: 1px solid var(--border); text-align: center; }
+    .article-cta h3 { font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; margin: 0 0 12px; }
+    .article-cta p { font-size: 0.95rem; color: var(--text-muted); margin: 0 0 20px; }
+
+    #load-forecast-mount {
+      margin: 0 auto 64px;
+      max-width: 1080px;
+      padding: 0 16px;
+    }
+    @media (max-width: 880px) {
+      .article-body { max-width: 100%; padding: 32px 12px 24px; }
+      #load-forecast-mount { padding: 0 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="https://insight-analytics.ca/" class="brand" aria-label="Insight Analytics home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGrad)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGrad)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGrad)"/></svg></span>
+        <span class="brand-name">Insight <b>Analytics</b></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="https://insight-analytics.ca/#services" class="nav-link">Services</a>
+        <a href="https://insight-analytics.ca/#dashboard" class="nav-link">Dashboard</a>
+        <a href="https://insight-analytics.ca/#cases" class="nav-link">Case Studies</a>
+        <a href="/blog/" class="nav-link" title="Demos — see it live. Production-ready pipelines.">Demos</a>
+        <a href="https://insight-analytics.ca/#contact" class="nav-link">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
+          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i>
+          <span class="sr-only" id="theme-label">Light</span>
+        </button>
+        <a href="https://insight-analytics.ca/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check" aria-hidden="true"></i> Book a Demo</a>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <i class="fas fa-bars" id="menu-icon" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu" role="menu" aria-label="Mobile navigation">
+    <a href="https://insight-analytics.ca/#services" class="nav-link" role="menuitem">Services</a>
+    <a href="https://insight-analytics.ca/#dashboard" class="nav-link" role="menuitem">Dashboard</a>
+    <a href="https://insight-analytics.ca/#cases" class="nav-link" role="menuitem">Case Studies</a>
+    <a href="/blog/" class="nav-link" role="menuitem" title="Live Demos — see it live. Production-ready pipelines.">Live Demos</a>
+    <a href="https://insight-analytics.ca/#contact" class="nav-link" role="menuitem">Contact</a>
+    <a href="https://insight-analytics.ca/#contact" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Book a Demo</a>
+  </div>
+
+  <section class="article-hero">
+    <div class="container">
+      <a href="/blog/" class="article-back">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        <span>Back to Demos</span>
+      </a>
+      <div class="article-eyebrow">Energy Analytics</div>
+      <h1>Weather-Driven Electricity Load Forecasting &amp; Operational Planning</h1>
+      <div class="article-meta">
+        <span>By Insight Analytics</span>
+        <span class="sep">·</span>
+        <span>October 7, 2026</span>
+        <span class="sep">·</span>
+        <span>7 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="article-body">
+
+    <p>Every utility forecast team knows the rule of thumb: <em>"10 MW per degree."</em> It's in the planning spreadsheet. It's in the operator's head. It's wrong — or at least, it's a single number standing in for a relationship that changes by season, by hour, by humidity, by wind. The real temperature-load relationship has a change-point (the balance point where heating gives way to cooling), different slopes above and below that point, and interactions with humidity, wind, and solar radiation that the rule of thumb can't capture.</p>
+
+    <p>This demo replaces the rule of thumb with a model that <strong>learns the actual relationships from data</strong>. It pulls real historical weather from your location (Open-Meteo Archive API), fetches the live 14-day forecast, generates realistic load patterns from the real weather, trains an interpretable OLS regression with change-point detection, and applies the model to produce a 14-day load forecast with operational recommendations — all in your browser.</p>
+
+    <h2>Try It Now</h2>
+    <p>The demo detects your location (via browser geolocation — allow the prompt), fetches 365 days of real hourly weather + the current 14-day forecast, generates realistic electricity load from the real weather, trains the model, and forecasts. No data leaves your browser except the weather API calls and the optional AI Q&amp;A.</p>
+
+    <div id="load-forecast-mount"></div>
+
+    <h2>What Just Happened</h2>
+    <p>The demo ran a complete Weather → Load → Risk → Recommendation pipeline:</p>
+    <ol>
+      <li><strong>Ingested real weather</strong> — 365 days of hourly historical observations (temperature, humidity, precipitation, wind speed, solar radiation, pressure, weather codes) from your actual location, fetched from the free Open-Meteo Archive API. Plus the current 14-day hourly forecast from the Open-Meteo Forecast API. No API key, no synthetic weather.</li>
+      <li><strong>Generated realistic load</strong> — synthetic electricity demand driven by the real weather. Realistic utility patterns: diurnal cycle (13 GW overnight trough, 19 GW evening peak), 15% weekend reduction, heating response below 18°C (~0.5 GW/°C), cooling response above 18°C (~0.8 GW/°C), humidity/wind/solar effects. The load follows the real weather — if your location had a heat wave last July, the load spiked.</li>
+      <li><strong>Trained an interpretable model</strong> — ordinary least squares regression on 16 features: hour-of-day (cyclical), day-of-week, weekend flag, temperature, temperature², heating degree hours, cooling degree hours, humidity, wind speed, solar radiation, precipitation, pressure, lag-1h load, lag-24h load. The model also <strong>detected the change-point</strong> (the temperature where heating gives way to cooling) by sweeping 10°C–25°C in 0.5°C steps and picking the breakpoint that minimizes RMSE. The model learned the actual slopes — not "10 MW per degree".</li>
+      <li><strong>Forecasted 14 days</strong> — applied the trained model to the real 14-day weather forecast. Produced hourly predicted load with 80% and 95% prediction intervals. Aggregated to daily peak load, identified threshold exceedances, and assigned operational risk levels (Normal / Elevated / High / Critical) based on configurable percentile thresholds.</li>
+      <li><strong>AI explained the forecast</strong> — the Groq AI layer answers questions like "Why is load expected to increase on Thursday?" using the model's actual learned coefficients, not assumptions. It also generates daily operational briefings: Expected Load → Main Drivers → Risk Level → Recommended Action.</li>
+    </ol>
+
+    <h2>What Makes This Different</h2>
+    <table>
+      <thead>
+        <tr><th>Rule-of-thumb forecasting</th><th>Interpretable model-based forecasting</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>"10 MW per degree" — one number for all seasons, all hours</td><td>Model learns separate heating and cooling slopes + the change-point where they meet</td></tr>
+        <tr><td>Temperature only — ignores humidity, wind, solar, pressure</td><td>16 features including calendar effects, lagged load, and 7 weather variables</td></tr>
+        <tr><td>No uncertainty quantification — just a point forecast</td><td>80% and 95% prediction intervals at every forecast hour</td></tr>
+        <tr><td>Operational thresholds are static ("if load &gt; 18 GW, call extra crews")</td><td>Thresholds are percentile-based (P90/P95/P99 of historical peaks) — adaptive to seasonal baselines</td></tr>
+        <tr><td>Black-box ML models (if used at all) can't explain <em>why</em> load is forecasted high</tr>
+        <td>AI uses the model's actual coefficients to explain: "Thursday's peak is +14% because temperature reaches 32°C — the model learned +0.8 GW/°C above 18°C"</td></tr>
+        <tr><td>One forecast, one number — no scenario analysis</td><td>Variable importance shows which features drive the forecast — temperature is #1, but humidity and hour-of-day matter too</td></tr>
+      </tbody>
+    </table>
+
+    <h2>The Modeling Approach</h2>
+    <p>The model is deliberately interpretable — ordinary least squares regression, not a neural network or gradient-boosted ensemble. This is a feature, not a limitation:</p>
+    <ul>
+      <li><strong>OLS regression</strong> — the coefficients are directly interpretable. "+0.8 GW per °C above 18°C" means exactly that. No black-box opacity.</li>
+      <li><strong>Change-point detection</strong> — instead of assuming 18°C is the balance point, the model sweeps 10°C–25°C and learns the actual breakpoint from data. Different climates have different change-points.</li>
+      <li><strong>Calendar effects</strong> — hour-of-day, day-of-week, and weekend/weekday are encoded as features. The model learns that load drops 15% on weekends, that the evening peak is at 6pm, that the overnight trough is at 4am.</li>
+      <li><strong>Lagged load</strong> — yesterday's load at the same hour is a feature. This captures autocorrelation (load is sticky — today's load is correlated with yesterday's).</li>
+      <li><strong>Variable importance</strong> — standardized coefficients show which features matter most. Temperature is typically #1, followed by hour-of-day, then humidity. The ranking is data-driven, not assumed.</li>
+    </ol>
+    <p>In production, you'd add regularized regression (Ridge/Lasso) for feature selection, GAMs for nonlinear temperature response, and optionally compare against Random Forest or XGBoost for accuracy benchmarking. But the interpretable OLS model remains the primary — because operations teams need to understand <em>why</em> the forecast says what it says, not just trust a number.</p>
+
+    <h2>From Demo to Production</h2>
+    <p>The demo runs entirely in your browser — real weather from Open-Meteo, realistic synthetic load, pure-JS regression, Groq AI. In production:</p>
+    <ul>
+      <li><strong>Real load data</strong> — replace the synthetic generator with your actual SCADA/AMI load feed. The model architecture stays the same — just swap the training data source.</li>
+      <li><strong>Backend-less (static JSON + GitHub Pages)</strong> — the pipeline runs as a scheduled job, fetches weather + load, trains the model server-side, writes forecast JSON. The dashboard fetches the JSON. Right for daily batch forecasting.</li>
+      <li><strong>Your existing SQL backend</strong> — the model reads from your SCADA historian + weather data warehouse, writes the 14-day forecast to a table the operations dashboard queries. The forecast updates every hour as new weather data arrives.</li>
+      <li><strong>Managed warehouse + serverless API</strong> — Supabase / Neon holds the load + weather tables, a scheduled serverless function retrains the model nightly + generates the 14-day forecast. Zero ops on your side.</li>
+    </ul>
+    <p>The model spec doesn't change between topologies. The runtime does.</p>
+
+    <h2>The Honest Part</h2>
+    <p>The load data is synthetic — generated from real weather using realistic utility coefficients (heating 0.5 GW/°C, cooling 0.8 GW/°C, etc.). The weather is 100% real from your location. In production, you'd replace the synthetic generator with your actual load feed. The model architecture, the change-point detection, the variable importance, the prediction intervals, and the AI explanation layer all stay the same.</p>
+    <p>The prediction intervals use single-step uncertainty (1.96σ × √(1 + x'⁻¹x)) rather than simulating lag-feature uncertainty propagation. For a 14-day forecast, the intervals widen in the later days — which is correct behavior, but a Kalman recursion or Monte Carlo simulation would be more precise. The UI notes this; for production, you'd integrate over the lag distribution.</p>
+    <p>The Groq AI rate limit is 10 calls per session. The model itself is trained entirely client-side — no server round-trip. The AI is used only for explanation and decision support, not for the forecast itself. The forecast is produced by the statistical model, not by the AI.</p>
+
+    <div class="article-cta">
+      <h3>Want this wired to your real load data?</h3>
+      <p>Bring your SCADA historian export or AMI load feed. We'll set up the model against your actual load + weather data, produce the 14-day forecast with operational recommendations, and show you the change-point + coefficients your data reveals — before the meeting ends.</p>
+      <a href="https://insight-analytics.ca/#contact" class="btn btn-primary btn-lg">
+        <i class="fas fa-calendar-check" aria-hidden="true"></i>
+        <span class="btn-text">Book a Working Session</span>
+      </a>
+    </div>
+
+  </article>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a href="https://insight-analytics.ca/" class="brand footer-brand" aria-label="Insight Analytics home">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGradFooter" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGradFooter)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGradFooter)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGradFooter)"/></svg></span>
+          <span class="brand-name">Insight <b>Analytics</b></span>
+        </a>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="https://insight-analytics.ca/#services">Services</a>
+          <a href="https://insight-analytics.ca/#dashboard">Dashboard</a>
+          <a href="/blog/" title="Demos — see it live. Production-ready pipelines.">Demos</a>
+          <a href="https://insight-analytics.ca/#contact">Contact</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-tagline">Insight Analytics · <em>Live truth on every desk.</em></span>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span>
+        <div class="social">
+          <a href="mailto:dev@insight-analytics.ca" aria-label="Email"><i class="fas fa-envelope"></i></a>
+          <a href="https://insight-analytics.ca/#dashboard" aria-label="Live Dashboards"><i class="fas fa-chart-pie"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/app.js?v=4.71.0" defer></script>
+
+</body>
+</html>
