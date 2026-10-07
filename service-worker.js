@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.72.1-20261007-multi-model-ai-summaries-correlations';
+const VERSION = 'v4.72.2-20261007-remove-blog-bypass-fix-http-cache-staleness';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -93,16 +93,16 @@ self.addEventListener('fetch', (event) => {
   // resource load and renders reliably on every browser.
   if (url.pathname.indexOf('/dashboards-preview/') === 0) return;
 
-  // CRITICAL: Skip /blog/ entirely too — the blog dashboard (markets dashboard)
-  // updates frequently (new futures, heatmap fixes, live data changes). The SW's
-  // stale-while-revalidate strategy was serving old cached JS in PWA standalone
-  // mode, so users couldn't see the latest changes even after a deploy. By
-  // bypassing the SW for blog assets, the browser always fetches from network.
-  if (url.pathname.indexOf('/blog/') === 0) return;
+  // NOTE: /blog/ and /js/blog-* bypass rules REMOVED in v4.72.2.
+  // The bypass was originally added because the SW's stale-while-revalidate
+  // strategy was serving old cached blog JS in PWA mode. But since v4.55.0
+  // the SW's SWR fetch uses { cache: 'no-cache' } which always revalidates
+  // against the server — so the bypass is no longer needed. Keeping the
+  // bypass meant blog pages used the BROWSER's HTTP cache (max-age=600 =
+  // 10 min staleness) instead of the SW's always-revalidate strategy.
+  // Removing the bypass lets the SW handle blog pages with cache: 'no-cache'
+  // → users see fresh content immediately after a deploy, not 10 min later.
 
-  // Same for blog asset requests (JS, CSS, data) that might be resolved
-  // without the /blog/ prefix (e.g. /js/blog-markets-dashboard.js).
-  if (url.pathname.indexOf('/js/blog-') === 0) return;
   if (url.pathname.indexOf('/data/historical/') === 0) return;
 
   // Same for the dashboard data files (in case the dashboard's relative path
