@@ -8,7 +8,7 @@
 
   <!-- SEO -->
   <title>Weather-Driven Electricity Load Forecasting | Insight Analytics</title>
-  <meta name="description" content="Real weather data from your location, realistic load patterns, interpretable statistical model that learns the actual temperature-load relationship (not '10 MW per degree'). 14-day forecast with operational recommendations and AI explanations." />
+  <meta name="description" content="Real weather data from your location, realistic load patterns, interpretable statistical model that learns the actual temperature-load relationship (not the single-number MW/°C shorthand). 14-day forecast with operational recommendations and AI explanations." />
   <meta name="keywords" content="electricity load forecasting, weather-driven demand, OLS regression, change-point model, heating cooling degree days, Open-Meteo, operational planning, interpretable AI" />
   <meta name="author" content="Insight Analytics" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -157,7 +157,7 @@
 
   <article class="article-body">
 
-    <p>Every utility forecast team knows the rule of thumb: <em>"10 MW per degree."</em> It's in the planning spreadsheet. It's in the operator's head. It's wrong — or at least, it's a single number standing in for a relationship that changes by season, by hour, by humidity, by wind. The real temperature-load relationship has a change-point (the balance point where heating gives way to cooling), different slopes above and below that point, and interactions with humidity, wind, and solar radiation that the rule of thumb can't capture.</p>
+    <p>Every utility forecast team uses a temperature-sensitivity number — <em>megawatts per degree Celsius (MW/°C)</em> — as the planning shorthand. It's in the spreadsheet. It's in the operator's head. It's wrong — or at least, it's a single number standing in for a relationship that changes by season, by hour, by humidity, by wind, and by the size and climate of the system it's measured on. There is no universal number. The real temperature-load relationship has a change-point (the balance point where heating gives way to cooling), different slopes above and below that point, and interactions with humidity, wind, and solar radiation that the single-number shorthand can't capture.</p>
 
     <p>This demo replaces the rule of thumb with a model that <strong>learns the actual relationships from data</strong>. It pulls real historical weather from your location (Open-Meteo Archive API), fetches the live 14-day forecast, generates realistic load patterns from the real weather, trains an interpretable OLS regression with change-point detection, and applies the model to produce a 14-day load forecast with operational recommendations — all in your browser.</p>
 
@@ -171,7 +171,7 @@
     <ol>
       <li><strong>Ingested real weather</strong> — 365 days of hourly historical observations (temperature, humidity, precipitation, wind speed, solar radiation, pressure, weather codes) from your actual location, fetched from the free Open-Meteo Archive API. Plus the current 14-day hourly forecast from the Open-Meteo Forecast API. No API key, no synthetic weather.</li>
       <li><strong>Generated realistic load</strong> — synthetic electricity demand driven by the real weather. Realistic utility patterns: diurnal cycle (13 GW overnight trough, 19 GW evening peak), 15% weekend reduction, heating response below 18°C (~0.5 GW/°C), cooling response above 18°C (~0.8 GW/°C), humidity/wind/solar effects. The load follows the real weather — if your location had a heat wave last July, the load spiked.</li>
-      <li><strong>Trained an interpretable model</strong> — ordinary least squares regression on 16 features: hour-of-day (cyclical), day-of-week, weekend flag, temperature, temperature², heating degree hours, cooling degree hours, humidity, wind speed, solar radiation, precipitation, pressure, lag-1h load, lag-24h load. The model also <strong>detected the change-point</strong> (the temperature where heating gives way to cooling) by sweeping 10°C–25°C in 0.5°C steps and picking the breakpoint that minimizes RMSE. The model learned the actual slopes — not "10 MW per degree".</li>
+      <li><strong>Trained an interpretable model</strong> — ordinary least squares regression on 16 features: hour-of-day (cyclical), day-of-week, weekend flag, temperature, temperature², heating degree hours, cooling degree hours, humidity, wind speed, solar radiation, precipitation, pressure, lag-1h load, lag-24h load. The model also <strong>detected the change-point</strong> (the temperature where heating gives way to cooling) by sweeping 10°C–25°C in 0.5°C steps and picking the breakpoint that minimizes RMSE. The model learned the actual slopes — not a single MW/°C shorthand.</li>
       <li><strong>Forecasted 14 days</strong> — applied the trained model to the real 14-day weather forecast. Produced hourly predicted load with 80% and 95% prediction intervals. Aggregated to daily peak load, identified threshold exceedances, and assigned operational risk levels (Normal / Elevated / High / Critical) based on configurable percentile thresholds.</li>
       <li><strong>AI explained the forecast</strong> — the Groq AI layer answers questions like "Why is load expected to increase on Thursday?" using the model's actual learned coefficients, not assumptions. It also generates daily operational briefings: Expected Load → Main Drivers → Risk Level → Recommended Action.</li>
     </ol>
@@ -182,7 +182,7 @@
         <tr><th>Rule-of-thumb forecasting</th><th>Interpretable model-based forecasting</th></tr>
       </thead>
       <tbody>
-        <tr><td>"10 MW per degree" — one number for all seasons, all hours</td><td>Model learns separate heating and cooling slopes + the change-point where they meet</td></tr>
+        <tr><td>Single MW/°C number — same for all seasons, all hours</td><td>Model learns separate heating and cooling slopes + the change-point where they meet</td></tr>
         <tr><td>Temperature only — ignores humidity, wind, solar, pressure</td><td>16 features including calendar effects, lagged load, and 7 weather variables</td></tr>
         <tr><td>No uncertainty quantification — just a point forecast</td><td>80% and 95% prediction intervals at every forecast hour</td></tr>
         <tr><td>Operational thresholds are static ("if load &gt; 18 GW, call extra crews")</td><td>Thresholds are percentile-based (P90/P95/P99 of historical peaks) — adaptive to seasonal baselines</td></tr>

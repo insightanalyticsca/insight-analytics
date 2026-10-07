@@ -1307,7 +1307,7 @@
   // Sweep BP from 10°C to 25°C in 0.5°C steps. For each, rebuild the design
   // matrix with that BP (heating_degree + cooling_degree derived from it),
   // fit OLS, record RMSE. Pick the BP that minimizes RMSE. This is the key
-  // differentiator from "10 MW per degree" — the model LEARNS the change-
+  // differentiator from the single-number MW/°C shorthand — the model LEARNS the change-
   // point AND the slopes from data, instead of assuming a hardcoded 18°C.
   //
   // Why this matters: the change-point (or "balance point") is the outdoor
