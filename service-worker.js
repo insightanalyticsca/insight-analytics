@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.73.0-20261007-fuzzy-match-normalize-and-map-modal';
+const VERSION = 'v4.73.1-20261007-fuzzy-normalize-comprehensive';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -26,7 +26,7 @@ const APP_SHELL = [
   './js/assistant.js?v=4.72.0',
   './js/blog-markets-dashboard.js?v=4.72.0',
   './js/blog-pipeline-builder.js?v=4.72.0',
-  './js/blog-fuzzy-match.js?v=4.73.0',
+  './js/blog-fuzzy-match.js?v=4.73.1',
   './js/sw-register.js?v=4.72.3',
   './js/blog-load-forecast.js?v=4.72.4',
   './data/groq-config.json',

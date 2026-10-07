@@ -612,11 +612,44 @@
   function normalizeAddress(addr) {
     if (!addr) return { base: '', unit: '' };
     var s = String(addr).toLowerCase().trim();
-    // Replace punctuation with spaces (period, comma, hash).
-    s = s.replace(/[.,#]/g, ' ');
+    // Replace punctuation with spaces (period, comma, hash, parentheses).
+    s = s.replace(/[.,#()]/g, ' ');
+    // Replace hyphens with spaces (e.g., "123-125 Main St" → "123 125 main st").
+    s = s.replace(/-/g, ' ');
+    // Strip Canadian postal codes (e.g., "m5h 2c2" or "M5H2C2").
+    s = s.replace(/\b[a-z]\d[a-z]\s?\d[a-z]\d\b/g, ' ');
+    // Strip US ZIP codes (e.g., "10001" or "10001-1234" — but the hyphen is already
+    // replaced with space, so we strip the bare 5-digit and 4-digit sequences).
+    s = s.replace(/\b\d{5}\b/g, ' ').replace(/\b\d{4}\b/g, ' ');
+    // Strip ordinal suffixes: "1st" → "1", "2nd" → "2", "3rd" → "3", "4th" → "4".
+    s = s.replace(/(\d+)(st|nd|rd|th)\b/g, '$1');
+    // Expand cardinal direction abbreviations (must come BEFORE token expansion
+    // so "n main st" → "north main street", not "n main street").
+    s = s.replace(/\bn\b(?=\s+\w)/g, 'north');
+    s = s.replace(/\bs\b(?=\s+\w)/g, 'south');
+    s = s.replace(/\be\b(?=\s+\w)/g, 'east');
+    s = s.replace(/\bw\b(?=\s+\w)/g, 'west');
+    s = s.replace(/\bnw\b/g, 'northwest');
+    s = s.replace(/\bne\b/g, 'northeast');
+    s = s.replace(/\bsw\b/g, 'southwest');
+    s = s.replace(/\bse\b/g, 'southeast');
+    // Split concatenated unit keywords from their numbers: "apt4" → "apt 4",
+    // "unit12" → "unit 12", "ste200" → "ste 200", "bldg3" → "bldg 3",
+    // "apt4b" → "apt 4b", "unit12a" → "unit 12a".
+    s = s.replace(/\b(apt|unit|ste|bldg|fl|dept)(\d+[a-z]?)\b/g, '$1 $2');
+    // Also split "#" that's directly followed by a number/letter (e.g., "#4b"
+    // was already converted to " 4b" by the punctuation strip, but "#4b"
+    // without space before # would be caught here too — belt + suspenders).
+    // This is already handled by the punctuation strip, but let's also catch
+    // "no4" or "no12" (British/European "No. 4" convention).
+    s = s.replace(/\bno(\d+[a-z]?)\b/g, 'unit $1');
     var tokens = s.split(/\s+/).filter(Boolean);
     // Expand common abbreviations — but only when the token is exactly the
-    // abbreviation AND not followed by a number ("St 4" stays as "St").
+    // abbreviation AND not followed by a number ("St 4" stays as "St" — but
+    // "St" followed by a street name like "St Clair" also stays as "St"
+    // because "St" followed by a non-digit is ambiguous: could be "Street"
+    // abbreviation OR "Saint" prefix. We default to expansion since "Street"
+    // is more common in address data).
     var expanded = tokens.map(function (tok, i) {
       var nextIsDigit = i + 1 < tokens.length && /^\d/.test(tokens[i + 1]);
       if (tok === 'st'  && !nextIsDigit) return 'street';
@@ -633,22 +666,68 @@
       if (tok === 'apt')                 return 'apartment';
       if (tok === 'ste')                 return 'suite';
       if (tok === 'bldg')                return 'building';
+      if (tok === 'fl' || tok === 'flr') return 'floor';
+      if (tok === 'dept')               return 'department';
+      if (tok === 'hwy')                return 'highway';
+      if (tok === 'ex' || tok === 'expy')return 'expressway';
+      if (tok === 'pkwy')               return 'parkway';
+      if (tok === 'ter' || tok === 'terr')return 'terrace';
+      if (tok === 'sq')                 return 'square';
+      if (tok === 'trl')                return 'trail';
+      if (tok === 'wy')                 return 'way';
       return tok;
     });
     // Split out unit suffixes — anything after "unit"/"apartment"/"suite"/
-    // "building" goes into the unit field (kept for geocoding, not used in the
-    // Jaro-Winkler comparison).
+    // "building"/"floor"/"department"/"rear"/"bsmt"/"basement"/"front"/
+    // "back"/"lower"/"upper"/"loft"/"penthouse" goes into the unit field
+    // (kept for geocoding, NOT used in the Jaro-Winkler comparison — units
+    // and position indicators are noisy; the same physical address can have
+    // many different unit formats: "Apt 4", "Unit 4", "#4", "4B", "Rear").
+    var unitKeywords = {
+      'unit': 1, 'apartment': 1, 'suite': 1, 'building': 1,
+      'floor': 1, 'department': 1,
+      'rear': 1, 'bsmt': 1, 'basement': 1, 'front': 1,
+      'back': 1, 'lower': 1, 'upper': 1, 'loft': 1, 'penthouse': 1,
+      'no': 1  // "No. 4" convention (British/European)
+    };
     var baseTokens = [];
     var unitTokens = [];
     var inUnit = false;
     for (var i = 0; i < expanded.length; i++) {
       var t = expanded[i];
-      if (t === 'unit' || t === 'apartment' || t === 'suite' || t === 'building') {
+      if (unitKeywords[t]) {
         inUnit = true;
         continue;
       }
       if (inUnit) unitTokens.push(t);
       else baseTokens.push(t);
+    }
+    // Detect bare unit suffixes (no keyword prefix):
+    // "123 main street 4" → move "4" to unit (pure digit)
+    // "123 main street 4b" → move "4b" to unit (digit + optional letter)
+    // "123 main street 12a" → move "12a" to unit
+    // "123 main street b" → move "b" to unit (single letter, but ONLY if we
+    //   already have ≥3 base tokens AND the previous base token is a street
+    //   type — avoids false positives like "123 Main B" where "B" is part of
+    //   the street name in some grid systems).
+    if (baseTokens.length >= 3) {
+      var lastTok = baseTokens[baseTokens.length - 1];
+      var secondLast = baseTokens[baseTokens.length - 2];
+      var streetTypes = {
+        'street':1, 'avenue':1, 'road':1, 'boulevard':1, 'drive':1,
+        'lane':1, 'court':1, 'circle':1, 'crescent':1, 'place':1,
+        'highway':1, 'expressway':1, 'parkway':1, 'terrace':1,
+        'square':1, 'trail':1, 'way':1
+      };
+      // Pure digit or digit+letter: "4", "4b", "12a"
+      if (/^\d+[a-z]?$/.test(lastTok)) {
+        unitTokens.unshift(baseTokens.pop());
+      }
+      // Single letter after a street type: "street b" → base="street", unit="b"
+      // (but only if the base already has the building number + street name)
+      else if (/^[a-z]$/.test(lastTok) && streetTypes[secondLast]) {
+        unitTokens.unshift(baseTokens.pop());
+      }
     }
     return {
       base: baseTokens.join(' ').replace(/\s+/g, ' ').trim(),
