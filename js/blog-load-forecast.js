@@ -135,6 +135,27 @@
     briefingsLoading:    false,
     briefingsError:      null,
 
+    // Step 2.5 — multi-model comparison (OLS + Ridge + KNN + Decision Tree)
+    // state.model remains an alias to the OLS model (for backward compat with
+    // the existing chart factories that read state.model.predictions, etc.).
+    // state.models holds all 4 model objects; state.activeModel is the one
+    // currently selected for the 14-day forecast (radio button group).
+    models:              null,   // { ols, ridge, knn, tree } — each with predictOne()
+    activeModel:         'ols',  // 'ols' | 'ridge' | 'knn' | 'tree'
+    modelTab:            'ols',  // active tab in model card (ols|ridge|knn|tree|comparison)
+    ridgeLambda:         1.0,    // tunable Ridge λ (slider)
+    knnK:                24,     // tunable KNN k (slider, default 24 = one full day)
+    treeMaxDepth:        6,      // tunable Decision Tree max depth (slider)
+    collapsedModelDetails: false, // mobile: collapse model details
+
+    // Step 3.5 — AI comprehensive summary (4-section forecast briefing)
+    summary:             null,   // { overall, risks, drivers, actions, raw }
+    summaryLoading:      false,
+    summaryError:        null,
+
+    // Step 3.6 — seasonal baseline (30-day rolling average of historical load)
+    seasonalBaseline:    null,   // MW
+
     // Chart instances keyed by element id (for dispose + re-init)
     charts:             {},
     resizeObserver:      null
@@ -864,6 +885,397 @@
     };
   }
 
+  // ─── Ridge regression (L2 regularized) ─────────────────────────────────────
+  // β_ridge = (X'X + λI)^(-1) X'y
+  //
+  // Same OLS formula but add λ to the diagonal of X'X before inverting. This
+  // shrinks coefficients toward zero — useful when features are collinear
+  // (e.g. temperature and temperature_sq, or temperature and cooling_degree).
+  // The intercept column (index 0) is NOT regularized, which is standard
+  // practice so the model retains an unbiased intercept.
+  //
+  // λ is tunable (default 1.0, exposed as a slider). Higher λ → more shrinkage
+  // → smaller coefficients (but possibly higher bias, lower variance).
+  //
+  // Prediction intervals use the same OLS-style formula with the ridge
+  // (X'X + λI)^(-1) matrix and ridge σ. This is an approximation (ridge is
+  // biased, so the PI formula isn't strictly correct) but it gives a useful
+  // uncertainty estimate for demo purposes.
+  function fitRidge(X, y, featureNames, lambda) {
+    var n = X.length;
+    if (n === 0) throw new Error('Cannot fit Ridge on empty data.');
+    var p = X[0].length;
+    var Xt  = matrixTranspose(X);
+    var XtX = matrixMultiply(Xt, X);
+    // Add λ to the diagonal of XtX, EXCEPT the intercept (index 0).
+    for (var i = 1; i < p; i++) XtX[i][i] += lambda;
+    var XtX_inv;
+    try { XtX_inv = matrixInverse(XtX); }
+    catch (e) { throw new Error('Ridge regression failed: ' + e.message); }
+    var yMat = y.map(function (v) { return [v]; });
+    var Xty = matrixMultiply(Xt, yMat);
+    var betaMat = matrixMultiply(XtX_inv, Xty);
+    var beta = betaMat.map(function (row) { return row[0]; });
+    // Predictions ŷ = Xβ.
+    var predictions = new Array(n);
+    for (var i = 0; i < n; i++) {
+      var s = 0; var row = X[i];
+      for (var j = 0; j < p; j++) s += row[j] * beta[j];
+      predictions[i] = s;
+    }
+    // Residuals + metrics.
+    var residuals = new Array(n);
+    var sse = 0, maeSum = 0, mapeSum = 0, mapeCount = 0;
+    for (var i = 0; i < n; i++) {
+      var r = y[i] - predictions[i];
+      residuals[i] = r;
+      sse += r * r;
+      maeSum += Math.abs(r);
+      if (Math.abs(y[i]) > 1e-6) { mapeSum += Math.abs(r / y[i]); mapeCount++; }
+    }
+    var yMean = vecMean(y);
+    var sst = 0;
+    for (var i = 0; i < n; i++) { var d = y[i] - yMean; sst += d * d; }
+    var r2 = sst > 0 ? 1 - sse / sst : 0;
+    var adjR2 = 1 - (1 - r2) * (n - 1) / Math.max(1, n - p - 1);
+    var rmse = Math.sqrt(sse / n);
+    var mae = maeSum / n;
+    var mape = mapeCount > 0 ? (mapeSum / mapeCount) * 100 : 0;
+    var sigma = Math.sqrt(sse / Math.max(1, n - p));
+    var se = new Array(p), tStat = new Array(p), pValue = new Array(p);
+    for (var i = 0; i < p; i++) {
+      se[i] = sigma * Math.sqrt(Math.max(0, XtX_inv[i][i]));
+      tStat[i] = se[i] > 0 ? beta[i] / se[i] : 0;
+      pValue[i] = pValueFromT(tStat[i], n - p);
+    }
+    return {
+      beta: beta, se: se, tStat: tStat, pValue: pValue,
+      predictions: predictions, residuals: residuals,
+      r2: r2, adjR2: adjR2, rmse: rmse, mae: mae, mape: mape, sigma: sigma,
+      XtX_inv: XtX_inv, featureNames: featureNames, n: n, p: p, lambda: lambda
+    };
+  }
+
+  // ─── K-Nearest Neighbors regression (non-parametric) ────────────────────────
+  // For each query point, find the K most similar training rows (by Euclidean
+  // distance on feature columns, skipping the intercept at index 0), and
+  // predict the mean of the K neighbors' y values. Prediction intervals come
+  // from the empirical distribution of the K neighbors' y values:
+  //   - 95% PI = [2.5th percentile, 97.5th percentile] of neighbor y values
+  //   - 80% PI = [10th percentile, 90th percentile] of neighbor y values
+  //
+  // K is tunable (default 24 — one full day of similar hours). Leave-one-out
+  // is used for training metrics: each training point is predicted from its K
+  // nearest OTHER training points (excluding itself) — this avoids the
+  // trivial self-match (distance 0) that would otherwise make KNN look
+  // artificially good on training data.
+  //
+  // Performance: distance computation is O(p) per pair. For the 14-day
+  // forecast (336 query rows × 8760 train × 20 p = 5.9M ops) the full
+  // computation runs in well under a second. For training metrics, the
+  // full LOO would be O(n² × p) = 1.5B ops (~30s) — too slow for an
+  // interactive demo, so we subsample to 1500 random rows (~1s).
+  function knnPredictOne(X_train, y_train, x_query, k, excludeIdx) {
+    var nTrain = X_train.length;
+    var p = X_train[0].length;
+    // Compute squared Euclidean distance (skip intercept at index 0) to
+    // every training row. We keep the array of {i, d} for partial sort.
+    var dists = new Array(nTrain);
+    for (var i = 0; i < nTrain; i++) {
+      if (i === excludeIdx) { dists[i] = { i: i, d: Infinity }; continue; }
+      var xi = X_train[i];
+      var d = 0;
+      for (var j = 1; j < p; j++) {
+        var diff = xi[j] - x_query[j];
+        d += diff * diff;
+      }
+      dists[i] = { i: i, d: d };
+    }
+    // Partial selection sort — only need the K smallest. For small K and
+    // large nTrain, this is much faster than a full sort. We use a simple
+    // approach: sort the whole array (n log n) — for n=8760 this is ~100k
+    // comparisons, fast enough.
+    dists.sort(function (a, b) { return a.d - b.d; });
+    var kk = Math.min(k, dists.length);
+    var neighbors = new Array(kk);
+    for (var i = 0; i < kk; i++) neighbors[i] = y_train[dists[i].i];
+    var yhat = vecMean(neighbors);
+    return {
+      yhat: yhat,
+      l95: percentile(neighbors, 0.025),
+      u95: percentile(neighbors, 0.975),
+      l80: percentile(neighbors, 0.10),
+      u80: percentile(neighbors, 0.90)
+    };
+  }
+  // Train KNN: store the full training set + compute LOO metrics on a
+  // subsample. Returns the model object with a predictOne closure for the
+  // forecast path. KNN has no coefficient table — variable importance is
+  // left empty (the AVP + residuals charts carry the diagnostic story).
+  function fitKNNModel(X, y, k, timestamps) {
+    var startMs = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    var n = X.length;
+    var p = X[0].length;
+    // Subsample for training metrics — Fisher-Yates shuffle on indices.
+    var sampleSize = Math.min(1500, n);
+    var allIdx = new Array(n);
+    for (var i = 0; i < n; i++) allIdx[i] = i;
+    for (var i = allIdx.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = allIdx[i]; allIdx[i] = allIdx[j]; allIdx[j] = tmp;
+    }
+    var sampleIdx = allIdx.slice(0, sampleSize).sort(function (a, b) { return a - b; });
+    // LOO predictions on the subsample.
+    var subPred = new Array(sampleSize);
+    var subRes = new Array(sampleSize);
+    var subActual = new Array(sampleSize);
+    var subL95 = new Array(sampleSize), subU95 = new Array(sampleSize);
+    var subL80 = new Array(sampleSize), subU80 = new Array(sampleSize);
+    for (var s = 0; s < sampleSize; s++) {
+      var i = sampleIdx[s];
+      var r = knnPredictOne(X, y, X[i], k, i);
+      subPred[s] = r.yhat;
+      subRes[s]  = y[i] - r.yhat;
+      subActual[s] = y[i];
+      subL95[s] = r.l95; subU95[s] = r.u95;
+      subL80[s] = r.l80; subU80[s] = r.u80;
+    }
+    // Metrics on the subsample.
+    var sse = 0, maeSum = 0, mapeSum = 0, mapeCount = 0;
+    for (var s = 0; s < sampleSize; s++) {
+      sse += subRes[s] * subRes[s];
+      maeSum += Math.abs(subRes[s]);
+      if (Math.abs(subActual[s]) > 1e-6) {
+        mapeSum += Math.abs(subRes[s] / subActual[s]); mapeCount++;
+      }
+    }
+    var yMean = vecMean(y);
+    var sst = 0;
+    for (var s = 0; s < sampleSize; s++) { var d = subActual[s] - yMean; sst += d * d; }
+    var r2 = sst > 0 ? 1 - sse / sst : 0;
+    var adjR2 = r2;  // KNN has no parametric dof — adj R² ≈ R²
+    var rmse = Math.sqrt(sse / sampleSize);
+    var mae = maeSum / sampleSize;
+    var mape = mapeCount > 0 ? (mapeSum / mapeCount) * 100 : 0;
+    var sigma = Math.sqrt(sse / Math.max(1, sampleSize - 1));
+    // Capture closure variables for predictOne.
+    var _X = X, _y = y, _k = k;
+    var elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startMs;
+    return {
+      name: 'KNN',
+      fitTime: elapsed,
+      r2: r2, adjR2: adjR2, rmse: rmse, mae: mae, mape: mape, sigma: sigma,
+      n: sampleSize, p: p, k: k,
+      predictions: subPred, residuals: subRes,
+      piL95: subL95, piU95: subU95, piL80: subL80, piU80: subU80,
+      // Subsample timestamps + actuals so AVP/residual charts work on KNN.
+      timestamps: sampleIdx.map(function (i) { return timestamps[i]; }),
+      actual: subActual,
+      X_train: X, y_train: y,
+      featureNames: FEATURE_NAMES(),
+      variableImportance: [],
+      predictOne: function (x) {
+        return knnPredictOne(_X, _y, x, _k, -1);
+      }
+    };
+  }
+
+  // ─── Decision Tree (CART-style regression tree, depth-limited) ──────────────
+  // Pure-JS regression tree with greedy binary splits. At each node:
+  //   1. For each candidate feature (skip intercept), sample 20 candidate
+  //      thresholds from the quantiles of that feature's values.
+  //   2. For each (feature, threshold), split the indices into left/right
+  //      and compute the weighted MSE (parent SSE → child SSE).
+  //   3. Pick the split with the lowest child SSE.
+  //   4. Recurse on each child until max depth, min samples (50), or no
+  //      improvement (parent MSE already minimal).
+  //
+  // Leaf predictions: the mean of training y in that leaf. Prediction
+  // intervals: yhat ± z × leaf_std (where leaf_std is the std of training
+  // y in that leaf; if the leaf has <2 samples, fall back to global σ).
+  //
+  // Variable importance = total SSE reduction attributed to each feature
+  // (summed across all splits on that feature), normalized so sum = 1.
+  //
+  // Performance: at each node we evaluate 20 candidate thresholds × 20
+  // features × n indices = 400n ops. With max depth 6 and ~64 nodes max,
+  // total work ≈ 25600n ops. For n=8760 that's ~225M ops — ~1-2s in JS.
+  function fitDecisionTree(X, y, featureNames, maxDepth) {
+    var n = X.length, p = X[0].length;
+    var importance = new Array(p).fill(0);
+    // Candidate split features: everything except the intercept (index 0).
+    var candFeats = [];
+    for (var j = 1; j < p; j++) candFeats.push(j);
+
+    function buildNode(indices, depth) {
+      var sum = 0;
+      for (var i = 0; i < indices.length; i++) sum += y[indices[i]];
+      var mean = sum / indices.length;
+      var ss = 0;
+      for (var i = 0; i < indices.length; i++) {
+        var d = y[indices[i]] - mean; ss += d * d;
+      }
+      var mse = ss / indices.length;
+      var std = Math.sqrt(ss / Math.max(1, indices.length - 1));
+      // Stop conditions.
+      if (depth >= maxDepth || indices.length < 50 || mse < 1e-6) {
+        return { leaf: true, mean: mean, std: std, count: indices.length, mse: mse };
+      }
+      // Find best split.
+      var best = { childSSE: ss, feat: -1, thr: null, left: null, right: null };
+      for (var cf = 0; cf < candFeats.length; cf++) {
+        var feat = candFeats[cf];
+        // Sample 20 candidate thresholds from sorted unique values.
+        var vals = new Array(indices.length);
+        for (var i = 0; i < indices.length; i++) vals[i] = X[indices[i]][feat];
+        var sorted = vals.slice().sort(function (a, b) { return a - b; });
+        var nCand = Math.min(20, sorted.length - 1);
+        for (var c = 0; c < nCand; c++) {
+          var pct = (c + 0.5) / nCand;
+          var idx = Math.floor(pct * (sorted.length - 1));
+          var thr = sorted[idx];
+          var left = [], right = [];
+          for (var i = 0; i < indices.length; i++) {
+            if (X[indices[i]][feat] <= thr) left.push(indices[i]);
+            else right.push(indices[i]);
+          }
+          if (left.length < 10 || right.length < 10) continue;
+          var sumL = 0, sumR = 0;
+          for (var i = 0; i < left.length; i++) sumL += y[left[i]];
+          for (var i = 0; i < right.length; i++) sumR += y[right[i]];
+          var meanL = sumL / left.length, meanR = sumR / right.length;
+          var ssL = 0, ssR = 0;
+          for (var i = 0; i < left.length; i++) { var d2 = y[left[i]] - meanL; ssL += d2 * d2; }
+          for (var i = 0; i < right.length; i++) { var d3 = y[right[i]] - meanR; ssR += d3 * d3; }
+          var childSSE = ssL + ssR;
+          if (childSSE < best.childSSE) {
+            best = { childSSE: childSSE, feat: feat, thr: thr, left: left, right: right };
+          }
+        }
+      }
+      if (best.feat === -1) {
+        return { leaf: true, mean: mean, std: std, count: indices.length, mse: mse };
+      }
+      importance[best.feat] += (ss - best.childSSE);
+      var leftNode = buildNode(best.left, depth + 1);
+      var rightNode = buildNode(best.right, depth + 1);
+      return {
+        leaf: false, feature: best.feat, threshold: best.thr,
+        left: leftNode, right: rightNode, count: indices.length, mse: mse
+      };
+    }
+
+    var allIdx = new Array(n);
+    for (var i = 0; i < n; i++) allIdx[i] = i;
+    var tree = buildNode(allIdx, 0);
+
+    function predictOne(x) {
+      var node = tree;
+      while (!node.leaf) {
+        if (x[node.feature] <= node.threshold) node = node.left;
+        else node = node.right;
+      }
+      var yhat = node.mean;
+      var se = node.std || 0;
+      return {
+        yhat: yhat,
+        l95: yhat - 1.96 * se,
+        u95: yhat + 1.96 * se,
+        l80: yhat - 1.282 * se,
+        u80: yhat + 1.282 * se
+      };
+    }
+
+    // Full-length training predictions (fast — tree traversal is O(depth)).
+    var predictions = new Array(n);
+    var residuals = new Array(n);
+    for (var i = 0; i < n; i++) {
+      var r = predictOne(X[i]);
+      predictions[i] = r.yhat;
+      residuals[i] = y[i] - r.yhat;
+    }
+    var sse = 0, maeSum = 0, mapeSum = 0, mapeCount = 0;
+    for (var i = 0; i < n; i++) {
+      sse += residuals[i] * residuals[i];
+      maeSum += Math.abs(residuals[i]);
+      if (Math.abs(y[i]) > 1e-6) { mapeSum += Math.abs(residuals[i] / y[i]); mapeCount++; }
+    }
+    var yMean = vecMean(y);
+    var sst = 0;
+    for (var i = 0; i < n; i++) { var d = y[i] - yMean; sst += d * d; }
+    var r2 = sst > 0 ? 1 - sse / sst : 0;
+    // Approximate effective # parameters as 2^maxDepth (max # leaves).
+    var pEff = Math.pow(2, maxDepth);
+    var adjR2 = 1 - (1 - r2) * (n - 1) / Math.max(1, n - pEff - 1);
+    var rmse = Math.sqrt(sse / n);
+    var mae = maeSum / n;
+    var mape = mapeCount > 0 ? (mapeSum / mapeCount) * 100 : 0;
+    var sigma = Math.sqrt(sse / Math.max(1, n - 1));
+    // Variable importance: normalize so sum (excluding intercept) = 1.
+    var impSum = 0;
+    for (var j = 1; j < p; j++) impSum += importance[j];
+    var impArr = [];
+    for (var j = 1; j < p; j++) {
+      impArr.push({
+        feature: featureNames[j],
+        importance: impSum > 0 ? importance[j] / impSum : 0
+      });
+    }
+    impArr.sort(function (a, b) { return b.importance - a.importance; });
+    return {
+      tree: tree, importance: importance,
+      predictions: predictions, residuals: residuals,
+      r2: r2, adjR2: adjR2, rmse: rmse, mae: mae, mape: mape, sigma: sigma,
+      featureNames: featureNames, n: n, p: p, maxDepth: maxDepth,
+      variableImportance: impArr,
+      predictOne: predictOne
+    };
+  }
+  // Wrapper that adds the name + fitTime + timestamps/actual fields expected by
+  // the rest of the codebase. (fitDecisionTree returns the bare model object;
+  // this wrapper standardizes the shape to match the OLS/Ridge/KNN shape.)
+  function fitDecisionTreeModel(X, y, featureNames, maxDepth, timestamps) {
+    var startMs = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    var m = fitDecisionTree(X, y, featureNames, maxDepth);
+    m.name = 'Decision Tree';
+    m.fitTime = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startMs;
+    m.timestamps = timestamps;
+    m.actual = y;
+    return m;
+  }
+
+  // ─── Pearson correlation + matrix ───────────────────────────────────────────
+  // Pearson r between two equal-length arrays. Returns a value in [-1, +1].
+  // denom = sqrt(sum(dx²) × sum(dy²)) — guards against zero variance.
+  function pearsonR(x, y) {
+    var n = x.length;
+    if (n === 0) return 0;
+    var mx = vecMean(x), my = vecMean(y);
+    var num = 0, dx2 = 0, dy2 = 0;
+    for (var i = 0; i < n; i++) {
+      var dx = x[i] - mx, dy = y[i] - my;
+      num += dx * dy;
+      dx2 += dx * dx;
+      dy2 += dy * dy;
+    }
+    var denom = Math.sqrt(dx2 * dy2);
+    return denom > 0 ? num / denom : 0;
+  }
+  // Compute the k×k Pearson correlation matrix for an array of variable
+  // arrays. `variables` is an array of equal-length arrays; `labels` is the
+  // array of human-readable names. Diagonal is exactly 1.
+  function computeCorrelationMatrix(variables, labels) {
+    var k = variables.length;
+    var matrix = new Array(k);
+    for (var i = 0; i < k; i++) {
+      matrix[i] = new Array(k);
+      for (var j = 0; j < k; j++) {
+        matrix[i][j] = (i === j) ? 1 : pearsonR(variables[i], variables[j]);
+      }
+    }
+    return { matrix: matrix, labels: labels };
+  }
+
   // ─── Standardized coefficients (variable importance) ────────────────────────
   // Standardize each feature (subtract mean, divide by std), re-fit OLS, take
   // the absolute value of each resulting coefficient as variable importance.
@@ -927,18 +1339,33 @@
   }
 
   // ─── Train model (top-level orchestrator) ────────────────────────────────────
-  // 1. Detect the change-point by sweep.
-  // 2. Build the final design matrix at the detected BP.
-  // 3. Standardize features → variable importance ranking.
-  // 4. Compute prediction intervals (95% + 80%) at every historical hour.
-  // 5. Compute P90 / P95 / P99 thresholds from historical daily peaks.
+  // Fits ALL 4 models (OLS / Ridge / KNN / Decision Tree) at the detected
+  // change-point, then stores them in state.models. state.model is kept as
+  // an alias to the OLS model so existing chart factories (which read
+  // state.model.predictions, state.model.beta, etc.) keep working unchanged.
+  //
+  // 1. Detect the change-point by sweep (10→25°C in 0.5°C steps).
+  // 2. Build the final OLS design matrix at the detected BP.
+  // 3. Standardize features → variable importance ranking (for OLS only).
+  // 4. Compute OLS prediction intervals at every historical hour.
+  // 5. Fit Ridge with current λ (state.ridgeLambda) — uses the same X
+  //    matrix and the same change-point as OLS.
+  // 6. Fit KNN with current k (state.knnK) — subsamples 1500 rows for LOO
+  //    metrics, stores the full training set for the forecast path.
+  // 7. Fit Decision Tree with current maxDepth (state.treeMaxDepth) —
+  //    CART-style greedy splits, returns predictions + variable importance.
+  // 8. Each model object gets a predictOne(x) closure returning
+  //    { yhat, l95, u95, l80, u80 } for forecast use.
+  // 9. Compute P90 / P95 / P99 thresholds from historical daily peaks.
+  // 10. Compute the seasonal baseline (30-day rolling mean) for the
+  //     forecast chart's reference line.
   function trainModel() {
     var w = state.weatherHistory;
     var ts = w.time;
     var load = state.loadData.load;
     var det = detectChangePoint(w, ts, load);
     var m = det.model;
-    // Standardized coefficients → variable importance.
+    // Standardized coefficients → variable importance (OLS).
     var Xfull = buildDesignMatrix(w, ts, load, det.changePoint);
     var stdBetas = fitStandardized(Xfull, load, FEATURE_NAMES());
     var importance = [];
@@ -947,16 +1374,15 @@
     }
     importance.sort(function (a, b) { return b.importance - a.importance; });
 
-    // Discovered heating/cooling slopes.
+    // Discovered heating/cooling slopes (OLS coefficients).
     var featIdx = FEATURE_NAMES();
     var heatingIdx = featIdx.indexOf('heating_degree');
     var coolingIdx = featIdx.indexOf('cooling_degree');
     var heatingSlope = m.beta[heatingIdx];
     var coolingSlope = m.beta[coolingIdx];
 
-    // Prediction intervals at every historical point:
+    // OLS prediction intervals at every historical point:
     //   ŷ ± z × σ × sqrt(1 + x'(X'X)^(-1)x)
-    //   z_95 = 1.96, z_80 = 1.282
     var piL95 = new Array(m.n), piU95 = new Array(m.n);
     var piL80 = new Array(m.n), piU80 = new Array(m.n);
     for (var i = 0; i < m.n; i++) {
@@ -974,7 +1400,13 @@
       piU80[i] = m.predictions[i] + 1.282 * se;
     }
 
-    state.model = {
+    // ── Build the OLS model object + predictOne closure ───────────────────
+    var olsFitStart = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    // Capture OLS closure vars (so predictOne doesn't depend on `m` later).
+    var olsBeta = m.beta, olsXtX_inv = m.XtX_inv, olsSigma = m.sigma, olsP = m.p;
+    var olsModel = {
+      name: 'OLS',
+      fitTime: 0,  // OLS fit time absorbed into change-point sweep; show 0
       beta: m.beta, se: m.se, tStat: m.tStat, pValue: m.pValue,
       predictions: m.predictions, residuals: m.residuals,
       r2: m.r2, adjR2: m.adjR2, rmse: m.rmse, mae: m.mae, mape: m.mape, sigma: m.sigma,
@@ -983,8 +1415,120 @@
       heatingSlope: heatingSlope, coolingSlope: coolingSlope,
       standardizedBetas: stdBetas, variableImportance: importance,
       piL95: piL95, piU95: piU95, piL80: piL80, piU80: piU80,
-      timestamps: ts, actual: load
+      timestamps: ts, actual: load,
+      predictOne: function (x) {
+        var yhat = 0;
+        for (var j = 0; j < olsP; j++) yhat += x[j] * olsBeta[j];
+        var q2 = 0;
+        for (var j = 0; j < olsP; j++) {
+          var sj2 = 0;
+          for (var k = 0; k < olsP; k++) sj2 += olsXtX_inv[j][k] * x[k];
+          q2 += x[j] * sj2;
+        }
+        var se2 = olsSigma * Math.sqrt(Math.max(0, 1 + q2));
+        return {
+          yhat: yhat,
+          l95: yhat - 1.96 * se2, u95: yhat + 1.96 * se2,
+          l80: yhat - 1.282 * se2, u80: yhat + 1.282 * se2
+        };
+      }
     };
+    // Override fitTime after-the-fact (change-point sweep dominates).
+    olsModel.fitTime = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - olsFitStart;
+
+    // ── Fit Ridge at the same change-point with current λ ─────────────────
+    var ridgeModel;
+    try {
+      var ridgeResult = fitRidge(Xfull, load, FEATURE_NAMES(), state.ridgeLambda);
+      // Compute Ridge PIs (using ridge (X'X+λI)^(-1) and ridge σ).
+      var rPiL95 = new Array(ridgeResult.n), rPiU95 = new Array(ridgeResult.n);
+      var rPiL80 = new Array(ridgeResult.n), rPiU80 = new Array(ridgeResult.n);
+      for (var i = 0; i < ridgeResult.n; i++) {
+        var rx = Xfull[i];
+        var rq = 0;
+        for (var j = 0; j < ridgeResult.p; j++) {
+          var rsj = 0;
+          for (var k = 0; k < ridgeResult.p; k++) rsj += ridgeResult.XtX_inv[j][k] * rx[k];
+          rq += rx[j] * rsj;
+        }
+        var rse = ridgeResult.sigma * Math.sqrt(Math.max(0, 1 + rq));
+        rPiL95[i] = ridgeResult.predictions[i] - 1.96 * rse;
+        rPiU95[i] = ridgeResult.predictions[i] + 1.96 * rse;
+        rPiL80[i] = ridgeResult.predictions[i] - 1.282 * rse;
+        rPiU80[i] = ridgeResult.predictions[i] + 1.282 * rse;
+      }
+      var rBeta = ridgeResult.beta, rXtX_inv = ridgeResult.XtX_inv,
+          rSigma = ridgeResult.sigma, rP = ridgeResult.p, rLambda = ridgeResult.lambda;
+      ridgeModel = {
+        name: 'Ridge',
+        fitTime: 0,  // filled below
+        beta: ridgeResult.beta, se: ridgeResult.se, tStat: ridgeResult.tStat, pValue: ridgeResult.pValue,
+        predictions: ridgeResult.predictions, residuals: ridgeResult.residuals,
+        r2: ridgeResult.r2, adjR2: ridgeResult.adjR2, rmse: ridgeResult.rmse,
+        mae: ridgeResult.mae, mape: ridgeResult.mape, sigma: ridgeResult.sigma,
+        XtX_inv: ridgeResult.XtX_inv, featureNames: ridgeResult.featureNames,
+        n: ridgeResult.n, p: ridgeResult.p, lambda: ridgeResult.lambda,
+        changePoint: det.changePoint,
+        heatingSlope: ridgeResult.beta[heatingIdx],
+        coolingSlope: ridgeResult.beta[coolingIdx],
+        standardizedBetas: null, variableImportance: [],
+        piL95: rPiL95, piU95: rPiU95, piL80: rPiL80, piU80: rPiU80,
+        timestamps: ts, actual: load,
+        predictOne: function (x) {
+          var yhat = 0;
+          for (var j = 0; j < rP; j++) yhat += x[j] * rBeta[j];
+          var q2 = 0;
+          for (var j = 0; j < rP; j++) {
+            var sj2 = 0;
+            for (var k = 0; k < rP; k++) sj2 += rXtX_inv[j][k] * x[k];
+            q2 += x[j] * sj2;
+          }
+          var se2 = rSigma * Math.sqrt(Math.max(0, 1 + q2));
+          return {
+            yhat: yhat,
+            l95: yhat - 1.96 * se2, u95: yhat + 1.96 * se2,
+            l80: yhat - 1.282 * se2, u80: yhat + 1.282 * se2
+          };
+        }
+      };
+      // Ridge variable importance via |standardized ridge betas|.
+      var rstd = fitStandardized(Xfull, load, FEATURE_NAMES());
+      var rImp = [];
+      for (var j = 1; j < rstd.length; j++) {
+        rImp.push({ feature: FEATURE_NAMES()[j], importance: Math.abs(rstd[j]) });
+      }
+      rImp.sort(function (a, b) { return b.importance - a.importance; });
+      ridgeModel.standardizedBetas = rstd;
+      ridgeModel.variableImportance = rImp;
+      ridgeModel.fitTime = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - olsFitStart - 1;
+    } catch (e) {
+      // If Ridge fails (shouldn't, since λ > 0 guarantees non-singular),
+      // surface an empty stub so the comparison table still renders.
+      ridgeModel = {
+        name: 'Ridge', fitTime: 0, error: e.message,
+        r2: 0, adjR2: 0, rmse: 0, mae: 0, mape: 0, sigma: 0,
+        n: m.n, p: m.p, lambda: state.ridgeLambda,
+        featureNames: FEATURE_NAMES(), variableImportance: [],
+        predictions: m.predictions, residuals: m.residuals,
+        piL95: piL95, piU95: piU95, piL80: piL80, piU80: piU80,
+        timestamps: ts, actual: load,
+        predictOne: olsModel.predictOne  // fallback to OLS
+      };
+    }
+
+    // ── Fit KNN with current k ─────────────────────────────────────────────
+    var knnModel = fitKNNModel(Xfull, load, state.knnK, ts);
+
+    // ── Fit Decision Tree with current maxDepth ───────────────────────────
+    var treeModel = fitDecisionTreeModel(Xfull, load, FEATURE_NAMES(), state.treeMaxDepth, ts);
+
+    // Stash everything.
+    state.models = { ols: olsModel, ridge: ridgeModel, knn: knnModel, tree: treeModel };
+    state.model = olsModel;  // backward-compat alias
+    // Default to OLS for the forecast on first train (user can switch later).
+    if (!state.activeModel || !state.models[state.activeModel]) {
+      state.activeModel = 'ols';
+    }
 
     // P90 / P95 / P99 thresholds from historical daily peak distribution.
     var dailyPeaks = computeDailyPeaks(ts, load);
@@ -998,6 +1542,17 @@
         p99: percentile(dailyPeaks, 0.99)
       }
     };
+
+    // Seasonal baseline = 30-day rolling mean of historical load. Shown as a
+    // orange dashed reference line in the 14-day forecast chart so operators
+    // can see whether the forecast is above or below the recent seasonal norm.
+    var last30 = load.slice(-Math.min(24 * 30, load.length));
+    state.seasonalBaseline = vecMean(last30);
+  }
+  // Return the model object currently selected for the 14-day forecast.
+  function getActiveModel() {
+    if (!state.models) return state.model;
+    return state.models[state.activeModel] || state.models.ols;
   }
   function computeDailyPeaks(timestamps, load) {
     var byDay = {};
@@ -1030,7 +1585,12 @@
   // For this demo we use the simpler single-step formula and note the
   // limitation in the UI text.
   function applyModelToForecast() {
-    var m = state.model;
+    // Use whichever model the user has selected (state.activeModel). Each
+    // model object exposes a predictOne(x) closure that returns
+    // { yhat, l95, u95, l80, u80 }. The lag buffer + forecast-row builder
+    // are shared across all models — only the predictOne call differs.
+    var model = getActiveModel();
+    var m = state.model;  // OLS — used for changePoint + driver attribution
     var w = state.weatherForecast;
     var ts = w.time;
     var n = ts.length;
@@ -1040,25 +1600,18 @@
     // Seed the recursive lag buffer with the last 24 actual loads from history.
     var lastHist = state.loadData.load;
     var lagBuffer = lastHist.slice(-24);
+    // Use the OLS-detected change-point for building forecast features —
+    // it's the same BP all 4 models were trained at, so it stays consistent
+    // regardless of which model is currently selected for forecasting.
+    var bp = (m && m.changePoint) ? m.changePoint : BALANCE_POINT_INIT;
     for (var i = 0; i < n; i++) {
-      var x = buildForecastRow(w, ts, i, lagBuffer, m.changePoint);
-      var yhat = 0;
-      for (var j = 0; j < m.p; j++) yhat += x[j] * m.beta[j];
-      predicted[i] = yhat;
-      // PI for a NEW observation: σ × sqrt(1 + x'(X'X)^(-1)x)
-      var q = 0;
-      for (var j = 0; j < m.p; j++) {
-        var sj = 0;
-        for (var k = 0; k < m.p; k++) sj += m.XtX_inv[j][k] * x[k];
-        q += x[j] * sj;
-      }
-      var se = m.sigma * Math.sqrt(Math.max(0, 1 + q));
-      piL95[i] = yhat - 1.96 * se;
-      piU95[i] = yhat + 1.96 * se;
-      piL80[i] = yhat - 1.282 * se;
-      piU80[i] = yhat + 1.282 * se;
+      var x = buildForecastRow(w, ts, i, lagBuffer, bp);
+      var r = model.predictOne(x);
+      predicted[i] = r.yhat;
+      piL95[i] = r.l95; piU95[i] = r.u95;
+      piL80[i] = r.l80; piU80[i] = r.u80;
       // Update lag buffer (FIFO — keep last 24 values).
-      lagBuffer.push(yhat);
+      lagBuffer.push(r.yhat);
       if (lagBuffer.length > 24) lagBuffer.shift();
     }
     var daily = aggregateDaily(ts, predicted, w);
@@ -1066,7 +1619,7 @@
       hourly: {
         timestamps: ts, predicted: predicted,
         piL95: piL95, piU95: piU95, piL80: piL80, piU80: piU80,
-        weather: w
+        weather: w, modelName: model.name
       },
       daily: daily
     };
@@ -1148,7 +1701,12 @@
         mainDriver: drivers[0] ? drivers[0].name : 'Baseline load',
         riskLevel: 'Normal',
         recommendation: '',
-        aiNarration: null
+        aiNarration: null,
+        // Per-day delta vs seasonal baseline (signed MW + pct). Used in the
+        // per-day AI briefing format ("+14% above seasonal baseline").
+        peakDeltaMW: state.seasonalBaseline != null ? peakLoad - state.seasonalBaseline : 0,
+        peakDeltaPct: state.seasonalBaseline != null && state.seasonalBaseline > 0
+          ? ((peakLoad - state.seasonalBaseline) / state.seasonalBaseline) * 100 : 0
       };
     });
   }
@@ -1179,7 +1737,13 @@
         mainDrivers: topDrivers || 'Baseline diurnal + seasonal pattern',
         riskLevel: d.riskLevel,
         recommendation: d.recommendation,
-        aiNarration: null
+        aiNarration: null,
+        // Carry the baseline delta through to the briefing UI.
+        peakDeltaMW: d.peakDeltaMW || 0,
+        peakDeltaPct: d.peakDeltaPct || 0,
+        drivers: d.drivers,
+        maxTemp: d.maxTemp, minTemp: d.minTemp,
+        avgHumid: d.avgHumid, maxWind: d.maxWind, totalPrecip: d.totalPrecip
       };
     });
   }
@@ -1298,7 +1862,65 @@
 .lf-window-toggle-row { display: flex; gap: 6px; margin: 10px 0 0; }\
 .lf-window-toggle { background: var(--bg-alt); border: 1px solid var(--border); color: var(--text-muted); padding: 4px 12px; border-radius: 999px; cursor: pointer; font-size: 0.78rem; font-family: inherit; }\
 .lf-window-toggle.lf-active { background: var(--gradient); color: #fff; border-color: transparent; }\
-@media (max-width: 720px) { .lf-input-row > input { max-width: 100%; } .lf-chart-body { height: 260px; } }\
+/* ─── Multi-model tab row ───────────────────────────────────────────── */\
+.lf-tab-row { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin: 12px 0 16px; flex-wrap: wrap; }\
+.lf-tab { background: transparent; border: 1px solid transparent; border-bottom: none; border-radius: var(--radius-sm) var(--radius-sm) 0 0; padding: 8px 14px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); font-family: inherit; transition: color 0.15s, background 0.15s; }\
+.lf-tab:hover:not(.lf-tab-active) { color: var(--indigo); }\
+.lf-tab.lf-tab-active { background: var(--bg-alt); color: var(--indigo); border-color: var(--border); font-weight: 600; }\
+/* ─── Stat tiles with color accents (good/warn/bad) ─────────────────── */\
+.lf-stat.lf-stat-good { border-left: 3px solid #10b981; }\
+.lf-stat.lf-stat-warn { border-left: 3px solid #f59e0b; }\
+.lf-stat.lf-stat-bad { border-left: 3px solid #ef4444; }\
+.lf-stat.lf-stat-info { border-left: 3px solid var(--indigo); }\
+.lf-stat-large { font-family: var(--font-head); font-size: 1.45rem; font-weight: 800; color: var(--text); }\
+/* ─── Section source labels (Measured Data / Weather Forecast / Model Prediction / AI Explanation) ── */\
+.lf-section-label { display: inline-block; background: var(--bg-alt); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.68rem; font-family: var(--font-head); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-soft); margin: 0 0 8px; }\
+.lf-section-label-data { color: #475569; }\
+.lf-section-label-forecast { color: #06b6d4; }\
+.lf-section-label-model { color: #6366f1; }\
+.lf-section-label-ai { color: #8b5cf6; }\
+[data-theme="dark"] .lf-section-label-data { color: #94a3b8; }\
+[data-theme="dark"] .lf-section-label-forecast { color: #67e8f9; }\
+[data-theme="dark"] .lf-section-label-model { color: #818cf8; }\
+[data-theme="dark"] .lf-section-label-ai { color: #a78bfa; }\
+/* ─── Model-selection radio button group ────────────────────────────── */\
+.lf-model-select { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); margin: 12px 0; }\
+.lf-model-select-label { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); border-radius: 999px; border: 1px solid transparent; transition: color 0.15s, border-color 0.15s, background 0.15s; }\
+.lf-model-select-label:hover { color: var(--indigo); }\
+.lf-model-select-label input[type="radio"] { accent-color: var(--indigo); margin: 0; }\
+.lf-model-select-label.lf-radio-active { color: var(--indigo); border-color: var(--indigo); background: rgba(99,102,241,0.08); font-weight: 600; }\
+.lf-model-select-hint { font-size: 0.78rem; color: var(--text-soft); margin-left: auto; align-self: center; }\
+/* ─── Tunable slider row (λ, k, maxDepth) ──────────────────────────── */\
+.lf-slider-row { display: grid; grid-template-columns: 130px 1fr 70px; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--border); }\
+.lf-slider-row:first-of-type { border-top: none; }\
+.lf-slider-row > label { font-size: 0.82rem; color: var(--text-muted); }\
+.lf-slider-row input[type="range"] { width: 100%; accent-color: var(--indigo); }\
+.lf-slider-value { text-align: right; font-family: var(--font-head); font-weight: 700; color: var(--text); font-size: 0.92rem; }\
+.lf-slider-row .lf-slider-sub { font-size: 0.72rem; color: var(--text-soft); }\
+/* ─── Risk badges (color-coded backgrounds) ────────────────────────── */\
+.lf-risk-badge { display: inline-block; padding: 3px 9px; border-radius: 6px; font-family: var(--font-head); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: #fff; }\
+.lf-risk-badge-Normal { background: #10b981; }\
+.lf-risk-badge-Elevated { background: #f59e0b; color: #1f2937; }\
+.lf-risk-badge-High { background: #f97316; }\
+.lf-risk-badge-Critical { background: #ef4444; }\
+/* ─── Collapsible model details ────────────────────────────────────── */\
+.lf-collapsible-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 0; color: var(--text-muted); font-size: 0.86rem; font-family: var(--font-head); font-weight: 600; user-select: none; }\
+.lf-collapsible-toggle:hover { color: var(--indigo); }\
+.lf-collapsible-toggle .lf-caret { transition: transform 0.2s; }\
+.lf-collapsible-toggle.lf-collapsed .lf-caret { transform: rotate(-90deg); }\
+.lf-collapsible-body { transition: max-height 0.2s; }\
+.lf-collapsible-body.lf-collapsed { display: none; }\
+/* ─── AI comprehensive summary card ────────────────────────────────── */\
+.lf-summary-card { padding: 18px 22px; border-radius: var(--radius); background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(139,92,246,0.03)); border: 1px solid var(--border); margin-top: 8px; }\
+.lf-summary-section { margin-bottom: 14px; }\
+.lf-summary-section:last-child { margin-bottom: 0; }\
+.lf-summary-section-title { font-family: var(--font-head); font-weight: 700; font-size: 0.92rem; color: var(--indigo); margin: 0 0 6px; display: flex; align-items: center; gap: 6px; }\
+.lf-summary-section-body { font-size: 0.92rem; line-height: 1.65; color: var(--text); }\
+[data-theme="dark"] .lf-summary-section-body { color: #e6edf7; }\
+/* ─── Comparison table accents ─────────────────────────────────────── */\
+.lf-table .lf-winner { background: rgba(16,185,129,0.10); font-weight: 700; }\
+.lf-table .lf-winner td { background: rgba(16,185,129,0.10); }\
+@media (max-width: 720px) { .lf-input-row > input { max-width: 100%; } .lf-chart-body { height: 260px; } .lf-slider-row { grid-template-columns: 100px 1fr 60px; } .lf-model-select-hint { display: none; } }\
 ';
     var style = document.createElement('style');
     style.id = 'lf-style';
@@ -1379,8 +2001,10 @@
   }
 
   // 3. Variable importance horizontal bar
-  function chartVariableImportance() {
-    var imp = state.model.variableImportance.slice(0, 12);
+  function chartVariableImportance(model) {
+    model = model || state.model;
+    if (!model || !model.variableImportance || !model.variableImportance.length) return { series: [] };
+    var imp = model.variableImportance.slice(0, 12);
     var cats = imp.map(function (d) { return d.feature; });
     var vals = imp.map(function (d) { return Number(d.importance.toFixed(4)); });
     return {
@@ -1403,9 +2027,11 @@
     };
   }
 
-  // 4. Temperature response curve (predicted load vs temperature, others at mean)
-  function chartTemperatureResponse() {
-    var m = state.model;
+  // 4. Temperature response curve (predicted load vs temperature, others at mean).
+  //    Only meaningful for OLS / Ridge (linear models with beta coefficients).
+  //    Caller should not invoke this for KNN / Decision Tree.
+  function chartTemperatureResponse(model) {
+    var m = model || state.model;
     var bp = m.changePoint;
     // Sweep temperature from observed min - 5 to observed max + 5.
     var temps = state.weatherHistory.temperature_2m.filter(function (v) { return typeof v === 'number'; });
@@ -1501,9 +2127,11 @@
     };
   }
 
-  // 5. Actual vs predicted with 80% + 95% PI bands
-  function chartActualVsPredicted() {
-    var m = state.model;
+  // 5. Actual vs predicted with 80% + 95% PI bands. Parameterized by
+  //    model so it can render AVP for any of the 4 models (each model's
+  //    tab shows its own predictions).
+  function chartActualVsPredicted(model) {
+    var m = model || state.model;
     var ts = m.timestamps;
     var actual = m.actual;
     var pred = m.predictions;
@@ -1546,8 +2174,8 @@
   // 6. Residual histogram — distribution of prediction errors (e = y - ŷ).
   //    Binned from -3σ to +3σ; a symmetric bell around 0 indicates the model
   //    is unbiased. Long tails suggest heteroscedasticity or missing features.
-  function chartResidualHistogram() {
-    var m = state.model;
+  function chartResidualHistogram(model) {
+    var m = model || state.model;
     var residuals = m.residuals;
     var n = residuals.length;
     var sigma = m.sigma;
@@ -1590,8 +2218,8 @@
   //     structure on the table. Significant autocorrelation at lag-24 means
   //     the daily cycle is imperfectly captured. The 95% confidence band
   //     is ±1.96 / sqrt(n) for white noise.
-  function chartResidualAutocorrelation() {
-    var m = state.model;
+  function chartResidualAutocorrelation(model) {
+    var m = model || state.model;
     var residuals = m.residuals;
     var n = residuals.length;
     var maxLag = 48;
@@ -1708,9 +2336,20 @@
       var peakTs = ts[Math.min(d.peakHourIdx, n - 1)];
       return { coord: [peakTs, d.peakLoad], value: d.peakLoad };
     });
+    // Seasonal baseline (30-day rolling mean of historical load) — dashed
+    // orange reference line. Lets the operator see at a glance whether the
+    // forecast is above or below the recent seasonal norm.
+    var baseline = state.seasonalBaseline;
+    var baselineLabel = (baseline != null)
+      ? 'Seasonal baseline (' + fmtMW1(baseline) + ' \u2014 30-day mean)'
+      : 'Seasonal baseline';
+    var markLineData = baseline != null ? [{ yAxis: baseline, label: { formatter: baselineLabel, color: '#f59e0b', position: 'insideEndTop', fontSize: 10 } }] : [];
+    // Legend includes the model name so the user knows which model produced
+    // the forecast (OLS / Ridge / KNN / Decision Tree).
+    var modelName = f.modelName || 'OLS';
     return {
       tooltip: baseTooltip(),
-      legend: { data: ['Predicted load', '95% PI', '80% PI'], textStyle: { color: axisLabelColor() }, top: 0, selected: { '95% PI': true, '80% PI': true } },
+      legend: { data: [modelName + ' forecast', '95% PI', '80% PI', 'Seasonal baseline'], textStyle: { color: axisLabelColor() }, top: 0, selected: { '95% PI': true, '80% PI': true, 'Seasonal baseline': true } },
       grid: { left: 60, right: 30, top: 36, bottom: 50, containLabel: true },
       xAxis: { type: 'time', axisLabel: baseAxisLabel(), axisLine: baseAxisLine(), axisTick: { lineStyle: { color: chartGridColor() } } },
       yAxis: { type: 'value', name: 'MW', nameTextStyle: { color: axisLabelColor() }, axisLabel: baseAxisLabel(), splitLine: baseSplitLine(), axisLine: baseAxisLine() },
@@ -1720,15 +2359,195 @@
         { name: '_l80f', type: 'line', data: l80Data, stack: 'fpi80', showSymbol: false, lineStyle: { opacity: 0 }, itemStyle: { opacity: 0 }, silent: true, animation: false },
         { name: '80% PI', type: 'line', data: band80, stack: 'fpi80', showSymbol: false, lineStyle: { opacity: 0 }, itemStyle: { opacity: 0 }, areaStyle: { color: 'rgba(99,102,241,0.18)' }, silent: true, animation: false },
         {
-          name: 'Predicted load', type: 'line', data: predData, showSymbol: false, smooth: true,
+          name: modelName + ' forecast', type: 'line', data: predData, showSymbol: false, smooth: true,
           lineStyle: { color: '#06b6d4', width: 2 }, itemStyle: { color: '#06b6d4' },
           markPoint: {
             symbol: 'circle', symbolSize: 8,
             itemStyle: { color: '#ef4444' },
             label: { formatter: function (p) { return Math.round(p.value).toLocaleString('en-US'); }, color: '#ef4444', position: 'top', fontSize: 10, fontWeight: 'bold' },
             data: peaks
+          },
+          markLine: {
+            symbol: 'none', silent: false,
+            lineStyle: { color: '#f59e0b', type: 'dashed', width: 2 },
+            data: markLineData
           }
         }
+      ]
+    };
+  }
+
+  // 9. Correlation matrix heatmap — Pearson r between every pair of weather
+  //     variables + load. Rows/cols: [temperature, humidity, wind, solar,
+  //     precip, pressure, load]. Color scale: -1 (red) → 0 (light) → +1 (green).
+  //     Cells show the r value to 2 decimals; tooltip shows 3 decimals + the
+  //     pair label. Useful for spotting which weather variables are correlated
+  //     with each other (e.g. temperature ↔ solar) AND which drive load.
+  function chartCorrelationHeatmap(corr) {
+    if (!corr || !corr.matrix) return { series: [] };
+    var labels = corr.labels;
+    var k = labels.length;
+    var data = [];
+    for (var i = 0; i < k; i++) {
+      for (var j = 0; j < k; j++) {
+        data.push([j, i, Number(corr.matrix[i][j].toFixed(3))]);
+      }
+    }
+    return {
+      tooltip: {
+        formatter: function (p) {
+          return esc(labels[p.value[1]]) + ' \u2194 ' + esc(labels[p.value[0]]) +
+            '<br/>r = <strong>' + p.value[2].toFixed(3) + '</strong>';
+        },
+        backgroundColor: tooltipBgColor(), textStyle: { color: tooltipTextColor() }
+      },
+      grid: { left: 110, right: 30, top: 12, bottom: 90, containLabel: false },
+      xAxis: {
+        type: 'category', data: labels,
+        axisLabel: Object.assign({ rotate: 45 }, baseAxisLabel()),
+        splitArea: { show: true, areaStyle: { color: [chartGridColor(), 'transparent'] } },
+        axisLine: baseAxisLine()
+      },
+      yAxis: {
+        type: 'category', data: labels,
+        axisLabel: baseAxisLabel(),
+        splitArea: { show: true, areaStyle: { color: [chartGridColor(), 'transparent'] } },
+        axisLine: baseAxisLine()
+      },
+      visualMap: {
+        min: -1, max: 1, calculable: true,
+        orient: 'horizontal', left: 'center', bottom: 16,
+        inRange: { color: ['#ef4444', '#f87171', '#f8fafc', '#86efac', '#10b981'] },
+        textStyle: { color: axisLabelColor() },
+        title: 'Pearson r'
+      },
+      series: [{
+        type: 'heatmap', data: data,
+        label: {
+          show: true, color: '#0f172a', fontSize: 11, fontWeight: 600,
+          formatter: function (p) { return p.value[2].toFixed(2); }
+        },
+        emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.35)' } }
+      }]
+    };
+  }
+
+  // 10. Weather/load relationship scatter — X = temperature, Y = load, colored
+  //     by hour-of-day. Shows the characteristic V-shape of temperature-driven
+  //     load (heating slope on the left, cooling slope on the right, change-
+  //     point visible as the inflection). Hour-of-day coloring reveals the
+  //     diurnal offset (e.g. early-morning hours cluster at lower load for the
+  //     same temperature). Subsampled to ~2000 points for performance.
+  function chartWeatherLoadScatter(weather, load, timestamps, model) {
+    var n = timestamps.length;
+    var step = Math.max(1, Math.floor(n / 2000));
+    var data = [];
+    for (var i = 0; i < n; i += step) {
+      var dt = new Date(timestamps[i]);
+      var hour = dt.getHours();
+      data.push([Number(num(weather.temperature_2m, i).toFixed(2)),
+                 Number(load[i].toFixed(2)),
+                 hour]);
+    }
+    // Optional: overlay the model's predicted temperature-response curve so
+    // the user can see the model's learned V-shape vs the raw data. Sample
+    // temperatures from -15 to 40 in 1°C steps using the model's predictOne
+    // (with all other features at mean) — for OLS/Ridge only.
+    var overlayData = [];
+    if (model && model.beta) {
+      var w = state.weatherHistory;
+      var nn = w.time.length;
+      var meanHumid = 0, meanWind = 0, meanSolar = 0, meanPrecip = 0, meanPressure = 0;
+      for (var i = 0; i < nn; i++) {
+        meanHumid += num(w.relative_humidity_2m, i);
+        meanWind  += num(w.wind_speed_10m, i);
+        meanSolar += num(w.shortwave_radiation, i);
+        meanPrecip += num(w.precipitation, i);
+        meanPressure += num(w.surface_pressure, i);
+      }
+      meanHumid /= nn; meanWind /= nn; meanSolar /= nn; meanPrecip /= nn; meanPressure /= nn;
+      var meanLoad = vecMean(state.loadData.load);
+      var now = new Date();
+      var month = now.getMonth() + 1;
+      var dow = 3, hour = 12;
+      var bp = model.changePoint || BALANCE_POINT_INIT;
+      for (var t = -15; t <= 40; t += 1) {
+        var heatingDeg = Math.max(0, bp - t);
+        var coolingDeg = Math.max(0, t - bp);
+        var row = [
+          1.0,
+          Math.sin(2 * Math.PI * hour / 24), Math.cos(2 * Math.PI * hour / 24),
+          Math.sin(2 * Math.PI * dow / 7),   Math.cos(2 * Math.PI * dow / 7),
+          Math.sin(2 * Math.PI * (month - 1) / 12), Math.cos(2 * Math.PI * (month - 1) / 12),
+          0, t, t * t, heatingDeg, coolingDeg, meanHumid,
+          Math.max(0, meanHumid - 60), meanWind, meanSolar, meanPrecip, meanPressure,
+          meanLoad, meanLoad
+        ];
+        var r = model.predictOne(row);
+        overlayData.push([t, Number(r.yhat.toFixed(2))]);
+      }
+    }
+    var seriesArr = [{
+      name: 'Historical (T, load)',
+      type: 'scatter', data: data, symbolSize: 5,
+      itemStyle: { opacity: 0.55 }
+    }];
+    if (overlayData.length) {
+      seriesArr.push({
+        name: 'Model temp-response',
+        type: 'line', data: overlayData, showSymbol: false, smooth: true,
+        lineStyle: { color: '#ef4444', width: 2.5 },
+        itemStyle: { color: '#ef4444' }
+      });
+    }
+    return {
+      tooltip: {
+        formatter: function (p) {
+          if (p.seriesName === 'Model temp-response') {
+            return 'Model: T=' + p.value[0].toFixed(1) + '°C → load ' + Math.round(p.value[1]) + ' MW';
+          }
+          return 'T=' + p.value[0].toFixed(1) + '°C, load=' + Math.round(p.value[1]) + ' MW, hour=' + Math.round(p.value[2]);
+        },
+        backgroundColor: tooltipBgColor(), textStyle: { color: tooltipTextColor() }
+      },
+      legend: {
+        data: overlayData.length ? ['Historical (T, load)', 'Model temp-response'] : ['Historical (T, load)'],
+        textStyle: { color: axisLabelColor() }, top: 0
+      },
+      grid: { left: 60, right: 30, top: 36, bottom: 80, containLabel: true },
+      xAxis: { type: 'value', name: 'Temperature (°C)', nameTextStyle: { color: axisLabelColor() }, axisLabel: baseAxisLabel(), splitLine: baseSplitLine(), axisLine: baseAxisLine() },
+      yAxis: { type: 'value', name: 'Load (MW)', nameTextStyle: { color: axisLabelColor() }, axisLabel: baseAxisLabel(), splitLine: baseSplitLine(), axisLine: baseAxisLine() },
+      visualMap: {
+        min: 0, max: 23, orient: 'horizontal', left: 'center', bottom: 16,
+        inRange: { color: ['#1e3a8a', '#06b6d4', '#10b981', '#facc15', '#f97316', '#dc2626', '#7c3aed', '#1e3a8a'] },
+        textStyle: { color: axisLabelColor() },
+        title: 'Hour'
+      },
+      series: seriesArr
+    };
+  }
+
+  // 11. Model comparison bar chart — grouped bars of R² (%) and RMSE (GW)
+  //     for each of the 4 trained models. R² on the left Y axis (indigo),
+  //     RMSE on the right Y axis (amber). Lets the user see at a glance
+  //     which model fits best and which is most accurate.
+  function chartModelComparison(models) {
+    var arr = [models.ols, models.ridge, models.knn, models.tree];
+    var names = arr.map(function (m) { return m ? m.name : '\u2014'; });
+    var r2Data = arr.map(function (m) { return m ? Number((m.r2 * 100).toFixed(1)) : 0; });
+    var rmseData = arr.map(function (m) { return m ? Number(m.rmse.toFixed(3)) : 0; });
+    return {
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: tooltipBgColor(), textStyle: { color: tooltipTextColor() } },
+      legend: { data: ['R\u00b2 (%)', 'RMSE (GW)'], textStyle: { color: axisLabelColor() }, top: 0 },
+      grid: { left: 60, right: 60, top: 36, bottom: 50, containLabel: true },
+      xAxis: { type: 'category', data: names, axisLabel: baseAxisLabel(), axisLine: baseAxisLine(), axisTick: { lineStyle: { color: chartGridColor() } } },
+      yAxis: [
+        { type: 'value', name: 'R\u00b2 (%)', nameTextStyle: { color: axisLabelColor() }, axisLabel: baseAxisLabel(), splitLine: baseSplitLine(), axisLine: baseAxisLine(), min: 0, max: 100 },
+        { type: 'value', name: 'RMSE (GW)', nameTextStyle: { color: axisLabelColor() }, axisLabel: baseAxisLabel(), splitLine: { show: false }, axisLine: baseAxisLine() }
+      ],
+      series: [
+        { name: 'R\u00b2 (%)', type: 'bar', data: r2Data, itemStyle: { color: '#6366f1', borderRadius: [4, 4, 0, 0] }, label: { show: true, position: 'top', color: axisLabelColor(), fontSize: 10, formatter: '{c}%' } },
+        { name: 'RMSE (GW)', type: 'bar', yAxisIndex: 1, data: rmseData, itemStyle: { color: '#f59e0b', borderRadius: [4, 4, 0, 0] }, label: { show: true, position: 'top', color: axisLabelColor(), fontSize: 10 } }
       ]
     };
   }
@@ -1919,12 +2738,27 @@
     renderChartInto('lf-chart-load-overlay', chartLoadOverlay);
   }
 
-  // 4. Model training card
+  // 4. Model training card — now TAB-BASED for multi-model comparison.
+  //    Tabs: OLS | Ridge | KNN | Decision Tree | Comparison. Each tab shows
+  //    that model's stat tiles + AVP + residuals (+ coefficients/importance
+  //    where applicable). Below the tabs: a model-select radio group lets the
+  //    user pick which model drives the 14-day forecast. Switching the radio
+  //    does NOT re-render the model card — only the forecast (per the brief).
   function renderModelCard() {
     var slot = $('lf-model-slot');
     if (!slot) return;
     if (!state.loadData) { slot.innerHTML = ''; return; }
-    // Feature list
+    // Dispose any stale chart instances from a prior render of this slot.
+    // We use a precise list of model-card chart IDs (rather than a prefix
+    // match) to avoid disposing the weather card's lf-chart-temp-mini or the
+    // load card's lf-chart-load-overlay by accident.
+    var modelChartIds = [
+      'lf-chart-importance', 'lf-chart-temp-response', 'lf-chart-avp',
+      'lf-chart-residual', 'lf-chart-acf', 'lf-chart-comparison',
+      'lf-chart-correlation', 'lf-chart-scatter'
+    ];
+    modelChartIds.forEach(function (id) { disposeChart(id); });
+    // Feature list (shown pre-train + post-train).
     var features = [
       { name: 'hour_sin / hour_cos', type: 'cyclical' },
       { name: 'dow_sin / dow_cos', type: 'cyclical' },
@@ -1947,97 +2781,411 @@
       return '<span class="lf-feature-pill">' + esc(f.name) + '<span class="lf-feature-type">' + esc(f.type) + '</span></span>';
     }).join('');
     var trainBtn = state.modelLoading
-      ? '<div class="lf-loading"><div class="lf-spinner"></div>Training OLS regression + detecting change-point\u2026</div>'
+      ? '<div class="lf-loading"><div class="lf-spinner"></div>Training 4 models (OLS + Ridge + KNN + Decision Tree) + detecting change-point\u2026</div>'
       : (state.modelError
         ? '<div class="lf-error"><i class="fas fa-triangle-exclamation"></i> ' + esc(state.modelError) + '</div>'
         : '');
     var fetchBtn = (!state.model && !state.modelLoading && !state.modelError)
-      ? '<button class="btn btn-primary lf-btn-sm" id="lf-train-model" type="button"><i class="fas fa-brain"></i><span class="btn-text">Train model</span></button>'
+      ? '<button class="btn btn-primary lf-btn-sm" id="lf-train-model" type="button"><i class="fas fa-brain"></i><span class="btn-text">Train models</span></button>'
       : (!state.model ? '<button class="btn btn-ghost lf-btn-sm" id="lf-train-model" type="button"><i class="fas fa-rotate-right"></i> Retry training</button>' : '');
+
     var modelHTML = '';
-    if (state.model) {
-      var m = state.model;
-      var adjR2Pct = (m.adjR2 * 100).toFixed(1);
-      var r2Pct = (m.r2 * 100).toFixed(1);
-      // Coefficient table
-      var coefRows = '';
-      for (var i = 0; i < m.featureNames.length; i++) {
-        var sig = m.pValue[i] < 0.001 ? '***' : (m.pValue[i] < 0.01 ? '**' : (m.pValue[i] < 0.05 ? '*' : ''));
-        var significant = m.pValue[i] < 0.05 ? ' lf-coef-row-significant' : '';
-        var stdBeta = m.standardizedBetas[i];
-        coefRows += '<tr class="' + significant + '">'
-          + '<td>' + esc(m.featureNames[i]) + (sig ? ' ' + sig : '') + '</td>'
-          + '<td class="num">' + fmtNum(m.beta[i], 4) + '</td>'
-          + '<td class="num">' + fmtNum(m.se[i], 4) + '</td>'
-          + '<td class="num">' + fmtNum(m.tStat[i], 2) + '</td>'
-          + '<td class="num">' + (m.pValue[i] < 0.0001 ? '<0.0001' : m.pValue[i].toFixed(4)) + '</td>'
-          + '<td class="num">' + (i === 0 ? '\u2014' : fmtNum(Math.abs(stdBeta), 4)) + '</td>'
-          + '</tr>';
-      }
-      // AVP window toggle
-      var winBtns = [7, 30, 365].map(function (d) {
-        return '<button class="lf-window-toggle ' + (state.avpWindow === d ? 'lf-active' : '') + '" data-lf-window="' + d + '" type="button">Last ' + d + 'd</button>';
+    if (state.models) {
+      // Build the tab row.
+      var tabs = [
+        { id: 'ols',         label: 'OLS' },
+        { id: 'ridge',       label: 'Ridge' },
+        { id: 'knn',         label: 'KNN' },
+        { id: 'tree',        label: 'Decision Tree' },
+        { id: 'comparison', label: 'Comparison' }
+      ];
+      var tabHTML = tabs.map(function (t) {
+        return '<button class="lf-tab ' + (state.modelTab === t.id ? 'lf-tab-active' : '') +
+          '" data-lf-tab="' + t.id + '" type="button">' + esc(t.label) + '</button>';
       }).join('');
-      modelHTML = '\
-        <div class="lf-stat-grid">\
-          <div class="lf-stat"><div class="lf-stat-label">R\u00b2</div><div class="lf-stat-value">' + r2Pct + '%</div><div class="lf-stat-sub">variance explained</div></div>\
-          <div class="lf-stat"><div class="lf-stat-label">Adjusted R\u00b2</div><div class="lf-stat-value">' + adjR2Pct + '%</div><div class="lf-stat-sub">penalized for # features</div></div>\
-          <div class="lf-stat"><div class="lf-stat-label">RMSE</div><div class="lf-stat-value">' + fmtMW1(m.rmse) + '</div><div class="lf-stat-sub">root mean sq error</div></div>\
-          <div class="lf-stat"><div class="lf-stat-label">MAE</div><div class="lf-stat-value">' + fmtMW1(m.mae) + '</div><div class="lf-stat-sub">mean abs error</div></div>\
-          <div class="lf-stat"><div class="lf-stat-label">MAPE</div><div class="lf-stat-value">' + m.mape.toFixed(2) + '%</div><div class="lf-stat-sub">mean abs % error</div></div>\
-          <div class="lf-stat"><div class="lf-stat-label">Change-point</div><div class="lf-stat-value">' + m.changePoint.toFixed(1) + '\u00b0C</div><div class="lf-stat-sub">detected from data</div></div>\
-          <div class="lf-stat"><div class="lf-stat-label">Heating slope</div><div class="lf-stat-value">' + fmtMW1(m.heatingSlope) + '/\u00b0C</div><div class="lf-stat-sub">below BP</div></div>\
-          <div class="lf-stat"><div class="lf-stat-label">Cooling slope</div><div class="lf-stat-value">' + fmtMW1(m.coolingSlope) + '/\u00b0C</div><div class="lf-stat-sub">above BP</div></div>\
-        </div>\
-        <div class="lf-chart-card">\
-          <p class="lf-chart-title"><i class="fas fa-ranking-star"></i> Variable importance \u2014 top 12 by |standardized coefficient|</p>\
-          <div class="lf-chart-body" id="lf-chart-importance" style="height:380px;"></div>\
-        </div>\
-        <div class="lf-chart-card">\
-          <p class="lf-chart-title"><i class="fas fa-temperature-half"></i> Temperature response curve \u2014 predicted load vs temperature (other features at mean)</p>\
-          <div class="lf-chart-body" id="lf-chart-temp-response" style="height:320px;"></div>\
-        </div>\
-        <div class="lf-chart-card">\
-          <p class="lf-chart-title"><i class="fas fa-chart-area"></i> Actual vs predicted \u2014 with 80% + 95% prediction intervals</p>\
-          <div class="lf-window-toggle-row">' + winBtns + '</div>\
-          <div class="lf-chart-body" id="lf-chart-avp" style="height:380px;"></div>\
-        </div>\
-        <div class="lf-chart-card">\
-          <p class="lf-chart-title"><i class="fas fa-chart-column"></i> Residual histogram \u2014 prediction errors (\u00b13\u03c3)</p>\
-          <div class="lf-chart-body" id="lf-chart-residual" style="height:280px;"></div>\
-        </div>\
-        <div class="lf-chart-card">\
-          <p class="lf-chart-title"><i class="fas fa-wave-square"></i> Residual autocorrelation \u2014 unexplained structure (lags 1-48h)</p>\
-          <div class="lf-chart-body" id="lf-chart-acf" style="height:260px;"></div>\
-          <p class="lf-card-sub" style="margin-top:8px;">Significant spikes (beyond red dashed 95% CI) at lag-24 indicate residual daily-cycle structure the model has not fully captured \u2014 a known signature of utility load.</p>\
-        </div>\
-        <div class="lf-chart-card">\
-          <p class="lf-chart-title"><i class="fas fa-table"></i> Coefficient table \u2014 feature | \u03b2 | std error | t-stat | p-value | standardized</p>\
-          <div class="lf-table-wrap">\
-            <table class="lf-table">\
-              <thead><tr><th>Feature</th><th class="num">Coefficient</th><th class="num">Std Error</th><th class="num">t-stat</th><th class="num">p-value</th><th class="num">|Std \u03b2|</th></tr></thead>\
-              <tbody>' + coefRows + '</tbody>\
-            </table>\
+      // Model-select radio group (controls which model drives the forecast).
+      var radioItems = [
+        { id: 'ols',   label: 'OLS' },
+        { id: 'ridge', label: 'Ridge' },
+        { id: 'knn',   label: 'KNN' },
+        { id: 'tree',  label: 'Decision Tree' }
+      ];
+      var radioHTML = radioItems.map(function (r) {
+        var checked = state.activeModel === r.id ? 'checked' : '';
+        var active = state.activeModel === r.id ? ' lf-radio-active' : '';
+        return '<label class="lf-model-select-label' + active + '">' +
+          '<input type="radio" name="lf-model-radio" value="' + r.id + '" ' + checked + ' />' +
+          '<span>' + esc(r.label) + '</span></label>';
+      }).join('');
+      // Per-tab content.
+      var tabContent = '';
+      if (state.modelTab === 'ols' || state.modelTab === 'ridge') {
+        var m = state.modelTab === 'ols' ? state.models.ols : state.models.ridge;
+        if (m && !m.error) {
+          // Color-coded stat tiles: green if R² > 0.8, amber if 0.5-0.8, red if < 0.5.
+          var r2Class = m.r2 > 0.8 ? 'lf-stat-good' : (m.r2 > 0.5 ? 'lf-stat-warn' : 'lf-stat-bad');
+          var adjR2Pct = (m.adjR2 * 100).toFixed(1);
+          var r2Pct = (m.r2 * 100).toFixed(1);
+          var coefRows = '';
+          for (var i = 0; i < m.featureNames.length; i++) {
+            var sig = m.pValue[i] < 0.001 ? '***' : (m.pValue[i] < 0.01 ? '**' : (m.pValue[i] < 0.05 ? '*' : ''));
+            var significant = m.pValue[i] < 0.05 ? ' lf-coef-row-significant' : '';
+            var stdBeta = m.standardizedBetas ? m.standardizedBetas[i] : 0;
+            coefRows += '<tr class="' + significant + '">'
+              + '<td>' + esc(m.featureNames[i]) + (sig ? ' ' + sig : '') + '</td>'
+              + '<td class="num">' + fmtNum(m.beta[i], 4) + '</td>'
+              + '<td class="num">' + fmtNum(m.se[i], 4) + '</td>'
+              + '<td class="num">' + fmtNum(m.tStat[i], 2) + '</td>'
+              + '<td class="num">' + (m.pValue[i] < 0.0001 ? '<0.0001' : m.pValue[i].toFixed(4)) + '</td>'
+              + '<td class="num">' + (i === 0 ? '\u2014' : fmtNum(Math.abs(stdBeta), 4)) + '</td>'
+              + '</tr>';
+          }
+          // AVP window toggle.
+          var winBtns = [7, 30, 365].map(function (d) {
+            return '<button class="lf-window-toggle ' + (state.avpWindow === d ? 'lf-active' : '') + '" data-lf-window="' + d + '" type="button">Last ' + d + 'd</button>';
+          }).join('');
+          // For Ridge tab: also show an OLS vs Ridge coefficient side-by-side table.
+          var ridgeCompareHTML = '';
+          if (state.modelTab === 'ridge' && state.models.ols) {
+            var ols = state.models.ols;
+            var cmpRows = '';
+            for (var i = 0; i < m.featureNames.length; i++) {
+              var shrink = ols.beta[i] !== 0
+                ? ((m.beta[i] - ols.beta[i]) / ols.beta[i] * 100).toFixed(1)
+                : '\u2014';
+              var shrinkColor = shrink < 0 ? '#10b981' : '#f59e0b';
+              cmpRows += '<tr>'
+                + '<td>' + esc(m.featureNames[i]) + '</td>'
+                + '<td class="num">' + fmtNum(ols.beta[i], 4) + '</td>'
+                + '<td class="num">' + fmtNum(m.beta[i], 4) + '</td>'
+                + '<td class="num" style="color:' + shrinkColor + '">' + shrink + '%</td>'
+                + '</tr>';
+            }
+            ridgeCompareHTML = '\
+              <div class="lf-chart-card">\
+                <p class="lf-chart-title"><i class="fas fa-arrows-left-right"></i> OLS vs Ridge coefficients \u2014 shrinkage comparison (\u03bb = ' + state.ridgeLambda.toFixed(2) + ')</p>\
+                <div class="lf-table-wrap" style="max-height:320px;">\
+                  <table class="lf-table">\
+                    <thead><tr><th>Feature</th><th class="num">OLS \u03b2</th><th class="num">Ridge \u03b2</th><th class="num">Shrinkage</th></tr></thead>\
+                    <tbody>' + cmpRows + '</tbody>\
+                  </table>\
+                </div>\
+                <p class="lf-card-sub" style="margin-top:6px;">Negative shrinkage = Ridge coefficient shrank toward zero vs OLS (the regularization effect).</p>\
+              </div>';
+          }
+          // Stat tiles + slider for Ridge λ.
+          var sliderHTML = '';
+          if (state.modelTab === 'ridge') {
+            sliderHTML = '\
+              <div class="lf-chart-card">\
+                <p class="lf-chart-title"><i class="fas fa-sliders"></i> Ridge \u03bb (regularization strength)</p>\
+                <div class="lf-slider-row">\
+                  <label for="lf-slider-lambda">Lambda \u03bb</label>\
+                  <input type="range" id="lf-slider-lambda" min="0.01" max="100" step="0.01" value="' + state.ridgeLambda + '" />\
+                  <div class="lf-slider-value">' + state.ridgeLambda.toFixed(2) + '</div>\
+                </div>\
+                <p class="lf-card-sub">Higher \u03bb \u2192 more shrinkage \u2192 smaller coefficients (lower variance, possibly higher bias). Retrain to apply.</p>\
+                <div class="lf-btn-row"><button class="btn btn-primary lf-btn-sm" id="lf-retrain-ridge" type="button"><i class="fas fa-rotate-right"></i> Retrain Ridge with new \u03bb</button></div>\
+              </div>';
+          }
+          tabContent = '\
+            <span class="lf-section-label lf-section-label-model">Model Prediction</span>\
+            <div class="lf-stat-grid">\
+              <div class="lf-stat ' + r2Class + '"><div class="lf-stat-label">R\u00b2</div><div class="lf-stat-value">' + r2Pct + '%</div><div class="lf-stat-sub">variance explained</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">Adjusted R\u00b2</div><div class="lf-stat-value">' + adjR2Pct + '%</div><div class="lf-stat-sub">penalized for # features</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">RMSE</div><div class="lf-stat-value">' + fmtMW1(m.rmse) + '</div><div class="lf-stat-sub">root mean sq error</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">MAE</div><div class="lf-stat-value">' + fmtMW1(m.mae) + '</div><div class="lf-stat-sub">mean abs error</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">MAPE</div><div class="lf-stat-value">' + m.mape.toFixed(2) + '%</div><div class="lf-stat-sub">mean abs % error</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">Change-point</div><div class="lf-stat-value">' + m.changePoint.toFixed(1) + '\u00b0C</div><div class="lf-stat-sub">detected from data</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">Heating slope</div><div class="lf-stat-value">' + fmtMW1(m.heatingSlope) + '/\u00b0C</div><div class="lf-stat-sub">below BP</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">Cooling slope</div><div class="lf-stat-value">' + fmtMW1(m.coolingSlope) + '/\u00b0C</div><div class="lf-stat-sub">above BP</div></div>\
+            </div>'
+            + sliderHTML
+            + '\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-ranking-star"></i> Variable importance \u2014 top 12 by |standardized coefficient|</p>\
+              <div class="lf-chart-body" id="lf-chart-importance" style="height:380px;"></div>\
+            </div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-temperature-half"></i> Temperature response curve \u2014 predicted load vs temperature (other features at mean)</p>\
+              <div class="lf-chart-body" id="lf-chart-temp-response" style="height:320px;"></div>\
+            </div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-chart-area"></i> Actual vs predicted \u2014 with 80% + 95% prediction intervals</p>\
+              <div class="lf-window-toggle-row">' + winBtns + '</div>\
+              <div class="lf-chart-body" id="lf-chart-avp" style="height:380px;"></div>\
+            </div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-chart-column"></i> Residual histogram \u2014 prediction errors (\u00b13\u03c3)</p>\
+              <div class="lf-chart-body" id="lf-chart-residual" style="height:280px;"></div>\
+            </div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-wave-square"></i> Residual autocorrelation \u2014 unexplained structure (lags 1-48h)</p>\
+              <div class="lf-chart-body" id="lf-chart-acf" style="height:260px;"></div>\
+              <p class="lf-card-sub" style="margin-top:8px;">Significant spikes (beyond red dashed 95% CI) at lag-24 indicate residual daily-cycle structure the model has not fully captured \u2014 a known signature of utility load.</p>\
+            </div>'
+            + ridgeCompareHTML
+            + '\
+            <div class="lf-collapsible-toggle" id="lf-toggle-coef-details">\
+              <i class="fas fa-chevron-down lf-caret"></i> Coefficient table (statistical details)\
+            </div>\
+            <div class="lf-collapsible-body" id="lf-coef-details-body">\
+              <div class="lf-chart-card">\
+                <p class="lf-chart-title"><i class="fas fa-table"></i> Coefficient table \u2014 feature | \u03b2 | std error | t-stat | p-value | standardized</p>\
+                <div class="lf-table-wrap">\
+                  <table class="lf-table">\
+                    <thead><tr><th>Feature</th><th class="num">Coefficient</th><th class="num">Std Error</th><th class="num">t-stat</th><th class="num">p-value</th><th class="num">|Std \u03b2|</th></tr></thead>\
+                    <tbody>' + coefRows + '</tbody>\
+                  </table>\
+                </div>\
+                <p class="lf-card-sub" style="margin-top:8px;">Significance: *** p&lt;0.001, ** p&lt;0.01, * p&lt;0.05. Bold rows are statistically significant. Heating/cooling slopes are discovered from data via change-point detection (10\u00b0C \u2192 25\u00b0C sweep, 0.5\u00b0C steps).</p>\
+              </div>\
+            </div>';
+        } else if (m && m.error) {
+          tabContent = '<div class="lf-error"><i class="fas fa-triangle-exclamation"></i> ' + esc(m.error) + '</div>';
+        }
+      } else if (state.modelTab === 'knn') {
+        var km = state.models.knn;
+        if (km) {
+          var kR2Class = km.r2 > 0.8 ? 'lf-stat-good' : (km.r2 > 0.5 ? 'lf-stat-warn' : 'lf-stat-bad');
+          tabContent = '\
+            <span class="lf-section-label lf-section-label-model">Model Prediction</span>\
+            <div class="lf-stat-grid">\
+              <div class="lf-stat ' + kR2Class + '"><div class="lf-stat-label">R\u00b2</div><div class="lf-stat-value">' + (km.r2 * 100).toFixed(1) + '%</div><div class="lf-stat-sub">on ' + km.n + '-row subsample</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">RMSE</div><div class="lf-stat-value">' + fmtMW1(km.rmse) + '</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">MAE</div><div class="lf-stat-value">' + fmtMW1(km.mae) + '</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">MAPE</div><div class="lf-stat-value">' + km.mape.toFixed(2) + '%</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">k</div><div class="lf-stat-value">' + km.k + '</div><div class="lf-stat-sub">neighbors</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">Training time</div><div class="lf-stat-value">' + km.fitTime.toFixed(0) + ' ms</div></div>\
+            </div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-sliders"></i> KNN k (number of neighbors)</p>\
+              <div class="lf-slider-row">\
+                <label for="lf-slider-k">k</label>\
+                <input type="range" id="lf-slider-k" min="3" max="100" step="1" value="' + state.knnK + '" />\
+                <div class="lf-slider-value">' + state.knnK + '</div>\
+              </div>\
+              <p class="lf-card-sub">Higher k \u2192 smoother predictions (less variance, more bias). Default 24 = one full day of similar hours. Retrain to apply.</p>\
+              <div class="lf-btn-row"><button class="btn btn-primary lf-btn-sm" id="lf-retrain-knn" type="button"><i class="fas fa-rotate-right"></i> Retrain KNN with new k</button></div>\
+            </div>\
+            <div class="lf-warn"><i class="fas fa-circle-info"></i> KNN is non-parametric \u2014 no coefficient table. Distance-weighted average of the k most similar historical hours. PIs come from the empirical percentile of neighbor y values.</div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-chart-area"></i> Actual vs predicted (LOO on ' + km.n + '-row subsample)</p>\
+              <div class="lf-chart-body" id="lf-chart-avp" style="height:340px;"></div>\
+            </div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-chart-column"></i> Residual histogram</p>\
+              <div class="lf-chart-body" id="lf-chart-residual" style="height:260px;"></div>\
+            </div>';
+        }
+      } else if (state.modelTab === 'tree') {
+        var tm = state.models.tree;
+        if (tm) {
+          var tR2Class = tm.r2 > 0.8 ? 'lf-stat-good' : (tm.r2 > 0.5 ? 'lf-stat-warn' : 'lf-stat-bad');
+          tabContent = '\
+            <span class="lf-section-label lf-section-label-model">Model Prediction</span>\
+            <div class="lf-stat-grid">\
+              <div class="lf-stat ' + tR2Class + '"><div class="lf-stat-label">R\u00b2</div><div class="lf-stat-value">' + (tm.r2 * 100).toFixed(1) + '%</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">RMSE</div><div class="lf-stat-value">' + fmtMW1(tm.rmse) + '</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">MAE</div><div class="lf-stat-value">' + fmtMW1(tm.mae) + '</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">MAPE</div><div class="lf-stat-value">' + tm.mape.toFixed(2) + '%</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">Max depth</div><div class="lf-stat-value">' + tm.maxDepth + '</div></div>\
+              <div class="lf-stat"><div class="lf-stat-label">Training time</div><div class="lf-stat-value">' + tm.fitTime.toFixed(0) + ' ms</div></div>\
+            </div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-sliders"></i> Decision Tree max depth</p>\
+              <div class="lf-slider-row">\
+                <label for="lf-slider-depth">max depth</label>\
+                <input type="range" id="lf-slider-depth" min="2" max="10" step="1" value="' + state.treeMaxDepth + '" />\
+                <div class="lf-slider-value">' + state.treeMaxDepth + '</div>\
+              </div>\
+              <p class="lf-card-sub">Higher depth \u2192 more splits \u2192 lower training error (but higher overfitting risk). Retrain to apply.</p>\
+              <div class="lf-btn-row"><button class="btn btn-primary lf-btn-sm" id="lf-retrain-tree" type="button"><i class="fas fa-rotate-right"></i> Retrain Tree with new depth</button></div>\
+            </div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-ranking-star"></i> Variable importance \u2014 total MSE reduction per feature</p>\
+              <div class="lf-chart-body" id="lf-chart-importance" style="height:340px;"></div>\
+            </div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-chart-area"></i> Actual vs predicted</p>\
+              <div class="lf-chart-body" id="lf-chart-avp" style="height:340px;"></div>\
+            </div>\
+            <div class="lf-chart-card">\
+              <p class="lf-chart-title"><i class="fas fa-chart-column"></i> Residual histogram</p>\
+              <div class="lf-chart-body" id="lf-chart-residual" style="height:260px;"></div>\
+            </div>';
+        }
+      } else if (state.modelTab === 'comparison') {
+        // Build the comparison table.
+        var models = state.models;
+        var modelList = [models.ols, models.ridge, models.knn, models.tree];
+        // Find best (winner) per metric.
+        var bestR2 = -Infinity, bestR2Idx = -1;
+        var bestRmse = Infinity, bestRmseIdx = -1;
+        var bestMae = Infinity, bestMaeIdx = -1;
+        var bestMape = Infinity, bestMapeIdx = -1;
+        for (var i = 0; i < modelList.length; i++) {
+          var mm = modelList[i];
+          if (!mm) continue;
+          if (mm.r2 > bestR2) { bestR2 = mm.r2; bestR2Idx = i; }
+          if (mm.rmse < bestRmse) { bestRmse = mm.rmse; bestRmseIdx = i; }
+          if (mm.mae < bestMae) { bestMae = mm.mae; bestMaeIdx = i; }
+          if (mm.mape < bestMape) { bestMape = mm.mape; bestMapeIdx = i; }
+        }
+        var cmpRows = '';
+        for (var i = 0; i < modelList.length; i++) {
+          var mm = modelList[i];
+          if (!mm) continue;
+          var r2Win = i === bestR2Idx ? ' lf-winner' : '';
+          var rmseWin = i === bestRmseIdx ? ' lf-winner' : '';
+          var maeWin = i === bestMaeIdx ? ' lf-winner' : '';
+          var mapeWin = i === bestMapeIdx ? ' lf-winner' : '';
+          cmpRows += '<tr>'
+            + '<td>' + esc(mm.name) + (mm.error ? ' <span class="lf-pill lf-pill-critical">failed</span>' : '') + '</td>'
+            + '<td class="num' + r2Win + '">' + (mm.r2 * 100).toFixed(1) + '%</td>'
+            + '<td class="num' + r2Win + '">' + (mm.adjR2 * 100).toFixed(1) + '%</td>'
+            + '<td class="num' + rmseWin + '">' + fmtMW1(mm.rmse) + '</td>'
+            + '<td class="num' + maeWin + '">' + fmtMW1(mm.mae) + '</td>'
+            + '<td class="num' + mapeWin + '">' + mm.mape.toFixed(2) + '%</td>'
+            + '<td class="num">' + (mm.fitTime || 0).toFixed(0) + ' ms</td>'
+            + '</tr>';
+        }
+        tabContent = '\
+          <span class="lf-section-label lf-section-label-model">Model Prediction</span>\
+          <div class="lf-chart-card">\
+            <p class="lf-chart-title"><i class="fas fa-table"></i> Model comparison \u2014 R\u00b2 | Adj R\u00b2 | RMSE | MAE | MAPE | Training time</p>\
+            <div class="lf-table-wrap" style="max-height:320px;">\
+              <table class="lf-table">\
+                <thead><tr><th>Model</th><th class="num">R\u00b2</th><th class="num">Adj R\u00b2</th><th class="num">RMSE</th><th class="num">MAE</th><th class="num">MAPE</th><th class="num">Train time</th></tr></thead>\
+                <tbody>' + cmpRows + '</tbody>\
+              </table>\
+            </div>\
+            <p class="lf-card-sub" style="margin-top:8px;">Green rows are the winner for each metric (higher R\u00b2 / lower RMSE / lower MAE / lower MAPE). All 4 models trained on the same features + change-point for a fair comparison.</p>\
           </div>\
-          <p class="lf-card-sub" style="margin-top:8px;">Significance: *** p&lt;0.001, ** p&lt;0.01, * p&lt;0.05. Bold rows are statistically significant. Heating/cooling slopes are discovered from data via change-point detection (10\u00b0C \u2192 25\u00b0C sweep, 0.5\u00b0C steps).</p>\
+          <div class="lf-chart-card">\
+            <p class="lf-chart-title"><i class="fas fa-chart-column"></i> R\u00b2 + RMSE grouped bars</p>\
+            <div class="lf-chart-body" id="lf-chart-comparison" style="height:340px;"></div>\
+          </div>';
+      }
+      // Always-visible bottom section: correlations + scatter (collapsible on mobile).
+      modelHTML = '\
+        <div class="lf-tab-row">' + tabHTML + '</div>\
+        <div class="lf-model-select">\
+          <span style="align-self:center;font-size:0.82rem;color:var(--text-muted);">Use for forecast:</span>\
+          ' + radioHTML + '\
+          <span class="lf-model-select-hint">Switching the radio re-runs only the 14-day forecast \u2014 model details stay put.</span>\
+        </div>\
+        ' + tabContent + '\
+        <div class="lf-collapsible-toggle" id="lf-toggle-corr-details">\
+          <i class="fas fa-chevron-down lf-caret"></i> Correlations + Weather/Load relationship\
+        </div>\
+        <div class="lf-collapsible-body" id="lf-corr-details-body">\
+          <div class="lf-chart-card">\
+            <p class="lf-chart-title"><i class="fas fa-grip"></i> Correlation matrix \u2014 Pearson r between weather variables + load</p>\
+            <div class="lf-chart-body" id="lf-chart-correlation" style="height:360px;"></div>\
+          </div>\
+          <div class="lf-chart-card">\
+            <p class="lf-chart-title"><i class="fas fa-braille"></i> Weather/load scatter \u2014 temperature vs load, colored by hour-of-day, with model temp-response overlay</p>\
+            <div class="lf-chart-body" id="lf-chart-scatter" style="height:360px;"></div>\
+          </div>\
         </div>';
     }
     slot.innerHTML = '\
       <div class="lf-card">\
         <div class="lf-card-step">Step 2</div>\
-        <h3 class="lf-card-title">Train the model</h3>\
-        <p class="lf-card-sub">Ordinary Least Squares regression with change-point detection. All math is implemented from scratch in vanilla JS \u2014 no math library. 17 features engineered from real weather + timestamps.</p>\
+        <h3 class="lf-card-title">Train the models</h3>\
+        <p class="lf-card-sub">Four models trained on the same features + change-point for fair comparison: OLS regression, Ridge (L2), K-Nearest Neighbors, Decision Tree (CART, depth-limited). All math is from scratch in vanilla JS \u2014 no math library.</p>\
         <div class="lf-features-grid">' + featureHTML + '</div>\
         <div class="lf-btn-row">' + fetchBtn + '</div>\
         ' + trainBtn + '\
         ' + modelHTML + '\
       </div>';
-    if (state.model) {
-      renderChartInto('lf-chart-importance', chartVariableImportance);
-      renderChartInto('lf-chart-temp-response', chartTemperatureResponse);
-      renderChartInto('lf-chart-avp', chartActualVsPredicted);
-      renderChartInto('lf-chart-residual', chartResidualHistogram);
-      renderChartInto('lf-chart-acf', chartResidualAutocorrelation);
+    if (state.models) {
+      // Render per-tab charts.
+      if (state.modelTab === 'ols' || state.modelTab === 'ridge') {
+        var m = state.modelTab === 'ols' ? state.models.ols : state.models.ridge;
+        if (m && !m.error) {
+          renderChartInto('lf-chart-importance', function () { return chartVariableImportance(m); });
+          renderChartInto('lf-chart-temp-response', function () { return chartTemperatureResponse(m); });
+          renderChartInto('lf-chart-avp', function () { return chartActualVsPredicted(m); });
+          renderChartInto('lf-chart-residual', function () { return chartResidualHistogram(m); });
+          renderChartInto('lf-chart-acf', function () { return chartResidualAutocorrelation(m); });
+        }
+      } else if (state.modelTab === 'knn') {
+        var km = state.models.knn;
+        if (km) {
+          renderChartInto('lf-chart-avp', function () { return chartActualVsPredicted(km); });
+          renderChartInto('lf-chart-residual', function () { return chartResidualHistogram(km); });
+        }
+      } else if (state.modelTab === 'tree') {
+        var tm = state.models.tree;
+        if (tm) {
+          renderChartInto('lf-chart-importance', function () { return chartVariableImportance(tm); });
+          renderChartInto('lf-chart-avp', function () { return chartActualVsPredicted(tm); });
+          renderChartInto('lf-chart-residual', function () { return chartResidualHistogram(tm); });
+        }
+      } else if (state.modelTab === 'comparison') {
+        renderChartInto('lf-chart-comparison', function () { return chartModelComparison(state.models); });
+      }
+      // Always render the correlation + scatter (in collapsible body).
+      renderChartInto('lf-chart-correlation', function () {
+        var w = state.weatherHistory;
+        var load = state.loadData.load;
+        // Truncate to min length in case of mismatch (shouldn't happen).
+        var n = Math.min(w.temperature_2m.length, load.length);
+        var tempArr = new Array(n), humidArr = new Array(n), windArr = new Array(n),
+            solarArr = new Array(n), precipArr = new Array(n), pressArr = new Array(n),
+            loadArr = new Array(n);
+        for (var i = 0; i < n; i++) {
+          tempArr[i]   = num(w.temperature_2m, i);
+          humidArr[i]  = num(w.relative_humidity_2m, i);
+          windArr[i]   = num(w.wind_speed_10m, i);
+          solarArr[i]  = num(w.shortwave_radiation, i);
+          precipArr[i] = num(w.precipitation, i);
+          pressArr[i]  = num(w.surface_pressure, i);
+          loadArr[i]   = load[i];
+        }
+        var corr = computeCorrelationMatrix(
+          [tempArr, humidArr, windArr, solarArr, precipArr, pressArr, loadArr],
+          ['Temperature', 'Humidity', 'Wind', 'Solar', 'Precip', 'Pressure', 'Load']
+        );
+        return chartCorrelationHeatmap(corr);
+      });
+      renderChartInto('lf-chart-scatter', function () {
+        return chartWeatherLoadScatter(
+          state.weatherHistory, state.loadData.load,
+          state.weatherHistory.time, state.model
+        );
+      });
+      // Wire up the collapsible toggles.
+      setTimeout(function () {
+        var t1 = $('lf-toggle-coef-details');
+        var b1 = $('lf-coef-details-body');
+        if (t1 && b1) {
+          if (state.collapsedModelDetails) {
+            t1.classList.add('lf-collapsed'); b1.classList.add('lf-collapsed');
+          }
+          t1.onclick = function (e) {
+            e.preventDefault();
+            state.collapsedModelDetails = !state.collapsedModelDetails;
+            t1.classList.toggle('lf-collapsed');
+            b1.classList.toggle('lf-collapsed');
+          };
+        }
+        var t2 = $('lf-toggle-corr-details');
+        var b2 = $('lf-corr-details-body');
+        if (t2 && b2) {
+          // Collapsed by default on mobile (max-width: 720px).
+          if (window.matchMedia && window.matchMedia('(max-width: 720px)').matches) {
+            t2.classList.add('lf-collapsed'); b2.classList.add('lf-collapsed');
+          }
+          t2.onclick = function (e) {
+            e.preventDefault();
+            t2.classList.toggle('lf-collapsed');
+            b2.classList.toggle('lf-collapsed');
+          };
+        }
+      }, 30);
     }
   }
 
@@ -2051,6 +3199,19 @@
     var peakLoads = daily.map(function (d) { return d.peakLoad; });
     var maxPeak = Math.max.apply(null, peakLoads);
     var minPeak = Math.min.apply(null, peakLoads);
+    var avgPeak = peakLoads.reduce(function (a, b) { return a + b; }, 0) / peakLoads.length;
+    var highestDay = daily[peakLoads.indexOf(maxPeak)];
+    // Risk level breakdown — how many days at each risk level.
+    var riskCounts = { Normal: 0, Elevated: 0, High: 0, Critical: 0 };
+    daily.forEach(function (d) { riskCounts[d.riskLevel] = (riskCounts[d.riskLevel] || 0) + 1; });
+    // Top risk = the highest-priority non-zero count.
+    var topRisk = 'Normal';
+    ['Critical', 'High', 'Elevated', 'Normal'].forEach(function (r) {
+      if (riskCounts[r] > 0 && topRisk === 'Normal') topRisk = r;
+    });
+    var riskClass = 'lf-stat-' + ({ Normal: 'good', Elevated: 'warn', High: 'warn', Critical: 'bad' }[topRisk]);
+    // Active model name (shown in the card title).
+    var activeModelName = state.forecast.hourly.modelName || 'OLS';
     // Threshold sliders
     var sliderHTML = '\
       <div class="lf-threshold-row">\
@@ -2068,33 +3229,55 @@
       <div class="lf-btn-row">\
         <button class="btn btn-ghost lf-btn-sm" id="lf-reset-thresholds" type="button"><i class="fas fa-rotate-left"></i> Reset to defaults</button>\
       </div>';
-    // Daily summary table
+    // Daily summary table — color-coded risk badges (full-background badges
+    // rather than the muted pills, to make risk levels pop).
     var rowsHTML = daily.map(function (d) {
-      var pillCls = 'lf-pill-' + d.riskLevel.toLowerCase();
+      var badgeCls = 'lf-risk-badge-' + d.riskLevel;
+      var deltaSign = d.peakDeltaPct >= 0 ? '+' : '';
+      var deltaColor = d.peakDeltaPct >= 0 ? '#dc2626' : '#059669';
       return '<tr>'
         + '<td>' + fmtDateShort(d.date) + '</td>'
         + '<td class="num">' + fmtMW(d.peakLoad) + '</td>'
         + '<td class="num">' + fmtMW(d.avgLoad) + '</td>'
+        + '<td class="num" style="color:' + deltaColor + '">' + deltaSign + d.peakDeltaPct.toFixed(1) + '%</td>'
         + '<td>' + esc(d.mainDriver) + '</td>'
         + '<td>' + d.maxTemp.toFixed(1) + '\u00b0C / ' + d.minTemp.toFixed(1) + '\u00b0C</td>'
-        + '<td><span class="lf-pill ' + pillCls + '">' + esc(d.riskLevel) + '</span></td>'
+        + '<td><span class="lf-risk-badge ' + badgeCls + '">' + esc(d.riskLevel) + '</span></td>'
         + '<td>' + esc(d.recommendation) + '</td>'
         + '</tr>';
     }).join('');
+    // Stat tiles — Peak Load (large), Risk Level (color-coded), Avg Peak,
+    // Active Model, Baseline Delta. The brief calls out R² + RMSE + Peak Load
+    // + Risk Level as the four key metrics on top of the card.
+    var baselineDeltaPct = state.seasonalBaseline != null && state.seasonalBaseline > 0
+      ? ((avgPeak - state.seasonalBaseline) / state.seasonalBaseline) * 100 : 0;
+    var baselineDeltaColor = baselineDeltaPct >= 0 ? '#dc2626' : '#059669';
+    var r2TileColor = state.model.r2 > 0.8 ? 'lf-stat-good' : (state.model.r2 > 0.5 ? 'lf-stat-warn' : 'lf-stat-bad');
     slot.innerHTML = '\
       <div class="lf-card">\
         <div class="lf-card-step">Step 3</div>\
-        <h3 class="lf-card-title">14-day load forecast</h3>\
+        <h3 class="lf-card-title">14-day load forecast <span style="font-size:0.78rem;font-weight:500;color:var(--text-muted);">(' + esc(activeModelName) + ' model)</span></h3>\
         <p class="lf-card-sub">Trained model applied recursively to the 14-day weather forecast. Daily peak / avg aggregated from hourly predictions. Risk thresholds default to P90 / P95 / P99 of historical daily peaks \u2014 adjust below.</p>\
+        <div class="lf-stat-grid">\
+          <div class="lf-stat ' + r2TileColor + '"><div class="lf-stat-label">Model R\u00b2</div><div class="lf-stat-value">' + (state.model.r2 * 100).toFixed(1) + '%</div><div class="lf-stat-sub">' + esc(activeModelName) + ' fit on history</div></div>\
+          <div class="lf-stat lf-stat-info"><div class="lf-stat-label">RMSE</div><div class="lf-stat-value">' + fmtMW1(state.model.rmse) + '</div><div class="lf-stat-sub">training error</div></div>\
+          <div class="lf-stat ' + riskClass + '"><div class="lf-stat-label">Risk level</div><div class="lf-stat-value">' + esc(topRisk) + '</div><div class="lf-stat-sub">' + riskCounts[topRisk] + ' day' + (riskCounts[topRisk] === 1 ? '' : 's') + ' at top risk</div></div>\
+          <div class="lf-stat lf-stat-info"><div class="lf-stat-label">Peak load (14d)</div><div class="lf-stat-value lf-stat-large">' + fmtMW(maxPeak) + '</div><div class="lf-stat-sub">' + fmtDateShort(highestDay.date) + ' \u00b7 ' + highestDay.peakTime + '</div></div>\
+          <div class="lf-stat"><div class="lf-stat-label">Avg daily peak</div><div class="lf-stat-value">' + fmtMW(avgPeak) + '</div></div>\
+          <div class="lf-stat"><div class="lf-stat-label">Vs seasonal baseline</div><div class="lf-stat-value" style="color:' + baselineDeltaColor + '">' + (baselineDeltaPct >= 0 ? '+' : '') + baselineDeltaPct.toFixed(1) + '%</div><div class="lf-stat-sub">vs 30-day mean</div></div>\
+        </div>\
         <div class="lf-chart-card">\
+          <span class="lf-section-label lf-section-label-forecast">Weather Forecast</span>\
           <p class="lf-chart-title"><i class="fas fa-cloud-sun"></i> 14-day weather forecast \u2014 temperature, humidity, wind, precipitation</p>\
           <div class="lf-chart-body" id="lf-chart-forecast-weather" style="height:340px;"></div>\
         </div>\
         <div class="lf-chart-card">\
-          <p class="lf-chart-title"><i class="fas fa-bolt"></i> 14-day load forecast \u2014 predicted hourly load with 80% + 95% prediction intervals. Red dots mark daily peaks.</p>\
+          <span class="lf-section-label lf-section-label-model">Model Prediction</span>\
+          <p class="lf-chart-title"><i class="fas fa-bolt"></i> 14-day load forecast \u2014 predicted hourly load with 80% + 95% prediction intervals. Red dots mark daily peaks. Orange dashed line = 30-day seasonal baseline.</p>\
           <div class="lf-chart-body" id="lf-chart-forecast-load" style="height:380px;"></div>\
         </div>\
         <div class="lf-chart-card">\
+          <span class="lf-section-label lf-section-label-model">Model Prediction</span>\
           <p class="lf-chart-title"><i class="fas fa-chart-column"></i> Daily peaks \u2014 color-coded by risk level (Normal/Elevated/High/Critical)</p>\
           <div class="lf-chart-body" id="lf-chart-daily-peaks" style="height:280px;"></div>\
         </div>\
@@ -2103,10 +3286,10 @@
           ' + sliderHTML + '\
         </div>\
         <div class="lf-chart-card">\
-          <p class="lf-chart-title"><i class="fas fa-table"></i> Daily summary \u2014 date | peak | avg | main driver | temps | risk | recommendation</p>\
+          <p class="lf-chart-title"><i class="fas fa-table"></i> Daily summary \u2014 date | peak | avg | \u0394 baseline | main driver | temps | risk | recommendation</p>\
           <div class="lf-table-wrap">\
             <table class="lf-table">\
-              <thead><tr><th>Date</th><th class="num">Peak</th><th class="num">Avg</th><th>Main driver</th><th>Hi / Lo</th><th>Risk</th><th>Recommendation</th></tr></thead>\
+              <thead><tr><th>Date</th><th class="num">Peak</th><th class="num">Avg</th><th class="num">\u0394 baseline</th><th>Main driver</th><th>Hi / Lo</th><th>Risk</th><th>Recommendation</th></tr></thead>\
               <tbody>' + rowsHTML + '</tbody>\
             </table>\
           </div>\
@@ -2140,7 +3323,7 @@
     var resultHTML = '';
     if (state.aiResult) {
       var textHTML = esc(state.aiResult).replace(/\r?\n/g, '<br>');
-      resultHTML = '<div class="lf-ai-result-card"><div class="lf-ai-result-text">' + textHTML + '</div></div>';
+      resultHTML = '<div class="lf-ai-result-card"><span class="lf-section-label lf-section-label-ai">AI Explanation</span><div class="lf-ai-result-text">' + textHTML + '</div></div>';
     }
     var remaining = remainingGroqCalls();
     var rateNote = '<div class="lf-rate-note">' + remaining + ' / ' + MAX_GROQ_CALLS + ' AI calls remaining this session</div>';
@@ -2166,6 +3349,70 @@
     // as it bubbles). The mount-level handler is the single source of truth.
   }
 
+  // 6.5. AI comprehensive forecast summary card — NEW.
+  //      Sits between the forecast card and the Q&A card. Proactively
+  //      generates a 4-section operational briefing via Groq:
+  //        1. Overall Outlook
+  //        2. Key Risk Periods
+  //        3. Main Weather Drivers
+  //        4. Recommended Actions
+  //      The prompt passes: 14-day daily forecast summary, the model's
+  //      learned coefficients, detected change-point, variable importance
+  //      ranking, and risk-level assignments. The summary is regenerated
+  //      automatically after every model switch (when the active model
+  //      changes, the forecast changes, so the summary must follow).
+  function renderSummaryCard() {
+    var slot = $('lf-summary-slot');
+    if (!slot) return;
+    if (!state.forecast || !state.model) { slot.innerHTML = ''; return; }
+    var loadingHTML = state.summaryLoading
+      ? '<div class="lf-loading"><div class="lf-spinner"></div>AI is composing the comprehensive forecast briefing\u2026</div>'
+      : '';
+    var errHTML = state.summaryError
+      ? '<div class="lf-warn"><i class="fas fa-circle-info"></i> ' + esc(state.summaryError) + '</div>'
+      : '';
+    var summaryHTML = '';
+    if (state.summary) {
+      var s = state.summary;
+      summaryHTML = '\
+        <div class="lf-summary-card">\
+          <span class="lf-section-label lf-section-label-ai">AI Explanation</span>\
+          <div class="lf-summary-section">\
+            <div class="lf-summary-section-title"><i class="fas fa-chart-line"></i> Overall Outlook</div>\
+            <div class="lf-summary-section-body">' + esc(s.overall || s.raw || '(no content)').replace(/\r?\n/g, '<br>') + '</div>\
+          </div>\
+          <div class="lf-summary-section">\
+            <div class="lf-summary-section-title"><i class="fas fa-triangle-exclamation"></i> Key Risk Periods</div>\
+            <div class="lf-summary-section-body">' + esc(s.risks || '(no content)').replace(/\r?\n/g, '<br>') + '</div>\
+          </div>\
+          <div class="lf-summary-section">\
+            <div class="lf-summary-section-title"><i class="fas fa-cloud-bolt"></i> Main Weather Drivers</div>\
+            <div class="lf-summary-section-body">' + esc(s.drivers || '(no content)').replace(/\r?\n/g, '<br>') + '</div>\
+          </div>\
+          <div class="lf-summary-section">\
+            <div class="lf-summary-section-title"><i class="fas fa-clipboard-check"></i> Recommended Actions</div>\
+            <div class="lf-summary-section-body">' + esc(s.actions || '(no content)').replace(/\r?\n/g, '<br>') + '</div>\
+          </div>\
+        </div>';
+    }
+    var remaining = remainingGroqCalls();
+    var rateNote = '<div class="lf-rate-note">' + remaining + ' / ' + MAX_GROQ_CALLS + ' AI calls remaining this session</div>';
+    var generateBtn = state.summaryLoading
+      ? ''
+      : '<button class="btn btn-primary lf-btn-sm" id="lf-generate-summary" type="button" ' + (!canCallGroq() ? 'disabled' : '') + '><i class="fas fa-wand-magic-sparkles"></i><span class="btn-text">' + (state.summary ? 'Regenerate' : 'Generate') + ' AI comprehensive summary</span></button>';
+    slot.innerHTML = '\
+      <div class="lf-card">\
+        <div class="lf-card-step">Step 3.5</div>\
+        <h3 class="lf-card-title">AI comprehensive forecast briefing</h3>\
+        <p class="lf-card-sub">A 4-section operational summary written by Groq using the model\u2019s learned coefficients, the detected change-point, the variable-importance ranking, and the per-day risk assignments. Click the button to generate; the summary refreshes whenever you switch the active forecast model.</p>\
+        <div class="lf-btn-row">' + generateBtn + '</div>\
+        ' + loadingHTML + '\
+        ' + errHTML + '\
+        ' + summaryHTML + '\
+        ' + rateNote + '\
+      </div>';
+  }
+
   // 7. Daily briefings card
   function renderBriefingsCard() {
     var slot = $('lf-briefings-slot');
@@ -2173,23 +3420,26 @@
     if (!state.briefings) { slot.innerHTML = ''; return; }
     var briefings = state.briefings;
     var loadingHTML = state.briefingsLoading
-      ? '<div class="lf-loading"><div class="lf-spinner"></div>AI is narrating operational briefings\u2026</div>'
+      ? '<div class="lf-loading"><div class="lf-spinner"></div>AI is narrating per-day briefings\u2026</div>'
       : '';
     var errHTML = state.briefingsError
       ? '<div class="lf-warn"><i class="fas fa-circle-info"></i> ' + esc(state.briefingsError) + ' Showing locally-computed briefings.</div>'
       : '';
     var cardsHTML = briefings.map(function (b, idx) {
       var pillCls = 'lf-pill-' + b.riskLevel.toLowerCase();
+      var badgeCls = 'lf-risk-badge-' + b.riskLevel;
       var narrationHTML = b.aiNarration
-        ? '<div class="lf-briefing-narration">' + esc(b.aiNarration).replace(/\r?\n/g, '<br>') + '</div>'
+        ? '<div class="lf-briefing-narration"><span class="lf-section-label lf-section-label-ai">AI Explanation</span>' + esc(b.aiNarration).replace(/\r?\n/g, '<br>') + '</div>'
         : '';
+      var deltaSign = b.peakDeltaPct >= 0 ? '+' : '';
+      var deltaColor = b.peakDeltaPct >= 0 ? '#dc2626' : '#059669';
       return '<div class="lf-briefing">\
         <div class="lf-briefing-head">\
           <div>\
             <div class="lf-briefing-date">' + fmtDateShort(b.date) + ' \u00b7 Day ' + (idx + 1) + '</div>\
-            <div class="lf-briefing-load">' + fmtMW(b.peakLoad) + ' peak @ ' + b.peakTime + '</div>\
+            <div class="lf-briefing-load">' + fmtMW(b.peakLoad) + ' peak @ ' + b.peakTime + ' <span style="font-size:0.78rem;color:' + deltaColor + ';font-weight:500;">(' + deltaSign + b.peakDeltaPct.toFixed(1) + '% vs baseline)</span></div>\
           </div>\
-          <span class="lf-pill ' + pillCls + '">' + esc(b.riskLevel) + '</span>\
+          <span class="lf-risk-badge ' + badgeCls + '">' + esc(b.riskLevel) + '</span>\
         </div>\
         <div class="lf-briefing-lines">\
           <div><strong>Expected Load:</strong> ' + fmtMW(b.peakLoad) + ' (peak at ' + b.peakTime + ', avg ' + fmtMW1(b.avgLoad) + ')</div>\
@@ -2204,12 +3454,12 @@
     var rateNote = '<div class="lf-rate-note">' + remaining + ' / ' + MAX_GROQ_CALLS + ' AI calls remaining this session</div>';
     var narrateBtn = state.briefingsLoading
       ? ''
-      : '<button class="btn btn-primary lf-btn-sm" id="lf-narrate-briefings" type="button" ' + (!canCallGroq() ? 'disabled' : '') + '><i class="fas fa-wand-magic-sparkles"></i><span class="btn-text">Generate AI-narrated briefings</span></button>';
+      : '<button class="btn btn-primary lf-btn-sm" id="lf-narrate-briefings" type="button" ' + (!canCallGroq() ? 'disabled' : '') + '><i class="fas fa-wand-magic-sparkles"></i><span class="btn-text">Generate AI per-day briefings</span></button>';
     slot.innerHTML = '\
       <div class="lf-card">\
         <div class="lf-card-step">Step 5</div>\
         <h3 class="lf-card-title">Daily operational briefings</h3>\
-        <p class="lf-card-sub">14 daily cards. Locally-computed structure (Expected Load / Main Drivers / Risk / Action) is always shown. The optional AI narration button calls Groq once for polished paragraph briefings using the model\u2019s learned coefficients.</p>\
+        <p class="lf-card-sub">14 daily cards. Locally-computed structure (Expected Load / Main Drivers / Risk / Action) is always shown. The optional AI narration button calls Groq once to generate per-day briefings for Elevated/High/Critical days (full driver attribution with learned coefficients) and one-liners for Normal days.</p>\
         <div class="lf-btn-row">' + narrateBtn + '</div>\
         ' + loadingHTML + '\
         ' + errHTML + '\
@@ -2252,6 +3502,7 @@
         <div id="lf-load-slot"></div>\
         <div id="lf-model-slot"></div>\
         <div id="lf-forecast-slot"></div>\
+        <div id="lf-summary-slot"></div>\
         <div id="lf-ai-qa-slot"></div>\
         <div id="lf-briefings-slot"></div>\
         <div id="lf-export-slot"></div>\
@@ -2261,6 +3512,7 @@
     renderLoadCard();
     renderModelCard();
     renderForecastCard();
+    renderSummaryCard();
     renderAQCard();
     renderBriefingsCard();
     renderExportCard();
@@ -2274,6 +3526,7 @@
     if (name === 'load')       renderLoadCard();
     if (name === 'model')      renderModelCard();
     if (name === 'forecast')   renderForecastCard();
+    if (name === 'summary')    renderSummaryCard();
     if (name === 'qa')         renderAQCard();
     if (name === 'briefings')  renderBriefingsCard();
     if (name === 'export')     renderExportCard();
@@ -2324,14 +3577,18 @@
     if (!state.location) return;
     state.weatherLoading = true; state.weatherError = null;
     state.weatherHistory = null; state.weatherForecast = null; state.loadData = null;
-    state.model = null; state.forecast = null; state.briefings = null;
+    state.model = null; state.models = null; state.forecast = null; state.briefings = null;
     state.aiResult = null; state.aiError = null;
+    state.summary = null; state.summaryError = null;
+    state.seasonalBaseline = null;
+    state.activeModel = 'ols'; state.modelTab = 'ols';
     disposeAllCharts();
     renderSlot('location');
     renderSlot('weather');
     renderSlot('load');
     renderSlot('model');
     renderSlot('forecast');
+    renderSlot('summary');
     renderSlot('qa');
     renderSlot('briefings');
     renderSlot('export');
@@ -2362,11 +3619,16 @@
   function onTrainModelClick() {
     if (!state.loadData) return;
     state.modelLoading = true; state.modelError = null;
-    state.model = null; state.forecast = null; state.briefings = null;
+    state.model = null; state.models = null; state.forecast = null; state.briefings = null;
     state.aiResult = null; state.aiError = null;
+    state.summary = null; state.summaryError = null;
+    state.seasonalBaseline = null;
+    state.activeModel = 'ols';
+    state.modelTab = 'ols';
     disposeAllCharts();
     renderSlot('model');
     renderSlot('forecast');
+    renderSlot('summary');
     renderSlot('qa');
     renderSlot('briefings');
     renderSlot('export');
@@ -2379,6 +3641,7 @@
         applyModelToForecast();
         renderSlot('model');
         renderSlot('forecast');
+        renderSlot('summary');
         renderSlot('qa');
         renderSlot('briefings');
         renderSlot('export');
@@ -2388,6 +3651,264 @@
         renderSlot('model');
       }
     }, 30);
+  }
+
+  // ── New: model-select radio + per-model retrain handlers ──────────────────
+  // Switching the radio does NOT re-render the model card — only the forecast
+  // (and the AI summary, since the summary must follow the active model's
+  // forecast). This matches the brief: "When the user switches models, only
+  // the forecast + prediction intervals re-render".
+  function onModelSelectChange(modelId) {
+    if (!state.models || !state.models[modelId]) return;
+    state.activeModel = modelId;
+    // Re-apply the new model to the forecast (predictions + PIs).
+    applyModelToForecast();
+    // Re-render the model card (to update radio active styling) + forecast
+    // + summary (the summary reflects the new forecast, so it must clear).
+    renderSlot('model');
+    state.summary = null;
+    renderSlot('summary');
+    renderSlot('forecast');
+    renderSlot('briefings');
+  }
+
+  // Lambda slider input — track the value live (no retrain yet).
+  function onRidgeLambdaInput(value) {
+    state.ridgeLambda = parseFloat(value);
+    // Update only the slider value display + button label (re-render the
+    // model slot to refresh the slider row's value cell).
+    renderSlot('model');
+  }
+  function onKnnKInput(value) {
+    state.knnK = parseInt(value, 10);
+    renderSlot('model');
+  }
+  function onTreeDepthInput(value) {
+    state.treeMaxDepth = parseInt(value, 10);
+    renderSlot('model');
+  }
+
+  // Retrain ONLY the Ridge model with the current λ (keep OLS/KNN/Tree as-is).
+  // Re-fit Ridge on the same Xfull matrix at the same change-point — cheap
+  // (~1s for n=8760, p=20).
+  function onRetrainRidgeClick() {
+    if (!state.models || !state.model) return;
+    var w = state.weatherHistory, ts = w.time, load = state.loadData.load;
+    var Xfull = buildDesignMatrix(w, ts, load, state.model.changePoint);
+    var featIdx = FEATURE_NAMES();
+    var heatingIdx = featIdx.indexOf('heating_degree');
+    var coolingIdx = featIdx.indexOf('cooling_degree');
+    try {
+      var ridgeResult = fitRidge(Xfull, load, FEATURE_NAMES(), state.ridgeLambda);
+      var rBeta = ridgeResult.beta, rXtX_inv = ridgeResult.XtX_inv,
+          rSigma = ridgeResult.sigma, rP = ridgeResult.p;
+      // PIs
+      var rPiL95 = new Array(ridgeResult.n), rPiU95 = new Array(ridgeResult.n);
+      var rPiL80 = new Array(ridgeResult.n), rPiU80 = new Array(ridgeResult.n);
+      for (var i = 0; i < ridgeResult.n; i++) {
+        var rx = Xfull[i];
+        var rq = 0;
+        for (var j = 0; j < ridgeResult.p; j++) {
+          var rsj = 0;
+          for (var k = 0; k < ridgeResult.p; k++) rsj += ridgeResult.XtX_inv[j][k] * rx[k];
+          rq += rx[j] * rsj;
+        }
+        var rse = ridgeResult.sigma * Math.sqrt(Math.max(0, 1 + rq));
+        rPiL95[i] = ridgeResult.predictions[i] - 1.96 * rse;
+        rPiU95[i] = ridgeResult.predictions[i] + 1.96 * rse;
+        rPiL80[i] = ridgeResult.predictions[i] - 1.282 * rse;
+        rPiU80[i] = ridgeResult.predictions[i] + 1.282 * rse;
+      }
+      var rstd = fitStandardized(Xfull, load, FEATURE_NAMES());
+      var rImp = [];
+      for (var j = 1; j < rstd.length; j++) {
+        rImp.push({ feature: FEATURE_NAMES()[j], importance: Math.abs(rstd[j]) });
+      }
+      rImp.sort(function (a, b) { return b.importance - a.importance; });
+      state.models.ridge = {
+        name: 'Ridge',
+        fitTime: 0,
+        beta: ridgeResult.beta, se: ridgeResult.se, tStat: ridgeResult.tStat, pValue: ridgeResult.pValue,
+        predictions: ridgeResult.predictions, residuals: ridgeResult.residuals,
+        r2: ridgeResult.r2, adjR2: ridgeResult.adjR2, rmse: ridgeResult.rmse,
+        mae: ridgeResult.mae, mape: ridgeResult.mape, sigma: ridgeResult.sigma,
+        XtX_inv: ridgeResult.XtX_inv, featureNames: ridgeResult.featureNames,
+        n: ridgeResult.n, p: ridgeResult.p, lambda: ridgeResult.lambda,
+        changePoint: state.model.changePoint,
+        heatingSlope: ridgeResult.beta[heatingIdx],
+        coolingSlope: ridgeResult.beta[coolingIdx],
+        standardizedBetas: rstd, variableImportance: rImp,
+        piL95: rPiL95, piU95: rPiU95, piL80: rPiL80, piU80: rPiU80,
+        timestamps: ts, actual: load,
+        predictOne: function (x) {
+          var yhat = 0;
+          for (var j = 0; j < rP; j++) yhat += x[j] * rBeta[j];
+          var q2 = 0;
+          for (var j = 0; j < rP; j++) {
+            var sj2 = 0;
+            for (var k = 0; k < rP; k++) sj2 += rXtX_inv[j][k] * x[k];
+            q2 += x[j] * sj2;
+          }
+          var se2 = rSigma * Math.sqrt(Math.max(0, 1 + q2));
+          return { yhat: yhat, l95: yhat - 1.96 * se2, u95: yhat + 1.96 * se2,
+                   l80: yhat - 1.282 * se2, u80: yhat + 1.282 * se2 };
+        }
+      };
+      // If the active model is Ridge, re-apply to the forecast.
+      if (state.activeModel === 'ridge') {
+        applyModelToForecast();
+        state.summary = null;
+        renderSlot('summary');
+        renderSlot('forecast');
+        renderSlot('briefings');
+      }
+      renderSlot('model');
+    } catch (e) {
+      // Show the error inline — keep the previous Ridge model.
+      var card = $('lf-model-slot');
+      if (card) {
+        var err = card.querySelector('.lf-error');
+        if (!err) {
+          card.insertAdjacentHTML('afterbegin',
+            '<div class="lf-error"><i class="fas fa-triangle-exclamation"></i> Ridge retrain failed: ' + esc(e.message) + '</div>');
+        }
+      }
+    }
+  }
+  // Retrain ONLY the KNN model with the current k.
+  function onRetrainKnnClick() {
+    if (!state.models || !state.model) return;
+    var w = state.weatherHistory, ts = w.time, load = state.loadData.load;
+    var Xfull = buildDesignMatrix(w, ts, load, state.model.changePoint);
+    state.models.knn = fitKNNModel(Xfull, load, state.knnK, ts);
+    if (state.activeModel === 'knn') {
+      applyModelToForecast();
+      state.summary = null;
+      renderSlot('summary');
+      renderSlot('forecast');
+      renderSlot('briefings');
+    }
+    renderSlot('model');
+  }
+  // Retrain ONLY the Decision Tree with the current maxDepth.
+  function onRetrainTreeClick() {
+    if (!state.models || !state.model) return;
+    var w = state.weatherHistory, ts = w.time, load = state.loadData.load;
+    var Xfull = buildDesignMatrix(w, ts, load, state.model.changePoint);
+    state.models.tree = fitDecisionTreeModel(Xfull, load, FEATURE_NAMES(), state.treeMaxDepth, ts);
+    if (state.activeModel === 'tree') {
+      applyModelToForecast();
+      state.summary = null;
+      renderSlot('summary');
+      renderSlot('forecast');
+      renderSlot('briefings');
+    }
+    renderSlot('model');
+  }
+
+  // Tab click — just change state.modelTab and re-render the model card.
+  function onTabClick(tabId) {
+    state.modelTab = tabId;
+    renderSlot('model');
+  }
+
+  // Generate the comprehensive 4-section AI forecast summary.
+  function onGenerateSummaryClick() {
+    if (!state.forecast || !state.model) return;
+    if (!canCallGroq()) {
+      state.summaryError = 'Demo rate limit reached — ' + MAX_GROQ_CALLS + ' AI calls this session. Refresh the page to try again.';
+      renderSlot('summary');
+      return;
+    }
+    state.summaryLoading = true; state.summaryError = null;
+    renderSlot('summary');
+    var prompt = buildSummaryPrompt();
+    callGroq(
+      [{ role: 'system', content:
+          'You are an operational load forecaster writing a concise 14-day operational briefing for a utility operator. ' +
+          'Use plain text only — no markdown, no bullet points, no headers beyond the section labels. ' +
+          'Your response MUST have exactly 4 sections labeled in this exact format:\n' +
+          'OVERALL OUTLOOK: <2-4 sentences>\n' +
+          'KEY RISK PERIODS: <2-4 sentences>\n' +
+          'MAIN WEATHER DRIVERS: <2-4 sentences>\n' +
+          'RECOMMENDED ACTIONS: <2-4 sentences>\n\n' +
+          'Use the model\u2019s actual learned coefficients + the detected change-point provided in the user message. ' +
+          'Be specific about which days are at risk and which weather variables drive the forecast, with concrete numbers.' },
+       { role: 'user', content: prompt }],
+      { temperature: 0.4, max_tokens: 1000 }
+    ).then(function (text) {
+      state.summaryLoading = false;
+      state.summary = parseSummarySections(text);
+      renderSlot('summary');
+    }).catch(function (e) {
+      state.summaryLoading = false;
+      state.summaryError = (e && e.message) || 'Summary failed.';
+      renderSlot('summary');
+    });
+  }
+  // Parse the AI response into 4 named sections. If the labels aren't found
+  // (the AI didn't follow instructions), fall back to the raw text under
+  // "Overall Outlook" so the user always sees something.
+  function parseSummarySections(text) {
+    var raw = String(text || '');
+    function extract(label) {
+      var re = new RegExp(label + '\\s*:\\s*([\\s\\S]*?)(?=(?:OVERALL OUTLOOK|KEY RISK PERIODS|MAIN WEATHER DRIVERS|RECOMMENDED ACTIONS)\\s*:|$)', 'i');
+      var m = raw.match(re);
+      return m ? m[1].trim() : '';
+    }
+    var overall = extract('OVERALL OUTLOOK');
+    var risks   = extract('KEY RISK PERIODS');
+    var drivers = extract('MAIN WEATHER DRIVERS');
+    var actions = extract('RECOMMENDED ACTIONS');
+    return {
+      overall: overall || raw,
+      risks: risks,
+      drivers: drivers,
+      actions: actions,
+      raw: raw
+    };
+  }
+  // Build the prompt for the comprehensive 4-section AI summary. Passes:
+  //   - 14-day daily forecast summary (date, peak, avg, temp, humidity, etc.)
+  //   - The model's learned coefficients (heating slope, cooling slope, etc.)
+  //   - The detected change-point
+  //   - Variable importance ranking (top 5)
+  //   - Risk-level assignments + counts per level
+  function buildSummaryPrompt() {
+    var m = state.model;
+    var daily = state.forecast.daily;
+    var activeName = state.forecast.hourly.modelName || m.name || 'OLS';
+    var dayLines = daily.map(function (d, i) {
+      var deltaSign = d.peakDeltaPct >= 0 ? '+' : '';
+      return 'Day ' + (i + 1) + ' (' + fmtDateShort(d.date) + '): peak ' + Math.round(d.peakLoad) +
+        ' MW at ' + d.peakTime + ', avg ' + Math.round(d.avgLoad) + ' MW (' + deltaSign + d.peakDeltaPct.toFixed(1) +
+        '% vs baseline), max temp ' + d.maxTemp.toFixed(1) + '°C, humidity ' + Math.round(d.avgHumid) +
+        '%, wind ' + d.maxWind.toFixed(1) + ' m/s, precip ' + d.totalPrecip.toFixed(1) + 'mm. ' +
+        'Drivers: ' + d.drivers.slice(0, 3).map(function (dr) {
+          return dr.name + ' (' + (dr.contribution >= 0 ? '+' : '') + dr.contribution.toFixed(2) + ' GW)';
+        }).join(', ') + '. Risk: ' + d.riskLevel + '.';
+    }).join('\n');
+    var riskCounts = { Normal: 0, Elevated: 0, High: 0, Critical: 0 };
+    daily.forEach(function (d) { riskCounts[d.riskLevel] = (riskCounts[d.riskLevel] || 0) + 1; });
+    var importanceTop5 = m.variableImportance && m.variableImportance.length
+      ? m.variableImportance.slice(0, 5).map(function (v) { return v.feature + ' (' + v.importance.toFixed(3) + ')'; }).join(', ')
+      : '(no coefficient-based importance for this model)';
+    return 'Active forecast model: ' + activeName + '\n' +
+      'Model context (LEARNED from data — not assumed):\n' +
+      '- Detected change-point (balance temperature): ' + m.changePoint.toFixed(1) + '°C\n' +
+      '- Heating slope (below BP): ' + m.heatingSlope.toFixed(3) + ' GW per °C\n' +
+      '- Cooling slope (above BP): ' + m.coolingSlope.toFixed(3) + ' GW per °C\n' +
+      '- Residual std dev (σ): ' + m.sigma.toFixed(3) + ' GW\n' +
+      '- R²: ' + (m.r2 * 100).toFixed(1) + '%, RMSE: ' + m.rmse.toFixed(3) + ' GW, MAPE: ' + m.mape.toFixed(2) + '%\n' +
+      '- Seasonal baseline (30-day mean): ' + (state.seasonalBaseline != null ? state.seasonalBaseline.toFixed(0) + ' MW' : 'unknown') + '\n' +
+      '- Top 5 features by |standardized coefficient|: ' + importanceTop5 + '\n\n' +
+      'Risk-level summary: Normal=' + riskCounts.Normal + ', Elevated=' + riskCounts.Elevated +
+      ', High=' + riskCounts.High + ', Critical=' + riskCounts.Critical + ' days out of 14.\n\n' +
+      '14-day forecast summary:\n' + dayLines + '\n\n' +
+      'Write a 4-section operational briefing using the labels OVERALL OUTLOOK, KEY RISK PERIODS, ' +
+      'MAIN WEATHER DRIVERS, RECOMMENDED ACTIONS. Each section 2-4 sentences. Cite specific dates, ' +
+      'peak MW values, learned coefficients (e.g., "cooling slope +0.8 GW/°C above 18°C change-point"), ' +
+      'and risk levels. For RECOMMENDED ACTIONS, name specific dates and what to do on each.';
   }
 
   function onThresholdChange(which, value) {
@@ -2484,8 +4005,19 @@
     renderSlot('briefings');
     var m = state.model;
     var prompt = buildBriefingsPrompt();
+    // Per-day AI briefing format (from the brief):
+    //  - Elevated/High/Critical days: detailed format with driver attribution
+    //    + baseline delta + learned coefficients cited.
+    //  - Normal days: one-liner "Normal operations. Peak X MW, within baseline."
     callGroq(
-      [{ role: 'system', content: 'You are an operational load forecaster writing concise daily briefings. For each day, write ONE paragraph (2-3 sentences) that narrates the expected load, main drivers (using the model\u2019s learned coefficients), risk level, and recommended action. Use plain text. Format: "Day N (Mon DD): ..." with one day per line. Do not use markdown.' },
+      [{ role: 'system', content:
+          'You are an operational load forecaster writing per-day briefings. ' +
+          'Write ONE line per day. Format each line as: "Day N (Mon DD): <text>". ' +
+          'For Elevated/High/Critical days, use this format:\n' +
+          '  "Day N (Mon DD): Expected peak X MW at HHpm (+Y% above seasonal baseline). Primary driver: <driver> (+A.B GW). Secondary: <driver> (+C.D GW). Risk: <level>. Action: <recommendation>."\n' +
+          'For Normal days, use this one-liner:\n' +
+          '  "Day N (Mon DD): Normal operations. Peak X MW, within seasonal baseline."\n' +
+          'Cite the model\u2019s learned coefficients (cooling slope, change-point, etc.) when attributing drivers. Plain text only — no markdown.' },
        { role: 'user', content: prompt }],
       { temperature: 0.4, max_tokens: 1500 }
     ).then(function (text) {
@@ -2517,22 +4049,27 @@
   function buildBriefingsPrompt() {
     var m = state.model;
     var daily = state.forecast.daily;
+    var baseline = state.seasonalBaseline;
     var days = daily.map(function (d, i) {
+      var deltaSign = d.peakDeltaPct >= 0 ? '+' : '';
       return 'Day ' + (i + 1) + ' (' + fmtDateShort(d.date) + '): peak ' + Math.round(d.peakLoad) +
-        ' MW at ' + d.peakTime + ', avg ' + Math.round(d.avgLoad) + ' MW, max temp ' + d.maxTemp.toFixed(1) +
-        '°C, humidity ' + Math.round(d.avgHumid) + '%, wind ' + d.maxWind.toFixed(1) +
+        ' MW at ' + d.peakTime + ', avg ' + Math.round(d.avgLoad) + ' MW (' + deltaSign + d.peakDeltaPct.toFixed(1) +
+        '% vs seasonal baseline ' + (baseline != null ? Math.round(baseline) + ' MW' : 'unknown') +
+        '), max temp ' + d.maxTemp.toFixed(1) + '°C, humidity ' + Math.round(d.avgHumid) + '%, wind ' + d.maxWind.toFixed(1) +
         ' m/s, precip ' + d.totalPrecip.toFixed(1) + 'mm. Drivers: ' + d.drivers.slice(0, 3).map(function (dr) {
           return dr.name + ' (' + (dr.contribution >= 0 ? '+' : '') + dr.contribution.toFixed(2) + ' GW)';
         }).join(', ') + '. Risk: ' + d.riskLevel + '. Action: ' + d.recommendation;
     }).join('\n');
     return 'Model context (LEARNED):\n' +
-      '- Change-point: ' + m.changePoint.toFixed(1) + '°C\n' +
+      '- Change-point (balance temperature): ' + m.changePoint.toFixed(1) + '°C\n' +
       '- Heating slope: ' + m.heatingSlope.toFixed(3) + ' GW/°C below BP\n' +
       '- Cooling slope: ' + m.coolingSlope.toFixed(3) + ' GW/°C above BP\n' +
+      '- Seasonal baseline (30-day mean): ' + (baseline != null ? baseline.toFixed(0) + ' MW' : 'unknown') + '\n' +
       '- R²: ' + (m.r2 * 100).toFixed(1) + '%, MAPE: ' + m.mape.toFixed(2) + '%\n\n' +
       'Daily forecast data:\n' + days + '\n\n' +
-      'Write a 2-3 sentence paragraph per day that narrates the expected load and main drivers using the model\u2019s actual coefficients. ' +
-      'Format each line as: "Day N (Mon DD): <paragraph>" — one line per day.';
+      'Write ONE line per day. For Elevated/High/Critical days, follow the detailed format with ' +
+      'primary/secondary drivers (citing learned coefficients), risk level, and action. For Normal days, ' +
+      'use the one-liner format. Format each line as: "Day N (Mon DD): <text>".';
   }
 
   // ─── Export helpers ─────────────────────────────────────────────────────────
@@ -2624,9 +4161,10 @@
       m.featureNames.forEach(function (name, i) {
         coefRows.push([name, m.beta[i], m.se[i], m.tStat[i], m.pValue[i], i === 0 ? '' : Math.abs(m.standardizedBetas[i])]);
       });
-      // Sheet 5: Model metrics
+      // Sheet 5: Model metrics — include the active model + the comparison block.
       var metricsRows = [
         ['Metric', 'Value'],
+        ['ActiveModel', state.forecast && state.forecast.hourly.modelName ? state.forecast.hourly.modelName : (m.name || 'OLS')],
         ['R2', m.r2],
         ['AdjustedR2', m.adjR2],
         ['RMSE', m.rmse],
@@ -2636,15 +4174,34 @@
         ['ChangePoint_C', m.changePoint],
         ['HeatingSlope_GWperC', m.heatingSlope],
         ['CoolingSlope_GWperC', m.coolingSlope],
+        ['SeasonalBaseline_MW', state.seasonalBaseline],
         ['N', m.n],
         ['P', m.p]
       ];
+      // Sheet 6: Multi-model comparison (new).
+      var cmpRows = [['Model', 'R2', 'AdjustedR2', 'RMSE_GW', 'MAE_GW', 'MAPE_Pct', 'TrainTimeMs', 'Hyperparam']];
+      if (state.models) {
+        var marr = [
+          { mm: state.models.ols,   hp: '' },
+          { mm: state.models.ridge, hp: 'lambda=' + state.ridgeLambda },
+          { mm: state.models.knn,   hp: 'k=' + state.knnK },
+          { mm: state.models.tree,  hp: 'maxDepth=' + state.treeMaxDepth }
+        ];
+        marr.forEach(function (e) {
+          if (!e.mm) return;
+          cmpRows.push([
+            e.mm.name, e.mm.r2, e.mm.adjR2, e.mm.rmse, e.mm.mae, e.mm.mape,
+            e.mm.fitTime || 0, e.hp
+          ]);
+        });
+      }
       var wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(forecastRows), 'Forecast');
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(histRows),    'History');
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dailyRows),   'Daily');
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(coefRows),     'Coefficients');
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(metricsRows), 'Metrics');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cmpRows),     'ModelComparison');
       var arr = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
       downloadBlob('load-forecast-' + isoDate(new Date()) + '.xlsx',
         new Blob([arr], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
@@ -2662,19 +4219,33 @@
     var out = {
       generatedAt: new Date().toISOString(),
       location: state.location,
+      // The OLS model (always present when trained) — backward-compat with
+      // the original JSON shape.
       model: state.model ? {
+        name: state.model.name || 'OLS',
         r2: state.model.r2, adjR2: state.model.adjR2, rmse: state.model.rmse, mae: state.model.mae, mape: state.model.mape,
         sigma: state.model.sigma, changePoint: state.model.changePoint,
         heatingSlope: state.model.heatingSlope, coolingSlope: state.model.coolingSlope,
         n: state.model.n, p: state.model.p,
-        coefficients: state.model.featureNames.map(function (name, i) {
+        coefficients: state.model.featureNames ? state.model.featureNames.map(function (name, i) {
           return { feature: name, beta: state.model.beta[i], se: state.model.se[i], tStat: state.model.tStat[i], pValue: state.model.pValue[i],
-                   standardizedAbs: i === 0 ? null : Math.abs(state.model.standardizedBetas[i]) };
-        }),
+                   standardizedAbs: (state.model.standardizedBetas && i > 0) ? Math.abs(state.model.standardizedBetas[i]) : null };
+        }) : [],
         variableImportance: state.model.variableImportance
       } : null,
+      // NEW: the multi-model comparison block.
+      activeModel: state.activeModel,
+      models: state.models ? {
+        ols:   { name: 'OLS',           r2: state.models.ols.r2,   adjR2: state.models.ols.adjR2,   rmse: state.models.ols.rmse,   mae: state.models.ols.mae,   mape: state.models.ols.mape,   fitTime: state.models.ols.fitTime },
+        ridge: { name: 'Ridge',         r2: state.models.ridge.r2, adjR2: state.models.ridge.adjR2, rmse: state.models.ridge.rmse, mae: state.models.ridge.mae, mape: state.models.ridge.mape, fitTime: state.models.ridge.fitTime, lambda: state.models.ridge.lambda },
+        knn:   { name: 'KNN',           r2: state.models.knn.r2,   adjR2: state.models.knn.adjR2,   rmse: state.models.knn.rmse,   mae: state.models.knn.mae,   mape: state.models.knn.mape,   fitTime: state.models.knn.fitTime, k: state.models.knn.k },
+        tree:  { name: 'Decision Tree', r2: state.models.tree.r2,  adjR2: state.models.tree.adjR2,  rmse: state.models.tree.rmse,  mae: state.models.tree.mae,  mape: state.models.tree.mape,  fitTime: state.models.tree.fitTime, maxDepth: state.models.tree.maxDepth }
+      } : null,
+      seasonalBaseline: state.seasonalBaseline,
+      summary: state.summary,
       thresholds: state.thresholds,
       forecast: state.forecast ? {
+        modelName: state.forecast.hourly.modelName,
         hourlyCount: state.forecast.hourly.timestamps.length,
         daily: state.forecast.daily
       } : null,
@@ -2865,6 +4436,13 @@
       if (t.closest('#lf-retry-weather'))   { onFetchWeatherClick(); return; }
       // Step 2 — train
       if (t.closest('#lf-train-model'))     { onTrainModelClick(); return; }
+      // Tabs (OLS / Ridge / KNN / Decision Tree / Comparison)
+      var tabBtn = t.closest('[data-lf-tab]');
+      if (tabBtn) { onTabClick(tabBtn.getAttribute('data-lf-tab')); return; }
+      // Per-model retrain buttons (λ / k / maxDepth).
+      if (t.closest('#lf-retrain-ridge'))   { onRetrainRidgeClick(); return; }
+      if (t.closest('#lf-retrain-knn'))     { onRetrainKnnClick(); return; }
+      if (t.closest('#lf-retrain-tree'))    { onRetrainTreeClick(); return; }
       // AVP window toggle
       var winBtn = t.closest('[data-lf-window]');
       if (winBtn) {
@@ -2874,6 +4452,8 @@
       }
       // Step 3 — thresholds
       if (t.closest('#lf-reset-thresholds')) { onResetThresholds(); return; }
+      // Step 3.5 — AI comprehensive summary
+      if (t.closest('#lf-generate-summary')) { onGenerateSummaryClick(); return; }
       // Step 4 — Q&A
       var suggest = t.closest('[data-lf-suggest]');
       if (suggest) {
@@ -2900,15 +4480,28 @@
       }
     });
 
-    // Range slider input events (threshold changes).
+    // Range slider input events (threshold changes + model hyperparams).
     mount.addEventListener('input', function (e) {
       if (!e.target) return;
       if (e.target.id === 'lf-slider-p90') onThresholdChange('p90', parseFloat(e.target.value));
       if (e.target.id === 'lf-slider-p95') onThresholdChange('p95', parseFloat(e.target.value));
       if (e.target.id === 'lf-slider-p99') onThresholdChange('p99', parseFloat(e.target.value));
+      // Ridge λ / KNN k / Tree depth sliders — track live, no retrain yet
+      // (user must click the "Retrain" button to apply).
+      if (e.target.id === 'lf-slider-lambda') onRidgeLambdaInput(e.target.value);
+      if (e.target.id === 'lf-slider-k')      onKnnKInput(e.target.value);
+      if (e.target.id === 'lf-slider-depth')  onTreeDepthInput(e.target.value);
       // Track AI question input — kept out of the re-render flow so typing
       // doesn't lose focus, but the value lives in state for the next render.
       if (e.target.id === 'lf-ai-question') state.aiQuestion = e.target.value;
+    });
+
+    // Radio button change events (model select for forecast).
+    mount.addEventListener('change', function (e) {
+      if (!e.target) return;
+      if (e.target.name === 'lf-model-radio' && e.target.value) {
+        onModelSelectChange(e.target.value);
+      }
     });
 
     // Enter on the AI question input → ask. (Single source of truth — the
@@ -2936,6 +4529,7 @@
           renderLoadCard();
           renderModelCard();
           renderForecastCard();
+          renderSummaryCard();
         }
       });
     });
@@ -2950,6 +4544,7 @@
             renderLoadCard();
             renderModelCard();
             renderForecastCard();
+            renderSummaryCard();
           }
         });
       });

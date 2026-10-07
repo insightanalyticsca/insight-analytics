@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.72.0-20261007-weather-load-forecast-demo';
+const VERSION = 'v4.72.1-20261007-multi-model-ai-summaries-correlations';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -27,7 +27,7 @@ const APP_SHELL = [
   './js/blog-markets-dashboard.js?v=4.72.0',
   './js/blog-pipeline-builder.js?v=4.72.0',
   './js/blog-fuzzy-match.js?v=4.72.0',
-  './js/blog-load-forecast.js?v=4.72.0',
+  './js/blog-load-forecast.js?v=4.72.1',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
