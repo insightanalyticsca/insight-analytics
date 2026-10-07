@@ -207,21 +207,21 @@
       .then(function (r) {
         clearTimeout(timer);
         if (!r.ok) {
-          throw new Error('AI service returned ' + r.status + '. Please try again.');
+          throw new Error('AI service returned ' + r.status + '. We\'re already on it — please try again in a moment.');
         }
         return r.json();
       })
       .then(function (data) {
         bumpGroqCount();
         if (!data || !data.choices || !data.choices[0] || !data.choices[0].message) {
-          throw new Error('AI returned an unexpected response. Try rephrasing your instruction.');
+          throw new Error('AI returned an unexpected response — we\'re looking into it. Try rephrasing your instruction in a moment.');
         }
         return data.choices[0].message.content || '';
       })
       .catch(function (e) {
         clearTimeout(timer);
         if (e.name === 'AbortError') {
-          throw new Error('The AI service took too long to respond. Please try again.');
+          throw new Error('The AI service is taking longer than usual — we\'re already on it. Please try again shortly.');
         }
         if (e.message && e.message.indexOf('AI service') === 0) throw e;
         if (e.message && e.message.indexOf('Demo rate limit') === 0) throw e;
@@ -232,11 +232,11 @@
         // the current origin, not a network outage or a rate limit.
         if (e.name === 'TypeError' || (e.message && e.message.indexOf('Failed to fetch') >= 0)) {
           throw new Error('Couldn\u2019t reach the AI service (CORS or network error). ' +
-            'The Groq proxy may be cold-starting — please try again in a few seconds. ' +
-            'If the problem persists, please let us know via the Contact form.');
+            'Our team is already on it and we should be back online shortly. ' +
+            'The Groq proxy may be cold-starting — please try again in a few seconds.');
         }
         // Other unexpected errors
-        throw new Error('Couldn\u2019t reach the AI service. Please try again — if the problem persists, the demo may be rate-limited.');
+        throw new Error('Couldn\u2019t reach the AI service at the moment — we\'re already working to bring it back. Please try again shortly.');
       });
   }
 
@@ -244,7 +244,7 @@
   // Groq often wraps JSON in ```json ... ``` fences despite the prompt asking
   // for raw JSON. Strip fences + any leading/trailing prose, then JSON.parse.
   function extractJson(content) {
-    if (!content) throw new Error('AI returned an empty response. Try rephrasing your instruction.');
+    if (!content) throw new Error('AI returned an empty response — we\'re looking into it. Try rephrasing your instruction in a moment.');
     var s = String(content).trim();
     // Strip markdown code fences if present.
     var fence = s.match(/```(?:json)?\s*([\s\S]*?)```/i);
@@ -263,7 +263,7 @@
     try {
       return JSON.parse(s);
     } catch (e) {
-      throw new Error('The AI returned an unexpected response. Try rephrasing your instruction.');
+      throw new Error('The AI returned an unexpected response — we\'re looking into it. Try rephrasing your instruction in a moment.');
     }
   }
 
@@ -862,13 +862,13 @@
       var hasAiTask = spec.aiTask && typeof spec.aiTask === 'object' && typeof spec.aiTask.type === 'string';
       var hasSteps = spec.steps && Array.isArray(spec.steps) && spec.steps.length;
       if (!hasAiTask && !hasSteps) {
-        throw new Error('The AI didn\u2019t produce a pipeline or an AI task. Try rephrasing your instruction.');
+        throw new Error('The AI didn\u2019t produce a pipeline or an AI task — we\'re looking into it. Try rephrasing your instruction in a moment.');
       }
       if (hasSteps && !hasAiTask) {
         // Tabular path — strip obviously bad step types so the executor doesn't choke.
         spec.steps = spec.steps.filter(function (s) { return s && typeof s.type === 'string'; });
         if (!spec.steps.length) {
-          throw new Error('The AI returned an unexpected response. Try rephrasing your instruction.');
+          throw new Error('The AI returned an unexpected response — we\'re looking into it. Try rephrasing your instruction in a moment.');
         }
       }
       if (!spec.output || typeof spec.output !== 'object') {

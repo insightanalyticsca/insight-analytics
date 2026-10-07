@@ -240,21 +240,21 @@
       .then(function (r) {
         clearTimeout(timer);
         if (!r.ok) {
-          throw new Error('AI service returned ' + r.status + '. Please try again.');
+          throw new Error('AI service returned ' + r.status + '. We\'re already on it — please try again in a moment.');
         }
         return r.json();
       })
       .then(function (data) {
         bumpGroqCount();
         if (!data || !data.choices || !data.choices[0] || !data.choices[0].message) {
-          throw new Error('AI returned an unexpected response. Please try again.');
+          throw new Error('AI returned an unexpected response — we\'re looking into it. Please try again in a moment.');
         }
         return data.choices[0].message.content || '';
       })
       .catch(function (e) {
         clearTimeout(timer);
         if (e.name === 'AbortError') {
-          throw new Error('The AI service took too long to respond. Please try again.');
+          throw new Error('The AI service is taking longer than usual — we\'re already on it. Please try again shortly.');
         }
         if (e.message && e.message.indexOf('AI service') === 0) throw e;
         if (e.message && e.message.indexOf('Demo rate limit') === 0) throw e;
@@ -262,9 +262,10 @@
         // TypeError("Failed to fetch") — surface an actionable hint.
         if (e.name === 'TypeError' || (e.message && e.message.indexOf('Failed to fetch') >= 0)) {
           throw new Error('Couldn\u2019t reach the AI service (CORS or network error). ' +
+            'Our team is already on it and we should be back online shortly. ' +
             'The Groq proxy may be cold-starting — please try again in a few seconds.');
         }
-        throw new Error('Couldn\u2019t reach the AI service. Please try again.');
+        throw new Error('Couldn\u2019t reach the AI service at the moment — we\'re already working to bring it back. Please try again shortly.');
       });
   }
 
