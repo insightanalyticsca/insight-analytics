@@ -1304,6 +1304,10 @@
 '[data-theme="dark"] .fm-stat-value.warn  { color: #fbbf24; }',
 '[data-theme="dark"] .fm-stat-value.bad   { color: #f87171; }',
 '.fm-stat-label { color: var(--text-soft); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; font-family: var(--font-head); }',
+'.fm-map-btn { display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid var(--border);border-radius:6px;background:var(--surface-2);color:var(--accent);cursor:pointer;font-size:0.7rem;padding:0;margin:0 0 0 4px;vertical-align:middle;transition:all 180ms ease; }',
+'.fm-map-btn:hover { background:var(--accent);color:#fff;border-color:var(--accent);transform:scale(1.1); }',
+'[data-theme="dark"] .fm-map-btn { background:rgba(255,255,255,0.06);color:var(--accent); }',
+'[data-theme="dark"] .fm-map-btn:hover { background:var(--accent);color:#fff; }',
 '.fm-status-pill { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; font-family: var(--font-head); letter-spacing: 0.04em; }',
 '.fm-status-pill.matched   { background: rgba(22,163,74,0.14); color: #16a34a; }',
 '.fm-status-pill.ambiguous { background: rgba(217,119,6,0.14); color: #d97706; }',
@@ -1754,15 +1758,18 @@
         '</div>';
     } else if (state.geocodes) {
       // Results table.
-      var geoRows = state.geocodes.map(function (gc) {
+      var geoRows = state.geocodes.map(function (gc, idx) {
         var a = gc.address || {};
         var latlon = gc.ok ? esc(gc.lat) + ', ' + esc(gc.lon) : '—';
         var statusPill = gc.ok
           ? '<span class="fm-status-pill matched">OK</span>'
           : '<span class="fm-status-pill unmatched">Failed</span>';
+        var mapIcon = gc.ok
+          ? ' <button class="fm-map-btn" data-fm-map="' + idx + '" type="button" title="View on map" aria-label="View on map"><i class="fas fa-map-pin"></i></button>'
+          : '';
         return '<tr>' +
           '<td style="max-width:200px;white-space:normal;">' + esc(gc.originalAddress) + '</td>' +
-          '<td style="max-width:280px;white-space:normal;">' + (gc.ok ? esc(gc.matchedAddress) : '<span style="color:var(--text-soft);font-style:italic;">' + esc(gc.error || '') + '</span>') + '</td>' +
+          '<td style="max-width:280px;white-space:normal;">' + (gc.ok ? esc(gc.matchedAddress) + mapIcon : '<span style="color:var(--text-soft);font-style:italic;">' + esc(gc.error || '') + '</span>') + '</td>' +
           '<td class="fm-coords">' + latlon + '</td>' +
           '<td class="num">' + (gc.ok ? fmtNumber(gc.importance) : '—') + '</td>' +
           '<td>' + statusPill + '</td>' +
@@ -2287,6 +2294,27 @@
       if (t.closest('#fm-geocode-cancel')) { onGeocodeCancel(); return; }
       if (t.closest('#fm-re-geocode'))     { onReGeocodeClick(); return; }
       if (t.closest('#fm-generate-brief')) { onGenerateBriefClick(); return; }
+      // Map pin button — opens an OpenStreetMap embed in a modal
+      var mapBtn = t.closest('[data-fm-map]');
+      if (mapBtn) {
+        var geoIdx = parseInt(mapBtn.getAttribute('data-fm-map'), 10);
+        var gc = state.geocodes[geoIdx];
+        if (gc && gc.ok && gc.lat && gc.lon) {
+          var lat = gc.lat, lon = gc.lon;
+          var delta = 0.005;
+          var bbox = (parseFloat(lon) - delta) + ',' + (parseFloat(lat) - delta) + ',' + (parseFloat(lon) + delta) + ',' + (parseFloat(lat) + delta);
+          var mapSrc = 'https://www.openstreetmap.org/export/embed.html?bbox=' + bbox + '&layer=mapnik&marker=' + lat + ',' + lon;
+          openModal('Location: ' + (gc.matchedAddress || '').slice(0, 60) + (gc.matchedAddress.length > 60 ? '…' : ''),
+            '<div style="margin-bottom:10px;color:var(--text-muted);font-size:0.88rem;line-height:1.6;">' +
+              '<strong style="color:var(--text);">Real address:</strong> ' + esc(gc.matchedAddress) + '<br>' +
+              '<strong style="color:var(--text);">Original:</strong> ' + esc(gc.originalAddress) + '<br>' +
+              '<strong style="color:var(--text);">Coordinates:</strong> ' + esc(lat) + ', ' + esc(lon) + ' · <strong style="color:var(--text);">Importance:</strong> ' + fmtNumber(gc.importance) +
+            '</div>' +
+            '<iframe src="' + mapSrc + '" style="width:100%;height:400px;border:0;border-radius:10px;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+            [{ label: 'Close', primary: true, action: function () { closeModal(); } }]);
+        }
+        return;
+      }
       if (t.closest('#fm-retry-brief'))    { onRetryBrief(); return; }
       if (t.closest('#fm-email-results'))  { onEmailClick(); return; }
       // Downloads.
