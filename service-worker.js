@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.73.1-20261007-fuzzy-normalize-comprehensive';
+const VERSION = 'v4.74.0-20261007-glassmorphism-cards-aurora-bg';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,7 +19,7 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.72.0',
+  './css/styles.css?v=4.74.0',
   './js/app.js?v=4.72.0',
   './js/hero-animation.js?v=4.72.0',
   './js/pull-to-refresh.js?v=4.72.0',

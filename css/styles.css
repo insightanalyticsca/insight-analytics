@@ -113,6 +113,30 @@ body {
   transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
 }
 
+/* ─── Animated gradient background blobs (port from dashboards site) ────
+   Three large radial gradient "auroras" behind the content — indigo, cyan,
+   and a touch of pink — that give the page depth without distracting from
+   the content. In dark theme they're more visible (glowing on dark bg);
+   in light theme they're very subtle (like watercolor on white). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 900px 700px at 10% 0%, rgba(99, 102, 241, 0.08), transparent 60%),
+    radial-gradient(ellipse 800px 600px at 90% 10%, rgba(6, 182, 212, 0.06), transparent 55%),
+    radial-gradient(ellipse 700px 500px at 50% 100%, rgba(236, 72, 153, 0.04), transparent 60%);
+  transition: opacity 0.4s var(--ease);
+}
+[data-theme="dark"] body::before {
+  background:
+    radial-gradient(ellipse 900px 700px at 10% 0%, rgba(99, 102, 241, 0.14), transparent 60%),
+    radial-gradient(ellipse 800px 600px at 90% 10%, rgba(6, 182, 212, 0.10), transparent 55%),
+    radial-gradient(ellipse 700px 500px at 50% 100%, rgba(236, 72, 153, 0.06), transparent 60%);
+}
+
 img {
   max-width: 100%;
   display: block;
@@ -814,8 +838,13 @@ ul {
   box-shadow: var(--shadow-md);
 }
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  /* Glassmorphism — port from dashboards site. Semi-transparent surface
+     + backdrop-filter blur so the background gradient blobs subtly show
+     through the cards, giving depth without distracting from content. */
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  border: 1px solid rgba(99, 102, 241, 0.08);
   border-radius: var(--radius-lg);
   padding: 30px;
   box-shadow: var(--shadow-sm);
@@ -824,10 +853,18 @@ ul {
   overflow: hidden;
   height: 100%;
 }
+[data-theme="dark"] .card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
 .card:hover {
   transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
-  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: var(--shadow-lg), 0 0 32px -8px rgba(99, 102, 241, 0.20);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+[data-theme="dark"] .card:hover {
+  box-shadow: var(--shadow-lg), 0 0 32px -8px rgba(99, 102, 241, 0.30);
+  border-color: rgba(99, 102, 241, 0.30);
 }
 .card::before {
   content: "";
