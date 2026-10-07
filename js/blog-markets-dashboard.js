@@ -1420,7 +1420,7 @@
     }).catch(function () {
       ids.forEach(function (id) {
         var el = document.getElementById(id);
-        if (el) { el.classList.remove('bmd-shimmer'); el.textContent = 'AI narrative unavailable — live data is still streaming in the dashboard above.'; }
+        if (el) { el.classList.remove('bmd-shimmer'); el.textContent = 'AI narrative is temporarily unavailable — our team is already on it. Live data is still streaming in the dashboard above, so the numbers stay fresh while we restore the AI service.'; }
       });
     });
   }

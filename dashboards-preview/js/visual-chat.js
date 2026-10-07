@@ -430,8 +430,8 @@
     // data/groq-config.json). Stream a graceful message that's honest
     // about the AI being offline — not a canned "demo answer" pretending
     // to be a real response.
-    var offlineMsg = 'AI is offline — Groq is not configured on this deployment.\n\n' +
-      'I can\'t produce a live brief without the AI backend. ' +
+    var offlineMsg = 'AI is temporarily unavailable — our team is already on it and we should be back online shortly.\n\n' +
+      'I can\'t produce a live brief until the AI service is restored, but the dashboard above stays fully live. ' +
       (state.visualData && state.visualData.title
         ? 'This dashboard (' + state.visualData.title + ') still has its charts and KPIs visible — explore them directly, or refresh the page in a moment if this is a temporary outage.'
         : 'Refresh the page in a moment if this is a temporary outage.');

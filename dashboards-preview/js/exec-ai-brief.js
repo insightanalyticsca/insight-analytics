@@ -446,7 +446,7 @@
     setBadgeState(briefHost, 'fallback');
     if (!payload || !payload.notes || !payload.notes.length) {
       // No static notes either — show a clean "AI offline" message in each cell
-      var offlineMsg = 'AI is offline — refresh in a moment, or open Visual Chat below to ask directly.';
+      var offlineMsg = 'AI is temporarily unavailable — our team is already on it. Try Visual Chat below to ask directly, or refresh in a moment.';
       ['what', 'why', 'next', 'do'].forEach(function (sec) {
         var cell = briefHost.querySelector('[data-section="' + sec + '"] [data-brief-body]');
         if (cell) cell.textContent = sec === 'what' ? offlineMsg : '';

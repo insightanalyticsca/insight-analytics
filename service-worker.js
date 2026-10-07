@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.50.1-20261007-drop-transform-icon-squares';
+const VERSION = 'v4.50.2-20261008-ai-msg-warm-recovery';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 

@@ -285,8 +285,8 @@
     // data/groq-config.json). Stream a graceful message pointing to the
     // tappable email/phone in the panel. This is the ONLY static content
     // and it makes clear the AI is offline — not a fake "demo answer".
-    var offlineMsg = 'AI is offline — Groq is not configured on this deployment.\n\n' +
-      'For a real answer, reach out directly:\n' +
+    var offlineMsg = 'AI is temporarily unavailable — our team is already on it and we should be back online shortly.\n\n' +
+      'For a real answer in the meantime, reach out directly:\n' +
       '  • Email: ' + CONTACT.email + ' (clickable above)\n' +
       '  • Phone: ' + CONTACT.phone + ' (clickable above)\n\n' +
       'Or refresh the page in a moment if this is a temporary outage.';
