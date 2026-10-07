@@ -1615,11 +1615,38 @@
       if (lagBuffer.length > 24) lagBuffer.shift();
     }
     var daily = aggregateDaily(ts, predicted, w);
+    // ANCHOR TO TODAY — also filter the hourly arrays so the forecast
+    // load chart doesn't show past hours (the API may return past hours
+    // of today from midnight to now — those aren't forecasts, they're
+    // observations that already happened).
+    var todayStr = isoDate(new Date());
+    var fTs = [], fPred = [], fL95 = [], fU95 = [], fL80 = [], fU80 = [];
+    var fTemp = [], fHumid = [], fWind = [], fPrecip = [], fSolar = [], fPress = [], fWCode = [];
+    for (var fi = 0; fi < ts.length; fi++) {
+      if (isoDate(new Date(ts[fi])) < todayStr) continue;
+      fTs.push(ts[fi]); fPred.push(predicted[fi]);
+      fL95.push(piL95[fi]); fU95.push(piU95[fi]);
+      fL80.push(piL80[fi]); fU80.push(piU80[fi]);
+      fTemp.push(num(w.temperature_2m, fi));
+      fHumid.push(num(w.relative_humidity_2m, fi));
+      fWind.push(num(w.wind_speed_10m, fi));
+      fPrecip.push(num(w.precipitation, fi));
+      fSolar.push(num(w.shortwave_radiation, fi));
+      fPress.push(num(w.surface_pressure, fi));
+      fWCode.push(num(w.weather_code, fi));
+    }
+    var fw = {
+      time: fTs,
+      temperature_2m: fTemp, relative_humidity_2m: fHumid,
+      wind_speed_10m: fWind, precipitation: fPrecip,
+      shortwave_radiation: fSolar, surface_pressure: fPress,
+      weather_code: fWCode
+    };
     state.forecast = {
       hourly: {
-        timestamps: ts, predicted: predicted,
-        piL95: piL95, piU95: piU95, piL80: piL80, piU80: piU80,
-        weather: w, modelName: model.name
+        timestamps: fTs, predicted: fPred,
+        piL95: fL95, piU95: fU95, piL80: fL80, piU80: fU80,
+        weather: fw, modelName: model.name
       },
       daily: daily
     };
@@ -1627,11 +1654,18 @@
     computeLocalBriefings();
   }
   function aggregateDaily(timestamps, predicted, weather) {
+    // ANCHOR TO TODAY — only include today + forward. Filter out any
+    // timestamps before today's date (the Open-Meteo forecast API may
+    // include past hours of today, which is fine, but if the API or
+    // timezone handling causes past DATES to appear, we strip them here).
+    var todayStr = isoDate(new Date());
     var byDay = {};
     var order = [];
     for (var i = 0; i < timestamps.length; i++) {
       var d = new Date(timestamps[i]);
       var key = isoDate(d);
+      // Skip any date before today
+      if (key < todayStr) continue;
       if (!(key in byDay)) {
         byDay[key] = { date: key, loads: [], temps: [], humids: [], winds: [], precips: [], solars: [] };
         order.push(key);

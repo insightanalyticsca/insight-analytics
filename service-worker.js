@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.74.0-20261007-glassmorphism-cards-aurora-bg';
+const VERSION = 'v4.74.1-20261007-forecast-anchored-to-today';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -28,7 +28,7 @@ const APP_SHELL = [
   './js/blog-pipeline-builder.js?v=4.72.0',
   './js/blog-fuzzy-match.js?v=4.73.1',
   './js/sw-register.js?v=4.72.3',
-  './js/blog-load-forecast.js?v=4.72.4',
+  './js/blog-load-forecast.js?v=4.74.1',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
