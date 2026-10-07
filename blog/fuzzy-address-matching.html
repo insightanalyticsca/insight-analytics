@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
+
+  <!-- SEO -->
+  <title>Fuzzy Address Matching: Turning Siloed Systems into One Map | Insight Analytics</title>
+  <meta name="description" content="Two transactional tables. Free-form addresses. No shared key. This demo fuzzy-matches customer records to service orders by address, validates against the Nominatim Geo API, and uses AI to narrate the results." />
+  <meta name="keywords" content="fuzzy address matching, master data management, customer 360, geocoding, OpenStreetMap, Nominatim, Jaro-Winkler, data integration, AI-assisted matching" />
+  <meta name="author" content="Insight Analytics" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://insight-analytics.ca/blog/fuzzy-address-matching" />
+
+  <!-- PWA / Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="../icons/favicon.ico" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Fuzzy Address Matching: Turning Siloed Systems into One Map" />
+  <meta property="og:description" content="Two transactional tables. Free-form addresses. No shared key. Fuzzy-match + geocode + AI narrate — try the live demo." />
+  <meta property="og:url" content="https://insight-analytics.ca/blog/fuzzy-address-matching" />
+  <meta property="og:site_name" content="Insight Analytics" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="article:published_time" content="2026-10-07T00:00:00Z" />
+  <meta property="article:author" content="Insight Analytics" />
+  <meta property="article:section" content="Data Integration" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Fuzzy Address Matching: Turning Siloed Systems into One Map" />
+  <meta name="twitter:description" content="Two transactional tables. Free-form addresses. No shared key. Fuzzy-match + geocode + AI narrate — try the live demo." />
+
+  <!-- Article structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Fuzzy Address Matching: Turning Siloed Systems into One Map",
+    "description": "Two transactional tables with free-form addresses and no shared key. This demo fuzzy-matches customer records to service orders by address, validates against the Nominatim Geo API, and uses AI to narrate the results.",
+    "author": { "@type": "Organization", "name": "Insight Analytics", "url": "https://insight-analytics.ca/" },
+    "publisher": { "@type": "Organization", "name": "Insight Analytics", "logo": { "@type": "ImageObject", "url": "https://insight-analytics.ca/icons/icon-512.png" } },
+    "datePublished": "2026-10-07",
+    "dateModified": "2026-10-07",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://insight-analytics.ca/blog/fuzzy-address-matching" },
+    "articleSection": "Data Integration",
+    "keywords": ["fuzzy address matching", "master data management", "customer 360", "geocoding", "Nominatim", "Jaro-Winkler"]
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="../css/styles.css?v=4.74.0" />
+  <script src="../js/blog-fuzzy-match.js?v=4.73.1" defer></script>
+
+  <style>
+    .article-hero { padding: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 60px) 0 40px; text-align: center; background: linear-gradient(180deg, rgba(99,102,241,0.04) 0%, transparent 100%); border-bottom: 1px solid var(--border); }
+    .article-hero .container { max-width: 760px; }
+    .article-eyebrow { font-family: var(--font-head); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .article-hero h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 20px; }
+    .article-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .article-meta .sep { opacity: 0.4; }
+    .article-body { max-width: 720px; margin: 0 auto; padding: 48px 24px 32px; }
+    .article-body h2 { font-family: var(--font-head); font-size: 1.5rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    .article-body h2:first-child { margin-top: 0; }
+    .article-body h3 { font-family: var(--font-head); font-size: 1.15rem; font-weight: 600; margin: 32px 0 12px; }
+    .article-body p { font-size: 1.02rem; line-height: 1.75; color: var(--text-muted); margin: 0 0 20px; }
+    .article-body strong { color: var(--text); font-weight: 600; }
+    .article-body em { color: var(--text); font-style: italic; }
+    .article-body ul, .article-body ol { padding-left: 24px; margin: 0 0 20px; }
+    .article-body li { font-size: 1rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 6px; }
+    .article-body li strong { color: var(--text); }
+    .article-body table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 0.92rem; }
+    .article-body th { text-align: left; padding: 10px 12px; background: var(--surface-2); font-weight: 700; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+    .article-body td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); line-height: 1.5; }
+    .article-body td:first-child { color: var(--text-muted); }
+    .article-back { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 0.88rem; font-weight: 600; color: var(--text-muted); text-decoration: none; margin-bottom: 32px; transition: color 180ms ease; }
+    .article-back:hover { color: var(--accent); }
+    .article-back i { font-size: 0.78rem; }
+    .article-cta { margin: 48px auto 0; max-width: 720px; padding: 32px; border-radius: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04)); border: 1px solid var(--border); text-align: center; }
+    .article-cta h3 { font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; margin: 0 0 12px; }
+    .article-cta p { font-size: 0.95rem; color: var(--text-muted); margin: 0 0 20px; }
+
+    /* ─── Demo mount — the fuzzy-match IIFE renders INTO this div ─── */
+    #fuzzy-match-mount {
+      margin: 0 auto 64px;
+      max-width: 1080px;
+      padding: 0 16px;
+    }
+    @media (max-width: 880px) {
+      .article-body { max-width: 100%; padding: 32px 12px 24px; }
+      #fuzzy-match-mount { padding: 0 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="https://insight-analytics.ca/" class="brand" aria-label="Insight Analytics home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGrad)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGrad)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGrad)"/></svg></span>
+        <span class="brand-name">Insight <b>Analytics</b></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="https://insight-analytics.ca/#services" class="nav-link">Services</a>
+        <a href="https://insight-analytics.ca/#dashboard" class="nav-link">Dashboard</a>
+        <a href="https://insight-analytics.ca/#cases" class="nav-link">Case Studies</a>
+        <a href="/blog/" class="nav-link" title="Demos — see it live. Production-ready pipelines.">Demos</a>
+        <a href="https://insight-analytics.ca/#contact" class="nav-link">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
+          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i>
+          <span class="sr-only" id="theme-label">Light</span>
+        </button>
+        <a href="https://insight-analytics.ca/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check" aria-hidden="true"></i> Book a Demo</a>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <i class="fas fa-bars" id="menu-icon" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu" role="menu" aria-label="Mobile navigation">
+    <a href="https://insight-analytics.ca/#services" class="nav-link" role="menuitem">Services</a>
+    <a href="https://insight-analytics.ca/#dashboard" class="nav-link" role="menuitem">Dashboard</a>
+    <a href="https://insight-analytics.ca/#cases" class="nav-link" role="menuitem">Case Studies</a>
+    <a href="/blog/" class="nav-link" role="menuitem" title="Live Demos — see it live. Production-ready pipelines.">Live Demos</a>
+    <a href="https://insight-analytics.ca/#contact" class="nav-link" role="menuitem">Contact</a>
+    <a href="https://insight-analytics.ca/#contact" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Book a Demo</a>
+  </div>
+
+  <section class="article-hero">
+    <div class="container">
+      <a href="/blog/" class="article-back">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        <span>Back to Demos</span>
+      </a>
+      <div class="article-eyebrow">Data Integration</div>
+      <h1>Fuzzy Address Matching: Turning Siloed Systems into One Map</h1>
+      <div class="article-meta">
+        <span>By Insight Analytics</span>
+        <span class="sep">·</span>
+        <span>October 7, 2026</span>
+        <span class="sep">·</span>
+        <span>5 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="article-body">
+
+    <p>Two transactional tables. One has customer records. The other has service orders. They're not related — no shared foreign key, no common identifier. The only thread connecting them is a free-form address field, and the addresses don't even match. "123 Main Street" in the customer table. "123 Main St" in the service orders. Sometimes "123 main st" lowercase. Sometimes with a unit number, sometimes without.</p>
+
+    <p>This is the daily reality of enterprise data integration. CRM has customers. Service desk has tickets. Billing has invoices. Field service has work orders. Each system was built independently, each captured addresses in its own way, and nobody enforced a canonical format. The result: the same physical site appears as 3-5 different strings across 3-5 different systems. You can't JOIN them. You can't build a customer 360 view. You can't tell a dispatcher how many service orders are open for a given site.</p>
+
+    <h2>Try It Now</h2>
+    <p>The demo below takes two synthetic transactional tables (50 customers, ~150 service orders with fuzzy address variations) and runs the full pipeline: normalize addresses, fuzzy-match via Jaro-Winkler similarity, geocode each unique customer address against the free Nominatim/OpenStreetMap API to validate it against a real-world canonical address, then ask the AI to narrate what it found.</p>
+
+    <div id="fuzzy-match-mount"></div>
+
+    <h2>What Just Happened</h2>
+    <p>The demo did four things in sequence, none of which required you to write code or configure a data pipeline:</p>
+    <ol>
+      <li><strong>Normalized addresses</strong> — lowercased, stripped punctuation, expanded abbreviations (St → Street, Ave → Avenue, Rd → Road, etc.), separated unit/apartment suffixes into a separate field so they don't pollute the primary match.</li>
+      <li><strong>Fuzzy-matched</strong> — for each customer address, computed Jaro-Winkler similarity against every service order address in the same city. Jaro-Winkler is the right algorithm for addresses because it gives bonus weight to common prefixes (which addresses almost always share — "123 Main" is the same in both strings even if the suffix differs). Threshold ≥0.85 = high confidence; 0.65-0.85 = ambiguous (flagged for manual review); below = no match.</li>
+      <li><strong>Geocoded</strong> — for each unique customer address, called the free Nominatim API (OpenStreetMap's geocoding service, no API key, CORS-enabled, rate-limited to 1 request/second per their usage policy) to fetch the canonical real-world address + latitude/longitude + place_id. This validates that the fuzzy address actually corresponds to a real location — and gives you a canonical form to use for future matching.</li>
+      <li><strong>Narrated</strong> — Groq analyzed the match results + geocoding success rate and wrote a 4-section executive brief: what happened, why it matters, what to expect, what to do.</li>
+    </ol>
+
+    <h2>The Business Case</h2>
+    <p>This isn't a toy problem. It's the core of <strong>Master Data Management (MDM)</strong> — the discipline of creating a single, trusted, canonical view of entities (customers, sites, products, suppliers) across an enterprise's siloed systems. Every mid-to-large enterprise has this problem. The addresses are just the most visible symptom of a deeper issue: <em>the systems of record don't share a canonical key, so the only way to link records across systems is fuzzy matching against a volatile free-form field.</em></p>
+    <table>
+      <thead>
+        <tr><th>Without fuzzy matching</th><th>With fuzzy matching + geocoding</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Each system reports its own counts — customer count from CRM, service order count from the service desk — but you can't reconcile them to a site level</td><td>One canonical site record links every customer + every service order + every invoice + every field ticket — counts reconcile automatically</td></tr>
+        <tr><td>Dispatchers see service orders one system at a time, miss the full picture per site</td><td>Dispatchers see all open service orders per site in one view, prioritized by site-level SLA risk</td></tr>
+        <tr><td>Duplicate customers enter the system (sales enters "123 Main St", service enters "123 Main Street") and nobody catches it</td><td>Fuzzy match detects the duplicate at entry time, surfaces it for review before it propagates</td></tr>
+        <tr><td>Address quality erodes silently — typos, missing units, outdated formats accumulate</td><td>Geocoding validates every address against a real-world canonical source; invalid addresses surface immediately</td></tr>
+        <tr><td>BI dashboards show "customer" counts that don't match across systems — executives lose trust in the numbers</td><td>One canonical customer count, reconciled across all systems via the matched site key</td></tr>
+      </tbody>
+    </table>
+
+    <h2>From Demo to Production</h2>
+    <p>The demo runs entirely in your browser — the fuzzy matching is client-side JS, the geocoding goes through Nominatim's public API, the AI narration goes through our Groq proxy. In production, the same pipeline runs server-side against your actual transactional tables:</p>
+    <ul>
+      <li><strong>Backend-less (static JSON + GitHub Pages)</strong> — the pipeline runs as a scheduled job, writes matched + geocoded results as JSON files, the dashboard fetches them. Right for nightly batch matching of ≤10K records.</li>
+      <li><strong>Your existing SQL backend</strong> — the pipeline reads from your CRM / service desk / billing tables directly via a thin API, writes matched results to a canonical site table that downstream dashboards query. The canonical site key becomes the join key across all your systems.</li>
+      <li><strong>Managed warehouse + serverless API</strong> — Supabase / Neon / Cloudflare D1 holds the canonical site table, a scheduled serverless function runs the fuzzy match + geocoding, the dashboard queries the matched view. Zero ops on your side.</li>
+    </ul>
+    <p>The match spec doesn't change between topologies. The runtime does.</p>
+
+    <h2>The Honest Part</h2>
+    <p>This is a concept demo, not a production MDM system. The Groq call is rate-limited to 10 per browser session. The Nominatim API is rate-limited to 1 request/second (their public usage policy) — for 50 unique addresses that's ~50 seconds, hence the progress bar. For production-scale matching (100K+ records), you'd batch-geocode via the US Census Geocoder API (no rate limit, US addresses only) or pay for a commercial geocoder (SmartyStreets, Google Places, Mapbox). The fuzzy matching algorithm itself scales linearly with the product of table sizes — for 100K × 100K records you'd want blocking (pre-filter by city/zip) to reduce the comparison count.</p>
+    <p>What we're showing is the shape: <strong>two siloed tables in, one canonical matched + geocoded view out, AI narrates the gaps.</strong> The plumbing underneath is whatever your team already runs.</p>
+
+    <div class="article-cta">
+      <h3>Want this wired to your data?</h3>
+      <p>Bring two tables that should match but don't — CRM + service desk, billing + field tickets, supplier + warehouse. We'll set up the fuzzy match + geocoding against your actual sources and show you the canonical site view before the meeting ends.</p>
+      <a href="https://insight-analytics.ca/#contact" class="btn btn-primary btn-lg">
+        <i class="fas fa-calendar-check" aria-hidden="true"></i>
+        <span class="btn-text">Book a Working Session</span>
+      </a>
+    </div>
+
+  </article>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a href="https://insight-analytics.ca/" class="brand footer-brand" aria-label="Insight Analytics home">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGradFooter" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGradFooter)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGradFooter)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGradFooter)"/></svg></span>
+          <span class="brand-name">Insight <b>Analytics</b></span>
+        </a>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="https://insight-analytics.ca/#services">Services</a>
+          <a href="https://insight-analytics.ca/#dashboard">Dashboard</a>
+          <a href="/blog/" title="Demos — see it live. Production-ready pipelines.">Demos</a>
+          <a href="https://insight-analytics.ca/#contact">Contact</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-tagline">Insight Analytics · <em>Live truth on every desk.</em></span>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span>
+        <div class="social">
+          <a href="mailto:dev@insight-analytics.ca" aria-label="Email"><i class="fas fa-envelope"></i></a>
+          <a href="https://insight-analytics.ca/#dashboard" aria-label="Live Dashboards"><i class="fas fa-chart-pie"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Theme toggle + mobile menu handlers — same as the main site -->
+  <script src="../js/app.js?v=4.73.1" defer></script>
+
+  <script src="/js/sw-register.js?v=4.72.3" defer></script>
+</body>
+</html>

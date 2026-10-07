@@ -107,7 +107,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn7TZv2Dl3Jp2s1Lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Site styles -->
-  <link rel="stylesheet" href="./css/styles.css?v=4.50.2" />
+  <link rel="stylesheet" href="./css/styles.css?v=4.75.0" />
 
   <!-- Prevent theme flash -->
   <script>
@@ -136,7 +136,7 @@
         <a href="#services" class="nav-link" data-nav="services">Services</a>
         <a href="#dashboard" class="nav-link" data-nav="dashboard">Dashboard</a>
         <a href="#cases" class="nav-link" data-nav="cases">Case Studies</a>
-        <a href="/blog/" class="nav-link">Blog</a>
+        <a href="/blog/" class="nav-link" title="Demos — see it live. Production-ready pipelines.">Demos</a>
         <a href="#contact" class="nav-link" data-nav="contact">Contact</a>
       </nav>
 
@@ -162,7 +162,7 @@
     <a href="#services" class="nav-link" role="menuitem">Services</a>
     <a href="#dashboard" class="nav-link" role="menuitem">Dashboard</a>
     <a href="#cases" class="nav-link" role="menuitem">Case Studies</a>
-    <a href="/blog/" class="nav-link" role="menuitem">Blog</a>
+    <a href="/blog/" class="nav-link" role="menuitem" title="Live Demos — see it live. Production-ready pipelines.">Live Demos</a>
     <a href="#contact" class="nav-link" role="menuitem">Contact</a>
     <a href="#contact" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Book a Demo</a>
   </div>
@@ -176,22 +176,22 @@
       <div class="container hero-inner">
         <span class="eyebrow reveal"><span class="dot"></span> Enterprise Business Intelligence</span>
         <h1 id="hero-title" class="reveal reveal-left">
-          From Reporting to <span class="grad">Predictive Business Intelligence</span>
+          Excel dashboards and PowerPoint decks, <span class="grad">replaced</span>.
         </h1>
         <p class="hero-sub reveal reveal-left">
-          The business already has the answers. Leadership should not have to hunt for them.
-          Instead of asking leadership to find the story in the data, let the system bring
-          the story to leadership.
+          Executives read spreadsheets and slide decks because that's what the data pipeline produces.
+          We replace the pipeline — live dashboards, AI briefs, automated reports. The same numbers
+          your team already trusts, ready to act on this morning.
         </p>
 
         <div class="hero-cta reveal reveal-left">
           <a href="#dashboard" class="btn btn-primary" data-nav="dashboard">
             <i class="fas fa-chart-line" aria-hidden="true"></i>
-            <span>Try the live dashboard</span>
+            <span>See the live dashboard</span>
           </a>
-          <a href="#services" class="btn btn-ghost" data-nav="services">
-            <i class="fas fa-list-ol" aria-hidden="true"></i>
-            <span>See the 8-step methodology</span>
+          <a href="/blog/personalized-power-automate" class="btn btn-ghost" data-nav="pipeline">
+            <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+            <span>See the engine that builds them</span>
           </a>
         </div>
 
@@ -750,14 +750,14 @@
           <article class="card case-card" data-stagger-item>
             <div class="case-banner" aria-hidden="true"></div>
             <div class="case-body">
-              <span class="case-industry"><i class="fas fa-store"></i> Multi-Unit Retail</span>
-              <h3>Multi-Unit Retail — Executive Operating Dashboard</h3>
-              <div class="case-row"><span class="label">Challenge</span><span>No visibility into site-level performance; product vs service mix unclear across the network.</span></div>
-              <div class="case-row"><span class="label success">Outcome</span><span>4.7% YoY revenue growth visibility. Capacity optimization across the network.</span></div>
+              <span class="case-industry"><i class="fas fa-file-invoice"></i> eBill Performance</span>
+              <h3>eBill Performance — Executive Operating Dashboard</h3>
+              <div class="case-row"><span class="label">Challenge</span><span>No visibility into eBill adoption + delivery performance across the customer base.</span></div>
+              <div class="case-row"><span class="label success">Outcome</span><span>Live executive dashboard tracking eBill adoption, delivery rates, and bounce failures across the network. AI-driven prioritization of follow-up actions for stuck accounts.</span></div>
               <div class="case-tags">
                 <span class="tag">Executive Dashboard</span>
-                <span class="tag">Capacity Heatmap</span>
-                <span class="tag">Site Analytics</span>
+                <span class="tag">eBill Adoption</span>
+                <span class="tag">Delivery Analytics</span>
               </div>
             </div>
           </article>
@@ -768,7 +768,7 @@
               <span class="case-industry"><i class="fas fa-headset"></i> IT Service Operations</span>
               <h3>IT Function — Service Health Dashboard</h3>
               <div class="case-row"><span class="label">Challenge</span><span>Reactive incident management, no SLA visibility, ticket backlog growing month over month.</span></div>
-              <div class="case-row"><span class="label success">Outcome</span><span>60% faster incident response. SLA compliance up 23 points.</span></div>
+              <div class="case-row"><span class="label success">Outcome</span><span>Faster incident response and improved SLA compliance with a live service-health dashboard. Ticket backlog visible and tracked month-over-month.</span></div>
               <div class="case-tags">
                 <span class="tag">Service Health</span>
                 <span class="tag">SLA Dashboard</span>
@@ -812,6 +812,40 @@
               <p>Same design scales from a focused process to enterprise-scale information flow. Start small, extend fast.</p>
             </div>
           </div>
+        </div>
+
+        <div class="topology-block reveal">
+          <div class="topology-head">
+            <h3>Three deployment topologies — pick the one your pipeline already lands in</h3>
+            <p>Real data pipelines have to land their output somewhere queryable. We don't pick your backend for you. Pick the shape that matches where your data already lives — the same dashboards, same AI brief, same semantic layer, all three ways.</p>
+          </div>
+          <div class="topology-grid" data-stagger>
+            <article class="card topology-card" data-stagger-item>
+              <span class="topology-tag">Option 1</span>
+              <div class="topology-icon" aria-hidden="true"><i class="fas fa-folder-tree"></i></div>
+              <h4>Backend-less (static JSON)</h4>
+              <p class="topology-where"><strong>Right for:</strong> live dashboards refreshed on a daily or weekly cadence, internal snapshots, public demos, and any case where you'd rather commit a JSON file to git than run a database.</p>
+              <p class="topology-how"><strong>How it works:</strong> the pipeline writes the aggregated result as JSON files into the repo. GitHub Pages (or any static host) serves them. The dashboard fetches a static file — no API, no DB connection, no auth handshake on every page load. Loads in under 2 seconds.</p>
+              <p class="topology-when"><em>This is what the demo on this page runs on.</em> It's a legitimate production option, not just an evaluation mode — for low-frequency internal reporting, it's often the right one.</p>
+            </article>
+            <article class="card topology-card" data-stagger-item>
+              <span class="topology-tag">Option 2</span>
+              <div class="topology-icon" aria-hidden="true"><i class="fas fa-database"></i></div>
+              <h4>Your existing SQL backend</h4>
+              <p class="topology-where"><strong>Right for:</strong> production engagements where the pipeline already lands in SQL Server, Postgres, Snowflake, BigQuery, or a warehouse. This is where most client work lives.</p>
+              <p class="topology-how"><strong>How it works:</strong> we deploy a thin API in front of your existing database — same SQL you already trust, same security model, same audit trail. The dashboard queries it the same way it queries the static JSON in Option 1. One connection string swap and you're live.</p>
+              <p class="topology-when"><em>No rip-and-replace.</em> The warehouse you already pay for keeps doing its job. We add the dashboard + AI brief + semantic layer on top, not a parallel system.</p>
+            </article>
+            <article class="card topology-card" data-stagger-item>
+              <span class="topology-tag">Option 3</span>
+              <div class="topology-icon" aria-hidden="true"><i class="fas fa-cloud"></i></div>
+              <h4>Managed warehouse + serverless API</h4>
+              <p class="topology-where"><strong>Right for:</strong> teams that don't have a warehouse yet, or want to keep BI workloads off the production OLTP database. Provisioned in a day, fully managed.</p>
+              <p class="topology-how"><strong>How it works:</strong> Supabase, Neon, Cloudflare D1, Turso — pick one, the pipeline lands there, a serverless function (Cloudflare Workers, Netlify Edge, Vercel) serves the dashboard. Zero ops on your side. Backend exists, but it's managed, not yours to run.</p>
+              <p class="topology-when"><em>Right when you've outgrown static JSON</em> but a hosted warehouse is overkill. The same dashboard that runs backend-less in Option 1 runs indexed-and-scaled here.</p>
+            </article>
+          </div>
+          <p class="topology-note">The dashboard itself doesn't change between topologies — only the data source behind it. Start backend-less for evaluation, swap to your SQL backend for production, move to a managed warehouse if you outgrow both. Same code, same KPI definitions, same AI brief.</p>
         </div>
       </div>
     </section>
@@ -946,12 +980,12 @@
         <nav class="footer-links" aria-label="Footer">
           <a href="#services">Services</a>
           <a href="#dashboard">Dashboard</a>
-          <a href="/blog/">Blog</a>
+          <a href="/blog/" title="Demos — see it live. Production-ready pipelines.">Demos</a>
           <a href="#contact">Contact</a>
         </nav>
       </div>
       <div class="footer-bottom">
-        <span class="footer-tagline">Insight Analytics · <em>Live truth on every desk, leadership included.</em></span>
+        <span class="footer-tagline">Insight Analytics · <em>Live truth on every desk.</em></span>
         <span class="footer-sep" aria-hidden="true">·</span>
         <span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span>
         <div class="social">
@@ -963,37 +997,12 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="./js/app.js?v=4.50.2" defer></script>
-  <script src="./js/hero-animation.js?v=4.50.2" defer></script>
-  <script src="./js/pull-to-refresh.js?v=4.50.2" defer></script>
-  <script src="./js/assistant.js?v=4.50.2" defer></script>
+  <script src="./js/app.js?v=4.75.0" defer></script>
+  <script src="./js/hero-animation.js?v=4.75.0" defer></script>
+  <script src="./js/pull-to-refresh.js?v=4.75.0" defer></script>
+  <script src="./js/assistant.js?v=4.75.0" defer></script>
 
-  <!-- Register service worker for PWA (installable + offline cache) -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        // updateViaCache: 'none' — never use HTTP cache for the SW script itself,
-        // so byte-level changes to service-worker.js are picked up on every
-        // navigation instead of being held back by the 24h SW cache.
-        navigator.serviceWorker.register('./service-worker.js', {
-          scope: './',
-          updateViaCache: 'none'
-        })
-          .then(function (reg) { console.log('[PWA] Service worker registered with scope:', reg.scope); })
-          .catch(function (err) { console.warn('[PWA] Service worker registration failed:', err); });
-
-        // When a new SW takes over (skipWaiting + clients.claim), reload the
-        // page once so the user immediately gets the new HTML/CSS/JS instead
-        // of being stuck on the previously-cached versions until next visit.
-        var refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', function () {
-          if (refreshing) return;
-          refreshing = true;
-          window.location.reload();
-        });
-      });
-    }
-  </script>
+  <script src="/js/sw-register.js?v=4.75.0" defer></script>
 </body>
 </html>
 <!-- deploy 1791236920 -->

@@ -3,9 +3,9 @@
  *
  * Architecture:
  *  - Reuses the same Netlify Edge Function Groq proxy as the dashboards site:
- *    https://dashboards-groq-proxy.netlify.app/groq-proxy
+ *    https://startling-belekoy-b0ec70.netlify.app/groq-proxy
  *    The proxy holds the GROQ_API_KEY server-side; the browser only sees the
- *    proxy URL. CORS already allows insightanalyticsca.github.io.
+ *    proxy URL. CORS already allows insight-analytics.ca + insightanalyticsca.github.io.
  *  - Groq model: qwen/qwen3.8-27b (streaming, max 800 tokens per turn)
  *  - System prompt is hardcoded with the site's full content so the bot is
  *    "trained" to answer questions about: site content, automated pipelines,
@@ -78,8 +78,8 @@ Hero stats: 8-Step Methodology. 50+ Production Deployments.
 
 Three production case studies:
 • Operations Group — Executive Dashboard. Challenge: operations team overwhelmed by volume and lack of prioritization across daily workstreams. Outcome: AI-driven daily prioritization of operational targets with a live executive operating dashboard. Tags: Executive Dashboard, AI Brief, Operations Workflow.
-• Multi-Unit Retail — Executive Operating Dashboard. Challenge: no visibility into site-level performance; product vs service mix unclear across the network. Outcome: 4.7% YoY revenue growth visibility. Capacity optimization across the network. Tags: Executive Dashboard, Capacity Heatmap, Site Analytics.
-• IT Function — Service Health Dashboard. Challenge: reactive incident management, no SLA visibility, ticket backlog growing month over month. Outcome: 60% faster incident response. SLA compliance up 23 points. Tags: Service Health, SLA Dashboard, Ticket Operations.
+• eBill Performance — Executive Operating Dashboard. Challenge: no visibility into eBill adoption + delivery performance across the customer base. Outcome: live executive dashboard tracking eBill adoption, delivery rates, and bounce failures across the network. AI-driven prioritization of follow-up actions for stuck accounts. Tags: Executive Dashboard, eBill Adoption, Delivery Analytics.
+• IT Function — Service Health Dashboard. Challenge: reactive incident management, no SLA visibility, ticket backlog growing month over month. Outcome: faster incident response and improved SLA compliance with a live service-health dashboard. Ticket backlog visible and tracked month-over-month. Tags: Service Health, SLA Dashboard, Ticket Operations.
 
 Organizational change grid — for each role, Today vs Target vs "Frees people to…":
 • Executive Leadership — Target: enterprise signal, risk and decision points. Frees people to decide and steer.

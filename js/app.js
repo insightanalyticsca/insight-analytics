@@ -314,6 +314,49 @@
 
   if (browserMock && maximizeBtn) {
     const maximizeLabel = maximizeBtn.querySelector(".maximize-label");
+
+    // ─── Mobile scale-to-fit ────────────────────────────────────────────
+    // On mobile, the dashboard iframe content is designed for desktop
+    // (1280px+ wide). When maximized on a 375px mobile viewport, the
+    // dashboard overflows horizontally and the user has to pan around a
+    // 1280×1080 iframe — awful UX. Instead, scale the iframe DOWN to fit
+    // the viewport width. The dashboard's full desktop layout stays
+    // visible at a smaller visual size. User can pinch-zoom for detail.
+    //
+    // Implementation: CSS uses `transform: scale(var(--iframe-scale))` on
+    // the iframe when maximized on mobile. JS sets --iframe-scale based
+    // on window.innerWidth / 1280. Recomputed on resize/orientationchange
+    // so portrait ↔ landscape transitions update the scale live.
+    function updateIframeMobileScale() {
+      if (!browserMock) return;
+      var isMax = browserMock.classList.contains("is-maximized");
+      var isMobile = window.innerWidth <= 768;
+      if (isMax && isMobile) {
+        var isPortrait = window.innerHeight > window.innerWidth;
+        if (isPortrait) {
+          // Portrait: iframe fills the viewport directly (no scaling).
+          // The dashboard content sees the portrait dimensions and either
+          // reflows (if responsive) or scrolls horizontally inside the
+          // iframe. No --iframe-scale needed.
+          browserMock.style.removeProperty("--iframe-scale");
+        } else {
+          // Landscape: scale to fit WIDTH — the dashboard's landscape
+          // aspect matches the viewport's landscape aspect, so it fills
+          // naturally. Vertical scroll reveals the bottom if needed.
+          var scaleW = window.innerWidth / 1280;
+          browserMock.style.setProperty("--iframe-scale", Math.max(0.25, Math.min(1, scaleW)));
+        }
+      } else {
+        browserMock.style.removeProperty("--iframe-scale");
+      }
+    }
+    window.addEventListener("resize", updateIframeMobileScale);
+    window.addEventListener("orientationchange", function () {
+      // orientationchange fires before the new dimensions settle — wait
+      // a tick so window.innerWidth reflects the post-rotation viewport.
+      setTimeout(updateIframeMobileScale, 100);
+    });
+
     maximizeBtn.addEventListener("click", function () {
       const isMax = browserMock.classList.toggle("is-maximized");
       backdrop.classList.toggle("is-visible", isMax);
@@ -321,6 +364,8 @@
       maximizeBtn.title = isMax ? "Restore" : "Maximize to full screen";
       if (maximizeLabel) maximizeLabel.textContent = isMax ? "Restore" : "Maximize";
       document.body.style.overflow = isMax ? "hidden" : "";
+      // Apply / clear mobile scaling on toggle.
+      updateIframeMobileScale();
 
       // Reset the pan-hint pill and edge-fade indicators each time we
       // toggle maximize. The scroll listener below will re-evaluate
@@ -411,6 +456,8 @@
   backdrop.addEventListener("click", function () {
     if (browserMock) {
       browserMock.classList.remove("is-maximized");
+      // Clear any mobile scale that was applied during maximize.
+      browserMock.style.removeProperty("--iframe-scale");
       const f = browserMock.querySelector(".browser-frame");
       if (f) {
         f.classList.remove("can-scroll-right", "can-scroll-down");
@@ -436,6 +483,8 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && browserMock && browserMock.classList.contains("is-maximized")) {
       browserMock.classList.remove("is-maximized");
+      // Clear any mobile scale that was applied during maximize.
+      browserMock.style.removeProperty("--iframe-scale");
       const f = browserMock.querySelector(".browser-frame");
       if (f) {
         f.classList.remove("can-scroll-right", "can-scroll-down");

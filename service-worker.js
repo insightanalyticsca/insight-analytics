@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.50.2-20261008-ai-msg-warm-recovery';
+const VERSION = 'v4.75.0-20261008-ai-msg-warm-recovery';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,12 +19,16 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.50.1',
-  './js/app.js?v=4.50.1',
-  './js/hero-animation.js?v=4.50.1',
-  './js/pull-to-refresh.js?v=4.50.1',
-  './js/assistant.js?v=4.50.1',
-  './js/blog-markets-dashboard.js?v=4.50.1',
+  './css/styles.css?v=4.75.0',
+  './js/app.js?v=4.75.0',
+  './js/hero-animation.js?v=4.75.0',
+  './js/pull-to-refresh.js?v=4.75.0',
+  './js/assistant.js?v=4.75.0',
+  './js/blog-markets-dashboard.js?v=4.75.0',
+  './js/blog-pipeline-builder.js?v=4.75.0',
+  './js/blog-fuzzy-match.js?v=4.75.0',
+  './js/sw-register.js?v=4.75.0',
+  './js/blog-load-forecast.js?v=4.75.0',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
@@ -90,27 +94,39 @@ self.addEventListener('fetch', (event) => {
   // resource load and renders reliably on every browser.
   if (url.pathname.indexOf('/dashboards-preview/') === 0) return;
 
-  // CRITICAL: Skip /blog/ entirely too — the blog dashboard (markets dashboard)
-  // updates frequently (new futures, heatmap fixes, live data changes). The SW's
-  // stale-while-revalidate strategy was serving old cached JS in PWA standalone
-  // mode, so users couldn't see the latest changes even after a deploy. By
-  // bypassing the SW for blog assets, the browser always fetches from network.
-  if (url.pathname.indexOf('/blog/') === 0) return;
+  // NOTE: /blog/ and /js/blog-* bypass rules REMOVED in v4.72.2.
+  // The bypass was originally added because the SW's stale-while-revalidate
+  // strategy was serving old cached blog JS in PWA mode. But since v4.55.0
+  // the SW's SWR fetch uses { cache: 'no-cache' } which always revalidates
+  // against the server — so the bypass is no longer needed. Keeping the
+  // bypass meant blog pages used the BROWSER's HTTP cache (max-age=600 =
+  // 10 min staleness) instead of the SW's always-revalidate strategy.
+  // Removing the bypass lets the SW handle blog pages with cache: 'no-cache'
+  // → users see fresh content immediately after a deploy, not 10 min later.
 
-  // Same for blog asset requests (JS, CSS, data) that might be resolved
-  // without the /blog/ prefix (e.g. /js/blog-markets-dashboard.js).
-  if (url.pathname.indexOf('/js/blog-') === 0) return;
   if (url.pathname.indexOf('/data/historical/') === 0) return;
 
   // Same for the dashboard data files (in case the dashboard's relative path
   // resolves outside /dashboards-preview/, e.g. legacy paths).
   if (url.pathname.indexOf('/data/executive/') === 0) return;
 
+  // Bypass the sample PDF too — it's fetched by the pipeline-builder demo
+  // on demand (when the user clicks the "Sales Report (PDF)" sample button).
+  // The PDF content is parsed by pdf.js + the demo's detectPDFTable() at
+  // fetch time — caching it in the SW's runtime cache would just bloat
+  // storage for a 5KB file that's already cheap to re-fetch.
+  if (url.pathname.indexOf('/data/sample-sales-report.pdf') === 0) return;
+
   // For the navigation request (the HTML page itself), network-first so users
   // always get the latest deployed content on a hard refresh / pull-to-refresh.
+  // CRITICAL: cache: 'no-cache' — bypasses the browser HTTP cache. GitHub
+  // Pages sets cache-control: max-age=600 (10 min) on HTML, so without this
+  // the SW would serve stale HTML referencing old ?v=X.Y.Z URLs (which the
+  // old SW had cached) → user sees old content for up to 10 min after a
+  // deploy even after the new SW activates.
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
+      fetch(request, { cache: 'no-cache' })
         .then((response) => {
           // Clone + cache the fresh HTML for offline use
           const copy = response.clone();
@@ -122,10 +138,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For same-origin static assets: stale-while-revalidate
+  // For same-origin static assets: stale-while-revalidate.
+  // The network fetch uses cache: 'no-cache' so the SW revalidates against
+  // the server on every request (lets GitHub Pages return 304 if unchanged,
+  // but always checks). Without this, the SW would trust its own cached
+  // copy for the cache-bust query string's lifetime — fine for new deploys
+  // (new URL = new cache entry = fresh fetch) but a footgun if GitHub Pages
+  // ever serves a CSS file at the same URL with different content.
   event.respondWith(
     caches.match(request).then((cached) => {
-      const fetchPromise = fetch(request)
+      const fetchPromise = fetch(request, { cache: 'no-cache' })
         .then((response) => {
           // Only cache valid same-origin responses
           if (!response || response.status !== 200 || response.type !== 'basic') {

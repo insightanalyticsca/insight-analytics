@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
+
+  <!-- SEO -->
+  <title>Personalized Power Automate: AI Builds the Pipeline, You Approve It | Insight Analytics</title>
+  <meta name="description" content="Upload an Excel, Word, or PDF — describe in plain English what to do with it (summarize, aggregate, sort, email) — and the system constructs an executable pipeline you can save, rerun, and schedule. A personalized Power Automate that builds itself." />
+  <meta name="keywords" content="Power Automate alternative, AI pipeline builder, natural language data pipeline, automated Excel pipeline, document AI, Groq, NL-to-pipeline, no-code pipeline, workflow automation" />
+  <meta name="author" content="Insight Analytics" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://insight-analytics.ca/blog/personalized-power-automate" />
+
+  <!-- PWA / Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="../icons/favicon.ico" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Personalized Power Automate: AI Builds the Pipeline, You Approve It" />
+  <meta property="og:description" content="Upload a document, describe in plain English what to do, and the system constructs an executable pipeline you can save, rerun, and schedule." />
+  <meta property="og:url" content="https://insight-analytics.ca/blog/personalized-power-automate" />
+  <meta property="og:site_name" content="Insight Analytics" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="article:published_time" content="2026-10-07T00:00:00Z" />
+  <meta property="article:author" content="Insight Analytics" />
+  <meta property="article:section" content="Workflow Automation" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Personalized Power Automate: AI Builds the Pipeline, You Approve It" />
+  <meta name="twitter:description" content="Upload a document, describe in plain English what to do, and the system constructs an executable pipeline you can save, rerun, and schedule." />
+
+  <!-- Article structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Personalized Power Automate: AI Builds the Pipeline, You Approve It",
+    "description": "Upload an Excel, Word, or PDF — describe in plain English what to do with it — and the system constructs an executable pipeline you can save, rerun, and schedule.",
+    "author": { "@type": "Organization", "name": "Insight Analytics", "url": "https://insight-analytics.ca/" },
+    "publisher": { "@type": "Organization", "name": "Insight Analytics", "logo": { "@type": "ImageObject", "url": "https://insight-analytics.ca/icons/icon-512.png" } },
+    "datePublished": "2026-10-07",
+    "dateModified": "2026-10-07",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://insight-analytics.ca/blog/personalized-power-automate" },
+    "articleSection": "Workflow Automation",
+    "keywords": ["Power Automate alternative", "AI pipeline builder", "natural language pipeline", "document AI", "Groq"]
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="../css/styles.css?v=4.74.0" />
+  <script src="../js/blog-pipeline-builder.js?v=4.55.0" defer></script>
+
+  <style>
+    .article-hero { padding: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 60px) 0 40px; text-align: center; background: linear-gradient(180deg, rgba(99,102,241,0.04) 0%, transparent 100%); border-bottom: 1px solid var(--border); }
+    .article-hero .container { max-width: 760px; }
+    .article-eyebrow { font-family: var(--font-head); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .article-hero h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 20px; }
+    .article-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .article-meta .sep { opacity: 0.4; }
+    .article-body { max-width: 720px; margin: 0 auto; padding: 48px 24px 32px; }
+    .article-body h2 { font-family: var(--font-head); font-size: 1.5rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    .article-body h2:first-child { margin-top: 0; }
+    .article-body h3 { font-family: var(--font-head); font-size: 1.15rem; font-weight: 600; margin: 32px 0 12px; }
+    .article-body p { font-size: 1.02rem; line-height: 1.75; color: var(--text-muted); margin: 0 0 20px; }
+    .article-body strong { color: var(--text); font-weight: 600; }
+    .article-body em { color: var(--text); font-style: italic; }
+    .article-body ul, .article-body ol { padding-left: 24px; margin: 0 0 20px; }
+    .article-body li { font-size: 1rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 6px; }
+    .article-body li strong { color: var(--text); }
+    .article-body table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 0.92rem; }
+    .article-body th { text-align: left; padding: 10px 12px; background: var(--surface-2); font-weight: 700; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+    .article-body td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); line-height: 1.5; }
+    .article-body td:first-child { color: var(--text-muted); }
+    .article-back { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 0.88rem; font-weight: 600; color: var(--text-muted); text-decoration: none; margin-bottom: 32px; transition: color 180ms ease; }
+    .article-back:hover { color: var(--accent); }
+    .article-back i { font-size: 0.78rem; }
+    .article-cta { margin: 48px auto 0; max-width: 720px; padding: 32px; border-radius: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04)); border: 1px solid var(--border); text-align: center; }
+    .article-cta h3 { font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; margin: 0 0 12px; }
+    .article-cta p { font-size: 0.95rem; color: var(--text-muted); margin: 0 0 20px; }
+
+    /* ─── Demo mount — the pipeline builder IIFE renders INTO this div ─── */
+    #pipeline-builder-mount {
+      margin: 0 auto 64px;
+      max-width: 1080px;
+      padding: 0 16px;
+    }
+    /* On mobile, give the mount the full viewport width so the table + chart
+       don't get squished into the article's 720px column. */
+    @media (max-width: 880px) {
+      .article-body { max-width: 100%; padding: 32px 12px 24px; }
+      #pipeline-builder-mount { padding: 0 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="https://insight-analytics.ca/" class="brand" aria-label="Insight Analytics home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGrad)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGrad)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGrad)"/></svg></span>
+        <span class="brand-name">Insight <b>Analytics</b></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="https://insight-analytics.ca/#services" class="nav-link">Services</a>
+        <a href="https://insight-analytics.ca/#dashboard" class="nav-link">Dashboard</a>
+        <a href="https://insight-analytics.ca/#cases" class="nav-link">Case Studies</a>
+        <a href="/blog/" class="nav-link" title="Demos — see it live. Production-ready pipelines.">Demos</a>
+        <a href="https://insight-analytics.ca/#contact" class="nav-link">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
+          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i>
+          <span class="sr-only" id="theme-label">Light</span>
+        </button>
+        <a href="https://insight-analytics.ca/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check" aria-hidden="true"></i> Book a Demo</a>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <i class="fas fa-bars" id="menu-icon" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu" role="menu" aria-label="Mobile navigation">
+    <a href="https://insight-analytics.ca/#services" class="nav-link" role="menuitem">Services</a>
+    <a href="https://insight-analytics.ca/#dashboard" class="nav-link" role="menuitem">Dashboard</a>
+    <a href="https://insight-analytics.ca/#cases" class="nav-link" role="menuitem">Case Studies</a>
+    <a href="/blog/" class="nav-link" role="menuitem" title="Live Demos — see it live. Production-ready pipelines.">Live Demos</a>
+    <a href="https://insight-analytics.ca/#contact" class="nav-link" role="menuitem">Contact</a>
+    <a href="https://insight-analytics.ca/#contact" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Book a Demo</a>
+  </div>
+
+  <section class="article-hero">
+    <div class="container">
+      <a href="/blog/" class="article-back">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        <span>Back to Blog</span>
+      </a>
+      <div class="article-eyebrow">Workflow Automation</div>
+      <h1>Personalized Power Automate: AI Builds the Pipeline, You Approve It</h1>
+      <div class="article-meta">
+        <span>By Insight Analytics</span>
+        <span class="sep">·</span>
+        <span>October 7, 2026</span>
+        <span class="sep">·</span>
+        <span>4 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="article-body">
+
+    <p>Every team has a Power Automate user. They build a flow that watches a SharePoint folder, extracts an Excel, summarizes by region, and emails the result. The flow works for a quarter. Then the source moves, the column renames, and the flow breaks. Someone has to rebuild it — usually not the person who built it.</p>
+
+    <p>The flow is the wrong unit. The <strong>pipeline</strong> — filter, summarize, sort, send — is the unit. Power Automate makes you build the pipeline by hand, connector by connector. We think the AI should build it for you.</p>
+
+    <h2>Try It Now</h2>
+    <p>Upload an Excel, Word, or PDF (or pick a sample below). Tell the system, in plain English, what to do with it. The AI constructs a pipeline. You review it. You run it. You save it. Next time, it runs from a schedule.</p>
+
+    <div id="pipeline-builder-mount"></div>
+
+    <h2>What Just Happened</h2>
+    <p>The demo above did five things in sequence, none of which required you to write code or wire connectors:</p>
+    <ol>
+      <li><strong>Parsed your document</strong> — Excel rows, Word tables, PDF text, or CSV — into a unified shape the rest of the pipeline can read.</li>
+      <li><strong>Analyzed it</strong> — Groq looked at the headers, sample rows, and column types, then suggested three to five actions specific to your data. Not generic suggestions — actual things you'd plausibly want to do with this particular file.</li>
+      <li><strong>Translated your instruction into a pipeline spec</strong> — a JSON object with steps (filter, summarize, sort, limit, select, transform), each one a structured operation the runtime can execute. No pseudo-code, no prose.</li>
+      <li><strong>Ran the spec client-side</strong> — every step executed in your browser. No server round-trip. The result table and chart appeared in seconds, not minutes.</li>
+      <li><strong>Offered to email the result</strong> — opened your email client with the subject + table pre-filled, so you can edit before sending (which is how every "automated email" should actually work).</li>
+    </ol>
+
+    <h2>What Makes This Different</h2>
+    <table>
+      <thead>
+        <tr><th>Power Automate / Zapier / n8n</th><th>Personalized Power Automate</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>You build the pipeline by hand</td><td>AI builds it from a sentence</td></tr>
+        <tr><td>Connectors are the unit — one breaks, the flow breaks</td><td>Steps are the unit — swap one without rebuilding</td></tr>
+        <tr><td>Schema changes break the flow silently</td><td>Pipeline spec is versioned + auditable JSON</td></tr>
+        <tr><td>Vendor owns your workflows</td><td>You own the spec — runs on your infrastructure, on your schedule</td></tr>
+        <tr><td>Per-user / per-run licensing</td><td>One-time build — the spec is yours</td></tr>
+      </tbody>
+    </table>
+
+    <h2>From Demo to Production</h2>
+    <p>The demo above runs entirely in your browser. The pipeline spec it generates is real — it's a JSON object you can download, save, and import. In production, that spec becomes a scheduled job:</p>
+    <ul>
+      <li><strong>Static JSON + GitHub Pages</strong> — what the demo runs on. The pipeline is a JSON file, executed by a serverless function on a schedule. Right for daily/weekly snapshots.</li>
+      <li><strong>Your existing SQL backend</strong> — the spec lands in your warehouse, runs as a SQL Agent job or cron, writes results to a table the dashboard queries.</li>
+      <li><strong>Managed warehouse + serverless API</strong> — Supabase, Neon, Cloudflare D1, Turso. The spec runs via scheduled serverless function. Zero ops on your side.</li>
+    </ul>
+    <p>The spec doesn't change between topologies. The runtime does.</p>
+
+    <h2>The Honest Part</h2>
+    <p>This is not a finished product. It's a concept demo. The Groq call is rate-limited to ten per browser session so the demo doesn't get abused. The email path uses your email client (mailto:) rather than sending directly — for real production, you'd wire it to a server-side sender. The "save pipeline" feature stores the spec in your browser's localStorage; in production it'd live in a database with auth.</p>
+    <p>What we're showing is the shape: <strong>natural language in, executable pipeline out, saved + scheduled + rerun on demand.</strong> The plumbing underneath is whatever your team already runs.</p>
+
+    <div class="article-cta">
+      <h3>Want this wired to your data?</h3>
+      <p>Bring one stubborn report or one recurring Excel grind. We'll set up the pipeline constructor against your actual sources — and show you what the first saved pipeline looks like before the meeting ends.</p>
+      <a href="https://insight-analytics.ca/#contact" class="btn btn-primary btn-lg">
+        <i class="fas fa-calendar-check" aria-hidden="true"></i>
+        <span class="btn-text">Book a Working Session</span>
+      </a>
+    </div>
+
+  </article>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a href="https://insight-analytics.ca/" class="brand footer-brand" aria-label="Insight Analytics home">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGradFooter" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGradFooter)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGradFooter)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGradFooter)"/></svg></span>
+          <span class="brand-name">Insight <b>Analytics</b></span>
+        </a>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="https://insight-analytics.ca/#services">Services</a>
+          <a href="https://insight-analytics.ca/#dashboard">Dashboard</a>
+          <a href="/blog/" title="Demos — see it live. Production-ready pipelines.">Demos</a>
+          <a href="https://insight-analytics.ca/#contact">Contact</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-tagline">Insight Analytics · <em>Live truth on every desk.</em></span>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span>
+        <div class="social">
+          <a href="mailto:dev@insight-analytics.ca" aria-label="Email"><i class="fas fa-envelope"></i></a>
+          <a href="https://insight-analytics.ca/#dashboard" aria-label="Live Dashboards"><i class="fas fa-chart-pie"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Theme toggle + mobile menu handlers — same as the main site -->
+  <script src="../js/app.js?v=4.55.0" defer></script>
+
+  <script src="/js/sw-register.js?v=4.72.3" defer></script>
+</body>
+</html>
