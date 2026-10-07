@@ -3609,6 +3609,7 @@
       renderSlot('location');
       renderSlot('weather');
       renderSlot('load');
+      renderSlot('model');  // CRITICAL: re-render model card now that state.loadData is set — otherwise the "Train model" button never appears
     }).catch(function (e) {
       state.weatherLoading = false;
       state.weatherError = (e && e.message) || 'Failed to fetch weather from Open-Meteo.';

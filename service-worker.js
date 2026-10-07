@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.72.3-20261007-shared-sw-register-on-all-pages';
+const VERSION = 'v4.72.4-20261007-fix-model-card-not-rendering-after-load';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -28,7 +28,7 @@ const APP_SHELL = [
   './js/blog-pipeline-builder.js?v=4.72.0',
   './js/blog-fuzzy-match.js?v=4.72.0',
   './js/sw-register.js?v=4.72.3',
-  './js/blog-load-forecast.js?v=4.72.3',
+  './js/blog-load-forecast.js?v=4.72.4',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
