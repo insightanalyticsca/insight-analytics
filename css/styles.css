@@ -2338,14 +2338,28 @@ ul {
    render at their natural, readable size.
    ------------------------------------------------------------------ */
 @media (max-width: 768px) {
-  /* When maximized on mobile: render dashboard at desktop dimensions,
-     allow bidirectional panning. */
+  /* Mobile maximize: SCALE the iframe to fit the viewport width instead
+     of forcing the user to pan around a 1280×1080 iframe (which was
+     awful UX in both portrait and landscape).
+
+     The dashboard content is designed for desktop (1280px+ wide). On
+     mobile, we scale it DOWN to fit the viewport. The dashboard's full
+     desktop layout stays visible at a smaller visual size. User can
+     pinch-zoom for detail.
+
+     Portrait: scaled height < viewport height → fits entirely, no scroll.
+     Landscape: scaled height > viewport height → vertical scroll reveals
+     the rest of the dashboard.
+
+     Scale factor is computed by JS (updateIframeMobileScale in app.js)
+     and exposed via the --iframe-scale CSS custom property on the
+     .browser-mock element. CSS reads it via var() in the transform. */
   .browser-mock.is-maximized .browser-frame {
-    overflow: auto !important;        /* both x and y panning */
+    overflow-y: auto !important;        /* vertical scroll if needed (landscape) */
+    overflow-x: hidden !important;     /* no horizontal panning — scale fits */
     -webkit-overflow-scrolling: touch;
-    display: block;                  /* override flex column from desktop */
-    overscroll-behavior: contain;    /* prevent scroll chaining to body */
-    scroll-snap-type: none;
+    display: block;
+    overscroll-behavior: contain;
   }
   .browser-mock.is-maximized .browser-frame iframe {
     /* Force the dashboard's desktop layout (above its 1024px breakpoint)
@@ -2355,10 +2369,16 @@ ul {
     height: 1080px !important;
     flex: none !important;
     display: block;
-    transform: none !important;
     margin: 0 !important;
-    /* Allow touch panning in both directions. */
-    touch-action: pan-x pan-y;
+    /* transform: scale(var(--iframe-scale, 0.4)) — JS sets --iframe-scale
+       on the parent .browser-mock based on window.innerWidth / 1280.
+       Default 0.4 (= 512px viewport, mid-range phone) used if JS hasn't
+       run yet or var is missing. transform-origin: top left anchors the
+       scaled iframe at the top-left corner of the viewport. */
+    transform: scale(var(--iframe-scale, 0.4)) !important;
+    transform-origin: top left !important;
+    /* Allow pinch-zoom for detail (pan-y lets vertical scroll work too). */
+    touch-action: pan-y pinch-zoom;
     -webkit-overflow-scrolling: touch;
   }
 }
