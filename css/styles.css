@@ -2338,28 +2338,46 @@ ul {
    render at their natural, readable size.
    ------------------------------------------------------------------ */
 @media (max-width: 768px) and (orientation: portrait) {
-  /* PORTRAIT mobile maximize: dashboard is scaled to fit HEIGHT (tall
-     portrait viewport). Dashboard overflows horizontally — user pans
-     left/right to see the rest. Vertical fits entirely (no vertical scroll). */
+  /* PORTRAIT mobile maximize: let the iframe FILL the portrait viewport
+     entirely (no scaling, no rotation). The dashboard content sees the
+     portrait dimensions directly (e.g., 375×700) and either:
+     (a) reflows via its own responsive CSS (best — native mobile layout),
+     (b) overflows horizontally inside the iframe if it has a fixed
+         desktop min-width — user scrolls horizontally INSIDE the iframe
+         (works on Android Chrome; iOS Safari has known iframe-scroll
+         quirks but the parent .browser-frame below also allows fallback
+         horizontal pan).
+
+     The previous approaches all failed:
+       - Fit-width (v4.67.0): tiny dashboard + big empty gap below
+         → user complained "dashes open as landscapes"
+       - Fit-height (v4.68.0): dashboard too wide, requires horizontal
+         pan in the parent → user complained "doesn't fit in portrait"
+
+     Fill-viewport is the cleanest: no scaling math, no aspect-ratio
+     compromise, no rotation. The iframe matches the portrait viewport
+     exactly; the dashboard either flows naturally or scrolls. */
   .browser-mock.is-maximized .browser-frame {
-    overflow-y: hidden !important;
-    overflow-x: auto !important;
+    overflow-y: auto !important;          /* fallback: parent scrolls if iframe doesn't */
+    overflow-x: auto !important;          /* fallback: parent pans if iframe doesn't */
     -webkit-overflow-scrolling: touch;
     display: block;
     overscroll-behavior: contain;
   }
   .browser-mock.is-maximized .browser-frame iframe {
-    width: 1280px !important;
-    height: 1080px !important;
-    flex: none !important;
+    /* Iframe fills the portrait viewport exactly — no fixed desktop
+       dimensions, no transform scaling. The dashboard content sees
+       viewport=portrait dimensions and either reflows (if responsive)
+       or overflows inside the iframe (which scrolls horizontally). */
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    flex: 1 !important;
     display: block;
+    transform: none !important;
     margin: 0 !important;
-    /* JS sets --iframe-scale based on (window.innerHeight - 60) / 1080
-       so the dashboard fills the tall portrait viewport vertically. */
-    transform: scale(var(--iframe-scale, 0.6)) !important;
-    transform-origin: top left !important;
-    /* Allow horizontal pan + pinch-zoom for detail. */
-    touch-action: pan-x pinch-zoom;
+    /* Allow touch scrolling inside the iframe (Android Chrome) + pinch-zoom. */
+    touch-action: pan-x pan-y pinch-zoom;
     -webkit-overflow-scrolling: touch;
   }
 }
@@ -2382,7 +2400,6 @@ ul {
     flex: none !important;
     display: block;
     margin: 0 !important;
-    /* JS sets --iframe-scale based on window.innerWidth / 1280. */
     transform: scale(var(--iframe-scale, 0.5)) !important;
     transform-origin: top left !important;
     touch-action: pan-y pinch-zoom;
