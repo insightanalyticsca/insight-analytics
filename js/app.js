@@ -332,14 +332,28 @@
       var isMax = browserMock.classList.contains("is-maximized");
       var isMobile = window.innerWidth <= 768;
       if (isMax && isMobile) {
-        // Scale = viewport width / iframe's desktop design width (1280px).
-        // Clamped to a max of 1 (don't upscale beyond natural size on
-        // tablets) and min of 0.2 (anything smaller is unreadable).
-        var scale = Math.max(0.2, Math.min(1, window.innerWidth / 1280));
-        browserMock.style.setProperty("--iframe-scale", scale);
+        var isPortrait = window.innerHeight > window.innerWidth;
+        if (isPortrait) {
+          // Portrait: viewport is TALL (e.g., 375×700). The dashboard's
+          // natural aspect is landscape (1280×1080), so fitting WIDTH
+          // leaves a big empty gap below the dashboard.
+          // Instead, fit HEIGHT — scale so the iframe fills the tall
+          // portrait viewport vertically. The dashboard overflows
+          // horizontally; user pans left/right to see the rest.
+          // This makes the dashboard readable in portrait without
+          // rotating the phone to landscape.
+          // (window.innerHeight - 60) accounts for the maximize bar.
+          var scaleH = (window.innerHeight - 60) / 1080;
+          browserMock.style.setProperty("--iframe-scale", Math.max(0.25, Math.min(1, scaleH)));
+        } else {
+          // Landscape: viewport is WIDE (e.g., 700×375). Fit WIDTH —
+          // the dashboard's landscape aspect matches the viewport's
+          // landscape aspect, so it fills naturally. Vertical scroll
+          // reveals the bottom of the dashboard if needed.
+          var scaleW = window.innerWidth / 1280;
+          browserMock.style.setProperty("--iframe-scale", Math.max(0.25, Math.min(1, scaleW)));
+        }
       } else {
-        // Desktop or not maximized — clear the scale (transform: none
-        // applies via the !important rule in CSS).
         browserMock.style.removeProperty("--iframe-scale");
       }
     }
