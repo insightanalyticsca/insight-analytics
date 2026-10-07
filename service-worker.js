@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.63.0-20261007-exec-summary-chip-blog-order-hero-update';
+const VERSION = 'v4.64.0-20261007-dazzling-email-and-exports';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,13 +19,13 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.63.0',
-  './js/app.js?v=4.63.0',
-  './js/hero-animation.js?v=4.63.0',
-  './js/pull-to-refresh.js?v=4.63.0',
-  './js/assistant.js?v=4.63.0',
-  './js/blog-markets-dashboard.js?v=4.63.0',
-  './js/blog-pipeline-builder.js?v=4.63.0',
+  './css/styles.css?v=4.64.0',
+  './js/app.js?v=4.64.0',
+  './js/hero-animation.js?v=4.64.0',
+  './js/pull-to-refresh.js?v=4.64.0',
+  './js/assistant.js?v=4.64.0',
+  './js/blog-markets-dashboard.js?v=4.64.0',
+  './js/blog-pipeline-builder.js?v=4.64.0',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
