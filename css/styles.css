@@ -1887,6 +1887,14 @@ ul {
   background: var(--bg);
   border-top: 1px solid var(--border);
   padding: 56px 0 32px;
+  /* Make the footer a scroll-snap target so users can actually reach it.
+     Without this, html's `scroll-snap-type: y mandatory` snaps the user
+     back up to the last .section start when they try to scroll into the
+     footer area — the footer was unreachable. Adding scroll-snap-align
+     + scroll-margin-top (matching .section) lets the snap algorithm
+     settle on the footer as a valid snap destination. */
+  scroll-snap-align: start;
+  scroll-margin-top: var(--nav-h);
 }
 [data-theme="dark"] .footer { background: var(--navy-deep); }
 .footer-top {
