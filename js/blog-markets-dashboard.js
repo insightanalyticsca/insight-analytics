@@ -257,6 +257,12 @@
       }
       .bmd-chart-card.bmd-wide { grid-column: 1 / -1; }
       .bmd-chart-card.bmd-wide-2 { grid-column: span 2; }
+      /* Trends chart spans the full row1 width — the line chart needs
+         horizontal real estate to show 30 days × 4 series. Previous
+         1.1fr narrow column made the chart cramped; FX (square 8x8
+         matrix) moves to its own full-width row below. */
+      .bmd-grid-row1 .bmd-trends-card { grid-column: 1 / -1; }
+      .bmd-grid-row1 .bmd-fx-card { grid-column: 1 / -1; }
       /* Row 1: trends (narrower) + FX heatmap (wider) — 55/45 split */
       .bmd-grid-row1 { grid-template-columns: 1.1fr 1.4fr; }
       /* Row 2: sectors (wider) + crypto + futures — 1.5/1/1 split */
@@ -1030,7 +1036,11 @@
       backgroundColor: 'transparent',
       tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
       legend: { data: ['S&P 500', 'NASDAQ', 'Volume (B)'].concat(btcSeries ? ['BTC ($)'] : []), textStyle: { color: '#94a3b8', fontSize: 10 }, top: 0 },
-      grid: { left: 60, right: 70, top: 30, bottom: 30 },
+      // containLabel:true → ECharts auto-computes the axis-label gutter.
+      // Small explicit margins (8/8/24/20) let the plot fill the card
+      // width — previous 60/70 reserved 130px (~30% of the card) for
+      // labels, making the line chart look narrow with empty gutters.
+      grid: { left: 8, right: 8, top: 24, bottom: 20, containLabel: true },
       // Single xAxis declaration — previous code had a duplicate that overrode
       // the styled version, and the second copy didn't carry the axisLine color.
       xAxis: { 
