@@ -1696,11 +1696,15 @@
     var bmdToggle = document.getElementById('bmd-theme-toggle');
     var bmdIcon = document.getElementById('bmd-theme-icon');
     if (bmdToggle) {
-      // Set initial icon + mount attribute based on default theme (dark)
-      mount.setAttribute('data-bmd-theme', 'dark');
-      if (bmdIcon) bmdIcon.className = 'fas fa-moon';
+      // Set initial icon + mount attribute based on default theme (LIGHT).
+      // User preference: dashboard loads in light theme by default; the
+      // theme toggle button still lets users switch to dark if they want.
+      // Previous code forced 'dark' here, overriding buildSkeleton()'s
+      // light default.
+      mount.setAttribute('data-bmd-theme', 'light');
+      if (bmdIcon) bmdIcon.className = 'fas fa-sun';
       bmdToggle.addEventListener('click', function () {
-        var current = mount.getAttribute('data-bmd-theme') || 'dark';
+        var current = mount.getAttribute('data-bmd-theme') || 'light';
         var next = current === 'dark' ? 'light' : 'dark';
         mount.setAttribute('data-bmd-theme', next);
         // The MutationObserver will handle re-rendering charts + updating the icon
