@@ -1029,10 +1029,13 @@
     }
 
     var srcEl3 = document.getElementById('bmd-src-trends');
+    // Use the SHORT label on all viewports — the long version
+    // ('S&P/NASDAQ: Yahoo history+live · BTC: Binance live') wraps to 2
+    // lines on mobile and doesn't fit in the chart-title's source-pill
+    // slot. The BTC source is already indicated by the BTC ($) legend
+    // entry, so qualifying it in the source pill is redundant.
     setSrcLabel('bmd-src-trends',
-      hasHist
-        ? (btcSeries ? 'S&P/NASDAQ: Yahoo history+live · BTC: Binance live' : 'Yahoo history+live')
-        : (btcSeries ? 'S&P/NASDAQ: Yahoo live · BTC: Binance live' : 'Yahoo live'),
+      hasHist ? 'Yahoo history+live' : 'Yahoo live',
       true
     );
 
