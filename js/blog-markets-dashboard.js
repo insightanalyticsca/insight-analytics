@@ -46,6 +46,10 @@
 
   // ─── Build the dashboard HTML skeleton ───────────────────────────────────
   function buildSkeleton(mount) {
+    // Default theme = LIGHT (user preference — was dark). Set BEFORE
+    // innerHTML so the [data-bmd-theme="light"] CSS rules apply on
+    // first paint, not after a flash of dark theme.
+    if (!mount.getAttribute('data-bmd-theme')) mount.setAttribute('data-bmd-theme', 'light');
     mount.innerHTML = `
       <div class="bmd-app">
         <div class="bmd-topbar">
@@ -618,11 +622,11 @@
 
   // ─── Dashboard-local theme — uses data-bmd-theme on #markets-dashboard-mount ──
   // Does NOT touch <html data-theme> — the blog page's own theme is independent.
-  var dashboardTheme = 'dark'; // default
+  var dashboardTheme = 'light'; // default — user prefers light
 
   function getTheme() {
     var mount = document.getElementById('markets-dashboard-mount');
-    if (mount) return mount.getAttribute('data-bmd-theme') === 'light' ? 'light' : 'dark';
+    if (mount) return mount.getAttribute('data-bmd-theme') === 'dark' ? 'dark' : 'light';
     return dashboardTheme;
   }
   // ECharts axis colors per theme
