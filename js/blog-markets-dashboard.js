@@ -867,9 +867,42 @@
   }
 
   // ─── Fetch LIVE crypto from Binance ──────────────────────────────────────
+  // Uses two Binance endpoints in fallback order:
+  //   1. data-api.binance.vision  — Binance's PUBLIC market-data API, NOT
+  //      geo-blocked, NOT on common ad-block lists. PRIMARY now because
+  //      Windows desktop users frequently have api.binance.com blocked
+  //      by uBlock Origin / AdGuard / NextDNS (flagged as a 'crypto
+  //      tracker' even though it's just market data, not trading). Mobile
+  //      browsers and PWAs usually don't have these blockers, so BTC
+  //      was loading fine there but failing on Windows.
+  //   2. api.binance.com          — Binance's main API. May be blocked
+  //      by ad blockers / DNS filters on some networks. Fallback only.
+  // Both endpoints return identical JSON shape and accept the same query
+  // string. Binance supports CORS for read-only market data.
+  var BINANCE_ENDPOINTS = [
+    'https://data-api.binance.vision',
+    'https://api.binance.com'
+  ];
+
   async function fetchCrypto() {
+    // Try each Binance endpoint in fallback order. First one that
+    // succeeds is used for BOTH the 24hr ticker AND the 30-day klines
+    // (so we don't re-test all endpoints for the klines call).
+    var base = null;
+    for (var i = 0; i < BINANCE_ENDPOINTS.length; i++) {
+      try {
+        var tr = await fetch(BINANCE_ENDPOINTS[i] + '/api/v3/ping');
+        if (tr.ok) { base = BINANCE_ENDPOINTS[i]; break; }
+      } catch (e) { /* endpoint blocked or unreachable — try next */ }
+    }
+    if (!base) {
+      // All endpoints failed (e.g., user behind a strict corporate
+      // firewall that blocks all crypto domains). Bail out — the trend
+      // chart will skip the BTC series, which is the existing behavior.
+      return false;
+    }
     try {
-      var r = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=%5b%22BTCUSDT%22,%22ETHUSDT%22,%22SOLUSDT%22%5d');
+      var r = await fetch(base + '/api/v3/ticker/24hr?symbols=%5b%22BTCUSDT%22,%22ETHUSDT%22,%22SOLUSDT%22%5d');
       if (!r.ok) return false;
       var d = await r.json();
       d.forEach(function (t) {
@@ -879,10 +912,10 @@
           change: parseFloat(t.priceChangePercent)
         };
       });
-      // Also fetch 30-day BTC klines (daily candles) for the trend chart.
-      // Binance has CORS — can fetch directly without a proxy.
+      // 30-day BTC klines for the trend chart — same endpoint that just
+      // succeeded for the ticker, reuses the working base URL.
       try {
-        var kUrl = 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=30';
+        var kUrl = base + '/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=30';
         var kr = await fetch(kUrl);
         if (kr.ok) {
           var kd = await kr.json();
