@@ -417,7 +417,7 @@
            reachable. Without this, long AI briefings get clipped by the
            cell's overflow:hidden (which is there for the accent strip's
            rounded corners). Now the text area scrolls within the cell. */
-        max-height: 120px;
+        max-height: 360px;
         overflow-y: auto;
         /* Firefox: thin scrollbar */
         scrollbar-width: thin;
