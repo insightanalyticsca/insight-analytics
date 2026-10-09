@@ -107,7 +107,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn7TZv2Dl3Jp2s1Lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Site styles -->
-  <link rel="stylesheet" href="./css/styles.css?v=4.83.0" />
+  <link rel="stylesheet" href="./css/styles.css?v=4.84.0" />
 
   <!-- Prevent theme flash -->
   <script>
@@ -1001,12 +1001,12 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="./js/app.js?v=4.83.0" defer></script>
-  <script src="./js/hero-animation.js?v=4.83.0" defer></script>
-  <script src="./js/pull-to-refresh.js?v=4.83.0" defer></script>
-  <script src="./js/assistant.js?v=4.83.0" defer></script>
+  <script src="./js/app.js?v=4.84.0" defer></script>
+  <script src="./js/hero-animation.js?v=4.84.0" defer></script>
+  <script src="./js/pull-to-refresh.js?v=4.84.0" defer></script>
+  <script src="./js/assistant.js?v=4.84.0" defer></script>
 
-  <script src="/js/sw-register.js?v=4.83.0" defer></script>
+  <script src="/js/sw-register.js?v=4.84.0" defer></script>
 <!-- ════════════════════════════════════════════════════════════════════════
      CONFIG BUTTON — access-key-protected settings panel
      ════════════════════════════════════════════════════════════════════════ -->
@@ -1038,6 +1038,13 @@
     </div>
     <style>@keyframes cfgPulse{0%,100%{opacity:0.7;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}</style>
 
+    <!-- Site selector tab bar — filter the activity panel by site -->
+    <div id="cfgTabs" style="display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--card-border,rgba(0,0,0,0.08));padding-bottom:8px;">
+      <button data-site="combined" class="cfg-tab" style="padding:6px 14px;border:0;border-radius:8px;background:linear-gradient(135deg,var(--primary,#6366f1),var(--accent,#06b6d4));color:#fff;font-size:11px;font-weight:600;cursor:pointer;">Combined</button>
+      <button data-site="main" class="cfg-tab" style="padding:6px 14px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:8px;background:transparent;color:var(--text-soft,#64748b);font-size:11px;font-weight:600;cursor:pointer;">Main</button>
+      <button data-site="dashboards" class="cfg-tab" style="padding:6px 14px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:8px;background:transparent;color:var(--text-soft,#64748b);font-size:11px;font-weight:600;cursor:pointer;">Dashboards</button>
+    </div>
+
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
       <div style="padding:16px 20px;border-radius:12px;border:1px solid rgba(99,102,241,0.15);background:linear-gradient(135deg,rgba(99,102,241,0.06),rgba(6,182,212,0.04));">
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted,#94a3b8);margin-bottom:4px;">Total</div>
@@ -1067,8 +1074,8 @@
   var ORIGIN = 'https://insight-analytics.ca';
   var REFRESH_MS = 5000;
 
-  // Page-load signal ping
-  new Image().src = EP + '?op=beacon&page=' + encodeURIComponent(window.location.pathname) + '&cb=' + Date.now();
+  // Page-load signal ping (site=main so the activity panel can filter by site)
+  new Image().src = EP + '?op=beacon&page=' + encodeURIComponent(window.location.pathname) + '&site=main&cb=' + Date.now();
 
   // Footer badge fetch
   fetch(EP + '?op=stats', { headers: { 'Origin': ORIGIN } })
@@ -1121,6 +1128,7 @@
   var closeBtn = document.getElementById('cfgClose');
   var timer = null;
   var key = null;
+  var currentSite = 'combined';  // 'combined' | 'main' | 'dashboards'
 
   gear.addEventListener('mouseenter', function() { gear.style.opacity = '0.6'; });
   gear.addEventListener('mouseleave', function() { gear.style.opacity = '0.3'; });
@@ -1136,7 +1144,8 @@
   modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
 
   function fetchState() {
-    var url = EP + '?op=visits&password=' + encodeURIComponent(key);
+    var siteQs = currentSite !== 'combined' ? '&site=' + currentSite : '';
+    var url = EP + '?op=visits&password=' + encodeURIComponent(key) + siteQs;
     fetch(url, { headers: { 'Origin': ORIGIN } })
       .then(function(r) { return r.status === 403 ? null : r.json(); })
       .then(function(data) {
@@ -1144,7 +1153,7 @@
         renderState(data);
       })
       .catch(function() {});
-    var devUrl = EP + '?op=devices&password=' + encodeURIComponent(key);
+    var devUrl = EP + '?op=devices&password=' + encodeURIComponent(key) + siteQs;
     fetch(devUrl, { headers: { 'Origin': ORIGIN } })
       .then(function(r) { return r.status === 403 ? null : r.json(); })
       .then(function(d) {
@@ -1332,6 +1341,27 @@
 
   input.addEventListener('keydown', function(e) { if (e.key === 'Enter') submit.click(); });
   closeBtn.addEventListener('click', function() { panel.style.display = 'none'; stopRefresh(); });
+
+  // ─── Site tab bar: switch the active site filter + immediately re-fetch ─
+  function setActiveTab(site) {
+    currentSite = site;
+    var tabs = document.querySelectorAll('.cfg-tab');
+    tabs.forEach(function(t) {
+      var isActive = t.getAttribute('data-site') === site;
+      t.style.background = isActive ? 'linear-gradient(135deg,var(--primary,#6366f1),var(--accent,#06b6d4))' : 'transparent';
+      t.style.color = isActive ? '#fff' : 'var(--text-soft,#64748b)';
+      t.style.border = isActive ? '0' : '1px solid var(--card-border,rgba(0,0,0,0.15))';
+    });
+    if (key) fetchState();  // immediate refresh with the new filter
+  }
+  var tabContainer = document.getElementById('cfgTabs');
+  if (tabContainer) {
+    tabContainer.addEventListener('click', function(e) {
+      var t = e.target.closest('.cfg-tab');
+      if (!t) return;
+      setActiveTab(t.getAttribute('data-site'));
+    });
+  }
 })();
 </script>
 
