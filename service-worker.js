@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.88.0-20261009-ai-max-tokens-1500';
+const VERSION = 'v4.89.0-20261009-remove-300-char-slice';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,16 +19,16 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.88.0',
-  './js/app.js?v=4.88.0',
-  './js/hero-animation.js?v=4.88.0',
-  './js/pull-to-refresh.js?v=4.88.0',
-  './js/assistant.js?v=4.88.0',
-  './js/blog-markets-dashboard.js?v=4.88.0',
-  './js/blog-pipeline-builder.js?v=4.88.0',
-  './js/blog-fuzzy-match.js?v=4.88.0',
-  './js/sw-register.js?v=4.88.0',
-  './js/blog-load-forecast.js?v=4.88.0',
+  './css/styles.css?v=4.89.0',
+  './js/app.js?v=4.89.0',
+  './js/hero-animation.js?v=4.89.0',
+  './js/pull-to-refresh.js?v=4.89.0',
+  './js/assistant.js?v=4.89.0',
+  './js/blog-markets-dashboard.js?v=4.89.0',
+  './js/blog-pipeline-builder.js?v=4.89.0',
+  './js/blog-fuzzy-match.js?v=4.89.0',
+  './js/sw-register.js?v=4.89.0',
+  './js/blog-load-forecast.js?v=4.89.0',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',

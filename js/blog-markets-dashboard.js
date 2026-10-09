@@ -1678,7 +1678,7 @@
         content = content.replace(/^(what happened|why it matters|what to expect|what to do)[:\-\s]*/i, '').trim();
         if (content) {
           var el = document.getElementById(pos.sectionId);
-          if (el) { el.classList.remove('bmd-shimmer'); el.textContent = content.slice(0, 300); }
+          if (el) { el.classList.remove('bmd-shimmer'); el.textContent = content; }
         }
       });
       return;
@@ -1692,7 +1692,7 @@
       // Assign each paragraph to a cell in order
       paragraphs.slice(0, 4).forEach(function (p, i) {
         var el = document.getElementById(ids[i]);
-        if (el) { el.classList.remove('bmd-shimmer'); el.textContent = p.slice(0, 300); }
+        if (el) { el.classList.remove('bmd-shimmer'); el.textContent = p; }
       });
       return;
     }
@@ -1701,7 +1701,7 @@
     // put what we have in the first cell (will update as more streams in)
     if (streaming && paragraphs.length > 0) {
       var el0 = document.getElementById(ids[0]);
-      if (el0) { el0.classList.remove('bmd-shimmer'); el0.textContent = paragraphs[0].slice(0, 300); }
+      if (el0) { el0.classList.remove('bmd-shimmer'); el0.textContent = paragraphs[0]; }
     }
   }
 
