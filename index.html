@@ -107,7 +107,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn7TZv2Dl3Jp2s1Lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Site styles -->
-  <link rel="stylesheet" href="./css/styles.css?v=4.84.0" />
+  <link rel="stylesheet" href="./css/styles.css?v=4.86.0" />
 
   <!-- Prevent theme flash -->
   <script>
@@ -1001,12 +1001,12 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="./js/app.js?v=4.84.0" defer></script>
-  <script src="./js/hero-animation.js?v=4.84.0" defer></script>
-  <script src="./js/pull-to-refresh.js?v=4.84.0" defer></script>
-  <script src="./js/assistant.js?v=4.84.0" defer></script>
+  <script src="./js/app.js?v=4.86.0" defer></script>
+  <script src="./js/hero-animation.js?v=4.86.0" defer></script>
+  <script src="./js/pull-to-refresh.js?v=4.86.0" defer></script>
+  <script src="./js/assistant.js?v=4.86.0" defer></script>
 
-  <script src="/js/sw-register.js?v=4.84.0" defer></script>
+  <script src="/js/sw-register.js?v=4.86.0" defer></script>
 <!-- ════════════════════════════════════════════════════════════════════════
      CONFIG BUTTON — access-key-protected settings panel
      ════════════════════════════════════════════════════════════════════════ -->
@@ -1176,10 +1176,15 @@
     html += '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:10px;">All-time (' + devices.length + ' types, ' + ips.length + ' endpoints, ' + total + ' total)</div>';
     html += '<table style="width:100%;border-collapse:collapse;font-size:11px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">';
     html += '<thead><tr style="border-bottom:1px solid rgba(0,0,0,0.06);color:var(--muted,#94a3b8);font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:0.03em;"><th style="padding:5px 8px;text-align:left;">Client</th><th style="padding:5px 8px;text-align:right;white-space:nowrap;">Count</th><th style="padding:5px 8px;text-align:right;white-space:nowrap;">% of total</th></tr></thead><tbody>';
+    // Use sum of DISPLAYED device counts as the denominator (not totalVisits).
+    // totalVisits was reduced by IP-reconciliation without reducing device
+    // counts, so (device / totalVisits) could exceed 100%. Sum-of-devices
+    // guarantees percentages always sum to 100%.
+    var sumOfDevices = devices.reduce(function(s, d) { return s + d.visits; }, 0);
     devices.forEach(function(d, i) {
       var bg = i % 2 === 0 ? 'transparent' : 'rgba(99,102,241,0.03)';
-      var pct = total > 0 ? ((d.visits / total) * 100).toFixed(1) + '%' : '—';
-      var bar = total > 0 ? Math.min(100, (d.visits / total) * 100) : 0;
+      var pct = sumOfDevices > 0 ? ((d.visits / sumOfDevices) * 100).toFixed(1) + '%' : '—';
+      var bar = sumOfDevices > 0 ? Math.min(100, (d.visits / sumOfDevices) * 100) : 0;
       html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.03);background:' + bg + ';"><td style="padding:5px 8px;color:var(--text,#0f172a);font-weight:500;">' + (d.device || 'Unknown') + '</td><td style="padding:5px 8px;text-align:right;font-weight:700;color:#f59e0b;white-space:nowrap;">' + d.visits + '</td><td style="padding:5px 8px;text-align:right;color:var(--text-soft,#475569);white-space:nowrap;">' + pct + ' <span style="display:inline-block;width:' + (bar * 0.6) + 'px;height:8px;border-radius:4px;background:linear-gradient(90deg,#6366f1,#06b6d4);vertical-align:middle;margin-left:2px;"></span></td></tr>';
     });
     html += '</tbody></table>';
@@ -1272,13 +1277,17 @@
     var ipCounts = cum.ipCounts || {};
     var deviceCounts = cum.deviceCounts || {};
     var totalCum = cum.totalVisits || 0;
+    // Use sum of DISPLAYED device counts as the denominator (not totalCum).
+    // totalCum was reduced by IP-reconciliation without reducing device
+    // counts, so (cnt / totalCum) could exceed 100%.
+    var sumOfDeviceCounts = Object.values(deviceCounts).reduce(function(a, b) { return a + b; }, 0);
     breakdown += '<div style="margin-top:12px;padding:14px;border-radius:12px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:rgba(34,197,94,0.03);">';
     breakdown += '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:10px;">All-time unique — ' + Object.keys(deviceCounts).length + ' types · ' + Object.keys(ipCounts).length + ' endpoints · ' + totalCum + ' total</div>';
     breakdown += '<table style="border-collapse:collapse;font-size:11px;width:100%;font-family:-apple-system,sans-serif;">';
     breakdown += '<thead><tr style="background:rgba(34,197,94,0.06);color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:9px;"><th style="padding:6px 10px;text-align:left;">Client</th><th style="padding:6px 10px;text-align:right;">Count</th><th style="padding:6px 10px;text-align:right;">%</th></tr></thead><tbody>';
     Object.entries(deviceCounts).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(entry, i) {
       var dev = entry[0]; var cnt = entry[1];
-      var pct = totalCum > 0 ? ((cnt / totalCum) * 100).toFixed(1) : '0.0';
+      var pct = sumOfDeviceCounts > 0 ? ((cnt / sumOfDeviceCounts) * 100).toFixed(1) : '0.0';
       var bg = i % 2 === 0 ? 'transparent' : 'rgba(34,197,94,0.02)';
       breakdown += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:5px 10px;color:var(--text,#0f172a);font-weight:500;">' + dev + '</td><td style="padding:5px 10px;text-align:right;font-weight:700;color:#16a34a;">' + cnt + '</td><td style="padding:5px 10px;text-align:right;color:var(--muted,#94a3b8);">' + pct + '%</td></tr>';
     });
