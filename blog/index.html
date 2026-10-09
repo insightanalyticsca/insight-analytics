@@ -25,6 +25,17 @@
   <link rel="stylesheet" href="../css/styles.css" />
 
   <style>
+    /* Disable scroll-snap on the blog index page. The shared styles.css
+       sets `html { scroll-snap-type: y mandatory }` which works on the
+       main landing page (where every .section is a snap target). But the
+       blog index has NO .section elements — it uses .blog-index-head +
+       .blog-card — so there are no valid snap targets. On mobile/PWA,
+       `mandatory` snap with no targets traps the scroll: the page loads
+       at the last card and won't let the user scroll up. Setting
+       scroll-snap-type: none here overrides the shared CSS (this inline
+       <style> comes after the <link> in <head>, and !important wins). */
+    html { scroll-snap-type: none !important; }
+
     .blog-index-head {
       padding: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 60px) 0 48px;
       text-align: center;
