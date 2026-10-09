@@ -413,7 +413,22 @@
         font-size: 11px; line-height: 1.5;
         color: #cbd5e1;
         word-wrap: break-word;
+        /* Cap height + add tiny vertical scrollbar so all AI text is
+           reachable. Without this, long AI briefings get clipped by the
+           cell's overflow:hidden (which is there for the accent strip's
+           rounded corners). Now the text area scrolls within the cell. */
+        max-height: 120px;
+        overflow-y: auto;
+        /* Firefox: thin scrollbar */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(99,102,241,0.3) transparent;
       }
+      /* Chrome/Safari/Edge: tiny 4px scrollbar */
+      .bmd-ai-cell-text::-webkit-scrollbar { width: 4px; }
+      .bmd-ai-cell-text::-webkit-scrollbar-track { background: transparent; }
+      .bmd-ai-cell-text::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 2px; }
+      .bmd-ai-cell-text::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.5); }
+      [data-bmd-theme="light"] .bmd-ai-cell-text::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); }
       /* Value-change glow — brief flash when a card's value updates */
       @keyframes bmd-value-flash {
         0%   { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
