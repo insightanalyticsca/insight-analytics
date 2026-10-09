@@ -417,7 +417,7 @@
            reachable. Without this, long AI briefings get clipped by the
            cell's overflow:hidden (which is there for the accent strip's
            rounded corners). Now the text area scrolls within the cell. */
-        max-height: 360px;
+        max-height: 432px;
         overflow-y: auto;
         /* Firefox: thin scrollbar */
         scrollbar-width: thin;
@@ -1675,7 +1675,16 @@
         while (contentStart < clean.length && /[:\-\n\r\s]/.test(clean[contentStart])) contentStart++;
         var contentEnd = (i + 1 < uniquePositions.length) ? uniquePositions[i + 1].start - uniquePositions[i + 1].name.length : clean.length;
         var content = clean.substring(contentStart, contentEnd).trim();
+        // Strip leading section name (e.g. "WHAT HAPPENED:") if present
         content = content.replace(/^(what happened|why it matters|what to expect|what to do)[:\-\s]*/i, '').trim();
+        // Strip leading number prefix (e.g. "1:", "2.", "3 -") — Groq
+        // often prefixes section headers with numbers.
+        content = content.replace(/^\d+[:\.\-\)\s]+/, '').trim();
+        // Strip TRAILING number prefix that leaked from the NEXT section's
+        // header (e.g. "...backdrop. 3:" — the "3:" is from "3: WHAT TO EXPECT").
+        // Matches: optional whitespace, then digits, then optional : . - ),
+        // at the very end of the string.
+        content = content.replace(/\s*\d+[:\.\-\)]?\s*$/, '').trim();
         if (content) {
           var el = document.getElementById(pos.sectionId);
           if (el) { el.classList.remove('bmd-shimmer'); el.textContent = content; }
