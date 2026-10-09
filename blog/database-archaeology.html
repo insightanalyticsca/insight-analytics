@@ -85,6 +85,16 @@
   <link rel="stylesheet" href="../css/styles.css" />
 
   <style>
+    /* Disable scroll-snap on blog pages. The shared styles.css sets
+       `html { scroll-snap-type: y mandatory }` which works on the main
+       landing page (where every .section is a snap target). But blog
+       pages use <section class='blog-hero'>, <section class='blog-body'>,
+       etc. — NOT the .section class that styles.css targets for
+       scroll-snap-align. So there are no valid snap targets on blog
+       pages, and `mandatory` snap with no targets traps the scroll on
+       mobile/PWA (page loads at the bottom and won't let the user
+       scroll up). This override disables snap for blog pages only. */
+    html { scroll-snap-type: none !important; }
     /* Blog article-specific styles */
     .article-hero {
       padding: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 60px) 0 40px;
