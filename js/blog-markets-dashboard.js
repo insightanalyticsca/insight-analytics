@@ -1608,7 +1608,7 @@
     fetch('https://startling-belekoy-b0ec70.netlify.app/groq-proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'qwen/qwen3.8-27b', messages: [{ role: 'user', content: prompt }], max_tokens: 600, stream: true, temperature: 0.3 })
+      body: JSON.stringify({ model: 'qwen/qwen3.8-27b', messages: [{ role: 'user', content: prompt }], max_tokens: 1500, stream: true, temperature: 0.3 })
     }).then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       var reader = res.body.getReader();
