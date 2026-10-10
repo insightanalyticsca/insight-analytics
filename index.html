@@ -107,7 +107,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn7TZv2Dl3Jp2s1Lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Site styles -->
-  <link rel="stylesheet" href="./css/styles.css?v=4.86.0" />
+  <link rel="stylesheet" href="./css/styles.css?v=4.92.0" />
 
   <!-- Prevent theme flash -->
   <script>
@@ -1001,12 +1001,12 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="./js/app.js?v=4.86.0" defer></script>
-  <script src="./js/hero-animation.js?v=4.86.0" defer></script>
-  <script src="./js/pull-to-refresh.js?v=4.86.0" defer></script>
-  <script src="./js/assistant.js?v=4.86.0" defer></script>
+  <script src="./js/app.js?v=4.92.0" defer></script>
+  <script src="./js/hero-animation.js?v=4.92.0" defer></script>
+  <script src="./js/pull-to-refresh.js?v=4.92.0" defer></script>
+  <script src="./js/assistant.js?v=4.92.0" defer></script>
 
-  <script src="/js/sw-register.js?v=4.86.0" defer></script>
+  <script src="/js/sw-register.js?v=4.92.0" defer></script>
 <!-- ════════════════════════════════════════════════════════════════════════
      CONFIG BUTTON — access-key-protected settings panel
      ════════════════════════════════════════════════════════════════════════ -->
@@ -1074,8 +1074,29 @@
   var ORIGIN = 'https://insight-analytics.ca';
   var REFRESH_MS = 5000;
 
+  // ─── Client-side bot filter — skip the signal ping for automated clients ──
+  // Detects crawlers, scrapers, test scripts, headless browsers via UA.
+  // Same logic as the edge function's isBotUA() (which deploys after
+  // Netlify credits reset on Oct 29). Client-side filter is the primary
+  // defense — prevents unnecessary requests to the edge function.
+  function isAutomated() {
+    var ua = (navigator.userAgent || '').toLowerCase();
+    var patterns = ['bot', 'crawl', 'spider', 'scrape', 'curl', 'wget',
+      'python', 'headless', 'phantom', 'selenium', 'puppeteer', 'playwright',
+      'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider',
+      'yandexbot', 'ahrefsbot', 'semrushbot', 'facebookexternalhit',
+      'twitterbot', 'linkedinbot', 'scrapy', 'httpx', 'node-fetch', 'axios'];
+    for (var i = 0; i < patterns.length; i++) {
+      if (ua.indexOf(patterns[i]) >= 0) return true;
+    }
+    return false;
+  }
+
   // Page-load signal ping (site=main so the activity panel can filter by site)
-  new Image().src = EP + '?op=beacon&page=' + encodeURIComponent(window.location.pathname) + '&site=main&cb=' + Date.now();
+  // Skip for automated clients — don't count bots as real visits.
+  if (!isAutomated()) {
+    new Image().src = EP + '?op=beacon&page=' + encodeURIComponent(window.location.pathname) + '&site=main&cb=' + Date.now();
+  }
 
   // Footer badge fetch
   fetch(EP + '?op=stats', { headers: { 'Origin': ORIGIN } })
