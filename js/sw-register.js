@@ -14,7 +14,7 @@
   'use strict';
   if (!('serviceWorker' in navigator)) return;
 
-  var EXPECTED_SW_VERSION = 'v4.72.2';
+  var EXPECTED_SW_VERSION = 'v4.93.0-20261015-ai-options';
 
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('/service-worker.js', {
