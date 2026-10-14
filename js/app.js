@@ -212,7 +212,10 @@
       function (entries, observer) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting && src) {
-            showcaseFrame.setAttribute("src", src);
+            // Append cache-bust so iframe loads LATEST dashboard version
+            const cacheBust = "?v=universal22";
+            const finalSrc = src + (src.includes("?") ? "&" : "") + cacheBust;
+            showcaseFrame.setAttribute("src", finalSrc);
             observer.unobserve(showcaseSection);
           }
         });
@@ -292,12 +295,13 @@
         };
         showLoading(labelMap[dashKey] || "Loading dashboard…");
 
-        // Swap iframe src — using a cache-busting query param forces a fresh
-        // load (some browsers won't fire 'load' again if src is identical to
-        // what it was before, but since each dashboard has a different URL
-        // this is mostly belt-and-suspenders)
+        // Swap iframe src — append cache-bust query param so the iframe
+        // always loads the LATEST version of the dashboard (without this,
+        // browsers serve a cached version that may be stale after deploys).
+        const cacheBust = "?v=universal22";
+        const finalSrc = newSrc + (newSrc.includes("?") ? "&" : "") + cacheBust;
         showcaseFrame.setAttribute("data-src", newSrc);
-        showcaseFrame.setAttribute("src", newSrc);
+        showcaseFrame.setAttribute("src", finalSrc);
       });
     }
   }
