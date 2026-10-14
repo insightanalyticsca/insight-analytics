@@ -273,17 +273,19 @@
         // but shouldn't be visible to users)
         if (urlText) {
           const urlMap = {
-            "executive": "insight-analytics.ca/dashboards/executive-operating",
+            "executive": "insight-analytics.ca/dashboards/supply-chain",
+            "retail": "insight-analytics.ca/dashboards/retail-operations",
             "it-ops": "insight-analytics.ca/dashboards/it-service-health",
             "payments": "insight-analytics.ca/dashboards/customer-payments",
             "ebill": "insight-analytics.ca/dashboards/ebill-performance"
           };
-          urlText.textContent = urlMap[dashKey] || "insight-analytics.ca/dashboards/executive-operating";
+          urlText.textContent = urlMap[dashKey] || "insight-analytics.ca/dashboards/supply-chain";
         }
 
         // Show loading overlay with the new label
         const labelMap = {
-          "executive": "Loading executive dashboard…",
+          "executive": "Loading supply chain dashboard…",
+          "retail": "Loading retail operations dashboard…",
           "it-ops": "Loading IT service health dashboard…",
           "payments": "Loading customer payments dashboard…",
           "ebill": "Loading eBill performance dashboard…"

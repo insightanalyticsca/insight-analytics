@@ -623,15 +623,19 @@
       <div class="container">
         <div class="section-head reveal">
           <span class="eyebrow"><span class="dot"></span> See It In Action</span>
-          <h2 class="section-title" id="dash-title">The Executive Operating Dashboard — <span class="grad">live, interactive</span></h2>
-          <p class="section-sub">The dashboard below is a live, interactive demo. Try clicking through the charts. The AI Brief card streams a real-time analysis from the data.</p>
+          <h2 class="section-title" id="dash-title">Live Executive Dashboards — <span class="grad">switch and explore</span></h2>
+          <p class="section-sub">Five live, interactive demos — supply chain, retail operations, IT service health, customer payments, and eBill performance. Try clicking through the charts. The AI Brief card streams a real-time analysis from the data.</p>
         </div>
 
         <!-- Dashboard switcher — pick which live dashboard to preview -->
         <div class="dashboard-switcher reveal" id="dashboardSwitcher" role="tablist" aria-label="Choose a live dashboard to preview">
           <button class="dash-tab is-active" type="button" role="tab" aria-selected="true" data-dash="executive" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian.html" title="Supply chain operations — OTIF trend, carrier scorecard, lane heatmap, freight spend, disruption feed">
             <i class="fas fa-chart-line" aria-hidden="true"></i>
-            <span>Executive Operating</span>
+            <span>Supply Chain</span>
+          </button>
+          <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="retail" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-operations-universal.html" title="Multi-unit retail + services chain — revenue per store, capacity utilization, retail attachment, LTV segments, 4-week forecast">
+            <i class="fas fa-store" aria-hidden="true"></i>
+            <span>Retail Operations</span>
           </button>
           <button class="dash-tab" type="button" role="tab" aria-selected="false" data-dash="it-ops" data-src="https://insightanalyticsca.github.io/dashboards/custom-html/its-service-health.html" title="IT department — SLA, ticket operations, uptime">
             <i class="fas fa-server" aria-hidden="true"></i>
@@ -652,7 +656,7 @@
             <div class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></div>
             <div class="browser-url">
               <i class="fas fa-lock" aria-hidden="true"></i>
-              <span id="browser-url-text">insight-analytics.ca/dashboards/executive-operating</span>
+              <span id="browser-url-text">insight-analytics.ca/dashboards/supply-chain</span>
             </div>
             <div class="browser-actions" aria-hidden="true">
               <i class="fas fa-rotate-right"></i>
@@ -666,7 +670,7 @@
           <div class="browser-frame">
             <div class="browser-loading" id="browser-loading">
               <div class="spinner" aria-hidden="true"></div>
-              <span id="browser-loading-label">Loading executive dashboard…</span>
+              <span id="browser-loading-label">Loading supply chain dashboard…</span>
             </div>
             <iframe
               id="dashboard-iframe"
@@ -728,10 +732,40 @@
         <div class="section-head reveal">
           <span class="eyebrow"><span class="dot"></span> Case Studies</span>
           <h2 class="section-title" id="cases-title">Outcomes, not <span class="grad">slide decks</span></h2>
-          <p class="section-sub">Three production deployments — each one started from components already in the field, then shaped to the client's data and operating model.</p>
+          <p class="section-sub">Five production deployments — each one started from components already in the field, then shaped to the client's data and operating model.</p>
         </div>
 
         <div class="case-grid" data-stagger>
+          <article class="card case-card" data-stagger-item>
+            <div class="case-banner" aria-hidden="true"></div>
+            <div class="case-body">
+              <span class="case-industry"><i class="fas fa-truck"></i> Supply Chain Operations</span>
+              <h3>Supply Chain — OTIF, Carrier, Disruption Dashboard</h3>
+              <div class="case-row"><span class="label">Challenge</span><span>No end-to-end visibility into on-time-in-full delivery, carrier performance, and lane-level risk across the network.</span></div>
+              <div class="case-row"><span class="label success">Outcome</span><span>Live executive dashboard tracking OTIF trend, carrier scorecard, lane heatmap, freight spend, and a 48-hour disruption feed with AI save-play prioritization.</span></div>
+              <div class="case-tags">
+                <span class="tag">Executive Dashboard</span>
+                <span class="tag">OTIF Analytics</span>
+                <span class="tag">Carrier Scorecard</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card case-card" data-stagger-item>
+            <div class="case-banner" aria-hidden="true"></div>
+            <div class="case-body">
+              <span class="case-industry"><i class="fas fa-store"></i> Multi-Unit Retail + Services</span>
+              <h3>Retail Operations — Revenue, Capacity, LTV Dashboard</h3>
+              <div class="case-row"><span class="label">Challenge</span><span>Multi-location retail + services chain lacked store-level revenue visibility, capacity utilization, and customer LTV segmentation.</span></div>
+              <div class="case-row"><span class="label success">Outcome</span><span>Executive dashboard blending retail vs services revenue mix, store productivity by province, appointment capacity heatmap, LTV segments, and a 4-week forecast with AI-driven save plays.</span></div>
+              <div class="case-tags">
+                <span class="tag">Executive Dashboard</span>
+                <span class="tag">Retail Operations</span>
+                <span class="tag">Capacity Utilization</span>
+              </div>
+            </div>
+          </article>
+
           <article class="card case-card" data-stagger-item>
             <div class="case-banner" aria-hidden="true"></div>
             <div class="case-body">
@@ -751,7 +785,7 @@
             <div class="case-banner" aria-hidden="true"></div>
             <div class="case-body">
               <span class="case-industry"><i class="fas fa-file-invoice"></i> eBill Performance</span>
-              <h3>eBill Performance — Executive Operating Dashboard</h3>
+              <h3>eBill Performance — Adoption + Delivery Dashboard</h3>
               <div class="case-row"><span class="label">Challenge</span><span>No visibility into eBill adoption + delivery performance across the customer base.</span></div>
               <div class="case-row"><span class="label success">Outcome</span><span>Live executive dashboard tracking eBill adoption, delivery rates, and bounce failures across the network. AI-driven prioritization of follow-up actions for stuck accounts.</span></div>
               <div class="case-tags">
