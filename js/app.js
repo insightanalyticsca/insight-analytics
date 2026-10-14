@@ -213,7 +213,7 @@
         entries.forEach(function (entry) {
           if (entry.isIntersecting && src) {
             // Append cache-bust so iframe loads LATEST dashboard version
-            const cacheBust = "?v=universal29";
+            const cacheBust = "?v=universal30";
             const finalSrc = src + (src.includes("?") ? "&" : "") + cacheBust;
             showcaseFrame.setAttribute("src", finalSrc);
             observer.unobserve(showcaseSection);
@@ -298,7 +298,7 @@
         // Swap iframe src — append cache-bust query param so the iframe
         // always loads the LATEST version of the dashboard (without this,
         // browsers serve a cached version that may be stale after deploys).
-        const cacheBust = "?v=universal29";
+        const cacheBust = "?v=universal30";
         const finalSrc = newSrc + (newSrc.includes("?") ? "&" : "") + cacheBust;
         showcaseFrame.setAttribute("data-src", newSrc);
         showcaseFrame.setAttribute("src", finalSrc);
