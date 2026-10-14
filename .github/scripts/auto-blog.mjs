@@ -7,7 +7,7 @@
  *   2. Feature article: deep-dive on Insight Analytics' own features (500 words)
  *
  * Groq is called via Netlify proxy (no API key needed).
- * max_tokens: 1500 (enough for 500+ words)
+ * max_tokens: 2000 (enough for 500+ words)
  */
 
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
@@ -15,7 +15,7 @@ import { join } from 'path';
 
 const SITE_URL = 'https://insight-analytics.ca';
 const GROQ_PROXY = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+const GROQ_MODEL = 'openai/gpt-oss-120b';
 const REPO_ROOT = process.cwd();
 const NOW = new Date();
 const ISO_NOW = NOW.toISOString();
@@ -129,13 +129,15 @@ async function groqChat(prompt) {
         model: GROQ_MODEL,
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.4,
-        max_tokens: 1500,  // enough for 500+ words
+        max_tokens: 2000,  // enough for 500+ words
         stream: false
       })
     });
     if (!res.ok) throw new Error(`Groq proxy returned ${res.status}`);
     const data = await res.json();
-    return data.choices?.[0]?.message?.content?.trim() || '';
+    // gpt-oss-120b is a reasoning model — output may be in 'reasoning' or 'content'
+    const msg = data.choices?.[0]?.message || {};
+    return (msg.content?.trim() || msg.reasoning?.trim() || '').split('\n').filter(l => !l.startsWith('The user') && !l.startsWith('We need') && !l.startsWith('Count') && !l.startsWith('Let')).join('\n').trim() || '';
   } catch (e) {
     console.error('Groq error:', e.message);
     return '';
