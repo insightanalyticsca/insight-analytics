@@ -160,7 +160,7 @@ async function fetchRSS(feedUrl) {
 // ─── Blog post HTML template ─────────────────────────────────────────────
 function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, keywords, slug, dateStr, isoDate }) {
   const readTime = Math.max(3, Math.ceil(body.split(/\s+/).length / 200));
-  const sourceAttribution = sourceUrl ? `\n    <p style="font-size:0.85rem;color:var(--text-muted);margin-top:32px;padding-top:16px;border-top:1px solid var(--border);">Source: <a href="${escAttr(sourceUrl)}" target="_blank" rel="noopener">${escHtml(sourceName || sourceUrl)}</a></p>` : '';
+  const sourceAttribution = sourceUrl ? `\n    <div class="article-source">\n      <div class="article-source-label"><i class="fas fa-link"></i> Source Article</div>\n      <a href="${escAttr(sourceUrl)}" target="_blank" rel="noopener">${escHtml(sourceName || sourceUrl)} <i class="fas fa-external-link-alt" style="font-size:0.8em"></i></a>\n    </div>` : '';
   
   return `<!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -170,7 +170,7 @@ function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, ke
 <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
 <title>${escHtml(title)} | Insight Analytics</title>
-<meta name="description" content="${escAttr(body.slice(0, 155))}" />
+<meta name="description" content="${escAttr(body.replace(/<[^>]+>/g, "").slice(0, 155))}" />
 <meta name="keywords" content="${escAttr(keywords)}" />
 <meta name="author" content="Insight Analytics" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -179,7 +179,7 @@ function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, ke
 <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="${escAttr(title)}" />
-<meta property="og:description" content="${escAttr(body.slice(0, 155))}" />
+<meta property="og:description" content="${escAttr(body.replace(/<[^>]+>/g, "").slice(0, 155))}" />
 <meta property="og:url" content="${SITE_URL}/insights/${slug}" />
 <meta property="og:site_name" content="Insight Analytics" />
 <meta property="article:published_time" content="${isoDate}" />
@@ -187,7 +187,7 @@ function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, ke
 <meta property="article:section" content="${escAttr(category)}" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="${escAttr(title)}" />
-<meta name="twitter:description" content="${escAttr(body.slice(0, 155))}" />
+<meta name="twitter:description" content="${escAttr(body.replace(/<[^>]+>/g, "").slice(0, 155))}" />
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":${JSON.stringify(title)},"description":${JSON.stringify(body.slice(0,155))},"author":{"@type":"Organization","name":"Insight Analytics","url":"${SITE_URL}/"},"publisher":{"@type":"Organization","name":"Insight Analytics","logo":{"@type":"ImageObject","url":"${SITE_URL}/icons/icon-512.png"}},"datePublished":"${dateStr}","dateModified":"${dateStr}","mainEntityOfPage":{"@type":"WebPage","@id":"${SITE_URL}/insights/${slug}"},"articleSection":${JSON.stringify(category)},"keywords":${JSON.stringify(keywords.split(',').map(k=>k.trim()))}}
 </script>
@@ -196,13 +196,13 @@ function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, ke
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="../css/styles.css" />
-<style>html{scroll-snap-type:none!important}</style>
+<style>html{scroll-snap-type:none!important}.article-hero{padding:calc(var(--nav-h) + 60px) 0 40px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,0.04) 0%,transparent 100%);border-bottom:1px solid var(--border)}.article-eyebrow{font-family:var(--font-head);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}.article-hero h1{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-bottom:20px}.article-meta{font-size:.85rem;color:var(--text-muted);display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}.article-meta .sep{opacity:.4}.article-body{max-width:720px;margin:0 auto;padding:48px 24px 64px}.article-body p{font-size:1.06rem;line-height:1.75;margin-bottom:24px;color:var(--text)}.article-body strong{font-weight:700}.article-back{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-head);font-size:.88rem;font-weight:600;color:var(--text-muted);text-decoration:none;margin-bottom:32px}.article-back:hover{color:var(--accent)}.article-source{margin:32px 0;padding:20px;border-radius:12px;background:linear-gradient(135deg,rgba(99,102,241,0.06),rgba(6,182,212,0.04));border:1px solid var(--border)}.article-source-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:8px}.article-source a{color:var(--accent);text-decoration:none;font-weight:600;word-break:break-all}</style>
 </head>
 <body>
 <header class="navbar" id="navbar">
 <div class="nav-inner">
 <a href="${SITE_URL}/" class="brand"><span class="brand-mark"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGrad)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGrad)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGrad)"/></svg></span><span class="brand-name">Insight <b>Analytics</b></span></a>
-<nav class="nav-links"><a href="${SITE_URL}/#services" class="nav-link">Services</a><a href="${SITE_URL}/#dashboard" class="nav-link">Dashboard</a><a href="${SITE_URL}/#cases" class="nav-link">Case Studies</a><a href="/insights/" class="nav-link">Live Demos</a><a href="${SITE_URL}/#contact" class="nav-link">Contact</a></nav>
+<nav class="nav-links"><a href="${SITE_URL}/#services" class="nav-link">Services</a><a href="${SITE_URL}/#dashboard" class="nav-link">Dashboard</a><a href="${SITE_URL}/#cases" class="nav-link">Case Studies</a><a href="/insights/" class="nav-link">Insights</a><a href="/blog/" class="nav-link">Live Demos</a><a href="${SITE_URL}/#contact" class="nav-link">Contact</a></nav>
 <div class="nav-actions"><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme"><i class="fas fa-sun" id="theme-icon"></i></button><a href="${SITE_URL}/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check"></i> Book a Demo</a></div>
 </div>
 </header>
@@ -211,7 +211,7 @@ function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, ke
 <div class="container">
 <div class="article-eyebrow">${escHtml(category)}</div>
 <h1>${escHtml(title)}</h1>
-<div class="article-meta"><span>Insight Analytics</span><span class="sep">·</span><span>${dateStr}</span><span class="sep">·</span><span>${readTime} min read</span></div>
+<div class="article-meta"><span>Insight Analytics</span><span class="sep">·</span><span>${new Date(dateStr).toLocaleDateString("en-US", {month:"short",day:"numeric",year:"numeric"})}</span><span class="sep">·</span><span>${readTime} min read</span></div>
 </div>
 </section>
 <section class="article-body" style="max-width:720px;margin:0 auto;padding:48px 24px 64px;">
@@ -340,7 +340,8 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
     const gridIdx = indexHTML.indexOf(gridMarker);
     if (gridIdx > 0) {
       const insertPos = gridIdx + gridMarker.length;
-      indexHTML = indexHTML.slice(0, insertPos) + '\n' + newCards + indexHTML.slice(insertPos);
+      // PREPEND: newest articles on top
+      indexHTML = indexHTML.slice(0, insertPos) + newCards + indexHTML.slice(insertPos);
       const newCards = generated.map(post => {
         const dateFormatted = new Date(post.dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         return `    <a href="/insights/${post.slug}" class="insight-card">
