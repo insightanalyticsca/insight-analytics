@@ -622,7 +622,8 @@ async function main() {
     if (withFresh !== html) { html = withFresh; modified = true; changeLog.techniques.push('freshness'); }
 
     // P1: Automated internal linking
-    const linkResult = autoLink(html, relPath, allPages);
+    // DISABLED: autoLink injects visible <a> tags into body text — causes plain-text SEO leakage
+    const linkResult = { html, linksAdded: 0 };
     if (linkResult.linksAdded > 0) {
       html = linkResult.html;
       modified = true;
@@ -673,7 +674,7 @@ Content: ${content.text.slice(0, 800)}`);
         if (html.match(/<meta\s+name=["']keywords["']/i)) {
           html = html.replace(/<meta\s+name=["']keywords["']\s+content=["'][^"']*["']/is, `<meta name="keywords" content="${escAttr(seo.keywords)}">`);
         } else {
-          html = html.replace(/<meta\s+name=["']description["']\s+content=["'][^"']*["']/is, m => `${m}\n  <meta name="keywords" content="${escAttr(seo.keywords)}">`);
+          html = html.replace(/</head>/i, m => `  <meta name="keywords" content="${escAttr(seo.keywords)}">\n${m}`);
         }
         changeLog.keywords = seo.keywords;
       }
