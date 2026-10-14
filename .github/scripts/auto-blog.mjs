@@ -39,6 +39,7 @@ Business-focused, not overly technical. Write as flowing prose — no H2 section
     category: 'Business Intelligence',
     keywords: 'dashboard constructor, CSS grid, executive dashboards, responsive dashboards, PWA dashboards, drag and resize, business intelligence',
     slug: 'universal-dashboard-constructor-system',
+    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian.html',
   },
   {
     title: 'Multi-Color Heatmaps with Translucent Cells: A Bloomberg-Terminal Visual Language',
@@ -48,6 +49,7 @@ Explain how this visual language makes complex matrix data instantly scannable. 
     category: 'Data Visualization',
     keywords: 'heatmap visualization, multi-color heatmap, executive dashboards, data visualization, Bloomberg terminal, ECharts heatmap',
     slug: 'multicolor-heatmap-visual-language',
+    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian.html',
   },
   {
     title: 'AI Brief Cards: Streaming Groq Analysis for Every Executive Dashboard',
@@ -57,6 +59,7 @@ Explain how executives get an honest narrative summary — not just numbers. Wri
     category: 'Artificial Intelligence',
     keywords: 'AI brief, Groq, executive dashboards, AI analysis, automated insights, business intelligence, streaming AI, data storytelling',
     slug: 'ai-brief-cards-streaming-groq-analysis',
+    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-velocity.html',
   },
   {
     title: 'Pastel Palette Rotation: Why Every Dashboard Visit Looks Slightly Different',
@@ -66,6 +69,7 @@ Explain why this prevents dashboard fatigue and keeps the experience engaging. W
     category: 'Design',
     keywords: 'pastel palette, dashboard design, color rotation, HSL, user engagement, executive dashboards, UX design',
     slug: 'pastel-palette-rotation-dashboard-design',
+    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-sentinel.html',
   },
   {
     title: 'Pointer Events for PWA: Drag, Move, Resize on Any Device',
@@ -75,6 +79,7 @@ Explain how executives can customize their dashboard layout on an iPad or phone.
     category: 'Technology',
     keywords: 'pointer events, PWA, drag and drop, touch support, mobile dashboards, responsive design, executive dashboards',
     slug: 'pointer-events-pwa-drag-move-resize',
+    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-operations-universal.html',
   },
   {
     title: 'Glassmorphic Tooltips: Dark Glass UI for Chart Data Exploration',
@@ -84,6 +89,7 @@ Explain how this matches Bloomberg-terminal aesthetics and provides high contras
     category: 'Design',
     keywords: 'glassmorphism, tooltip design, dashboard UI, dark glass, backdrop filter, executive dashboards, data visualization UX',
     slug: 'glassmorphic-tooltips-chart-exploration',
+    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-customer-payments.html',
   },
   {
     title: 'From Seven Renderers to One: Consolidating Executive Dashboards',
@@ -93,6 +99,7 @@ Explain the business benefits: consistent visual language, one codebase to maint
     category: 'Business Intelligence',
     keywords: 'dashboard migration, universal dashboard, CSS grid, code consolidation, executive dashboards, business intelligence, dashboard architecture',
     slug: 'consolidating-executive-dashboards-one-class',
+    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-ebill-performance.html',
   },
   {
     title: 'Gradient Chart Fills and Shadow Glow: Visual Polish That Sells',
@@ -102,6 +109,7 @@ Explain how visual polish builds executive confidence in the data. Write as flow
     category: 'Data Visualization',
     keywords: 'gradient fills, chart design, executive dashboards, visual polish, ECharts, data visualization, shadow effects, dashboard aesthetics',
     slug: 'gradient-chart-fills-shadow-glow-visual-polish',
+    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian.html',
   },
 ];
 
@@ -160,7 +168,7 @@ async function fetchRSS(feedUrl) {
 // ─── Blog post HTML template ─────────────────────────────────────────────
 function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, keywords, slug, dateStr, isoDate }) {
   const readTime = Math.max(3, Math.ceil(body.split(/\s+/).length / 200));
-  const sourceAttribution = sourceUrl ? `\n    <div class="article-source">\n      <div class="article-source-label"><i class="fas fa-link"></i> Source Article</div>\n      <a href="${escAttr(sourceUrl)}" target="_blank" rel="noopener">${escHtml(sourceName || sourceUrl)} <i class="fas fa-external-link-alt" style="font-size:0.8em"></i></a>\n    </div>` : '';
+  const sourceAttribution = sourceUrl ? `\n    <div class=\"article-source\">\n      <div class=\"article-source-label\"><i class=\"fas fa-link\"></i> ${sourceName ? 'Source' : 'Source Article'}</div>\n      <a href=\"${escAttr(sourceUrl)}\" target=\"_blank\" rel=\"noopener\">${escHtml(sourceName || sourceUrl)} <i class=\"fas fa-external-link-alt\" style=\"font-size:0.8em\"></i></a>\n    </div>` : '';
   
   return `<!DOCTYPE html>
 <html lang="en" data-theme="light">
