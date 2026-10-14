@@ -334,12 +334,16 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
     let indexHTML = readFileSync(indexPath, 'utf-8');
     
     // Find the first blog-card and insert new posts before it
-    const insertPoint = '<a href="/insights/';
-    const firstCardIdx = indexHTML.indexOf(insertPoint);
-    if (firstCardIdx > 0) {
+    // Insert cards INSIDE the insights-grid div, after the last existing card
+    // or after the opening div if no cards exist yet
+    const gridMarker = '<div class="insights-grid" id="insights-list">';
+    const gridIdx = indexHTML.indexOf(gridMarker);
+    if (gridIdx > 0) {
+      const insertPos = gridIdx + gridMarker.length;
+      indexHTML = indexHTML.slice(0, insertPos) + '\n' + newCards + indexHTML.slice(insertPos);
       const newCards = generated.map(post => {
         const dateFormatted = new Date(post.dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        return `    <a href="/insights/${post.slug}" class="blog-card">
+        return `    <a href="/insights/${post.slug}" class="insight-card">
       <div class="card-eyebrow">${post.category}</div>
       <h2>${escHtml(post.title)}</h2>
       <p>AI-generated executive analysis. ${post.readTime} min read.</p>
@@ -354,7 +358,7 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
 `;
       }).join('');
       
-      indexHTML = indexHTML.slice(0, firstCardIdx) + newCards + indexHTML.slice(firstCardIdx);
+      indexHTML = indexHTML.slice(0, insertPos) + '\n' + newCards + indexHTML.slice(insertPos);
       writeFileSync(indexPath, indexHTML);
       console.log('  ✅ Updated insights/index.html');
     }
