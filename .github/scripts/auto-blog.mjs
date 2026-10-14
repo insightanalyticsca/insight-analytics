@@ -339,9 +339,7 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
     const gridMarker = '<div class="insights-grid" id="insights-list">';
     const gridIdx = indexHTML.indexOf(gridMarker);
     if (gridIdx > 0) {
-      const insertPos = gridIdx + gridMarker.length;
-      // PREPEND: newest articles on top
-      indexHTML = indexHTML.slice(0, insertPos) + newCards + indexHTML.slice(insertPos);
+      // Build the new card HTML FIRST
       const newCards = generated.map(post => {
         const dateFormatted = new Date(post.dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         return `    <a href="/insights/${post.slug}" class="insight-card">
@@ -359,7 +357,8 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
 `;
       }).join('');
       
-      indexHTML = indexHTML.slice(0, insertPos) + '\n' + newCards + indexHTML.slice(insertPos);
+      const insertPos = gridIdx + gridMarker.length;
+      indexHTML = indexHTML.slice(0, insertPos) + newCards + indexHTML.slice(insertPos);
       writeFileSync(indexPath, indexHTML);
       console.log('  ✅ Updated insights/index.html');
     }
