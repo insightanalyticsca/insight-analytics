@@ -1,0 +1,50 @@
+name: Auto-Blog Generator
+
+on:
+  schedule:
+    # Twice daily: 6:00 AM + 6:00 PM UTC
+    - cron: '0 6 * * *'
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-blog
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate blog articles
+        run: node .github/scripts/auto-blog.mjs
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit + push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "Auto-Blog Bot"
+          git config user.email "blog-bot@insight-analytics.ca"
+          git commit -m "blog: auto-generated AI articles — $(date -u +%Y-%m-%d-%H%M)
+
+          [skip ci]"
+          git push
+          echo "✅ Committed + pushed. Deploy workflow will auto-deploy to GitHub Pages."
