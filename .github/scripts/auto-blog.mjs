@@ -353,7 +353,7 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
         const dateFormatted = new Date(post.dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         return `    <a href="/insights/${post.slug}" class="insight-card">
       <div class="card-eyebrow">${post.category}</div>
-      <h2>${escHtml(post.title)}</h2>
+      <h2>${escHtml(post.title.replace(/&#8217;/g, "'").replace(/&#8216;/g, "'").replace(/&amp;/g, '&').replace(/&#8211;/g, '-'))}</h2>
       <p>AI-generated executive analysis. ${post.readTime} min read.</p>
       <div class="card-meta">
         <span>Insight Analytics</span>
