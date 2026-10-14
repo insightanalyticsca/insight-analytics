@@ -174,13 +174,13 @@ function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, ke
 <meta name="keywords" content="${escAttr(keywords)}" />
 <meta name="author" content="Insight Analytics" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
-<link rel="canonical" href="${SITE_URL}/blog/${slug}" />
+<link rel="canonical" href="${SITE_URL}/insights/${slug}" />
 <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="${escAttr(title)}" />
 <meta property="og:description" content="${escAttr(body.slice(0, 155))}" />
-<meta property="og:url" content="${SITE_URL}/blog/${slug}" />
+<meta property="og:url" content="${SITE_URL}/insights/${slug}" />
 <meta property="og:site_name" content="Insight Analytics" />
 <meta property="article:published_time" content="${isoDate}" />
 <meta property="article:author" content="Insight Analytics" />
@@ -189,7 +189,7 @@ function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, ke
 <meta name="twitter:title" content="${escAttr(title)}" />
 <meta name="twitter:description" content="${escAttr(body.slice(0, 155))}" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":${JSON.stringify(title)},"description":${JSON.stringify(body.slice(0,155))},"author":{"@type":"Organization","name":"Insight Analytics","url":"${SITE_URL}/"},"publisher":{"@type":"Organization","name":"Insight Analytics","logo":{"@type":"ImageObject","url":"${SITE_URL}/icons/icon-512.png"}},"datePublished":"${dateStr}","dateModified":"${dateStr}","mainEntityOfPage":{"@type":"WebPage","@id":"${SITE_URL}/blog/${slug}"},"articleSection":${JSON.stringify(category)},"keywords":${JSON.stringify(keywords.split(',').map(k=>k.trim()))}}
+{"@context":"https://schema.org","@type":"Article","headline":${JSON.stringify(title)},"description":${JSON.stringify(body.slice(0,155))},"author":{"@type":"Organization","name":"Insight Analytics","url":"${SITE_URL}/"},"publisher":{"@type":"Organization","name":"Insight Analytics","logo":{"@type":"ImageObject","url":"${SITE_URL}/icons/icon-512.png"}},"datePublished":"${dateStr}","dateModified":"${dateStr}","mainEntityOfPage":{"@type":"WebPage","@id":"${SITE_URL}/insights/${slug}"},"articleSection":${JSON.stringify(category)},"keywords":${JSON.stringify(keywords.split(',').map(k=>k.trim()))}}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -202,7 +202,7 @@ function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, ke
 <header class="navbar" id="navbar">
 <div class="nav-inner">
 <a href="${SITE_URL}/" class="brand"><span class="brand-mark"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGrad)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGrad)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGrad)"/></svg></span><span class="brand-name">Insight <b>Analytics</b></span></a>
-<nav class="nav-links"><a href="${SITE_URL}/#services" class="nav-link">Services</a><a href="${SITE_URL}/#dashboard" class="nav-link">Dashboard</a><a href="${SITE_URL}/#cases" class="nav-link">Case Studies</a><a href="/blog/" class="nav-link">Live Demos</a><a href="${SITE_URL}/#contact" class="nav-link">Contact</a></nav>
+<nav class="nav-links"><a href="${SITE_URL}/#services" class="nav-link">Services</a><a href="${SITE_URL}/#dashboard" class="nav-link">Dashboard</a><a href="${SITE_URL}/#cases" class="nav-link">Case Studies</a><a href="/insights/" class="nav-link">Live Demos</a><a href="${SITE_URL}/#contact" class="nav-link">Contact</a></nav>
 <div class="nav-actions"><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme"><i class="fas fa-sun" id="theme-icon"></i></button><a href="${SITE_URL}/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check"></i> Book a Demo</a></div>
 </div>
 </header>
@@ -215,13 +215,13 @@ function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, ke
 </div>
 </section>
 <section class="article-body" style="max-width:720px;margin:0 auto;padding:48px 24px 64px;">
-<a href="/blog/" class="article-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+<a href="/insights/" class="article-back"><i class="fas fa-arrow-left"></i> All Insights</a>
 ${body}
 ${sourceAttribution}
 </section>
 </main>
 <footer style="padding:32px 24px;text-align:center;border-top:1px solid var(--border);">
-<a href="/blog/" style="font-size:0.88rem;color:var(--text-muted);text-decoration:none;">← Back to all articles</a>
+<a href="/insights/" style="font-size:0.88rem;color:var(--text-muted);text-decoration:none;">← Back to all insights</a>
 </footer>
 <script>!function(){var t=document.getElementById("theme-toggle"),i=document.getElementById("theme-icon");function e(){var t=document.documentElement.getAttribute("data-theme");t="light"===t?"dark":"light",document.documentElement.setAttribute("data-theme",t);var e=document.getElementById("theme-icon");e&&("dark"===t?e.className="fas fa-moon":e.className="fas fa-sun")}t&&t.addEventListener("click",e);try{var h=localStorage.getItem("docchat-theme");h&&document.documentElement.setAttribute("data-theme",h)}catch(t){}}();</script>
 </body>
@@ -245,7 +245,7 @@ async function main() {
   }
   
   // Pick 1 random RSS item (not already blogged)
-  const existingPosts = readdirSync(join(REPO_ROOT, 'blog')).filter(f => f.endsWith('.html') && f !== 'index.html');
+  const existingPosts = readdirSync(join(REPO_ROOT, 'insights')).filter(f => f.endsWith('.html') && f !== 'index.html');
   const availableItems = allRSSItems.filter(item => {
     const slug = slugify(item.title);
     return !existingPosts.includes(slug + '.html');
@@ -287,9 +287,9 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
         isoDate: ISO_NOW
       });
       
-      writeFileSync(join(REPO_ROOT, 'blog', slug + '.html'), postHTML);
+      writeFileSync(join(REPO_ROOT, 'insights', slug + '.html'), postHTML);
       generated.push({ slug, title: item.title, category: 'Applied AI', dateStr: DATE_STR, readTime: 3 });
-      console.log(`  ✅ Generated: blog/${slug}.html`);
+      console.log(`  ✅ Generated: insights/${slug}.html`);
     }
   }
   
@@ -321,25 +321,25 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
         isoDate: ISO_NOW
       });
       
-      writeFileSync(join(REPO_ROOT, 'blog', topic.slug + '.html'), postHTML);
+      writeFileSync(join(REPO_ROOT, 'insights', topic.slug + '.html'), postHTML);
       generated.push({ slug: topic.slug, title: topic.title, category: topic.category, dateStr: DATE_STR, readTime: 3 });
-      console.log(`  ✅ Generated: blog/${topic.slug}.html`);
+      console.log(`  ✅ Generated: insights/${topic.slug}.html`);
     }
   }
   
-  // ── 3. Update blog/index.html ──
+  // ── 3. Update insights/index.html ──
   if (generated.length > 0) {
-    console.log('\n--- Updating blog/index.html ---');
-    const indexPath = join(REPO_ROOT, 'blog', 'index.html');
+    console.log('\n--- Updating insights/index.html ---');
+    const indexPath = join(REPO_ROOT, 'insights', 'index.html');
     let indexHTML = readFileSync(indexPath, 'utf-8');
     
     // Find the first blog-card and insert new posts before it
-    const insertPoint = '<a href="/blog/';
+    const insertPoint = '<a href="/insights/';
     const firstCardIdx = indexHTML.indexOf(insertPoint);
     if (firstCardIdx > 0) {
       const newCards = generated.map(post => {
         const dateFormatted = new Date(post.dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        return `    <a href="/blog/${post.slug}" class="blog-card">
+        return `    <a href="/insights/${post.slug}" class="blog-card">
       <div class="card-eyebrow">${post.category}</div>
       <h2>${escHtml(post.title)}</h2>
       <p>AI-generated executive analysis. ${post.readTime} min read.</p>
@@ -356,7 +356,7 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
       
       indexHTML = indexHTML.slice(0, firstCardIdx) + newCards + indexHTML.slice(firstCardIdx);
       writeFileSync(indexPath, indexHTML);
-      console.log('  ✅ Updated blog/index.html');
+      console.log('  ✅ Updated insights/index.html');
     }
     
     // ── 4. Update sitemap.xml ──
@@ -364,7 +364,7 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
     const sitemapPath = join(REPO_ROOT, 'sitemap.xml');
     let sitemap = readFileSync(sitemapPath, 'utf-8');
     const newUrls = generated.map(post => `  <url>
-    <loc>${SITE_URL}/blog/${post.slug}</loc>
+    <loc>${SITE_URL}/insights/${post.slug}</loc>
     <lastmod>${post.dateStr}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

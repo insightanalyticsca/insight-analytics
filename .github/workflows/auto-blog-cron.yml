@@ -2,13 +2,13 @@ name: Auto-Blog Generator
 
 on:
   schedule:
-    # Twice daily: 6:00 AM + 6:00 PM UTC
     - cron: '0 6 * * *'
     - cron: '0 18 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: auto-blog
@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -27,6 +29,8 @@ jobs:
 
       - name: Generate blog articles
         run: node .github/scripts/auto-blog.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check for changes
         id: changes
@@ -47,4 +51,4 @@ jobs:
 
           [skip ci]"
           git push
-          echo "✅ Committed + pushed. Deploy workflow will auto-deploy to GitHub Pages."
+          echo "Done. Deploy workflow will auto-deploy."
