@@ -7,7 +7,7 @@
  *   2. Feature article: deep-dive on Insight Analytics' own features (500 words)
  *
  * Groq is called via Netlify proxy (no API key needed).
- * max_tokens: 1200 (enough for 500+ words)
+ * max_tokens: 1500 (enough for 500+ words)
  */
 
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
@@ -15,7 +15,7 @@ import { join } from 'path';
 
 const SITE_URL = 'https://insight-analytics.ca';
 const GROQ_PROXY = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
-const GROQ_MODEL = 'openai/gpt-oss-120b';
+const GROQ_MODEL = 'llama-3.3-70b-versatile';
 const REPO_ROOT = process.cwd();
 const NOW = new Date();
 const ISO_NOW = NOW.toISOString();
@@ -129,7 +129,7 @@ async function groqChat(prompt) {
         model: GROQ_MODEL,
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.4,
-        max_tokens: 1200,  // enough for 500+ words
+        max_tokens: 1500,  // enough for 500+ words
         stream: false
       })
     });
