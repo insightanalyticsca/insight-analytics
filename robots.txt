@@ -3,5 +3,8 @@
 User-agent: *
 Allow: /
 
-# Point to the sitemap
+# Allow Googlebot-Extended for AI Overview / AI Mode inclusion
+User-agent: Googlebot-Extended
+Allow: /
+
 Sitemap: https://insight-analytics.ca/sitemap.xml

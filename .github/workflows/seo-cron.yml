@@ -1,0 +1,49 @@
+name: SEO Optimization Cron
+
+on:
+  schedule:
+    # Run daily at 6:00 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seo
+  cancel-in-progress: true
+
+jobs:
+  seo-optimize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run SEO optimizer
+        run: node .github/scripts/seo-optimizer.mjs
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit SEO updates
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "SEO Bot"
+          git config user.email "seo-bot@insightanalyticsca.github.io"
+          git commit -m "chore(seo): automated optimization — all P0-P3 techniques
+
+          [skip ci]"
+          git push
+          echo "✅ Committed + pushed. The deploy.yml workflow will auto-deploy to GitHub Pages."
