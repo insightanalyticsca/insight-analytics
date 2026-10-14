@@ -42,7 +42,7 @@
     var suite = document.body.dataset.suite;
     if (!suite) return null;
     // Executive suites use data/executive/<suite>.json
-    var execKeys = ['ar', 'payments', 'disconnects', 'ebill', 'finalbill', 'chatters'];
+    var execKeys = ['ar', 'payments', 'disconnects', 'ebill', 'finalbill', 'meridian', 'velocity', 'sentinel'];
     if (execKeys.indexOf(suite) >= 0) return '../data/executive/' + suite + '.json';
     // CSR + ITS suites use data/versions/<suite>.json
     if (suite.indexOf('csr-') === 0 || suite.indexOf('its-') === 0) {
@@ -306,7 +306,7 @@
   //   - Refreshes within 1hr: 0 Groq calls (cached)
   //   - Visit after 1hr: 1 fresh Groq call, then cached again
   // Net: ~80% reduction in token usage for normal demo traffic.
-  // Keyed by version (so chatters.json != ar.json) + payload hash (so a
+  // Keyed by version (so velocity.json != ar.json) + payload hash (so a
   // new period invalidates the cache automatically).
   var BRIEF_CACHE_PREFIX = 'exec-ai-brief:v1:';
   var BRIEF_CACHE_TTL_MS = 60 * 60 * 1000;  // 1 hour
