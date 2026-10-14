@@ -33,56 +33,72 @@ const RSS_FEEDS = [
 const FEATURE_TOPICS = [
   {
     title: 'The Universal Dashboard Constructor: One Grid System for Every Executive View',
-    prompt: `Write a 500-word executive-oriented article about a "universal dashboard constructor" — a single CSS Grid + container query system that renders any executive dashboard (supply chain, SaaS growth, risk & treasury, retail operations, IT service health, customer payments, eBill performance) with consistent theming, pastel palette rotation, gradient chart fills, glassmorphic tooltips, and free drag-to-move/resize with pointer events for PWA.\n\nStructure with 3 H2 sections:\n## What It Does\n## Why It Matters\n## What Executives Should Do\n\nBusiness-focused, not overly technical. 500 words exactly.`,
+    prompt: `Write a 500-word executive-oriented article about a "universal dashboard constructor" — a single CSS Grid + container query system that renders any executive dashboard (supply chain, SaaS growth, risk & treasury, retail operations, IT service health, customer payments, eBill performance) with consistent theming, pastel palette rotation, gradient chart fills, glassmorphic tooltips, and free drag-to-move/resize with pointer events for PWA.
+
+Business-focused, not overly technical. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
     category: 'Business Intelligence',
     keywords: 'dashboard constructor, CSS grid, executive dashboards, responsive dashboards, PWA dashboards, drag and resize, business intelligence',
     slug: 'universal-dashboard-constructor-system',
   },
   {
     title: 'Multi-Color Heatmaps with Translucent Cells: A Bloomberg-Terminal Visual Language',
-    prompt: `Write a 500-word executive-oriented article about multi-color heatmap visualizations for executive dashboards. Cover: diverging color scales (red→amber→green for data crossing zero, warm pastel for positive data), translucent cell opacity (82%), rounded corners, shadow glow on emphasis, and always-visible value labels.\n\nStructure with 3 H2 sections:\n## What It Does\n## Why It Matters\n## What Executives Should Do\n\nExplain how this visual language makes complex matrix data instantly scannable. 500 words exactly.`,
+    prompt: `Write a 500-word executive-oriented article about multi-color heatmap visualizations for executive dashboards. Cover: diverging color scales (red→amber→green for data crossing zero, warm pastel for positive data), translucent cell opacity (82%), rounded corners, shadow glow on emphasis, and always-visible value labels.
+
+Explain how this visual language makes complex matrix data instantly scannable. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
     category: 'Data Visualization',
     keywords: 'heatmap visualization, multi-color heatmap, executive dashboards, data visualization, Bloomberg terminal, ECharts heatmap',
     slug: 'multicolor-heatmap-visual-language',
   },
   {
     title: 'AI Brief Cards: Streaming Groq Analysis for Every Executive Dashboard',
-    prompt: `Write a 500-word executive-oriented article about AI Brief cards on executive dashboards. Cover: a 4-section AI brief (What Happened, Why, What to Expect, What to Do) that streams real-time analysis from Groq LLM based on the dashboard's actual data.\n\nStructure with 3 H2 sections:\n## What It Does\n## Why It Matters\n## What Executives Should Do\n\nExplain how executives get an honest narrative summary — not just numbers. 500 words exactly.`,
+    prompt: `Write a 500-word executive-oriented article about AI Brief cards on executive dashboards. Cover: a 4-section AI brief (What Happened, Why, What to Expect, What to Do) that streams real-time analysis from Groq LLM based on the dashboard's actual data.
+
+Explain how executives get an honest narrative summary — not just numbers. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
     category: 'Artificial Intelligence',
     keywords: 'AI brief, Groq, executive dashboards, AI analysis, automated insights, business intelligence, streaming AI, data storytelling',
     slug: 'ai-brief-cards-streaming-groq-analysis',
   },
   {
     title: 'Pastel Palette Rotation: Why Every Dashboard Visit Looks Slightly Different',
-    prompt: `Write a 500-word executive-oriented article about pastel palette rotation in dashboard design. On each page load, a random hue offset (0-360°) is applied to all 12 base palette colors, with saturation kept at ~48% for a soft, pastel look.\n\nStructure with 3 H2 sections:\n## What It Does\n## Why It Matters\n## What Executives Should Do\n\nExplain why this prevents dashboard fatigue and keeps the experience engaging. 500 words exactly.`,
+    prompt: `Write a 500-word executive-oriented article about pastel palette rotation in dashboard design. On each page load, a random hue offset (0-360°) is applied to all 12 base palette colors, with saturation kept at ~48% for a soft, pastel look.
+
+Explain why this prevents dashboard fatigue and keeps the experience engaging. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
     category: 'Design',
     keywords: 'pastel palette, dashboard design, color rotation, HSL, user engagement, executive dashboards, UX design',
     slug: 'pastel-palette-rotation-dashboard-design',
   },
   {
     title: 'Pointer Events for PWA: Drag, Move, Resize on Any Device',
-    prompt: `Write a 500-word executive-oriented article about using Pointer Events (not mouse events) for drag-and-drop dashboard editing. PWAs on mobile/tablet generate touch events, not mouse events.\n\nStructure with 3 H2 sections:\n## What It Does\n## Why It Matters\n## What Executives Should Do\n\nExplain how executives can customize their dashboard layout on an iPad or phone. 500 words exactly.`,
+    prompt: `Write a 500-word executive-oriented article about using Pointer Events (not mouse events) for drag-and-drop dashboard editing. PWAs on mobile/tablet generate touch events, not mouse events.
+
+Explain how executives can customize their dashboard layout on an iPad or phone. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
     category: 'Technology',
     keywords: 'pointer events, PWA, drag and drop, touch support, mobile dashboards, responsive design, executive dashboards',
     slug: 'pointer-events-pwa-drag-move-resize',
   },
   {
     title: 'Glassmorphic Tooltips: Dark Glass UI for Chart Data Exploration',
-    prompt: `Write a 500-word executive-oriented article about glassmorphic tooltip design for executive dashboards. Tooltips with backdrop-filter blur(8px), dark glass background, cyan border, rounded corners, and drop shadow.\n\nStructure with 3 H2 sections:\n## What It Does\n## Why It Matters\n## What Executives Should Do\n\nExplain how this matches Bloomberg-terminal aesthetics and provides high contrast for data values. 500 words exactly.`,
+    prompt: `Write a 500-word executive-oriented article about glassmorphic tooltip design for executive dashboards. Tooltips with backdrop-filter blur(8px), dark glass background, cyan border, rounded corners, and drop shadow.
+
+Explain how this matches Bloomberg-terminal aesthetics and provides high contrast for data values. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
     category: 'Design',
     keywords: 'glassmorphism, tooltip design, dashboard UI, dark glass, backdrop filter, executive dashboards, data visualization UX',
     slug: 'glassmorphic-tooltips-chart-exploration',
   },
   {
     title: 'From Seven Renderers to One: Consolidating Executive Dashboards',
-    prompt: `Write a 500-word executive-oriented article about consolidating multiple dashboard renderers into a single universal constructor class. Previously each dashboard had its own host page loading different JS. After migration, all 7 share one universal-dashboard.js with CSS Grid + container queries.\n\nStructure with 3 H2 sections:\n## What It Does\n## Why It Matters\n## What Executives Should Do\n\nExplain the business benefits: consistent visual language, one codebase to maintain, instant propagation of improvements. 500 words exactly.`,
+    prompt: `Write a 500-word executive-oriented article about consolidating multiple dashboard renderers into a single universal constructor class. Previously each dashboard had its own host page loading different JS. After migration, all 7 share one universal-dashboard.js with CSS Grid + container queries.
+
+Explain the business benefits: consistent visual language, one codebase to maintain, instant propagation of improvements. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
     category: 'Business Intelligence',
     keywords: 'dashboard migration, universal dashboard, CSS grid, code consolidation, executive dashboards, business intelligence, dashboard architecture',
     slug: 'consolidating-executive-dashboards-one-class',
   },
   {
     title: 'Gradient Chart Fills and Shadow Glow: Visual Polish That Sells',
-    prompt: `Write a 500-word executive-oriented article about visual polish in executive dashboards: bar charts with vertical gradient fills (85% alpha at top → 25% at bottom), line charts with area gradient under the line, pie segments with per-segment colored shadow glow, and emphasis hover effects with shadowBlur 24.\n\nStructure with 3 H2 sections:\n## What It Does\n## Why It Matters\n## What Executives Should Do\n\nExplain how visual polish builds executive confidence in the data. 500 words exactly.`,
+    prompt: `Write a 500-word executive-oriented article about visual polish in executive dashboards: bar charts with vertical gradient fills (85% alpha at top → 25% at bottom), line charts with area gradient under the line, pie segments with per-segment colored shadow glow, and emphasis hover effects with shadowBlur 24.
+
+Explain how visual polish builds executive confidence in the data. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
     category: 'Data Visualization',
     keywords: 'gradient fills, chart design, executive dashboards, visual polish, ECharts, data visualization, shadow effects, dashboard aesthetics',
     slug: 'gradient-chart-fills-shadow-glow-visual-polish',
@@ -244,18 +260,7 @@ async function main() {
 Article title: ${item.title}
 Article description: ${item.desc}
 
-Write a 500-word executive summary with 3 sections (use H2 markdown headings):
-
-## What Happened
-(2 paragraphs, factual summary of the news)
-
-## Why It Matters
-(2 paragraphs, business impact and implications for executives)
-
-## What Executives Should Do
-(1-2 paragraphs, actionable recommendations)
-
-Use markdown formatting. Bold key terms. No preamble, no "Here is the summary". Start directly with ## What Happened.`;
+Write a 500-word executive analysis as flowing prose. No section headers. No H2 headings. Just write naturally — start with what happened, transition to why it matters, end with what executives should do. All in one continuous narrative with paragraph breaks only. Use **bold** for key terms. No preamble. Start directly with the first paragraph.`;
 
     const body = await groqChat(prompt);
     if (body && body.length > 200) {
