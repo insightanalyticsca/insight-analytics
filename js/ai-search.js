@@ -191,15 +191,17 @@
       '#ai-search-mic.recording { background:rgba(239,68,68,0.2)!important;border-color:rgba(239,68,68,0.5)!important;color:#ef4444!important;animation:micPulse 1.5s ease-in-out infinite }' +
       '@keyframes micPulse { 0%,100%{opacity:1}50%{opacity:0.5} }' +
       '[data-theme="light"] #ai-search-panel { background:rgba(255,255,255,0.98) }' +
-      '[data-theme="light"] #ai-search-results { color:#475569 }' +
+      '[data-theme="light"] #ai-search-results { color:#1e293b }' +
       '[data-theme="light"] #ai-search-results .ai-link-card { background:rgba(99,102,241,0.04);border-color:rgba(99,102,241,0.1);color:#1e293b }' +
-      '[data-theme="light"] #ai-search-results .ai-link-desc { color:#64748b }' +
+      '[data-theme="light"] #ai-search-results .ai-link-desc { color:#475569 }' +
       '[data-theme="light"] #ai-search-panel span { color:#1e293b }' +
-      '[data-theme="light"] #ai-suggestions .suggestion-pill { color:#64748b;background:rgba(99,102,241,0.06) }' +
+      '[data-theme="light"] #ai-search-results .ai-streaming { color:#4338ca }' +
+      '[data-theme="light"] #ai-suggestions .suggestion-pill { color:#475569;background:rgba(99,102,241,0.06) }' +
+      
       '[data-theme="light"] #ai-search-input { background:rgba(241,243,248,0.8);color:#1e293b }' +
       '[data-theme="light"] #ai-search-mic { background:rgba(241,243,248,0.8);color:#64748b }' +
       '[data-theme="light"] #ai-search-panel { background:rgba(255,255,255,0.98);box-shadow:0 12px 40px rgba(0,0,0,0.15) }' +
-      '[data-theme="light"] #ai-search-results { color:#475569 }';
+      '[data-theme="light"] #ai-search-results { color:#1e293b }';
     document.head.appendChild(style);
 
     var input = document.getElementById('ai-search-input');
