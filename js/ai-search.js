@@ -177,8 +177,7 @@
     // Inject styles
     var style = document.createElement('style');
     style.textContent =
-      '#ai-search-panel { background:rgba(15,23,42,0.96) }
-' +
+      '#ai-search-panel { background:rgba(15,23,42,0.96) }' +
       '#ai-suggestions .suggestion-pill { display:inline-block;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;color:#94a3b8;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);cursor:pointer;transition:all 150ms;font-family:Inter,sans-serif }' +
       '#ai-suggestions .suggestion-pill:hover { background:rgba(99,102,241,0.2);color:#06b6d4;border-color:rgba(6,182,212,0.4) }' +
       '#ai-search-results a { color:#06b6d4;text-decoration:none;font-weight:600;border-bottom:1px solid rgba(6,182,212,0.3) }' +
