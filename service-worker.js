@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.99.0-hamburger-fix';
+const VERSION = 'v5.0.0-aisearch-fix';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
