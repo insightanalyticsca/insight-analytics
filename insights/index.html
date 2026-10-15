@@ -103,6 +103,10 @@
 <footer style="padding:32px;text-align:center;border-top:1px solid var(--border)"><a href="/" style="font-size:0.88rem;color:var(--text-muted);text-decoration:none">Home</a></footer>
 
 
-<script>(function(){var KEY="ia-theme",r=document.documentElement,b=document.getElementById("theme-toggle"),i=document.getElementById("theme-icon"),l=document.getElementById("theme-label");function g(){try{var s=localStorage.getItem(KEY);if(s==="light"||s==="dark")return s}catch(e){}try{return matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}catch(e){return"light"}}function a(t){r.setAttribute("data-theme",t);if(i)i.className=t==="dark"?"fas fa-moon":"fas fa-sun";if(l)l.textContent=t==="dark"?"Dark":"Light"}a(g());if(b)b.addEventListener("click",function(){var n=(r.getAttribute("data-theme")||g())==="dark"?"light":"dark";try{localStorage.setItem(KEY,n)}catch(e){}a(n)})})();</script>
+
+
+  <script src="../js/app.js?v=4.98.0" defer></script>
+  <script>document.write('<script defer src="/js/ai-search.js?v='+Date.now()+'"><\/script>');</script>
+  <script src="/js/sw-register.js?v=4.98.0" defer></script>
 </body>
 </html>
