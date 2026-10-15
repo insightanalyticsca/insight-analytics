@@ -235,7 +235,7 @@ ${sourceAttribution}
 <a href="/insights/" style="font-size:0.88rem;color:var(--text-muted);text-decoration:none;">← Back to all insights</a>
 </footer>
 
-<script defer src="/js/theme-toggle.js?v=1.1"></script>
+<script>document.write('<script defer src="/js/theme-toggle.js?v='+Date.now()+'"><\/script>');</script>
 </body>
 </html>`;
 }
