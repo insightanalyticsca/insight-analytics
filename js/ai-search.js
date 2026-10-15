@@ -52,6 +52,13 @@
       'Can I see the IT service health dashboard?',
       'How does SLA tracking work?'
     ]},
+    { keys: ['ticker', 'stock', 'market', 'finance', 'portfolio', 'invest', 'trading', 'crypto', 'bitcoin', 'btc', 'eth', 'forex', 'fx', 'commodity', 'oil', 'gold', 'bond', 'yield'], questions: [
+      'Can you build a financial markets dashboard?',
+      'Do you have a live markets dashboard?',
+      'Can you show crypto prices and FX rates?',
+      'Do you track S{ keys: ['payment', 'finance'P 500 and NASDAQ?',
+      'Can you build a portfolio analytics dashboard?'
+    ]},
     { keys: ['payment', 'finance', 'billing', 'ebill', 'invoic', 'cash'], questions: [
       'Do you have a customer payments dashboard?',
       'How does eBill performance tracking work?',
@@ -125,6 +132,7 @@
     { url: 'https://insightanalyticsca.github.io/dashboards/custom-html/its-service-health.html', title: 'IT Service Health Dashboard', desc: 'Uptime by service vs SLA, SLA heatmap, ticket volume trend, service status matrix.' },
     { url: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-customer-payments.html', title: 'Customer Payments Dashboard', desc: 'Payments volume, payment methods, average days to pay, payment performance table.' },
     { url: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-ebill-performance.html', title: 'eBill Performance Dashboard', desc: 'Adoption rate trend, adoption drivers, Q4 target progress, eBill delivery performance.' },
+    { url: 'https://insightanalyticsca.github.io/markets-dashboard/', title: 'Markets and Finance Dashboard - Live', desc: 'Live crypto prices (BTC ETH SOL), FX rates heatmap, S{ url: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-ebill-performance.html', title: 'eBill Performance Dashboard', desc: 'Adoption rate trend, adoption drivers, Q4 target progress, eBill delivery performance.' },P 500 and NASDAQ trends, sector performance heatmap, futures prices, AI market brief with Groq streaming analysis.' },
   ];
 
   var CONTEXT = PAGES.map(function (p) {
