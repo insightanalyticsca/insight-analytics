@@ -19,15 +19,90 @@
   var SITE_URL = 'https://insight-analytics.ca';
 
   // Pre-built suggested questions
-  var SUGGESTIONS = [
+  // Default suggestions (shown when panel opens, before typing)
+  var DEFAULT_SUGGESTIONS = [
     'Do you build dashboards for supply chain?',
     'Can I see a live dashboard demo?',
     'What AI capabilities do you offer?',
-    'Do you work with IT service management?',
-    'Can you build a dashboard for my data?',
-    'What is the universal dashboard constructor?',
-    'How do your AI briefs work?',
-    'Do you offer data pipeline automation?'
+    'Do you work with IT service management?'
+  ];
+
+  // Keyword → suggestion map. As user types, matching keywords trigger
+  // contextual question pills that help them ask better questions.
+  var KEYWORD_MAP = [
+    { keys: ['dashboard', 'dash', 'visual'], questions: [
+      'Can you build a dashboard for my data?',
+      'What types of dashboards do you build?',
+      'Can I see a live dashboard demo?',
+      'What is the universal dashboard constructor?'
+    ]},
+    { keys: ['supply', 'chain', 'logistic', 'otif', 'freight', 'ship'], questions: [
+      'Do you build dashboards for supply chain?',
+      'Can I see the supply chain dashboard?',
+      'How does OTIF tracking work?'
+    ]},
+    { keys: ['ai', 'artificial', 'groq', 'llm', 'chatbot', 'brief', 'intelligen'], questions: [
+      'What AI capabilities do you offer?',
+      'How do your AI briefs work?',
+      'Can AI analyze my dashboard data?',
+      'Do you use Groq for AI?'
+    ]},
+    { keys: ['it', 'service', 'ticket', 'sla', 'uptime', 'inciden'], questions: [
+      'Do you work with IT service management?',
+      'Can I see the IT service health dashboard?',
+      'How does SLA tracking work?'
+    ]},
+    { keys: ['payment', 'finance', 'billing', 'ebill', 'invoic', 'cash'], questions: [
+      'Do you have a customer payments dashboard?',
+      'How does eBill performance tracking work?',
+      'Can you track payment methods?'
+    ]},
+    { keys: ['risk', 'treasury', 'credit', 'fraud', 'var', 'liquidity'], questions: [
+      'Can you build a risk and treasury dashboard?',
+      'How does fraud detection work?',
+      'What is credit risk heatmap?'
+    ]},
+    { keys: ['data', 'pipeline', 'etl', 'integration', 'database', 'sql'], questions: [
+      'Do you offer data pipeline automation?',
+      'Can you integrate my database with dashboards?',
+      'What is database archaeology?',
+      'How does fuzzy address matching work?'
+    ]},
+    { keys: ['predict', 'forecast', 'time series', 'model', 'ml', 'machine'], questions: [
+      'Do you offer predictive analytics?',
+      'Can you forecast from my data?',
+      'What is universal time series prediction?',
+      'How does weather-driven forecasting work?'
+    ]},
+    { keys: ['retail', 'store', 'revenue', 'customer', 'ltv', 'segment'], questions: [
+      'Do you build retail operations dashboards?',
+      'How does customer segmentation work?',
+      'Can you track revenue per store?'
+    ]},
+    { keys: ['demo', 'try', 'test', 'example', 'sample'], questions: [
+      'Can I see a live dashboard demo?',
+      'What demos are available?',
+      'Can I try the dashboard builder?'
+    ]},
+    { keys: ['power', 'automate', 'workflow', 'pipeline'], questions: [
+      'What is personalized Power Automate?',
+      'Can you automate my data workflows?'
+    ]},
+    { keys: ['price', 'cost', 'how much', 'budget', 'quote'], questions: [
+      'How much does a dashboard cost?',
+      'What is your pricing model?',
+      'Can I book a demo?'
+    ]},
+    { keys: ['theme', 'color', 'design', 'dark', 'light', 'pastel'], questions: [
+      'Do your dashboards support dark mode?',
+      'What is the pastel palette rotation?',
+      'Can I customize dashboard themes?'
+    ]},
+    { keys: ['edit', 'drag', 'resize', 'move', 'custom', 'layout'], questions: [
+      'Can I customize dashboard layouts?',
+      'Can I drag and resize dashboard tiles?',
+      'Does it work on mobile?'
+    ]}
   ];
 
   var PAGES = [
@@ -131,11 +206,39 @@
     var suggestionsEl = document.getElementById('ai-suggestions');
 
     // Show suggested questions
-    function showSuggestions() {
+    function showSuggestions(query) {
+      query = (query || '').toLowerCase().trim();
+      var questions = [];
+
+      if (!query) {
+        // No input — show defaults
+        questions = DEFAULT_SUGGESTIONS.slice();
+      } else {
+        // Find matching keywords
+        var used = {};
+        KEYWORD_MAP.forEach(function (group) {
+          var matches = group.keys.some(function (k) { return query.indexOf(k) >= 0 || k.indexOf(query) >= 0; });
+          if (matches) {
+            group.questions.forEach(function (q) {
+              if (!used[q]) { used[q] = true; questions.push(q); }
+            });
+          }
+        });
+        // If no matches, show contextual defaults based on first letter
+        if (questions.length === 0 && query.length >= 2) {
+          // Show generic "can you..." suggestions
+          questions = [
+            'Can you build a dashboard for ' + query + '?',
+            'Do you have experience with ' + query + '?',
+            'Can I see a demo related to ' + query + '?'
+          ];
+        }
+      }
+
+      // Show up to 5
+      questions = questions.slice(0, 5);
       suggestionsEl.innerHTML = '';
-      // Pick 4 random suggestions
-      var shuffled = SUGGESTIONS.slice().sort(function () { return 0.5 - Math.random(); }).slice(0, 4);
-      shuffled.forEach(function (q) {
+      questions.forEach(function (q) {
         var pill = document.createElement('span');
         pill.className = 'suggestion-pill';
         pill.textContent = q;
@@ -286,6 +389,14 @@
       }).finally(function () { sendBtn.disabled = false; });
     }
 
+    // Dynamic suggestions as user types
+    var debounceTimer = null;
+    input.addEventListener('input', function () {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function () {
+        showSuggestions(input.value);
+      }, 150);
+    });
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
     sendBtn.addEventListener('click', doSearch);
 
