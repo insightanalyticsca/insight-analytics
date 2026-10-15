@@ -521,20 +521,21 @@ ul {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 8px 3px 6px;
+  padding: 2px 7px;
   border-radius: 999px;
-  border: 1px solid var(--border-strong);
-  background: var(--surface-2);
-  color: var(--text);
-  font-size: 0.65rem;
-  font-weight: 700;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.6rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: transform 0.4s var(--ease), background 0.2s var(--ease-soft), border-color 0.2s var(--ease-soft), color 0.2s var(--ease-soft);
+  transition: transform 0.4s var(--ease), color 0.2s var(--ease-soft);
 }
-.theme-toggle i { font-size: 0.72rem; }
+.theme-toggle i { font-size: 0.68rem; }
 .theme-toggle .theme-label { font-family: var(--font-head); }
+.theme-toggle:hover { transform: rotate(20deg) scale(1.05); color: var(--indigo); }
 .theme-toggle:hover {
   transform: rotate(20deg) scale(1.05);
   color: var(--indigo);
