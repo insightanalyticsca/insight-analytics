@@ -132,7 +132,7 @@
     { url: 'https://insightanalyticsca.github.io/dashboards/custom-html/its-service-health.html', title: 'IT Service Health Dashboard', desc: 'Uptime by service vs SLA, SLA heatmap, ticket volume trend, service status matrix.' },
     { url: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-customer-payments.html', title: 'Customer Payments Dashboard', desc: 'Payments volume, payment methods, average days to pay, payment performance table.' },
     { url: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-ebill-performance.html', title: 'eBill Performance Dashboard', desc: 'Adoption rate trend, adoption drivers, Q4 target progress, eBill delivery performance.' },
-    { url: 'https://insightanalyticsca.github.io/markets-dashboard/', title: 'Markets and Finance Dashboard - Live', desc: 'Live crypto prices (BTC ETH SOL), FX rates heatmap, S&P 500 and NASDAQ trends, sector performance heatmap, futures prices, AI market brief with Groq streaming analysis.' },
+    { url: 'https://insight-analytics.ca/blog/universal-dashboard-builder', title: 'Markets Markets and Finance Dashboard - Live Finance Dashboard (Live Demo)', desc: 'Live crypto prices (BTC ETH SOL), FX rates heatmap, S&P 500 and NASDAQ trends, sector performance heatmap, futures prices, AI market brief with Groq streaming analysis.' },
   ];
 
   var CONTEXT = PAGES.map(function (p) {
