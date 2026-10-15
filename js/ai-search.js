@@ -148,7 +148,7 @@
     // Panel
     var panel = document.createElement('div');
     panel.id = 'ai-search-panel';
-    panel.style.cssText = 'position:fixed;bottom:96px;right:24px;width:420px;max-width:calc(100vw - 48px);max-height:560px;background:rgba(15,23,42,0.96);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);border:1px solid rgba(99,102,241,0.25);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,0.4);z-index:9999;display:none;flex-direction:column;overflow:hidden;font-family:Inter,sans-serif';
+    panel.style.cssText = 'position:fixed;bottom:96px;right:24px;width:420px;max-width:calc(100vw - 48px);max-height:560px;backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);border:1px solid rgba(99,102,241,0.25);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,0.4);z-index:9999;display:none;flex-direction:column;overflow:hidden;font-family:Inter,sans-serif';
 
     panel.innerHTML =
       '<div style="padding:14px 18px;border-bottom:1px solid rgba(99,102,241,0.15);display:flex;align-items:center;gap:10px">' +
@@ -177,6 +177,8 @@
     // Inject styles
     var style = document.createElement('style');
     style.textContent =
+      '#ai-search-panel { background:rgba(15,23,42,0.96) }
+' +
       '#ai-suggestions .suggestion-pill { display:inline-block;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;color:#94a3b8;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);cursor:pointer;transition:all 150ms;font-family:Inter,sans-serif }' +
       '#ai-suggestions .suggestion-pill:hover { background:rgba(99,102,241,0.2);color:#06b6d4;border-color:rgba(6,182,212,0.4) }' +
       '#ai-search-results a { color:#06b6d4;text-decoration:none;font-weight:600;border-bottom:1px solid rgba(6,182,212,0.3) }' +
@@ -193,9 +195,12 @@
       '[data-theme="light"] #ai-search-results { color:#475569 }' +
       '[data-theme="light"] #ai-search-results .ai-link-card { background:rgba(99,102,241,0.04);border-color:rgba(99,102,241,0.1);color:#1e293b }' +
       '[data-theme="light"] #ai-search-results .ai-link-desc { color:#64748b }' +
+      '[data-theme="light"] #ai-search-panel span { color:#1e293b }' +
       '[data-theme="light"] #ai-suggestions .suggestion-pill { color:#64748b;background:rgba(99,102,241,0.06) }' +
       '[data-theme="light"] #ai-search-input { background:rgba(241,243,248,0.8);color:#1e293b }' +
-      '[data-theme="light"] #ai-search-mic { background:rgba(241,243,248,0.8);color:#64748b }';
+      '[data-theme="light"] #ai-search-mic { background:rgba(241,243,248,0.8);color:#64748b }' +
+      '[data-theme="light"] #ai-search-panel { background:rgba(255,255,255,0.98);box-shadow:0 12px 40px rgba(0,0,0,0.15) }' +
+      '[data-theme="light"] #ai-search-results { color:#475569 }';
     document.head.appendChild(style);
 
     var input = document.getElementById('ai-search-input');
