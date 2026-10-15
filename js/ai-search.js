@@ -159,7 +159,7 @@
       // Suggested questions area
       '<div id="ai-suggestions" style="padding:12px 16px 4px;display:flex;flex-wrap:wrap;gap:6px"></div>' +
       // Results area
-      '<div id="ai-search-results" style="flex:1;overflow-y:auto;padding:4px 18px 16px;color:#cbd5e1;font-size:14px;line-height:1.6;min-height:60px"></div>' +
+      '<div id="ai-search-results" style="flex:1;overflow-y:auto;padding:4px 18px 16px;font-size:14px;line-height:1.6;min-height:60px"></div>' +
       // Input bar
       '<div style="padding:10px 14px;border-top:1px solid rgba(99,102,241,0.15);display:flex;gap:6px;align-items:center">' +
         '<input id="ai-search-input" type="text" placeholder="Ask anything..." style="flex:1;background:rgba(30,41,59,0.8);border:1px solid rgba(99,102,241,0.2);border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:14px;font-family:Inter,sans-serif;outline:none" />' +
@@ -178,6 +178,7 @@
     var style = document.createElement('style');
     style.textContent =
       '#ai-search-panel { background:rgba(15,23,42,0.96) }' +
+      '#ai-search-results { color:#cbd5e1 }' +
       '#ai-suggestions .suggestion-pill { display:inline-block;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;color:#94a3b8;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);cursor:pointer;transition:all 150ms;font-family:Inter,sans-serif }' +
       '#ai-suggestions .suggestion-pill:hover { background:rgba(99,102,241,0.2);color:#06b6d4;border-color:rgba(6,182,212,0.4) }' +
       '#ai-search-results a { color:#06b6d4;text-decoration:none;font-weight:600;border-bottom:1px solid rgba(6,182,212,0.3) }' +
