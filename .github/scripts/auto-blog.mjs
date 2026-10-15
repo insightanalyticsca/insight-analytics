@@ -212,7 +212,9 @@ function generateBlogPostHTML({ title, body, category, sourceUrl, sourceName, ke
 <div class="nav-inner">
 <a href="${SITE_URL}/" class="brand"><span class="brand-mark"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGrad)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGrad)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGrad)"/></svg></span><span class="brand-name">Insight <b>Analytics</b></span></a>
 <nav class="nav-links"><a href="${SITE_URL}/#services" class="nav-link">Services</a><a href="${SITE_URL}/#dashboard" class="nav-link">Dashboard</a><a href="${SITE_URL}/#cases" class="nav-link">Case Studies</a><a href="/insights/" class="nav-link">AI Insights</a><a href="/blog/" class="nav-link">Live Demos</a><a href="${SITE_URL}/#contact" class="nav-link">Contact</a></nav>
-<div class="nav-actions"><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme"><i class="fas fa-sun" id="theme-icon"></i></button><a href="${SITE_URL}/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check"></i> Book a Demo</a></div>
+<div class="nav-actions"><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme">
+          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i><span class="theme-label" id="theme-label">Light</span>
+        </button><a href="${SITE_URL}/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check"></i> Book a Demo</a></div>
 </div>
 </header>
 <main>
@@ -232,7 +234,8 @@ ${sourceAttribution}
 <footer style="padding:32px 24px;text-align:center;border-top:1px solid var(--border);">
 <a href="/insights/" style="font-size:0.88rem;color:var(--text-muted);text-decoration:none;">← Back to all insights</a>
 </footer>
-<script>!function(){var t=document.getElementById("theme-toggle"),i=document.getElementById("theme-icon");function e(){var t=document.documentElement.getAttribute("data-theme");t="light"===t?"dark":"light",document.documentElement.setAttribute("data-theme",t);var e=document.getElementById("theme-icon");e&&("dark"===t?e.className="fas fa-moon":e.className="fas fa-sun")}t&&t.addEventListener("click",e);try{var h=localStorage.getItem("docchat-theme");h&&document.documentElement.setAttribute("data-theme",h)}catch(t){}}();</script>
+
+<script defer src="/js/theme-toggle.js?v=1.0"></script>
 </body>
 </html>`;
 }

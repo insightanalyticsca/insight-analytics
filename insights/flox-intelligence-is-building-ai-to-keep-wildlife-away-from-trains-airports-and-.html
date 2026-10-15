@@ -51,7 +51,7 @@
       </nav>
       <div class="nav-actions">
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme">
-          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i>
+          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i><span class="theme-label" id="theme-label">Light</span>
         </button>
         <a href="/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check" aria-hidden="true"></i> Book a Demo</a>
         <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
@@ -84,6 +84,7 @@
 <footer style="padding:32px 24px;text-align:center;border-top:1px solid var(--border);">
 <a href="/insights/" style="font-size:0.88rem;color:var(--text-muted);text-decoration:none;">← Back to all insights</a>
 </footer>
-<script>!function(){var t=document.getElementById("theme-toggle"),i=document.getElementById("theme-icon");function e(){var t=document.documentElement.getAttribute("data-theme");t="light"===t?"dark":"light",document.documentElement.setAttribute("data-theme",t);var e=document.getElementById("theme-icon");e&&("dark"===t?e.className="fas fa-moon":e.className="fas fa-sun")}t&&t.addEventListener("click",e);try{var h=localStorage.getItem("docchat-theme");h&&document.documentElement.setAttribute("data-theme",h)}catch(t){}}();</script>
+
+<script defer src="/js/theme-toggle.js?v=1.0"></script>
 </body>
 </html>
