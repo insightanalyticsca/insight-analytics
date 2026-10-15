@@ -112,6 +112,22 @@
     else openMobileMenu();
   }
   if (menuToggle) menuToggle.addEventListener("click", toggleMobileMenu);
+  // Close menu when clicking outside it
+  document.addEventListener("click", function(e) {
+    if (!mobileMenu || !mobileMenu.classList.contains("is-open")) return;
+    if (mobileMenu.contains(e.target) || (menuToggle && menuToggle.contains(e.target))) return;
+    closeMobileMenu();
+  });
+  // Close menu on Escape key
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape" && mobileMenu && mobileMenu.classList.contains("is-open")) closeMobileMenu();
+  });
+  // Close menu when a nav-link inside it is clicked
+  if (mobileMenu) {
+    mobileMenu.querySelectorAll("a").forEach(function(link) {
+      link.addEventListener("click", closeMobileMenu);
+    });
+  }
 
   /* ------------------------------------------------------------------
    * Scroll-reveal animations (IntersectionObserver)
