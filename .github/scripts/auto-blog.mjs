@@ -288,6 +288,19 @@ function isConsumerNoise(item) {
   //    and "Jan 2006 Issue" as items, which are 20-year-old table-of-contents
   //    pages, not real articles).
   const title = (item.title || '').trim();
+  // Pattern 0: non-English language detection. The site is English-only.
+  // Reject if title contains inverted question/exclamation marks (¿ ¡),
+  // Spanish/French/German/Italian accents beyond common English names, or
+  // common Spanish connector words. Catches IMD's Spanish-language mirror
+  // ("Cómo pueden los profesionales...") which Groq then fails to summarize.
+  if (/[¿¡]/.test(title)) return true;
+  // Common Spanish/Portuguese/French/German/Italian lead words that don't
+  // appear in English business titles. Word-boundary matched.
+  if (/\b(cómo|cual|cuando|donde|está|están|para|porque|pueden|que|sean|sino|todos|entre|sobre|tras|los|las|una|unas|unos|del|al|lo|le|les|con|sin|por|dos|tres|cuatro|cinco|desde|hasta|como|cuándo|dónde|qué|cuál|quién|quiénes|cuánto|cuántos|cuántas|nuestra|nuestro|vuestra|vuestro|suyas|suyos|mías|míos|tuyas|tuyos|su|sus|mis|tus|esto|eso|aquello|esta|esa|aquel|estos|esos|aquellos|estas|esas|aquellas)\b/i.test(title)) return true;
+  // Reject titles where >15% of characters are non-ASCII (German umlauts,
+  // French accents, Spanish ñ, etc. — English business titles rarely have these)
+  const nonAscii = (title.match(/[^\x00-\x7F]/g) || []).length;
+  if (title.length > 10 && (nonAscii / title.length) > 0.15) return true;
   // Pattern 1: "Month YYYY ..." (e.g. "March 2006 _ Reviews", "Jan 2006 Issue")
   if (/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\b/i.test(title)) return true;
   // Pattern 2: title contains "2006" / "2005" / "2007" (legacy archive era)
