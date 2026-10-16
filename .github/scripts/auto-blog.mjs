@@ -38,38 +38,36 @@ const TIME_STAMP = NOW.getTime();
 // stories that pollute the feed). Only analyst houses, top-tier consulting firms,
 // and business-school journals that publish research, frameworks, benchmarks, and
 // surveys — the material CEOs/CFOs/COOs actually read.
+//
+// NOTE: Some analyst houses (BCG, Bain, Deloitte, Accenture, PwC, EY, Gartner,
+// INSEAD, Stanford GSB, Supply Chain Brain, Supply Chain Dive) aggressively
+// block server-side RSS fetches (Cloudflare/Akamai 403 even with browser UA).
+// Only feeds that consistently return 200 to Node's fetch() are listed below.
+// Re-probe quarterly — URLs do change.
 const RSS_FEEDS = [
-  // — Big-4 consulting firms —
+  // — Big consulting firms (working RSS) —
   { url: 'https://www.mckinsey.com/insights/rss', name: 'McKinsey & Company — Insights' },
-  { url: 'https://www.bcg.com/en-us/insights/rss', name: 'BCG — Insights & Publications' },
-  { url: 'https://www.bain.com/about/news-and-insights/feed/', name: 'Bain & Company — News & Insights' },
-  { url: 'https://www2.deloitte.com/us/en/footerlinks/rssforsubscriptions.rss?fe=insights', name: 'Deloitte — Insights' },
-  { url: 'https://www.accenture.com/us-en/blogs/insights-blog/feed', name: 'Accenture — Insights Blog' },
-  { url: 'https://www.pwc.com/us/en/library/rss/blogs/pwc-blogs.rss', name: 'PwC — Strategy& Blogs' },
-  { url: 'https://www.ey.com/en/rss/all', name: 'EY — All Insights' },
-  { url: 'https://www.kpmg.com/us/en/home/insights.rss', name: 'KPMG — Insights' },
-  // — Analyst houses —
-  { url: 'https://www.gartner.com/en/newsroom/rss/press-releases', name: 'Gartner — Press Releases' },
-  { url: 'https://www.gartner.com/en/newsroom/rss/insights', name: 'Gartner — Insights' },
-  { url: 'https://www.forrester.com/the/feed?feedType=RSS&feedName=Forrester+Insights', name: 'Forrester — Insights' },
+  { url: 'https://feeds.feedburner.com/mckinseyquarterly', name: 'McKinsey Quarterly (Feedburner)' },
+  { url: 'https://www.strategy-business.com/rss', name: 'Strategy+Business (PwC network)' },
+  { url: 'https://www.kpmg.com/us/en/home/insights.xml', name: 'KPMG — Insights' },
+  // — Analyst houses (working feeds) —
+  { url: 'https://www.forrester.com/blogs/rss', name: 'Forrester — Blogs' },
+  { url: 'https://www.forrester.com/what-it-means/rss', name: 'Forrester — What It Means' },
   // — Business-school journals (peer-reviewed-grade analytical content) —
-  { url: 'https://hbr.org/the-latest/feed', name: 'Harvard Business Review — Latest' },
-  { url: 'https://hbr.org/topic/finance/rss.xml', name: 'HBR — Finance & Accounting' },
-  { url: 'https://hbr.org/topic/operations/rss.xml', name: 'HBR — Operations' },
-  { url: 'https://hbr.org/topic/strategy/rss.xml', name: 'HBR — Strategy' },
+  { url: 'https://hbr.org/api/rss/latest', name: 'Harvard Business Review — Latest' },
+  { url: 'https://hbr.org/api/rss/topic/finance', name: 'HBR — Finance & Accounting' },
+  { url: 'https://hbr.org/api/rss/topic/operations', name: 'HBR — Operations' },
+  { url: 'https://hbr.org/api/rss/topic/strategy', name: 'HBR — Strategy' },
+  { url: 'https://hbr.org/api/rss/topic/technology', name: 'HBR — Technology' },
+  { url: 'https://hbr.org/api/rss/topic/marketing', name: 'HBR — Marketing' },
+  { url: 'https://hbswk.hbs.edu/rss', name: 'Harvard Business School — Working Knowledge' },
   { url: 'https://sloanreview.mit.edu/feed/', name: 'MIT Sloan Management Review' },
-  { url: 'https://www.gsb.stanford.edu/insights/rss.xml', name: 'Stanford GSB — Insights' },
-  { url: 'https://knowledge.insead.edu/rss.xml', name: 'INSEAD Knowledge' },
   { url: 'https://knowledge.wharton.upenn.edu/feed/', name: 'Wharton — Knowledge' },
+  { url: 'https://insight.kellogg.northwestern.edu/feed', name: 'Kellogg Insight' },
   // — Specialized analyst-grade operational outlets —
-  { url: 'https://www.supplychaindive.com/feeds/headlines/', name: 'Supply Chain Dive' },
-  { url: 'https://www.supplychainbrain.com/rss/', name: 'Supply Chain Brain' },
   { url: 'https://logisticsviewpoints.com/feed/', name: 'Logistics Viewpoints' },
-  { url: 'https://www.scmr.com/rss', name: 'Supply Chain Management Review' },
-  { url: 'https://www.cfo.com/feed/', name: 'CFO.com' },
-  // — Strategy / market-research outlets —
-  { url: 'https://www.strategicmanagement.net/rss', name: 'Strategic Management Society' },
-  { url: 'https://hbr.org/topic/marketing/rss.xml', name: 'HBR — Marketing' },
+  { url: 'https://www.scmr.com/feed/', name: 'Supply Chain Management Review' },
+  { url: 'https://www.scmr.com/rss/', name: 'Supply Chain Management Review — Alt' },
 ];
 
 // ─── Analyst-depth gate (NEW) ────────────────────────────────────────────
@@ -409,7 +407,17 @@ async function groqChat(prompt) {
 
 async function fetchRSS(feedUrl) {
   try {
-    const res = await fetch(feedUrl, { redirect: 'follow', signal: AbortSignal.timeout(10000) });
+    // Send browser-like headers so feeds behind Cloudflare/Akamai bot detection
+    // (MIT Sloan, Wharton, Logistics Viewpoints) don't 403 us.
+    const res = await fetch(feedUrl, {
+      redirect: 'follow',
+      signal: AbortSignal.timeout(10000),
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+        'Accept-Language': 'en-US, en;q=0.9',
+      },
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const xml = await res.text();
     const items = [];
