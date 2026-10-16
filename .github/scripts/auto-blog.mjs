@@ -636,7 +636,12 @@ Write a 500-word ANALYTICAL executive briefing as flowing prose. You MUST:
 
 4. Use **bold** for key numbers, named entities, and analytical concepts (e.g. **EBITDA margin**, **Gartner's 2026 CIO Survey**, **Monte Carlo simulation**).
 
-5. Close with 1 paragraph of synthesizing analysis — step back and place the findings in their broader business context. Weigh the strategic implications for executives (trade-offs, second-order effects, what it means for capital allocation, governance, competitive position). This is an analyst's reflective conclusion, NOT a to-do list — do not give orders, do not say "executives should do X", do not use imperative voice. Write in the analytical third-person register of an HBR or McKinsey closing paragraph.
+5. Close with 1 paragraph of synthesizing analysis — step back and place the findings in their broader business context. Weigh the strategic implications for executives (trade-offs, second-order effects, what it means for capital allocation, governance, competitive position). This is an analyst's reflective conclusion, NOT a to-do list. HARD RULES for the closing paragraph:
+   - Do NOT use the phrase "What executives should do" (or any variant like "What leaders should do", "What boards should do", "Action items", "Next steps").
+   - Do NOT use imperative voice ("convene the audit committee", "reallocate capex", "commission a benchmark"). The analyst does not give orders.
+   - Do NOT use bullet lists or numbered lists in the closing.
+   - DO write in the analytical third-person register of an HBR or McKinsey closing paragraph — declarative sentences about strategic implications, trade-offs, and what the findings mean for the broader business. Examples of acceptable phrasing: "The findings suggest that...", "For boards weighing similar moves, the trade-off between... and... is likely to sharpen", "The implication for capital allocation is that...", "Whether this approach generalizes beyond... remains an open question".
+   - DO end the paragraph (and the article) on a reflective, contextual note — not a command.
 
 No H2 headers. No bullet lists. No preamble like "Here is the summary". No news-recap tone ("Company X announced..."). Just the analyst-grade briefing, naturally flowing.`;
     const body = await groqChat(prompt);
