@@ -325,8 +325,31 @@ function pickExecutiveCategory(item) {
 // only." Every article now originates from a real RSS item with a source URL.
 
 // ─── Utility functions ───────────────────────────────────────────────────
+// Decode common HTML entities that appear in RSS titles/descriptions so the
+// article title and slug use clean characters (e.g. &#x2019; → ', &amp; → &).
+// Without this, titles render as literal "&amp;#x2018;" because escHtml()
+// double-escapes the ampersand in the entity.
+function decodeEntities(s) {
+  return String(s ?? '')
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'");
+}
+
 function slugify(text) {
-  return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 80);
+  // Decode entities FIRST so they don't end up as "x2018" etc in the slug.
+  return decodeEntities(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .slice(0, 80);
 }
 function escHtml(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function escAttr(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
@@ -607,23 +630,27 @@ No H2 headers. No bullet lists. No preamble like "Here is the summary". No news-
       const wrappedBody = '<p>' + htmlBody.replace(/^<p><\/p>/, '') + '</p>';
       
       const slug = slugify(item.title);
+      // Decode HTML entities in the title before passing to the template
+      // so the article <title>/<h1>/OG tags show clean characters instead of
+      // double-escaped "&amp;#x2018;".
+      const cleanTitle = decodeEntities(item.title);
       // Pick the dominant CEO lens as the article category so the Insights
       // index cards make the topic obvious at a glance.
       const category = pickExecutiveCategory(item);
       const postHTML = generateBlogPostHTML({
-        title: item.title,
+        title: cleanTitle,
         body: wrappedBody,
         category,
         sourceUrl: item.link,
         sourceName: item.feedName || 'Original article',
-        keywords: 'CEO insights, executive analysis, profitability, ROI, cost analysis, AI implementation, logistics, markets, ' + item.title.split(/\s+/).slice(0, 5).join(', ').toLowerCase(),
+        keywords: 'CEO insights, executive analysis, profitability, ROI, cost analysis, AI implementation, logistics, markets, ' + cleanTitle.split(/\s+/).slice(0, 5).join(', ').toLowerCase(),
         slug,
         dateStr: DATE_STR,
         isoDate: ISO_NOW
       });
       
       writeFileSync(join(REPO_ROOT, 'insights', slug + '.html'), postHTML);
-      generated.push({ slug, title: item.title, category, dateStr: DATE_STR, readTime: 3 });
+      generated.push({ slug, title: cleanTitle, category, dateStr: DATE_STR, readTime: 3 });
       console.log(`  ✅ Generated: insights/${slug}.html (category=${category})`);
     }
   }
