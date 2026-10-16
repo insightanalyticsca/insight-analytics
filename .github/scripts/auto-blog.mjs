@@ -54,16 +54,17 @@ const RSS_FEEDS = [
   { url: 'https://www.mckinsey.com/insights/rss', name: 'McKinsey & Company — Insights', isAnalystFeed: true },
   { url: 'https://feeds.feedburner.com/mckinseyquarterly', name: 'McKinsey Quarterly (Feedburner)', isAnalystFeed: true },
   { url: 'https://feeds.feedburner.com/bcg', name: 'BCG (Feedburner)', isAnalystFeed: true },
+  { url: 'https://feeds.feedburner.com/pwc', name: 'PwC (Feedburner)', isAnalystFeed: true },
   { url: 'https://www.strategy-business.com/rss', name: 'Strategy+Business (PwC network)', isAnalystFeed: true },
   { url: 'https://www.kpmg.com/us/en/home/insights.xml', name: 'KPMG — Insights', isAnalystFeed: true },
   // — Analyst houses (working feeds) —
   { url: 'https://www.forrester.com/blogs/rss', name: 'Forrester — Blogs', isAnalystFeed: true },
   // — Business-school journals (peer-reviewed-grade analytical content) —
-  { url: 'https://feeds.feedburner.com/harvardbusinessreview', name: 'Harvard Business Review (Feedburner)', isAnalystFeed: true },
+  // NOTE: HBR has killed all RSS feeds (api/rss/* returns 0 bytes, Feedburner
+  // mirror returns 2006 blogspot archive TOCs). Removed entirely.
   { url: 'https://workingknowledge.hbs.edu/rss/', name: 'Harvard Business School — Working Knowledge', isAnalystFeed: true },
   { url: 'https://feeds.feedburner.com/mitsloanmanagementreview', name: 'MIT Sloan Management Review (Feedburner)', isAnalystFeed: true },
   { url: 'https://knowledge.wharton.upenn.edu/feed/', name: 'Wharton — Knowledge', isAnalystFeed: true },
-  { url: 'https://insight.kellogg.northwestern.edu/feed', name: 'Kellogg Insight', isAnalystFeed: true },
   { url: 'https://www.iese.edu/feed', name: 'IESE Business School', isAnalystFeed: true },
   { url: 'https://www.imd.org/feed/', name: 'IMD Business School', isAnalystFeed: true },
   { url: 'https://insights.som.yale.edu/rss', name: 'Yale SOM — Insights', isAnalystFeed: true },
@@ -71,6 +72,13 @@ const RSS_FEEDS = [
   { url: 'https://feeds.feedburner.com/logisticsviewpoints', name: 'Logistics Viewpoints (Feedburner)', isAnalystFeed: true },
   { url: 'https://www.scmr.com/feed/', name: 'Supply Chain Management Review', isAnalystFeed: true },
   // — Tier-1 business news (analyst-grade content, NOT news-wire crime stories) —
+  { url: 'https://www.ft.com/rss/management', name: 'Financial Times — Management', isAnalystFeed: false },
+  { url: 'https://www.ft.com/rss/companies', name: 'Financial Times — Companies', isAnalystFeed: false },
+  { url: 'https://www.economist.com/business/rss.xml', name: 'The Economist — Business', isAnalystFeed: false },
+  { url: 'https://www.economist.com/finance-and-economics/rss.xml', name: 'The Economist — Finance & Economics', isAnalystFeed: false },
+  { url: 'https://www.economist.com/leaders/rss.xml', name: 'The Economist — Leaders', isAnalystFeed: false },
+  { url: 'https://www.economist.com/briefing/rss.xml', name: 'The Economist — Briefing', isAnalystFeed: false },
+  { url: 'https://feeds.bloomberg.com/markets/news.rss', name: 'Bloomberg — Markets', isAnalystFeed: false },
   { url: 'https://www.fortune.com/feed/', name: 'Fortune — Business', isAnalystFeed: false },
   { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', name: 'NYT — Business', isAnalystFeed: false },
 ];
@@ -274,6 +282,25 @@ function hasAnalystDepth(item, ceoScore = 0) {
 function isConsumerNoise(item) {
   const text = ((item.title || '') + ' ' + (item.desc || '')).toLowerCase();
   if (!text.trim()) return false;
+  // ── Junk-title filter — reject archive TOC pages, "Month YYYY" patterns,
+  //    blogspot legacy entries, and other non-article items that slip past
+  //    keyword filters (e.g. HBR Feedburner returned "March 2006 _ Reviews"
+  //    and "Jan 2006 Issue" as items, which are 20-year-old table-of-contents
+  //    pages, not real articles).
+  const title = (item.title || '').trim();
+  // Pattern 1: "Month YYYY ..." (e.g. "March 2006 _ Reviews", "Jan 2006 Issue")
+  if (/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\b/i.test(title)) return true;
+  // Pattern 2: title contains "2006" / "2005" / "2007" (legacy archive era)
+  if (/\b(200[0-7])\b/.test(title)) return true;
+  // Pattern 3: title is just a year or starts with "Issue" / "Reviews" / "Contents"
+  if (/^\d{4}$/.test(title)) return true;
+  if (/^(Issue|Reviews?|Contents?|Table of Contents)\b/i.test(title)) return true;
+  // Pattern 4: source URL is a legacy blogspot domain (HBR's old blog)
+  if (/\.blogspot\.com\//i.test(item.link || '')) return true;
+  // Pattern 5: title contains only punctuation/underscores (e.g. "_ Reviews")
+  if (/^[^a-zA-Z0-9]+$/.test(title)) return true;
+  // Pattern 6: title shorter than 15 chars (too short to be a real article)
+  if (title.length < 15) return true;
   for (const p of CONSUMER_NOISE_PATTERNS) {
     // Use a word-boundary regex so short tokens like 'NFL', 'NBA', 'HBO',
     // 'cat ', 'dog ' don't fire on substring matches inside real business
