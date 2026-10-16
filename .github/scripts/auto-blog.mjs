@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 /**
- * auto-blog.mjs — Automated AI blog article generator
+ * auto-blog.mjs — Executive-grade AI Insights scout
  *
- * Runs twice daily via GitHub Actions cron. Generates 2 articles per run:
- *   1. RSS feed article: fetches AI/business news, summarizes with Groq (500 words)
- *   2. Feature article: deep-dive on Insight Analytics' own features (500 words)
+ * Runs twice daily via GitHub Actions cron. Produces 2 articles per run:
+ *   1. RSS article: pulled from executive-grade business / finance / ops sources
+ *      (HBR, WSJ CFO, Reuters Business, Supply Chain Dive, FreightWaves, MIT Sloan,
+ *       CFO.com, Markets Insider, Business Insider, Barron's, The Economist).
+ *      Items MUST pass a CEO-relevance gate (profitability, cost, ROI, capex,
+ *      logistics, markets, AI implementation costs, operations). Consumer-blog
+ *      noise (AI music, gaming, social, sports, science one-offs) is filtered out.
+ *   2. Feature article: deep-dive on Insight Analytics' own capabilities.
  *
  * Groq is called via Netlify proxy (no API key needed).
  * max_tokens: 1200 (enough for 500+ words)
@@ -22,12 +27,168 @@ const ISO_NOW = NOW.toISOString();
 const DATE_STR = NOW.toISOString().split('T')[0];
 const TIME_STAMP = NOW.getTime();
 
-// ─── RSS Feed Sources ────────────────────────────────────────────────────
+// ─── RSS Feed Sources (executive-grade) ─────────────────────────────────
+// Curated for CEO/CFO/COO-grade material: profitability, cost, ROI, capex,
+// logistics, supply chain, markets, AI implementation cost, treasury, M&A.
+// No consumer-tech blogs (The Verge / Wired / TechCrunch consumer / Engadget).
 const RSS_FEEDS = [
-  { url: 'https://techcrunch.com/category/artificial-intelligence/feed/', name: 'TechCrunch AI' },
-  { url: 'https://venturebeat.com/category/ai/feed/', name: 'VentureBeat AI' },
-  { url: 'https://www.artificialintelligence-news.com/feed/', name: 'AI News' },
+  { url: 'https://hbr.org/the-latest/feed', name: 'Harvard Business Review — Latest' },
+  { url: 'https://hbr.org/topic/finance/rss.xml', name: 'HBR — Finance & Accounting' },
+  { url: 'https://hbr.org/topic/operations/rss.xml', name: 'HBR — Operations' },
+  { url: 'https://www.supplychaindive.com/feeds/headlines/', name: 'Supply Chain Dive' },
+  { url: 'https://www.freightwaves.com/feed', name: 'FreightWaves' },
+  { url: 'https://www.reuters.com/markets/rssFeed', name: 'Reuters Markets' },
+  { url: 'https://www.reuters.com/business/rssFeed', name: 'Reuters Business' },
+  { url: 'https://feeds.content.dowjones.io/public/rss/SB10001424053111904210604576563062342565452', name: 'WSJ CFO Journal' },
+  { url: 'https://feeds.content.dowjones.io/public/rss/markets', name: 'WSJ Markets' },
+  { url: 'https://www.cfomagazine.com/feed/', name: 'CFO Magazine' },
+  { url: 'https://www.businessinsider.com/rss', name: 'Business Insider' },
+  { url: 'https://feeds.barrons.com/rss/pf/100000022', name: 'Barrons — Markets' },
+  { url: 'https://www.economist.com/finance-and-economics/rss.xml', name: 'The Economist — Finance & Economics' },
+  { url: 'https://www.economist.com/business/rss.xml', name: 'The Economist — Business' },
+  { url: 'https://sloanreview.mit.edu/feed/', name: 'MIT Sloan Management Review' },
+  { url: 'https://www.marketscreener.com/rss/rss/marketscreener-MARKETS.xml', name: 'MarketScreener — Markets' },
+  // Keep one applied-AI feed for AI implementation cost / ROI stories, but the
+  // noise filter below strips out consumer-tech / music / gaming distractions.
+  { url: 'https://venturebeat.com/category/enterprise-ai/feed/', name: 'VentureBeat Enterprise AI' },
 ];
+
+// ─── CEO-relevance scoring ──────────────────────────────────────────────
+// Items are scored 0..N by counting hits across these CEO-grade topic clusters.
+// An item must score >= 2 to be eligible for selection.
+const CEO_RELEVANCE_KEYWORDS = [
+  // Profitability / margin
+  'profit', 'profitability', 'margin', 'ebitda', 'gross margin', 'operating margin',
+  'earnings', 'EPS', 'net income', 'bottom line', 'top line', 'revenue growth',
+  // Cost & efficiency
+  'cost', 'costs', 'cost reduction', 'opex', 'operating expense', 'capex',
+  'capital expenditure', 'spend', 'spending', 'budget', 'budget cut',
+  'cost analysis', 'cost optimization', 'efficiency', 'productivity',
+  'layoff', 'layoffs', 'workforce reduction', 'headcount', 'restructuring',
+  // ROI / capital allocation
+  'ROI', 'return on investment', 'payback', 'payback period', 'NPV', 'IRR',
+  'capital allocation', 'capital return', 'buyback', 'share repurchase',
+  'dividend', 'free cash flow', 'cash flow', 'investment case',
+  // AI implementation costs / value
+  'AI implementation', 'AI cost', 'AI ROI', 'AI spend', 'AI investment',
+  'AI adoption', 'AI deployment', 'generative AI cost', 'gen AI cost',
+  'LLM cost', 'inference cost', 'GPU cost', 'AI productivity gain',
+  'AI business value', 'AI monetization', 'AI pricing',
+  // Markets / valuation
+  'market', 'markets', 'valuation', 'multiple', 'P/E', 'price target',
+  'equity', 'stock', 'share price', 'index', 'S&P', 'NASDAQ', 'Dow',
+  'treasury yield', 'bond yield', 'rate cut', 'rate hike', 'Fed', 'ECB',
+  'BOE', 'inflation', 'CPI', 'PPI', 'recession', 'soft landing',
+  'earnings call', 'guidance', 'outlook', 'forecast',
+  // Logistics / supply chain
+  'logistics', 'supply chain', 'procurement', 'freight', 'shipping',
+  'carrier', 'OTIF', 'inventory', 'warehouse', 'fulfillment', 'last mile',
+  'demand planning', 'S&OP', 'lead time', 'tariff', 'duty', 'nearshoring',
+  'reshoring', 'port congestion', 'container', 'truckload', 'LTL',
+  // M&A / strategy
+  'M&A', 'merger', 'acquisition', 'divestiture', 'spin-off', 'IPO',
+  'private equity', 'LBO', 'deal', 'synergy', 'integration',
+  // Treasury / risk / capital structure
+  'treasury', 'liquidity', 'working capital', 'credit facility',
+  'debt refinancing', 'refinanc', 'capital structure', 'credit rating',
+  'risk management', 'hedge', 'hedging', 'FX exposure', 'commodity',
+  // Operations / executive
+  'CEO', 'CFO', 'COO', 'CIO', 'CTO', 'board', 'board of directors',
+  'executive', 'leadership', 'strategy', 'strategic', 'transformation',
+  'digital transformation', 'operational excellence',
+];
+
+// ─── Consumer-blog noise blocklist ──────────────────────────────────────
+// Items whose title+description contains any of these (case-insensitive)
+// are REJECTED regardless of CEO score. These are the pop-blog topics the
+// user explicitly does not want in the AI Insights feed.
+const CONSUMER_NOISE_PATTERNS = [
+  'AI music', 'AI-generated music', 'AI song', 'spotify', 'youtube music',
+  'deezer', 'soundcloud', 'apple music', 'tidal', 'streaming playlist',
+  'AI art', 'AI image', 'AI photo', 'midjourney', 'DALL-E', 'stable diffusion',
+  'AI girlfriend', 'AI companion', 'chatbot romance',
+  'gaming', 'video game', 'esports', 'playstation', 'xbox', 'nintendo',
+  'fortnite', 'minecraft', 'roblox',
+  'celebrity', 'tiktok', 'instagram', 'snapchat', 'influencer',
+  'kardashian', 'entertainment', 'gossip',
+  'wildlife', 'bird watching', 'pet', 'cat ', 'dog ',
+  'space tourism', 'mars mission', 'rocket launch',
+  'recipe', 'cooking', 'restaurant review',
+  'travel guide', 'hotel review', 'flight review',
+  'movie review', 'film festival', 'TV show', 'netflix', 'hbo',
+  'sports', 'NBA', 'NFL', 'NHL', 'MLB', 'soccer', 'football match',
+  'cricket', 'tennis', 'golf tournament',
+  'health wellness', 'diet', 'yoga', 'meditation',
+  'horoscope', 'astrology', 'psychic',
+];
+
+// Items whose title clearly matches "executive-grade" even without keyword hits
+// (e.g. explicit CEO/CFO interviews, earnings recaps) get a floor bonus.
+const EXEC_HEADLINE_PATTERNS = [
+  /\bCEO\b/i, /\bCFO\b/i, /\bCOO\b/i, /\bCIO\b/i, /\bCTO\b/i,
+  /\bboard\b/i, /\bearnings\b/i, /\bprofit\b/i, /\brevenue\b/i,
+  /\bmargin\b/i, /\bEBITDA\b/i, /\bguidance\b/i, /\bquarterly\b/i,
+];
+
+function scoreCEORelevance(item) {
+  const text = ((item.title || '') + ' ' + (item.desc || '')).toLowerCase();
+  if (!text.trim()) return 0;
+  let score = 0;
+  for (const kw of CEO_RELEVANCE_KEYWORDS) {
+    if (text.indexOf(kw.toLowerCase()) >= 0) score++;
+  }
+  for (const re of EXEC_HEADLINE_PATTERNS) {
+    if (re.test(item.title || '')) { score += 1; break; }
+  }
+  return score;
+}
+
+function isConsumerNoise(item) {
+  const text = ((item.title || '') + ' ' + (item.desc || '')).toLowerCase();
+  if (!text.trim()) return false;
+  for (const p of CONSUMER_NOISE_PATTERNS) {
+    // Use a word-boundary regex so short tokens like 'NFL', 'NBA', 'HBO',
+    // 'cat ', 'dog ' don't fire on substring matches inside real business
+    // words like 'inflation', ' markets', 'catalog', etc.
+    // \b on either side; trailing-space tokens are stripped before building
+    // the regex so the boundary itself enforces the separator.
+    const cleaned = p.replace(/\s+$/g, '').replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const re = new RegExp('\\b' + cleaned + '\\b', 'i');
+    if (re.test(text)) return true;
+  }
+  return false;
+}
+
+// ─── Executive category picker ──────────────────────────────────────────
+// Maps the dominant CEO lens of an item to a short, board-room-flavored
+// category label that appears on the Insights index card.
+const EXEC_CATEGORIES = [
+  { match: ['AI implementation','AI cost','AI ROI','AI spend','AI investment','AI adoption','AI deployment','generative AI cost','gen AI cost','LLM cost','inference cost','GPU cost','AI productivity gain','AI business value','AI monetization','AI pricing','AI ','artificial intelligence','machine learning'], label: 'AI Implementation' },
+  { match: ['profit','profitability','margin','ebitda','gross margin','operating margin','earnings','EPS','net income','bottom line','top line','revenue growth'], label: 'Profitability' },
+  { match: ['cost','costs','cost reduction','opex','operating expense','capex','capital expenditure','spend','spending','budget','budget cut','cost analysis','cost optimization','efficiency','productivity','layoff','layoffs','workforce reduction','headcount','restructuring'], label: 'Cost & Efficiency' },
+  { match: ['ROI','return on investment','payback','NPV','IRR','capital allocation','capital return','buyback','share repurchase','dividend','free cash flow','cash flow','investment case'], label: 'ROI & Capital' },
+  { match: ['logistics','supply chain','procurement','freight','shipping','carrier','OTIF','inventory','warehouse','fulfillment','last mile','demand planning','S&OP','lead time','tariff','duty','nearshoring','reshoring','port congestion','container','truckload','LTL'], label: 'Logistics & Supply Chain' },
+  { match: ['market','markets','valuation','multiple','P/E','price target','equity','stock','share price','index','S&P','NASDAQ','Dow','treasury yield','bond yield','rate cut','rate hike','Fed','ECB','BOE','inflation','CPI','PPI','recession','soft landing','earnings call','guidance','outlook','forecast'], label: 'Markets & Valuation' },
+  { match: ['M&A','merger','acquisition','divestiture','spin-off','IPO','private equity','LBO','deal','synergy','integration'], label: 'M&A & Strategy' },
+  { match: ['treasury','liquidity','working capital','credit facility','debt refinancing','refinanc','capital structure','credit rating','risk management','hedge','hedging','FX exposure','commodity'], label: 'Treasury & Risk' },
+  { match: ['CEO','CFO','COO','CIO','CTO','board','board of directors','executive','leadership','strategy','strategic','transformation','digital transformation','operational excellence'], label: 'Executive Strategy' },
+];
+
+function pickExecutiveCategory(item) {
+  const text = ((item.title || '') + ' ' + (item.desc || '')).toLowerCase();
+  let best = null;
+  let bestHits = 0;
+  for (const cat of EXEC_CATEGORIES) {
+    let hits = 0;
+    for (const kw of cat.match) {
+      if (text.indexOf(kw.toLowerCase()) >= 0) hits++;
+    }
+    if (hits > bestHits) { bestHits = hits; best = cat.label; }
+  }
+  // Fallback: if no specific lens matched but the item passed the CEO gate,
+  // default to 'Executive Briefing' so the card still reads exec-grade.
+  return best || 'Executive Briefing';
+}
 
 // ─── Feature topics (our own site features, exec-oriented) ───────────────
 const FEATURE_TOPICS = [
@@ -250,8 +411,8 @@ async function main() {
   
   const generated = [];
   
-  // ── 1. RSS Article ──
-  console.log('\n--- Fetching RSS feeds ---');
+  // ── 1. RSS Article (CEO-grade only) ──
+  console.log('\n--- Fetching executive-grade RSS feeds ---');
   let allRSSItems = [];
   for (const feed of RSS_FEEDS) {
     const items = await fetchRSS(feed.url);
@@ -259,24 +420,63 @@ async function main() {
     allRSSItems.push(...items);
   }
   
-  // Pick 1 random RSS item (not already blogged)
+  // CEO-grade filter: score each item, reject consumer-blog noise, require score >= 2
   const existingPosts = readdirSync(join(REPO_ROOT, 'insights')).filter(f => f.endsWith('.html') && f !== 'index.html');
-  const availableItems = allRSSItems.filter(item => {
-    const slug = slugify(item.title);
-    return !existingPosts.includes(slug + '.html');
-  });
+  const scoredItems = allRSSItems
+    .map(item => ({
+      item,
+      score: scoreCEORelevance(item),
+      noise: isConsumerNoise(item),
+      slug: slugify(item.title),
+    }))
+    .filter(s =>
+      !s.noise                                  // not consumer-blog noise
+      && s.score >= 2                           // passes CEO-relevance gate
+      && !existingPosts.includes(s.slug + '.html')   // not already blogged
+      && (s.item.title || '').length > 0
+    );
   
-  if (availableItems.length > 0) {
-    const item = availableItems[Math.floor(Math.random() * availableItems.length)];
-    console.log(`\n  Selected: ${item.title.slice(0, 60)}...`);
+  console.log(`  Total items fetched: ${allRSSItems.length}`);
+  console.log(`  Items passing CEO-relevance gate (score>=2, no noise, not already used): ${scoredItems.length}`);
+  
+  // Log the rejected noise samples so the run is debuggable
+  const rejectedNoise = allRSSItems.filter(i => isConsumerNoise(i)).slice(0, 5);
+  if (rejectedNoise.length > 0) {
+    console.log('  Rejected consumer-noise samples (first 5):');
+    rejectedNoise.forEach(i => console.log(`    - [REJECTED] ${i.title.slice(0, 80)}`));
+  }
+  
+  if (scoredItems.length > 0) {
+    // Weighted random pick: prefer higher-scored items, but keep variety.
+    // Probability of picking item i is proportional to score^2 (heavily favors
+    // strong CEO-grade items, but a 2-score item still gets a chance).
+    const weights = scoredItems.map(s => Math.pow(s.score, 2) + 1);
+    const totalW = weights.reduce((a, b) => a + b, 0);
+    let r = Math.random() * totalW;
+    let picked = scoredItems[0];
+    for (let i = 0; i < scoredItems.length; i++) {
+      r -= weights[i];
+      if (r <= 0) { picked = scoredItems[i]; break; }
+    }
+    const item = picked.item;
+    console.log(`\n  Selected (score=${picked.score}/N): ${item.title.slice(0, 90)}`);
     
-    const prompt = `You are an AI analyst writing for Insight Analytics, a Canadian analytics consultancy. Summarize this news article for an executive audience in exactly 500 words.
+    const prompt = `You are an executive analyst at Insight Analytics, a Canadian analytics consultancy writing for CEOs, CFOs, COOs, and board members. Your job is to translate raw business news into CEO-grade insight — no fluff, no consumer-blog tone, no marketing copy.
 
-Article title: ${item.title}
-Article description: ${item.desc}
+Source article title: ${item.title}
+Source article description: ${item.desc || '(no description provided)'}
 
-Write a 500-word executive analysis as flowing prose. No section headers. No H2 headings. Just write naturally — start with what happened, transition to why it matters, end with what executives should do. All in one continuous narrative with paragraph breaks only. Use **bold** for key terms. No preamble. Start directly with the first paragraph.`;
+Write a 500-word executive analysis as flowing prose. You MUST anchor every paragraph in at least one of these CEO lenses:
+  • Profitability & margin (gross margin, operating margin, EBITDA, EPS impact)
+  • Cost structure & efficiency (opex, capex, headcount, unit economics)
+  • ROI & capital allocation (payback, NPV, free cash flow, buyback vs reinvest)
+  • AI implementation cost & value (AI spend, inference cost, productivity gain, monetization)
+  • Markets & valuation (multiple expansion / compression, rate moves, FX, commodity impact)
+  • Logistics & operations (supply chain, OTIF, freight, inventory, nearshoring)
+  • Treasury & risk (liquidity, working capital, hedge, credit rating)
+  • M&A / strategy (deals, synergies, divestitures, board action)
 
+Open with a single-sentence headline takeaway (the one thing a CEO needs to know). Then 3-4 paragraphs of analysis. Close with 1 paragraph of "What executives should do this week" — concrete, board-actionable. Use **bold** for key numbers and named entities. No H2 headers, no bullet lists, no preamble like "Here is the summary". Just the analysis, naturally flowing.`;
     const body = await groqChat(prompt);
     if (body && body.length > 200) {
       // Convert markdown to HTML
@@ -290,21 +490,24 @@ Write a 500-word executive analysis as flowing prose. No section headers. No H2 
       const wrappedBody = '<p>' + htmlBody.replace(/^<p><\/p>/, '') + '</p>';
       
       const slug = slugify(item.title);
+      // Pick the dominant CEO lens as the article category so the Insights
+      // index cards make the topic obvious at a glance.
+      const category = pickExecutiveCategory(item);
       const postHTML = generateBlogPostHTML({
         title: item.title,
         body: wrappedBody,
-        category: 'Applied AI',
+        category,
         sourceUrl: item.link,
         sourceName: 'Original article',
-        keywords: 'artificial intelligence, AI business, applied AI, executive intelligence, ' + item.title.split(/\s+/).slice(0, 5).join(', ').toLowerCase(),
+        keywords: 'CEO insights, executive analysis, profitability, ROI, cost analysis, AI implementation, logistics, markets, ' + item.title.split(/\s+/).slice(0, 5).join(', ').toLowerCase(),
         slug,
         dateStr: DATE_STR,
         isoDate: ISO_NOW
       });
       
       writeFileSync(join(REPO_ROOT, 'insights', slug + '.html'), postHTML);
-      generated.push({ slug, title: item.title, category: 'Applied AI', dateStr: DATE_STR, readTime: 3 });
-      console.log(`  ✅ Generated: insights/${slug}.html`);
+      generated.push({ slug, title: item.title, category, dateStr: DATE_STR, readTime: 3 });
+      console.log(`  ✅ Generated: insights/${slug}.html (category=${category})`);
     }
   }
   
