@@ -39,35 +39,40 @@ const TIME_STAMP = NOW.getTime();
 // and business-school journals that publish research, frameworks, benchmarks, and
 // surveys — the material CEOs/CFOs/COOs actually read.
 //
-// NOTE: Some analyst houses (BCG, Bain, Deloitte, Accenture, PwC, EY, Gartner,
-// INSEAD, Stanford GSB, Supply Chain Brain, Supply Chain Dive) aggressively
-// block server-side RSS fetches (Cloudflare/Akamai 403 even with browser UA).
-// Only feeds that consistently return 200 to Node's fetch() are listed below.
+// Each feed is marked isAnalystFeed: true/false. Items from analyst feeds bypass
+// the hasAnalystDepth() gate — the source itself guarantees analyst depth.
+// (McKinsey's RSS descriptions are 1-line teasers that often don't contain
+// 'research' or 'survey' language, so the depth gate would wrongly reject them.)
+//
+// NOTE: Some analyst houses (BCG direct, Bain, Deloitte, Accenture, PwC, EY,
+// Gartner direct, INSEAD direct, Stanford GSB, Supply Chain Dive, Supply Chain Brain)
+// aggressively block server-side RSS fetches (Cloudflare/Akamai 403 even with browser UA).
+// Working Feedburner mirrors are used where available.
 // Re-probe quarterly — URLs do change.
 const RSS_FEEDS = [
   // — Big consulting firms (working RSS) —
-  { url: 'https://www.mckinsey.com/insights/rss', name: 'McKinsey & Company — Insights' },
-  { url: 'https://feeds.feedburner.com/mckinseyquarterly', name: 'McKinsey Quarterly (Feedburner)' },
-  { url: 'https://www.strategy-business.com/rss', name: 'Strategy+Business (PwC network)' },
-  { url: 'https://www.kpmg.com/us/en/home/insights.xml', name: 'KPMG — Insights' },
+  { url: 'https://www.mckinsey.com/insights/rss', name: 'McKinsey & Company — Insights', isAnalystFeed: true },
+  { url: 'https://feeds.feedburner.com/mckinseyquarterly', name: 'McKinsey Quarterly (Feedburner)', isAnalystFeed: true },
+  { url: 'https://feeds.feedburner.com/bcg', name: 'BCG (Feedburner)', isAnalystFeed: true },
+  { url: 'https://www.strategy-business.com/rss', name: 'Strategy+Business (PwC network)', isAnalystFeed: true },
+  { url: 'https://www.kpmg.com/us/en/home/insights.xml', name: 'KPMG — Insights', isAnalystFeed: true },
   // — Analyst houses (working feeds) —
-  { url: 'https://www.forrester.com/blogs/rss', name: 'Forrester — Blogs' },
-  { url: 'https://www.forrester.com/what-it-means/rss', name: 'Forrester — What It Means' },
+  { url: 'https://www.forrester.com/blogs/rss', name: 'Forrester — Blogs', isAnalystFeed: true },
   // — Business-school journals (peer-reviewed-grade analytical content) —
-  { url: 'https://hbr.org/api/rss/latest', name: 'Harvard Business Review — Latest' },
-  { url: 'https://hbr.org/api/rss/topic/finance', name: 'HBR — Finance & Accounting' },
-  { url: 'https://hbr.org/api/rss/topic/operations', name: 'HBR — Operations' },
-  { url: 'https://hbr.org/api/rss/topic/strategy', name: 'HBR — Strategy' },
-  { url: 'https://hbr.org/api/rss/topic/technology', name: 'HBR — Technology' },
-  { url: 'https://hbr.org/api/rss/topic/marketing', name: 'HBR — Marketing' },
-  { url: 'https://hbswk.hbs.edu/rss', name: 'Harvard Business School — Working Knowledge' },
-  { url: 'https://sloanreview.mit.edu/feed/', name: 'MIT Sloan Management Review' },
-  { url: 'https://knowledge.wharton.upenn.edu/feed/', name: 'Wharton — Knowledge' },
-  { url: 'https://insight.kellogg.northwestern.edu/feed', name: 'Kellogg Insight' },
+  { url: 'https://feeds.feedburner.com/harvardbusinessreview', name: 'Harvard Business Review (Feedburner)', isAnalystFeed: true },
+  { url: 'https://workingknowledge.hbs.edu/rss/', name: 'Harvard Business School — Working Knowledge', isAnalystFeed: true },
+  { url: 'https://feeds.feedburner.com/mitsloanmanagementreview', name: 'MIT Sloan Management Review (Feedburner)', isAnalystFeed: true },
+  { url: 'https://knowledge.wharton.upenn.edu/feed/', name: 'Wharton — Knowledge', isAnalystFeed: true },
+  { url: 'https://insight.kellogg.northwestern.edu/feed', name: 'Kellogg Insight', isAnalystFeed: true },
+  { url: 'https://www.iese.edu/feed', name: 'IESE Business School', isAnalystFeed: true },
+  { url: 'https://www.imd.org/feed/', name: 'IMD Business School', isAnalystFeed: true },
+  { url: 'https://insights.som.yale.edu/rss', name: 'Yale SOM — Insights', isAnalystFeed: true },
   // — Specialized analyst-grade operational outlets —
-  { url: 'https://logisticsviewpoints.com/feed/', name: 'Logistics Viewpoints' },
-  { url: 'https://www.scmr.com/feed/', name: 'Supply Chain Management Review' },
-  { url: 'https://www.scmr.com/rss/', name: 'Supply Chain Management Review — Alt' },
+  { url: 'https://feeds.feedburner.com/logisticsviewpoints', name: 'Logistics Viewpoints (Feedburner)', isAnalystFeed: true },
+  { url: 'https://www.scmr.com/feed/', name: 'Supply Chain Management Review', isAnalystFeed: true },
+  // — Tier-1 business news (analyst-grade content, NOT news-wire crime stories) —
+  { url: 'https://www.fortune.com/feed/', name: 'Fortune — Business', isAnalystFeed: false },
+  { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', name: 'NYT — Business', isAnalystFeed: false },
 ];
 
 // ─── Analyst-depth gate (NEW) ────────────────────────────────────────────
@@ -314,89 +319,10 @@ function pickExecutiveCategory(item) {
   return best || 'Executive Briefing';
 }
 
-// ─── Feature topics (our own site features, exec-oriented) ───────────────
-const FEATURE_TOPICS = [
-  {
-    title: 'The Universal Dashboard Constructor: One Grid System for Every Executive View',
-    prompt: `Write a 500-word executive-oriented article about a "universal dashboard constructor" — a single CSS Grid + container query system that renders any executive dashboard (supply chain, SaaS growth, risk & treasury, retail operations, IT service health, customer payments, eBill performance) with consistent theming, pastel palette rotation, gradient chart fills, glassmorphic tooltips, and free drag-to-move/resize with pointer events for PWA.
-
-Business-focused, not overly technical. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
-    category: 'Business Intelligence',
-    keywords: 'dashboard constructor, CSS grid, executive dashboards, responsive dashboards, PWA dashboards, drag and resize, business intelligence',
-    slug: 'universal-dashboard-constructor-system',
-    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian.html',
-  },
-  {
-    title: 'Multi-Color Heatmaps with Translucent Cells: A Bloomberg-Terminal Visual Language',
-    prompt: `Write a 500-word executive-oriented article about multi-color heatmap visualizations for executive dashboards. Cover: diverging color scales (red→amber→green for data crossing zero, warm pastel for positive data), translucent cell opacity (82%), rounded corners, shadow glow on emphasis, and always-visible value labels.
-
-Explain how this visual language makes complex matrix data instantly scannable. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
-    category: 'Data Visualization',
-    keywords: 'heatmap visualization, multi-color heatmap, executive dashboards, data visualization, Bloomberg terminal, ECharts heatmap',
-    slug: 'multicolor-heatmap-visual-language',
-    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian.html',
-  },
-  {
-    title: 'AI Brief Cards: Streaming Groq Analysis for Every Executive Dashboard',
-    prompt: `Write a 500-word executive-oriented article about AI Brief cards on executive dashboards. Cover: a 4-section AI brief (What Happened, Why, What to Expect, What to Do) that streams real-time analysis from Groq LLM based on the dashboard's actual data.
-
-Explain how executives get an honest narrative summary — not just numbers. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
-    category: 'Artificial Intelligence',
-    keywords: 'AI brief, Groq, executive dashboards, AI analysis, automated insights, business intelligence, streaming AI, data storytelling',
-    slug: 'ai-brief-cards-streaming-groq-analysis',
-    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-velocity.html',
-  },
-  {
-    title: 'Pastel Palette Rotation: Why Every Dashboard Visit Looks Slightly Different',
-    prompt: `Write a 500-word executive-oriented article about pastel palette rotation in dashboard design. On each page load, a random hue offset (0-360°) is applied to all 12 base palette colors, with saturation kept at ~48% for a soft, pastel look.
-
-Explain why this prevents dashboard fatigue and keeps the experience engaging. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
-    category: 'Design',
-    keywords: 'pastel palette, dashboard design, color rotation, HSL, user engagement, executive dashboards, UX design',
-    slug: 'pastel-palette-rotation-dashboard-design',
-    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-sentinel.html',
-  },
-  {
-    title: 'Pointer Events for PWA: Drag, Move, Resize on Any Device',
-    prompt: `Write a 500-word executive-oriented article about using Pointer Events (not mouse events) for drag-and-drop dashboard editing. PWAs on mobile/tablet generate touch events, not mouse events.
-
-Explain how executives can customize their dashboard layout on an iPad or phone. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
-    category: 'Technology',
-    keywords: 'pointer events, PWA, drag and drop, touch support, mobile dashboards, responsive design, executive dashboards',
-    slug: 'pointer-events-pwa-drag-move-resize',
-    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-operations-universal.html',
-  },
-  {
-    title: 'Glassmorphic Tooltips: Dark Glass UI for Chart Data Exploration',
-    prompt: `Write a 500-word executive-oriented article about glassmorphic tooltip design for executive dashboards. Tooltips with backdrop-filter blur(8px), dark glass background, cyan border, rounded corners, and drop shadow.
-
-Explain how this matches Bloomberg-terminal aesthetics and provides high contrast for data values. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
-    category: 'Design',
-    keywords: 'glassmorphism, tooltip design, dashboard UI, dark glass, backdrop filter, executive dashboards, data visualization UX',
-    slug: 'glassmorphic-tooltips-chart-exploration',
-    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-customer-payments.html',
-  },
-  {
-    title: 'From Seven Renderers to One: Consolidating Executive Dashboards',
-    prompt: `Write a 500-word executive-oriented article about consolidating multiple dashboard renderers into a single universal constructor class. Previously each dashboard had its own host page loading different JS. After migration, all 7 share one universal-dashboard.js with CSS Grid + container queries.
-
-Explain the business benefits: consistent visual language, one codebase to maintain, instant propagation of improvements. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
-    category: 'Business Intelligence',
-    keywords: 'dashboard migration, universal dashboard, CSS grid, code consolidation, executive dashboards, business intelligence, dashboard architecture',
-    slug: 'consolidating-executive-dashboards-one-class',
-    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-ebill-performance.html',
-  },
-  {
-    title: 'Gradient Chart Fills and Shadow Glow: Visual Polish That Sells',
-    prompt: `Write a 500-word executive-oriented article about visual polish in executive dashboards: bar charts with vertical gradient fills (85% alpha at top → 25% at bottom), line charts with area gradient under the line, pie segments with per-segment colored shadow glow, and emphasis hover effects with shadowBlur 24.
-
-Explain how visual polish builds executive confidence in the data. Write as flowing prose — no H2 section headers, no ## headings. Just natural paragraphs with **bold** key terms. 500 words.`,
-    category: 'Data Visualization',
-    keywords: 'gradient fills, chart design, executive dashboards, visual polish, ECharts, data visualization, shadow effects, dashboard aesthetics',
-    slug: 'gradient-chart-fills-shadow-glow-visual-polish',
-    demoUrl: 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian.html',
-  },
-];
+// NOTE: The FEATURE_TOPICS array (made-up site self-promotion articles about
+// glassmorphism / dashboard constructors / pastel palettes / etc.) has been
+// REMOVED per user direction: "Do not build made-up content, scout the net
+// only." Every article now originates from a real RSS item with a source URL.
 
 // ─── Utility functions ───────────────────────────────────────────────────
 function slugify(text) {
@@ -444,14 +370,25 @@ async function fetchRSS(feedUrl) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const xml = await res.text();
     const items = [];
-    const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
+    // Parse both RSS <item> and Atom <entry> elements. HBS Working Knowledge
+    // and some other feeds use Atom format which the prior parser missed entirely.
+    const itemRegex = /<(?:item|entry)[\s>]([\s\S]*?)<\/(?:item|entry)>/gi;
     let match;
     while ((match = itemRegex.exec(xml)) !== null) {
       const item = match[1];
-      const title = item.match(/<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is)?.[1]?.trim() || '';
-      const link = item.match(/<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is)?.[1]?.trim() || '';
-      const desc = item.match(/<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/description>/is)?.[1]?.replace(/<[^>]+>/g,'').trim() || '';
-      const pubDate = item.match(/<pubDate>(.*?)<\/pubDate>/is)?.[1]?.trim() || '';
+      const title = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is)?.[1]?.trim() || '';
+      // Atom uses <link href="..." /> instead of <link>text</link> — handle both.
+      let link = item.match(/<link[^>]*href=["']([^"']+)["'][^>]*>/i)?.[1]?.trim() || '';
+      if (!link) link = item.match(/<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is)?.[1]?.trim() || '';
+      // Atom uses <summary> or <content>; RSS uses <description>.
+      const desc = (item.match(/<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/description>/is)?.[1]
+        || item.match(/<summary[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/summary>/is)?.[1]
+        || item.match(/<content[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/content>/is)?.[1]
+        || '').replace(/<[^>]+>/g, '').trim();
+      const pubDate = (item.match(/<pubDate>(.*?)<\/pubDate>/is)?.[1]
+        || item.match(/<published>(.*?)<\/published>/is)?.[1]
+        || item.match(/<updated>(.*?)<\/updated>/is)?.[1]
+        || '').trim();
       items.push({ title, link, desc, pubDate });
     }
     return items;
@@ -550,37 +487,46 @@ async function main() {
   let allRSSItems = [];
   for (const feed of RSS_FEEDS) {
     const items = await fetchRSS(feed.url);
-    console.log(`  ${feed.name}: ${items.length} items`);
+    // Tag each item with the originating feed's analyst-feed flag so the
+    // filter knows to bypass the analyst-depth gate for analyst-house items.
+    for (const it of items) {
+      it.fromAnalystFeed = !!feed.isAnalystFeed;
+      it.feedName = feed.name;
+    }
+    console.log(`  ${feed.name}: ${items.length} items${feed.isAnalystFeed ? ' (analyst feed)' : ''}`);
     allRSSItems.push(...items);
   }
   
   // Analyst-grade filter: score each item, reject noise, require BOTH
   //   (a) CEO-relevance score >= 3 (was: 2) AND
-  //   (b) hasAnalystDepth (NEW) — must contain analytical methodology signals
-  //   (research / survey / framework / benchmark / KPI / etc.) so news-wire
-  //   stories ("robbery of copper load", "local CEO arrested") are filtered out
-  //   even when they accidentally hit CEO-relevance keywords.
+  //   (b) analyst-depth — items from isAnalystFeed feeds bypass this gate
+  //       (the source itself guarantees depth). Items from non-analyst feeds
+  //       (Fortune, NYT Business) must contain analytical-methodology signals
+  //       so news-wire crime stories are filtered out.
   const existingPosts = readdirSync(join(REPO_ROOT, 'insights')).filter(f => f.endsWith('.html') && f !== 'index.html');
   const scoredItems = allRSSItems
-    .map(item => ({
-      item,
-      score: scoreCEORelevance(item),
-      // Pass score into hasAnalystDepth so high-CEO-score strategy articles
-      // qualify via the alternate path.
-      depth: hasAnalystDepth(item, scoreCEORelevance(item)),
-      noise: isConsumerNoise(item),
-      slug: slugify(item.title),
-    }))
+    .map(item => {
+      const score = scoreCEORelevance(item);
+      const depth = item.fromAnalystFeed ? true : hasAnalystDepth(item, score);
+      return {
+        item,
+        score,
+        depth,
+        noise: isConsumerNoise(item),
+        slug: slugify(item.title),
+      };
+    })
     .filter(s =>
       !s.noise                                  // not consumer-blog / crime / small-potatoes noise
-      && s.depth                                // shows analytical-methodology signals
+      && s.depth                                // shows analytical-methodology signals (or from analyst feed)
       && s.score >= 3                           // passes CEO-relevance gate (raised from 2)
       && !existingPosts.includes(s.slug + '.html')   // not already blogged
       && (s.item.title || '').length > 0
+      && (s.item.link || '').length > 0         // MUST have a source URL (no made-up content)
     );
   
   console.log(`  Total items fetched: ${allRSSItems.length}`);
-  console.log(`  Items passing analyst-grade gate (score>=3 + analyst-depth + no noise + not already used): ${scoredItems.length}`);
+  console.log(`  Items passing analyst-grade gate (score>=3 + analyst-depth-or-feed + no noise + has-source-URL + not already used): ${scoredItems.length}`);
   
   // Log the rejected noise samples so the run is debuggable
   const rejectedNoise = allRSSItems.filter(i => isConsumerNoise(i)).slice(0, 5);
@@ -589,8 +535,9 @@ async function main() {
     rejectedNoise.forEach(i => console.log(`    - [REJECTED noise] ${i.title.slice(0, 80)}`));
   }
   // Also log items that passed noise filter but failed analyst-depth gate
+  // (only relevant for non-analyst feeds — analyst feeds bypass this check)
   const rejectedShallow = allRSSItems
-    .filter(i => !isConsumerNoise(i) && !hasAnalystDepth(i) && scoreCEORelevance(i) >= 3)
+    .filter(i => !isConsumerNoise(i) && !i.fromAnalystFeed && !hasAnalystDepth(i, scoreCEORelevance(i)) && scoreCEORelevance(i) >= 3)
     .slice(0, 5);
   if (rejectedShallow.length > 0) {
     console.log('  Rejected shallow-news samples (passed noise+CEO-gate but failed analyst-depth, first 5):');
@@ -610,11 +557,14 @@ async function main() {
       if (r <= 0) { picked = scoredItems[i]; break; }
     }
     const item = picked.item;
-    console.log(`\n  Selected (score=${picked.score}/N): ${item.title.slice(0, 90)}`);
+    console.log(`\n  Selected (score=${picked.score}/N, feed=${item.feedName || 'unknown'}): ${item.title.slice(0, 90)}`);
+    console.log(`  Source URL: ${item.link}`);
     
     const prompt = `You are a senior analyst at Insight Analytics, a Canadian analytics consultancy writing for CEOs, CFOs, COOs, and board members. Your sources are tier-1 analyst houses and consulting firms (Gartner, McKinsey, BCG, Bain, Deloitte, Accenture, PwC, EY, KPMG, Forrester) and business-school journals (HBR, MIT Sloan, Stanford GSB, Wharton, INSEAD). Your job is to translate their research into a board-grade executive briefing — no fluff, no consumer-blog tone, no marketing copy, no news-recap.
 
+This article originated from: ${item.feedName || 'a tier-1 business publication'}
 Source article title: ${item.title}
+Source article URL: ${item.link}
 Source article description: ${item.desc || '(no description provided)'}
 
 Write a 500-word ANALYTICAL executive briefing as flowing prose. You MUST:
@@ -632,7 +582,7 @@ Write a 500-word ANALYTICAL executive briefing as flowing prose. You MUST:
    • Treasury & enterprise risk (liquidity, working capital, hedge, ERM, cyber risk, credit rating)
    • M&A / strategy (deals, synergies, divestitures, portfolio review, corporate strategy)
 
-3. EXPLICITLY reference the analytical methodology behind the source (e.g. "Gartner's survey of 1,200 CIOs", "McKinsey's maturity model", "BCG's benchmark of 50 logistics leaders", "HBR's framework for capital allocation"). Name the source and the analytical method.
+3. Reference the source by name where appropriate (e.g. "McKinsey's analysis shows...", "HBR research on...", "Wharton's findings on..."). Use the source's analytical lens — if it's a research piece, treat it as research; if it's a strategy piece, treat it as analyst strategy. Do NOT fabricate statistics, surveys, or frameworks that the source did not actually publish — if the source description is thin, anchor the analysis in the source's stated topic and the CEO lenses above.
 
 4. Use **bold** for key numbers, named entities, and analytical concepts (e.g. **EBITDA margin**, **Gartner's 2026 CIO Survey**, **Monte Carlo simulation**).
 
@@ -665,7 +615,7 @@ No H2 headers. No bullet lists. No preamble like "Here is the summary". No news-
         body: wrappedBody,
         category,
         sourceUrl: item.link,
-        sourceName: 'Original article',
+        sourceName: item.feedName || 'Original article',
         keywords: 'CEO insights, executive analysis, profitability, ROI, cost analysis, AI implementation, logistics, markets, ' + item.title.split(/\s+/).slice(0, 5).join(', ').toLowerCase(),
         slug,
         dateStr: DATE_STR,
@@ -678,39 +628,9 @@ No H2 headers. No bullet lists. No preamble like "Here is the summary". No news-
     }
   }
   
-  // ── 2. Feature Article ──
-  console.log('\n--- Generating feature article ---');
-  // Pick a feature topic we haven't written about yet
-  const availableFeatures = FEATURE_TOPICS.filter(t => !existingPosts.includes(t.slug + '.html') && !generated.find(g => g.slug === t.slug));
-  
-  if (availableFeatures.length > 0) {
-    const topic = availableFeatures[Math.floor(Math.random() * availableFeatures.length)];
-    console.log(`  Topic: ${topic.title}`);
-    
-    const body = await groqChat(topic.prompt);
-    if (body && body.length > 200) {
-      const htmlBody = body
-        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\n\n/g, '</p>\n<p>')
-        .trim();
-      const wrappedBody = '<p>' + htmlBody + '</p>';
-      
-      const postHTML = generateBlogPostHTML({
-        title: topic.title,
-        body: wrappedBody,
-        category: topic.category,
-        keywords: topic.keywords,
-        slug: topic.slug,
-        dateStr: DATE_STR,
-        isoDate: ISO_NOW
-      });
-      
-      writeFileSync(join(REPO_ROOT, 'insights', topic.slug + '.html'), postHTML);
-      generated.push({ slug: topic.slug, title: topic.title, category: topic.category, dateStr: DATE_STR, readTime: 3 });
-      console.log(`  ✅ Generated: insights/${topic.slug}.html`);
-    }
-  }
+  // NOTE: Feature-article generation removed per user direction:
+  // "Do not build made-up content, scout the net only."
+  // Every article now originates from a real RSS item with a source URL.
   
   // ── 3. Update insights/index.html ──
   if (generated.length > 0) {
