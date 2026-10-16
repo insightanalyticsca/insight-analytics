@@ -2,8 +2,11 @@ name: Auto-Blog Generator
 
 on:
   schedule:
-    - cron: '0 12 * * *'
-    - cron: '0 0 * * *'
+    # 4× daily — UTC times below. Equivalent Toronto/EDT times in comments.
+    - cron: '0 0 * * *'    # 00:00 UTC = 08:00 PM EDT (evening)
+    - cron: '0 6 * * *'    # 06:00 UTC = 02:00 AM EDT (overnight)
+    - cron: '0 12 * * *'   # 12:00 UTC = 08:00 AM EDT (morning)
+    - cron: '0 18 * * *'   # 18:00 UTC = 02:00 PM EDT (afternoon)
   workflow_dispatch:
 
 permissions:
