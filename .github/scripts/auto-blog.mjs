@@ -636,7 +636,7 @@ Write a 500-word ANALYTICAL executive briefing as flowing prose. You MUST:
 
 4. Use **bold** for key numbers, named entities, and analytical concepts (e.g. **EBITDA margin**, **Gartner's 2026 CIO Survey**, **Monte Carlo simulation**).
 
-5. Close with 1 paragraph of "What executives should do this week" — concrete, board-actionable. Not "monitor the situation" — specific actions (commission a benchmark, reallocate capex from X to Y, convene the audit committee on Z).
+5. Close with 1 paragraph of synthesizing analysis — step back and place the findings in their broader business context. Weigh the strategic implications for executives (trade-offs, second-order effects, what it means for capital allocation, governance, competitive position). This is an analyst's reflective conclusion, NOT a to-do list — do not give orders, do not say "executives should do X", do not use imperative voice. Write in the analytical third-person register of an HBR or McKinsey closing paragraph.
 
 No H2 headers. No bullet lists. No preamble like "Here is the summary". No news-recap tone ("Company X announced..."). Just the analyst-grade briefing, naturally flowing.`;
     const body = await groqChat(prompt);
