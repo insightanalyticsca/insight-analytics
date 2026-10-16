@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 /**
- * auto-blog.mjs — Executive-grade AI Insights scout
+ * auto-blog.mjs — Executive-grade AI Insights scout (analyst-grade sources)
  *
- * Runs twice daily via GitHub Actions cron. Produces 2 articles per run:
- *   1. RSS article: pulled from executive-grade business / finance / ops sources
- *      (HBR, WSJ CFO, Reuters Business, Supply Chain Dive, FreightWaves, MIT Sloan,
- *       CFO.com, Markets Insider, Business Insider, Barron's, The Economist).
- *      Items MUST pass a CEO-relevance gate (profitability, cost, ROI, capex,
- *      logistics, markets, AI implementation costs, operations). Consumer-blog
- *      noise (AI music, gaming, social, sports, science one-offs) is filtered out.
+ * Runs twice daily via GitHub Actions cron. Produces 1-2 articles per run:
+ *   1. RSS article: pulled from TIER-1 ANALYST & CONSULTING sources
+ *      (Gartner, McKinsey, BCG, Bain, Deloitte, Accenture, HBR, MIT Sloan,
+ *       Stanford GSB, Wharton, INSEAD Knowledge, Supply Chain Brain, CSCMP).
+ *      Items MUST pass an ANALYST-DEPTH gate: must hit on analytical
+ *      methodology keywords (research, study, framework, benchmark, index,
+ *      survey, KPI, maturity model, etc.) AND a CEO-relevance lens
+ *      (corporate governance, logistics, optimization, market research,
+ *       profitability, AI implementation cost, M&A, treasury, risk).
+ *      CRIME / local news / small-potatoes stories (robbery, theft, arrest,
+ *       local incident, lawsuit gossip) are HARD-REJECTED regardless of score.
  *   2. Feature article: deep-dive on Insight Analytics' own capabilities.
  *
  * Groq is called via Netlify proxy (no API key needed).
@@ -27,82 +31,135 @@ const ISO_NOW = NOW.toISOString();
 const DATE_STR = NOW.toISOString().split('T')[0];
 const TIME_STAMP = NOW.getTime();
 
-// ─── RSS Feed Sources (executive-grade) ─────────────────────────────────
-// Curated for CEO/CFO/COO-grade material: profitability, cost, ROI, capex,
-// logistics, supply chain, markets, AI implementation cost, treasury, M&A.
-// No consumer-tech blogs (The Verge / Wired / TechCrunch consumer / Engadget).
+// ─── RSS Feed Sources (TIER-1 ANALYST / CONSULTING / BUSINESS-SCHOOL) ────────
+// Curated for board-grade analytical material: corporate governance, logistics,
+// optimization, market research, profitability, AI implementation cost, M&A, treasury.
+// No consumer-tech blogs. No general news wires (those produce crime / small-potatoes
+// stories that pollute the feed). Only analyst houses, top-tier consulting firms,
+// and business-school journals that publish research, frameworks, benchmarks, and
+// surveys — the material CEOs/CFOs/COOs actually read.
 const RSS_FEEDS = [
+  // — Big-4 consulting firms —
+  { url: 'https://www.mckinsey.com/insights/rss', name: 'McKinsey & Company — Insights' },
+  { url: 'https://www.bcg.com/en-us/insights/rss', name: 'BCG — Insights & Publications' },
+  { url: 'https://www.bain.com/about/news-and-insights/feed/', name: 'Bain & Company — News & Insights' },
+  { url: 'https://www2.deloitte.com/us/en/footerlinks/rssforsubscriptions.rss?fe=insights', name: 'Deloitte — Insights' },
+  { url: 'https://www.accenture.com/us-en/blogs/insights-blog/feed', name: 'Accenture — Insights Blog' },
+  { url: 'https://www.pwc.com/us/en/library/rss/blogs/pwc-blogs.rss', name: 'PwC — Strategy& Blogs' },
+  { url: 'https://www.ey.com/en/rss/all', name: 'EY — All Insights' },
+  { url: 'https://www.kpmg.com/us/en/home/insights.rss', name: 'KPMG — Insights' },
+  // — Analyst houses —
+  { url: 'https://www.gartner.com/en/newsroom/rss/press-releases', name: 'Gartner — Press Releases' },
+  { url: 'https://www.gartner.com/en/newsroom/rss/insights', name: 'Gartner — Insights' },
+  { url: 'https://www.forrester.com/the/feed?feedType=RSS&feedName=Forrester+Insights', name: 'Forrester — Insights' },
+  // — Business-school journals (peer-reviewed-grade analytical content) —
   { url: 'https://hbr.org/the-latest/feed', name: 'Harvard Business Review — Latest' },
   { url: 'https://hbr.org/topic/finance/rss.xml', name: 'HBR — Finance & Accounting' },
   { url: 'https://hbr.org/topic/operations/rss.xml', name: 'HBR — Operations' },
-  { url: 'https://www.supplychaindive.com/feeds/headlines/', name: 'Supply Chain Dive' },
-  { url: 'https://www.freightwaves.com/feed', name: 'FreightWaves' },
-  { url: 'https://www.reuters.com/markets/rssFeed', name: 'Reuters Markets' },
-  { url: 'https://www.reuters.com/business/rssFeed', name: 'Reuters Business' },
-  { url: 'https://feeds.content.dowjones.io/public/rss/SB10001424053111904210604576563062342565452', name: 'WSJ CFO Journal' },
-  { url: 'https://feeds.content.dowjones.io/public/rss/markets', name: 'WSJ Markets' },
-  { url: 'https://www.cfomagazine.com/feed/', name: 'CFO Magazine' },
-  { url: 'https://www.businessinsider.com/rss', name: 'Business Insider' },
-  { url: 'https://feeds.barrons.com/rss/pf/100000022', name: 'Barrons — Markets' },
-  { url: 'https://www.economist.com/finance-and-economics/rss.xml', name: 'The Economist — Finance & Economics' },
-  { url: 'https://www.economist.com/business/rss.xml', name: 'The Economist — Business' },
+  { url: 'https://hbr.org/topic/strategy/rss.xml', name: 'HBR — Strategy' },
   { url: 'https://sloanreview.mit.edu/feed/', name: 'MIT Sloan Management Review' },
-  { url: 'https://www.marketscreener.com/rss/rss/marketscreener-MARKETS.xml', name: 'MarketScreener — Markets' },
-  // Keep one applied-AI feed for AI implementation cost / ROI stories, but the
-  // noise filter below strips out consumer-tech / music / gaming distractions.
-  { url: 'https://venturebeat.com/category/enterprise-ai/feed/', name: 'VentureBeat Enterprise AI' },
+  { url: 'https://www.gsb.stanford.edu/insights/rss.xml', name: 'Stanford GSB — Insights' },
+  { url: 'https://knowledge.insead.edu/rss.xml', name: 'INSEAD Knowledge' },
+  { url: 'https://knowledge.wharton.upenn.edu/feed/', name: 'Wharton — Knowledge' },
+  // — Specialized analyst-grade operational outlets —
+  { url: 'https://www.supplychaindive.com/feeds/headlines/', name: 'Supply Chain Dive' },
+  { url: 'https://www.supplychainbrain.com/rss/', name: 'Supply Chain Brain' },
+  { url: 'https://logisticsviewpoints.com/feed/', name: 'Logistics Viewpoints' },
+  { url: 'https://www.scmr.com/rss', name: 'Supply Chain Management Review' },
+  { url: 'https://www.cfo.com/feed/', name: 'CFO.com' },
+  // — Strategy / market-research outlets —
+  { url: 'https://www.strategicmanagement.net/rss', name: 'Strategic Management Society' },
+  { url: 'https://hbr.org/topic/marketing/rss.xml', name: 'HBR — Marketing' },
+];
+
+// ─── Analyst-depth gate (NEW) ────────────────────────────────────────────
+// An item must contain at least ONE of these analytical-methodology signals
+// to be eligible. This is what separates real analyst-grade material
+// ("McKinsey survey of 1,200 CFOs shows margin compression...") from news
+// wire noise ("Nebraska deputies recover stolen copper load...").
+// Items without ANY of these signals are auto-rejected regardless of CEO score.
+const ANALYST_DEPTH_KEYWORDS = [
+  'research', 'study', 'survey', 'report', 'white paper', 'working paper',
+  'framework', 'methodology', 'benchmark', 'benchmarks', 'benchmarking',
+  'index', 'indicator', 'KPI', 'metric', 'metrics', 'measure', 'measurement',
+  'analysis', 'analytical', 'model', 'modeling', 'correlation', 'regression',
+  'maturity model', 'capability assessment', 'scorecard', 'dashboard',
+  'data', 'dataset', 'sample', 'sample size', 'respondents', 'findings',
+  'insight', 'insights', 'outlook', 'forecast', 'projection', 'scenario',
+  'case study', 'best practice', 'lessons learned', 'playbook', 'blueprint',
+  'transformation', 'optimization', 'optimization model', 'simulation',
+  'risk assessment', 'gap analysis', 'cost-benefit', 'total cost of ownership',
+  'TCO', 'NPV', 'IRR', 'payback', 'sensitivity analysis', 'Monte Carlo',
 ];
 
 // ─── CEO-relevance scoring ──────────────────────────────────────────────
 // Items are scored 0..N by counting hits across these CEO-grade topic clusters.
-// An item must score >= 2 to be eligible for selection.
+// An item must score >= 3 (was: 2) to be eligible for selection.
 const CEO_RELEVANCE_KEYWORDS = [
   // Profitability / margin
   'profit', 'profitability', 'margin', 'ebitda', 'gross margin', 'operating margin',
   'earnings', 'EPS', 'net income', 'bottom line', 'top line', 'revenue growth',
+  'unit economics', 'price elasticity', 'pricing power',
   // Cost & efficiency
   'cost', 'costs', 'cost reduction', 'opex', 'operating expense', 'capex',
   'capital expenditure', 'spend', 'spending', 'budget', 'budget cut',
   'cost analysis', 'cost optimization', 'efficiency', 'productivity',
-  'layoff', 'layoffs', 'workforce reduction', 'headcount', 'restructuring',
+  'process improvement', 'lean', 'six sigma', 'operational excellence',
+  'restructuring', 'synergies', 'run-rate', 'cost-to-serve',
   // ROI / capital allocation
   'ROI', 'return on investment', 'payback', 'payback period', 'NPV', 'IRR',
   'capital allocation', 'capital return', 'buyback', 'share repurchase',
   'dividend', 'free cash flow', 'cash flow', 'investment case',
+  'capital efficiency', 'capital productivity',
   // AI implementation costs / value
   'AI implementation', 'AI cost', 'AI ROI', 'AI spend', 'AI investment',
   'AI adoption', 'AI deployment', 'generative AI cost', 'gen AI cost',
   'LLM cost', 'inference cost', 'GPU cost', 'AI productivity gain',
-  'AI business value', 'AI monetization', 'AI pricing',
-  // Markets / valuation
-  'market', 'markets', 'valuation', 'multiple', 'P/E', 'price target',
-  'equity', 'stock', 'share price', 'index', 'S&P', 'NASDAQ', 'Dow',
-  'treasury yield', 'bond yield', 'rate cut', 'rate hike', 'Fed', 'ECB',
-  'BOE', 'inflation', 'CPI', 'PPI', 'recession', 'soft landing',
+  'AI business value', 'AI monetization', 'AI pricing', 'AI governance',
+  'AI strategy', 'AI maturity', 'AI readiness',
+  // Corporate governance & board
+  'corporate governance', 'board', 'board of directors', 'CEO', 'CFO', 'COO',
+  'CIO', 'CTO', 'audit committee', 'compensation committee', 'governance',
+  'fiduciary', 'shareholder', 'stakeholder', 'ESG', 'sustainability',
+  'compliance', 'regulatory', 'risk culture', 'tone at the top',
+  // Markets / valuation / market research
+  'market research', 'market analysis', 'market sizing', 'TAM', 'SAM', 'SOM',
+  'market share', 'competitive landscape', 'segmentation', 'positioning',
+  'valuation', 'multiple', 'P/E', 'price target',
+  'equity', 'stock', 'index', 'S&P', 'NASDAQ',
+  'treasury yield', 'bond yield', 'rate cut', 'rate hike', 'Fed',
+  'inflation', 'CPI', 'PPI', 'recession', 'soft landing',
   'earnings call', 'guidance', 'outlook', 'forecast',
-  // Logistics / supply chain
+  // Logistics / supply chain / optimization
   'logistics', 'supply chain', 'procurement', 'freight', 'shipping',
   'carrier', 'OTIF', 'inventory', 'warehouse', 'fulfillment', 'last mile',
   'demand planning', 'S&OP', 'lead time', 'tariff', 'duty', 'nearshoring',
   'reshoring', 'port congestion', 'container', 'truckload', 'LTL',
+  'network optimization', 'route optimization', 'warehouse optimization',
+  'inventory optimization', 'service level', 'fill rate',
   // M&A / strategy
   'M&A', 'merger', 'acquisition', 'divestiture', 'spin-off', 'IPO',
   'private equity', 'LBO', 'deal', 'synergy', 'integration',
+  'corporate strategy', 'strategic plan', 'portfolio review',
   // Treasury / risk / capital structure
   'treasury', 'liquidity', 'working capital', 'credit facility',
   'debt refinancing', 'refinanc', 'capital structure', 'credit rating',
-  'risk management', 'hedge', 'hedging', 'FX exposure', 'commodity',
+  'risk management', 'enterprise risk', 'ERM', 'hedge', 'hedging',
+  'FX exposure', 'commodity', 'counterparty', 'cyber risk',
   // Operations / executive
-  'CEO', 'CFO', 'COO', 'CIO', 'CTO', 'board', 'board of directors',
   'executive', 'leadership', 'strategy', 'strategic', 'transformation',
-  'digital transformation', 'operational excellence',
+  'digital transformation', 'change management', 'org design',
+  'operating model', 'business model', 'business transformation',
 ];
 
-// ─── Consumer-blog noise blocklist ──────────────────────────────────────
-// Items whose title+description contains any of these (case-insensitive)
-// are REJECTED regardless of CEO score. These are the pop-blog topics the
-// user explicitly does not want in the AI Insights feed.
+// ─── Noise blocklist — HARD REJECT ────────────────────────────────────────
+// Items whose title+description contains any of these (case-insensitive,
+// word-boundary regex) are REJECTED regardless of CEO score or analyst depth.
+// CRIME / local news / small-potatoes stories are explicitly rejected because
+// they slip past keyword filters ("robbery of copper load" has "load" and
+// "shipping-adjacent" words) but aren't executive-grade material.
 const CONSUMER_NOISE_PATTERNS = [
+  // — Consumer-blog fluff —
   'AI music', 'AI-generated music', 'AI song', 'spotify', 'youtube music',
   'deezer', 'soundcloud', 'apple music', 'tidal', 'streaming playlist',
   'AI art', 'AI image', 'AI photo', 'midjourney', 'DALL-E', 'stable diffusion',
@@ -120,6 +177,33 @@ const CONSUMER_NOISE_PATTERNS = [
   'cricket', 'tennis', 'golf tournament',
   'health wellness', 'diet', 'yoga', 'meditation',
   'horoscope', 'astrology', 'psychic',
+  // — Crime / local-incident / small-potatoes (the user explicitly called out
+  //   "robbery of wire" as the kind of story NOT to surface) —
+  'robbery', 'robbed', 'armed robbery', 'heist', 'loot', 'looted',
+  'theft', 'stolen', 'thief', 'thieves', 'burglary', 'break-in',
+  'arrest', 'arrested', 'indicted', 'convicted', 'sentenced',
+  'felony', 'misdemeanor', 'charged with', 'suspect', 'suspects',
+  'police say', 'sheriff', 'deputies', 'detectives', 'investigators say',
+  'copper theft', 'metal theft', 'cargo theft', 'cargo stolen',
+  'hijack', 'hijacked', 'piracy', 'smuggl',
+  'fatal', 'fatality', 'death of', 'killed in', 'slain', 'murder',
+  'homicide', 'shooting', 'shot ', 'stabbed', 'assault',
+  'crash', 'crashed', 'derailment', 'collision',
+  'fire at', 'burns down', 'explosion at',
+  'rescue', 'rescued', 'recovered stolen', 'recover stolen',
+  'lawsuit', 'sues', 'sued', 'class-action', 'plaintiff', 'defendant',
+  'settlement', 'out-of-court',
+  'scandal', 'controversy', 'outrage', 'backlash', 'uproar',
+  'protest', 'protesters', 'strike', 'walkout', 'picket',
+  'CEO arrested', 'executive arrested', 'exec charged',
+  'fraud', 'embezzlement', 'Ponzi', 'wire fraud', 'securities fraud',
+  // — Small-potatoes local / regional news —
+  'local business', 'small town', 'county news', 'regional news',
+  'city council', 'town hall', 'municipal',
+  // — Marketing / advertorial / PR puff pieces —
+  'announces partnership with', 'joins forces with', 'unveils new logo',
+  'launches brand', 'rebrand', 'new brand identity',
+  'gift guide', 'best of', 'top 10', 'year in review',
 ];
 
 // Items whose title clearly matches "executive-grade" even without keyword hits
@@ -128,7 +212,15 @@ const EXEC_HEADLINE_PATTERNS = [
   /\bCEO\b/i, /\bCFO\b/i, /\bCOO\b/i, /\bCIO\b/i, /\bCTO\b/i,
   /\bboard\b/i, /\bearnings\b/i, /\bprofit\b/i, /\brevenue\b/i,
   /\bmargin\b/i, /\bEBITDA\b/i, /\bguidance\b/i, /\bquarterly\b/i,
+  /\bsurvey\b/i, /\bstudy\b/i, /\breport\b/i, /\bbenchmark\b/i,
+  /\bgovernance\b/i, /\boptimization\b/i, /\bstrategy\b/i,
 ];
+
+// ─── NEW: analyst-depth gate ─────────────────────────────────────────────
+// Returns true if the item shows analytical-methodology signals (research,
+// survey, framework, benchmark, etc.). Required IN ADDITION to CEO-relevance
+// score so news-wire stories don't slip through.
+// (ANALYST_DEPTH_KEYWORDS is declared above, near CEO_RELEVANCE_KEYWORDS.)
 
 function scoreCEORelevance(item) {
   const text = ((item.title || '') + ' ' + (item.desc || '')).toLowerCase();
@@ -141,6 +233,16 @@ function scoreCEORelevance(item) {
     if (re.test(item.title || '')) { score += 1; break; }
   }
   return score;
+}
+
+// Returns true if the item shows analytical-methodology signals.
+function hasAnalystDepth(item) {
+  const text = ((item.title || '') + ' ' + (item.desc || '')).toLowerCase();
+  if (!text.trim()) return false;
+  for (const kw of ANALYST_DEPTH_KEYWORDS) {
+    if (text.indexOf(kw.toLowerCase()) >= 0) return true;
+  }
+  return false;
 }
 
 function isConsumerNoise(item) {
@@ -163,15 +265,16 @@ function isConsumerNoise(item) {
 // Maps the dominant CEO lens of an item to a short, board-room-flavored
 // category label that appears on the Insights index card.
 const EXEC_CATEGORIES = [
-  { match: ['AI implementation','AI cost','AI ROI','AI spend','AI investment','AI adoption','AI deployment','generative AI cost','gen AI cost','LLM cost','inference cost','GPU cost','AI productivity gain','AI business value','AI monetization','AI pricing','AI ','artificial intelligence','machine learning'], label: 'AI Implementation' },
-  { match: ['profit','profitability','margin','ebitda','gross margin','operating margin','earnings','EPS','net income','bottom line','top line','revenue growth'], label: 'Profitability' },
-  { match: ['cost','costs','cost reduction','opex','operating expense','capex','capital expenditure','spend','spending','budget','budget cut','cost analysis','cost optimization','efficiency','productivity','layoff','layoffs','workforce reduction','headcount','restructuring'], label: 'Cost & Efficiency' },
-  { match: ['ROI','return on investment','payback','NPV','IRR','capital allocation','capital return','buyback','share repurchase','dividend','free cash flow','cash flow','investment case'], label: 'ROI & Capital' },
-  { match: ['logistics','supply chain','procurement','freight','shipping','carrier','OTIF','inventory','warehouse','fulfillment','last mile','demand planning','S&OP','lead time','tariff','duty','nearshoring','reshoring','port congestion','container','truckload','LTL'], label: 'Logistics & Supply Chain' },
-  { match: ['market','markets','valuation','multiple','P/E','price target','equity','stock','share price','index','S&P','NASDAQ','Dow','treasury yield','bond yield','rate cut','rate hike','Fed','ECB','BOE','inflation','CPI','PPI','recession','soft landing','earnings call','guidance','outlook','forecast'], label: 'Markets & Valuation' },
-  { match: ['M&A','merger','acquisition','divestiture','spin-off','IPO','private equity','LBO','deal','synergy','integration'], label: 'M&A & Strategy' },
-  { match: ['treasury','liquidity','working capital','credit facility','debt refinancing','refinanc','capital structure','credit rating','risk management','hedge','hedging','FX exposure','commodity'], label: 'Treasury & Risk' },
-  { match: ['CEO','CFO','COO','CIO','CTO','board','board of directors','executive','leadership','strategy','strategic','transformation','digital transformation','operational excellence'], label: 'Executive Strategy' },
+  { match: ['AI implementation','AI cost','AI ROI','AI spend','AI investment','AI adoption','AI deployment','generative AI cost','gen AI cost','LLM cost','inference cost','GPU cost','AI productivity gain','AI business value','AI monetization','AI pricing','AI governance','AI strategy','AI maturity','AI readiness','AI '], label: 'AI Implementation' },
+  { match: ['corporate governance','board','board of directors','CEO','CFO','COO','CIO','CTO','audit committee','compensation committee','governance','fiduciary','shareholder','stakeholder','ESG','sustainability','compliance','regulatory','risk culture','tone at the top'], label: 'Corporate Governance' },
+  { match: ['profit','profitability','margin','ebitda','gross margin','operating margin','earnings','EPS','net income','bottom line','top line','revenue growth','unit economics','price elasticity','pricing power'], label: 'Profitability' },
+  { match: ['cost','costs','cost reduction','opex','operating expense','capex','capital expenditure','spend','spending','budget','budget cut','cost analysis','cost optimization','efficiency','productivity','process improvement','lean','six sigma','operational excellence','restructuring','synergies','run-rate','cost-to-serve'], label: 'Cost & Efficiency' },
+  { match: ['ROI','return on investment','payback','NPV','IRR','capital allocation','capital return','buyback','share repurchase','dividend','free cash flow','cash flow','investment case','capital efficiency','capital productivity'], label: 'ROI & Capital' },
+  { match: ['logistics','supply chain','procurement','freight','shipping','carrier','OTIF','inventory','warehouse','fulfillment','last mile','demand planning','S&OP','lead time','tariff','duty','nearshoring','reshoring','port congestion','container','truckload','LTL','network optimization','route optimization','warehouse optimization','inventory optimization','service level','fill rate'], label: 'Logistics & Supply Chain' },
+  { match: ['market research','market analysis','market sizing','TAM','SAM','SOM','market share','competitive landscape','segmentation','positioning','valuation','multiple','P/E','price target','equity','stock','index','S&P','NASDAQ','treasury yield','bond yield','rate cut','rate hike','Fed','inflation','CPI','PPI','recession','soft landing','earnings call','guidance','outlook','forecast'], label: 'Markets & Market Research' },
+  { match: ['M&A','merger','acquisition','divestiture','spin-off','IPO','private equity','LBO','deal','synergy','integration','corporate strategy','strategic plan','portfolio review'], label: 'M&A & Strategy' },
+  { match: ['treasury','liquidity','working capital','credit facility','debt refinancing','refinanc','capital structure','credit rating','risk management','enterprise risk','ERM','hedge','hedging','FX exposure','commodity','counterparty','cyber risk'], label: 'Treasury & Risk' },
+  { match: ['executive','leadership','strategy','strategic','transformation','digital transformation','change management','org design','operating model','business model','business transformation'], label: 'Executive Strategy' },
 ];
 
 function pickExecutiveCategory(item) {
@@ -420,30 +523,45 @@ async function main() {
     allRSSItems.push(...items);
   }
   
-  // CEO-grade filter: score each item, reject consumer-blog noise, require score >= 2
+  // Analyst-grade filter: score each item, reject noise, require BOTH
+  //   (a) CEO-relevance score >= 3 (was: 2) AND
+  //   (b) hasAnalystDepth (NEW) — must contain analytical methodology signals
+  //   (research / survey / framework / benchmark / KPI / etc.) so news-wire
+  //   stories ("robbery of copper load", "local CEO arrested") are filtered out
+  //   even when they accidentally hit CEO-relevance keywords.
   const existingPosts = readdirSync(join(REPO_ROOT, 'insights')).filter(f => f.endsWith('.html') && f !== 'index.html');
   const scoredItems = allRSSItems
     .map(item => ({
       item,
       score: scoreCEORelevance(item),
+      depth: hasAnalystDepth(item),
       noise: isConsumerNoise(item),
       slug: slugify(item.title),
     }))
     .filter(s =>
-      !s.noise                                  // not consumer-blog noise
-      && s.score >= 2                           // passes CEO-relevance gate
+      !s.noise                                  // not consumer-blog / crime / small-potatoes noise
+      && s.depth                                // shows analytical-methodology signals
+      && s.score >= 3                           // passes CEO-relevance gate (raised from 2)
       && !existingPosts.includes(s.slug + '.html')   // not already blogged
       && (s.item.title || '').length > 0
     );
   
   console.log(`  Total items fetched: ${allRSSItems.length}`);
-  console.log(`  Items passing CEO-relevance gate (score>=2, no noise, not already used): ${scoredItems.length}`);
+  console.log(`  Items passing analyst-grade gate (score>=3 + analyst-depth + no noise + not already used): ${scoredItems.length}`);
   
   // Log the rejected noise samples so the run is debuggable
   const rejectedNoise = allRSSItems.filter(i => isConsumerNoise(i)).slice(0, 5);
   if (rejectedNoise.length > 0) {
-    console.log('  Rejected consumer-noise samples (first 5):');
-    rejectedNoise.forEach(i => console.log(`    - [REJECTED] ${i.title.slice(0, 80)}`));
+    console.log('  Rejected noise samples (first 5):');
+    rejectedNoise.forEach(i => console.log(`    - [REJECTED noise] ${i.title.slice(0, 80)}`));
+  }
+  // Also log items that passed noise filter but failed analyst-depth gate
+  const rejectedShallow = allRSSItems
+    .filter(i => !isConsumerNoise(i) && !hasAnalystDepth(i) && scoreCEORelevance(i) >= 3)
+    .slice(0, 5);
+  if (rejectedShallow.length > 0) {
+    console.log('  Rejected shallow-news samples (passed noise+CEO-gate but failed analyst-depth, first 5):');
+    rejectedShallow.forEach(i => console.log(`    - [REJECTED shallow] ${i.title.slice(0, 80)}`));
   }
   
   if (scoredItems.length > 0) {
@@ -461,22 +579,33 @@ async function main() {
     const item = picked.item;
     console.log(`\n  Selected (score=${picked.score}/N): ${item.title.slice(0, 90)}`);
     
-    const prompt = `You are an executive analyst at Insight Analytics, a Canadian analytics consultancy writing for CEOs, CFOs, COOs, and board members. Your job is to translate raw business news into CEO-grade insight — no fluff, no consumer-blog tone, no marketing copy.
+    const prompt = `You are a senior analyst at Insight Analytics, a Canadian analytics consultancy writing for CEOs, CFOs, COOs, and board members. Your sources are tier-1 analyst houses and consulting firms (Gartner, McKinsey, BCG, Bain, Deloitte, Accenture, PwC, EY, KPMG, Forrester) and business-school journals (HBR, MIT Sloan, Stanford GSB, Wharton, INSEAD). Your job is to translate their research into a board-grade executive briefing — no fluff, no consumer-blog tone, no marketing copy, no news-recap.
 
 Source article title: ${item.title}
 Source article description: ${item.desc || '(no description provided)'}
 
-Write a 500-word executive analysis as flowing prose. You MUST anchor every paragraph in at least one of these CEO lenses:
-  • Profitability & margin (gross margin, operating margin, EBITDA, EPS impact)
-  • Cost structure & efficiency (opex, capex, headcount, unit economics)
-  • ROI & capital allocation (payback, NPV, free cash flow, buyback vs reinvest)
-  • AI implementation cost & value (AI spend, inference cost, productivity gain, monetization)
-  • Markets & valuation (multiple expansion / compression, rate moves, FX, commodity impact)
-  • Logistics & operations (supply chain, OTIF, freight, inventory, nearshoring)
-  • Treasury & risk (liquidity, working capital, hedge, credit rating)
-  • M&A / strategy (deals, synergies, divestitures, board action)
+Write a 500-word ANALYTICAL executive briefing as flowing prose. You MUST:
 
-Open with a single-sentence headline takeaway (the one thing a CEO needs to know). Then 3-4 paragraphs of analysis. Close with 1 paragraph of "What executives should do this week" — concrete, board-actionable. Use **bold** for key numbers and named entities. No H2 headers, no bullet lists, no preamble like "Here is the summary". Just the analysis, naturally flowing.`;
+1. Open with a single-sentence headline takeaway (the one thing a CEO/CFO/COO needs to know — quantitative if possible).
+
+2. In the next 3-4 paragraphs, anchor EVERY paragraph in at least one of these CEO lenses:
+   • Corporate governance & board (governance, fiduciary, ESG, compliance, board oversight)
+   • Profitability & margin (gross margin, operating margin, EBITDA, EPS impact, unit economics)
+   • Cost structure & efficiency (opex, capex, process improvement, lean, six sigma, run-rate)
+   • ROI & capital allocation (payback, NPV, IRR, free cash flow, capital efficiency)
+   • AI implementation cost & value (AI spend, inference cost, productivity gain, AI maturity, AI governance)
+   • Markets & market research (market sizing, TAM, segmentation, valuation, multiple expansion/compression)
+   • Logistics, supply chain & optimization (OTIF, network optimization, inventory optimization, nearshoring)
+   • Treasury & enterprise risk (liquidity, working capital, hedge, ERM, cyber risk, credit rating)
+   • M&A / strategy (deals, synergies, divestitures, portfolio review, corporate strategy)
+
+3. EXPLICITLY reference the analytical methodology behind the source (e.g. "Gartner's survey of 1,200 CIOs", "McKinsey's maturity model", "BCG's benchmark of 50 logistics leaders", "HBR's framework for capital allocation"). Name the source and the analytical method.
+
+4. Use **bold** for key numbers, named entities, and analytical concepts (e.g. **EBITDA margin**, **Gartner's 2026 CIO Survey**, **Monte Carlo simulation**).
+
+5. Close with 1 paragraph of "What executives should do this week" — concrete, board-actionable. Not "monitor the situation" — specific actions (commission a benchmark, reallocate capex from X to Y, convene the audit committee on Z).
+
+No H2 headers. No bullet lists. No preamble like "Here is the summary". No news-recap tone ("Company X announced..."). Just the analyst-grade briefing, naturally flowing.`;
     const body = await groqChat(prompt);
     if (body && body.length > 200) {
       // Convert markdown to HTML
