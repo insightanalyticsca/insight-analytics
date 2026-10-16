@@ -96,4 +96,10 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  </urlset>
+    <url>
+    <loc>https://insight-analytics.ca/insights/a-low-tech-intervention-can-help-migrant-families-survive-the-lean-season</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
