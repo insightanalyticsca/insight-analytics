@@ -42,18 +42,11 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit + push + trigger deploy
+      - name: Commit + push (deploy auto-fires via workflow_run trigger on deploy.yml)
         if: steps.changes.outputs.changed == 'true'
         run: |
           git config user.name "Auto-Blog Bot"
           git config user.email "blog-bot@insight-analytics.ca"
           git commit -m "blog: auto-generated AI articles — $(date -u +%Y-%m-%d-%H%M)"
           git push
-          echo "Triggering deploy workflow..."
-          sleep 3
-          curl -s -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches" \
-            -d '{"ref":"main"}'
-          echo "Deploy triggered."
+          echo "Pushed. deploy.yml will auto-fire via workflow_run trigger (no manual dispatch needed)."

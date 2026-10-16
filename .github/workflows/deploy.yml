@@ -3,6 +3,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Auto-fire after Auto-Blog Generator completes.
+  # (Pushes made with the auto-blog's GITHUB_TOKEN don't trigger `push:` events by design —
+  # workflow_run is the recommended chain pattern, no PAT required.)
+  workflow_run:
+    workflows: ["Auto-Blog Generator"]
+    types: [completed]
 permissions:
   pages: write
   id-token: write
@@ -11,6 +17,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
+    # When triggered via workflow_run, only run if the upstream workflow succeeded.
+    # (Push and workflow_dispatch triggers always proceed.)
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
