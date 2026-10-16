@@ -171,9 +171,13 @@ const CONSUMER_NOISE_PATTERNS = [
   'recipe', 'cooking', 'restaurant review',
   'travel guide', 'hotel review', 'flight review',
   'movie review', 'film festival', 'TV show', 'netflix', 'hbo',
-  'sports', 'NBA', 'NFL', 'NHL', 'MLB', 'soccer', 'football match',
-  'cricket', 'tennis', 'golf tournament',
-  'health wellness', 'diet', 'yoga', 'meditation',
+  // Narrow sports-noise to professional spectator leagues only — 'sports' alone
+  // would false-positive on McKinsey articles like 'what leaders can learn
+  // from modern sports' which is legit strategy material.
+  'NBA', 'NFL', 'NHL', 'MLB', 'soccer', 'football match',
+  'cricket', 'tennis tournament', 'golf tournament',
+  'super bowl', 'world cup', 'olympics',
+  'health wellness', 'diet plan', 'weight loss', 'yoga', 'meditation',
   'horoscope', 'astrology', 'psychic',
   // — Crime / local-incident / small-potatoes (the user explicitly called out
   //   "robbery of wire" as the kind of story NOT to surface) —
@@ -234,11 +238,30 @@ function scoreCEORelevance(item) {
 }
 
 // Returns true if the item shows analytical-methodology signals.
-function hasAnalystDepth(item) {
+// Two paths to qualifying:
+//   (a) the item contains an explicit analyst-depth keyword
+//       (research / survey / framework / benchmark / KPI / etc.), OR
+//   (b) the item has a high CEO-relevance score (>=5) AND contains a
+//       strategy/leadership/transformation keyword — these McKinsey-style
+//       articles often don't use explicit 'study' or 'survey' language but
+//       are still analyst-grade (e.g. "The CEO's singular impact on the success
+//       — or failure — of AI in organizations").
+const STRATEGY_DEPTH_KEYWORDS = [
+  'strategy', 'strategic', 'leadership', 'transformation',
+  'operating model', 'business model', 'playbook',
+];
+function hasAnalystDepth(item, ceoScore = 0) {
   const text = ((item.title || '') + ' ' + (item.desc || '')).toLowerCase();
   if (!text.trim()) return false;
+  // Path (a): explicit analyst-depth keyword
   for (const kw of ANALYST_DEPTH_KEYWORDS) {
     if (text.indexOf(kw.toLowerCase()) >= 0) return true;
+  }
+  // Path (b): high CEO score + strategy/leadership keyword
+  if (ceoScore >= 5) {
+    for (const kw of STRATEGY_DEPTH_KEYWORDS) {
+      if (text.indexOf(kw.toLowerCase()) >= 0) return true;
+    }
   }
   return false;
 }
@@ -542,7 +565,9 @@ async function main() {
     .map(item => ({
       item,
       score: scoreCEORelevance(item),
-      depth: hasAnalystDepth(item),
+      // Pass score into hasAnalystDepth so high-CEO-score strategy articles
+      // qualify via the alternate path.
+      depth: hasAnalystDepth(item, scoreCEORelevance(item)),
       noise: isConsumerNoise(item),
       slug: slugify(item.title),
     }))
