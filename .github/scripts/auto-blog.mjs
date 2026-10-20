@@ -389,7 +389,7 @@ function slugify(text) {
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-    .slice(0, 80);
+    .slice(0, 120);  // 120 chars — enough for typical analyst article titles (was 80, cut off titles like "...biodiversity-loss" mid-word)
 }
 function escHtml(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function escAttr(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
