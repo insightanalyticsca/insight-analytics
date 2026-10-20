@@ -436,17 +436,34 @@ async function fetchRSS(feedUrl) {
     // Parse both RSS <item> and Atom <entry> elements. HBS Working Knowledge
     // and some other feeds use Atom format which the prior parser missed entirely.
     const itemRegex = /<(?:item|entry)[\s>]([\s\S]*?)<\/(?:item|entry)>/gi;
+    // Tag-level extractor. Uses explicit alternation (CDATA branch | plain branch)
+    // instead of optional groups. The optional-group version was buggy: with
+    // non-greedy .*? and an optional CDATA prefix, the engine preferred to
+    // skip the prefix and capture the entire `<![CDATA[...]]>` literal as the
+    // title — producing article titles like `<![CDATA[Companies are scrambling...]]>`.
+    // Two-step approach: (1) extract inner text between <tag>...</tag>,
+    // (2) if inner is wrapped in `<![CDATA[...]]>`, strip the wrapper.
+    const extractTag = (item, tag) => {
+      const re = new RegExp('<' + tag + '[^>]*>([\\s\\S]*?)</' + tag + '>', 'i');
+      const m = item.match(re);
+      if (!m) return '';
+      let inner = m[1].trim();
+      // Strip CDATA wrapper if present: <![CDATA[ ... ]]>
+      const cdataMatch = inner.match(/^<!\[CDATA\[([\s\S]*?)\]\]>$/);
+      if (cdataMatch) inner = cdataMatch[1].trim();
+      return inner;
+    };
     let match;
     while ((match = itemRegex.exec(xml)) !== null) {
       const item = match[1];
-      const title = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is)?.[1]?.trim() || '';
+      const title = extractTag(item, 'title');
       // Atom uses <link href="..." /> instead of <link>text</link> — handle both.
       let link = item.match(/<link[^>]*href=["']([^"']+)["'][^>]*>/i)?.[1]?.trim() || '';
-      if (!link) link = item.match(/<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is)?.[1]?.trim() || '';
+      if (!link) link = extractTag(item, 'link');
       // Atom uses <summary> or <content>; RSS uses <description>.
-      const desc = (item.match(/<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/description>/is)?.[1]
-        || item.match(/<summary[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/summary>/is)?.[1]
-        || item.match(/<content[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/content>/is)?.[1]
+      const desc = (extractTag(item, 'description')
+        || extractTag(item, 'summary')
+        || extractTag(item, 'content')
         || '').replace(/<[^>]+>/g, '').trim();
       const pubDate = (item.match(/<pubDate>(.*?)<\/pubDate>/is)?.[1]
         || item.match(/<published>(.*?)<\/published>/is)?.[1]
