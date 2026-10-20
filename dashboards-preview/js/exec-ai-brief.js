@@ -330,11 +330,11 @@
       tenseRule = [
         'TENSE RULE (LIVE SESSION):',
         '- This is a LIVE session — data is current/streaming. Use PRESENT CONTINUOUS tense for all 4 sections:',
-        '  • "Revenue IS RISING 3% QoQ…" (NOT "Revenue rose 3% QoQ")',
-        '  • "Churn IS DECLINING…" (NOT "Churn declined")',
-        '  • "The dashboard IS SHOWING…" (NOT "The dashboard showed")',
-        '  • "Liquidity coverage IS HOLDING at 128%…" (NOT "Liquidity coverage held")',
-        '- For WHAT TO EXPECT: use present tense + future continuous — "if the trend CONTINUES, churn WILL LIKELY APPROACH 5% next quarter".',
+        '  • "Revenue is rising 3% QoQ…" (NOT "Revenue rose 3% QoQ")',
+        '  • "Churn is declining…" (NOT "Churn declined")',
+        '  • "The dashboard is showing…" (NOT "The dashboard showed")',
+        '  • "Liquidity coverage is holding at 128%…" (NOT "Liquidity coverage held")',
+        '- For WHAT TO EXPECT: use present tense + future continuous — "if the trend continues, churn will likely approach 5% next quarter".',
         '- For WHAT TO DO: still use imperative (e.g., "Reallocate capacity to…") — that section is always action-oriented.',
         ''
       ].join('\n');
@@ -351,11 +351,11 @@
       tenseRule = [
         'TENSE RULE (CLOSED SESSION):',
         '- This is a CLOSED session — data is period-end / historical / finalized. Use PAST tense for all 4 sections:',
-        '  • "Revenue ROSE 3% QoQ…" (NOT "Revenue is rising")',
-        '  • "Churn DECLINED…" (NOT "Churn is declining")',
-        '  • "The period SHOWED…" (NOT "The period is showing")',
-        '  • "Liquidity coverage HELD at 128%…" (NOT "Liquidity coverage is holding")',
-        '- For WHAT TO EXPECT: still use future conditional — "if the trend HAD CONTINUED, churn WOULD LIKELY HAVE APPROACHED 5%".',
+        '  • "Revenue rose 3% QoQ…" (NOT "Revenue is rising")',
+        '  • "Churn declined…" (NOT "Churn is declining")',
+        '  • "The period showed…" (NOT "The period is showing")',
+        '  • "Liquidity coverage held at 128%…" (NOT "Liquidity coverage is holding")',
+        '- For WHAT TO EXPECT: still use future conditional — "if the trend had continued, churn would likely have approached 5%".',
         '- For WHAT TO DO: still use imperative (e.g., "Reallocate capacity to…") — that section is always action-oriented.',
         ''
       ].join('\n');
