@@ -12,16 +12,22 @@
   'use strict';
 
   // ─── Config (mirror visual-chat.js + contact-chat.js) ────────────────────
+  // Default to 'groq' (not 'demo') because data/groq-config.json always sets
+  // the provider + proxyUrl. This prevents the premature "Groq not connected"
+  // fallback that happened when configPromise hadn't resolved yet.
   var CONFIG = {
-    provider: localStorage.getItem('docchat.provider') || 'demo',
+    provider: localStorage.getItem('docchat.provider') || 'groq',
     proxyUrl: localStorage.getItem('docchat.groq.proxyUrl') || '',
     groqModel: localStorage.getItem('docchat.groq.model') || 'qwen/qwen3.8-27b'
   };
 
-  // Expose a promise so callers can wait for the config to load before
-  // deciding whether Groq is truly available. This prevents premature
-  // fallback to static content while the async config fetch is in flight.
+  // If we have a proxyUrl in localStorage already, configPromise resolves
+  // instantly. If not, we fetch groq-config.json. Either way, runBrief()
+  // awaits this promise before checking CONFIG — so there's no race.
   var configPromise = (function () {
+    // Fast path: already have proxyUrl in localStorage — no fetch needed
+    if (CONFIG.proxyUrl) return Promise.resolve();
+    // Slow path: fetch groq-config.json
     return fetch('../data/groq-config.json', { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (cfg) {
@@ -49,6 +55,175 @@
       return '../data/versions/' + suite + '.json';
     }
     return null;
+  }
+
+  // ─── Session-state detector ─────────────────────────────────────────────
+  // Determines whether the dashboard is showing a LIVE session (real-time /
+  // intraday data) or a CLOSED session (period-end / historical / finalized).
+  // Drives verb tense in the AI brief: live → present continuous ("...is rising"),
+  // closed → past tense ("...rose"). Also drives the LIVE / CLOSED badge.
+  //
+  // Returns an object with:
+  //   state:       'live' | 'closed'
+  //   marketOpen:  bool — for trading dashboards, whether the market is open RIGHT NOW
+  //   sessionNote: short string for the prompt (e.g., "NYSE is open",
+  //                "Crypto markets never close", "Forex closed for weekend")
+  //   source:      'explicit' (asOfLabel started with "Live") | 'fresh'
+  //                (generatedUtc within 24h) | 'stale' (default closed)
+  //
+  // Heuristics, in priority order:
+  //   1. Explicit override via payload.sessionState === 'live' | 'closed'
+  //   2. asOfLabel starting with "Live" (e.g. "Live · Nov 2026 · Demo Build")
+  //   3. generatedUtc within the last 24 hours → live
+  //   4. Otherwise closed (historical / period-end)
+  //
+  // For dashboards whose title/key contains trading-related keywords
+  // (sentinel, treasury, market, portfolio, var, lcr, fx, crypto, equity,
+  // futures, etc.), also compute marketOpen + sessionNote using the
+  // real-world trading-session calendar:
+  //   - Crypto:        24/7/365 — always open
+  //   - Forex (Sydney/Tokyo/London/NY): 24/5 — closed Sat/Sun
+  //   - US equity futures (GLOBEX/CME):  Sun 6pm ET → Fri 5pm ET, daily halt 5-6pm ET
+  //   - US equities (NYSE/Nasdaq):        Mon-Fri 9:30am-4:00pm ET
+  //   - European equities (LSE/Euronext): Mon-Fri 8:00am-4:30pm London
+  //   - Asian equities (TSE/HKEx/SGX):    Mon-Fri 9:00am-3:00pm JST
+  function detectSessionState(payload) {
+    var suite = document.body.dataset.suite || '';
+    var title = (payload && (payload.title || (payload._meta && payload._meta.title))) || '';
+    var asOf = (payload && payload.asOfLabel) || ((payload && payload._meta && payload._meta.asOfLabel) || '');
+    var genUtc = (payload && (payload.generatedUtc || (payload._meta && payload._meta.generatedUtc))) || '';
+    var explicit = payload && payload.sessionState;
+
+    var state = 'closed';
+    var source = 'stale';
+
+    // Priority 1: explicit override in JSON
+    if (explicit === 'live' || explicit === 'closed') {
+      state = explicit;
+      source = 'explicit';
+    }
+    // Priority 2: asOfLabel starting with "Live"
+    else if (typeof asOf === 'string' && /^live\b/i.test(asOf.trim())) {
+      state = 'live';
+      source = 'explicit';
+    }
+    // Priority 3: generatedUtc within the last 24 hours
+    else if (genUtc) {
+      var genMs = Date.parse(genUtc);
+      if (!isNaN(genMs) && (Date.now() - genMs) < 24 * 60 * 60 * 1000) {
+        state = 'live';
+        source = 'fresh';
+      }
+    }
+
+    // Trading-session calendar — only consulted for dashboards whose
+    // theme suggests real-time market / treasury / risk content.
+    var suiteLower = suite.toLowerCase();
+    var titleLower = String(title).toLowerCase();
+    var tradingKeywords = ['sentinel', 'treasury', 'market', 'portfolio', 'var', 'lcr',
+                           'fx', 'crypto', 'equity', 'futures', 'risk', 'trading',
+                           'liquidity', 'counterparty', 'compliance'];
+    var isTradingDashboard = tradingKeywords.some(function (kw) {
+      return suiteLower.indexOf(kw) >= 0 || titleLower.indexOf(kw) >= 0;
+    });
+
+    var marketOpen = null;
+    var sessionNote = '';
+
+    if (state === 'live' && isTradingDashboard) {
+      var cal = getTradingSessionCalendar(new Date());
+      // Crypto dominates the dashboard if the title mentions it; otherwise
+      // we report the broadest traditional market window (US futures = GLOBEX).
+      var isCrypto = /\bcrypto\b|\cbtc\b|\bbitcoin\b|\bethereum\b/i.test(titleLower);
+      var isFxOnly = /\bfx\b|forex|currency/i.test(titleLower) && !isCrypto;
+
+      if (isCrypto) {
+        marketOpen = true;
+        sessionNote = 'Crypto markets never close (24/7/365)';
+      } else if (isFxOnly) {
+        marketOpen = cal.forexOpen;
+        sessionNote = cal.forexOpen ? 'Forex session active (24/5)' : 'Forex closed for weekend';
+      } else {
+        // Treasury/risk dashboard with mixed asset classes — report the
+        // broadest traditional session (US futures GLOBEX, which covers
+        // overnight + cash equities windows).
+        marketOpen = cal.globexOpen;
+        sessionNote = cal.sessionLabel;
+      }
+    } else if (state === 'live') {
+      // Live operational dashboard (not trading) — no market concept
+      sessionNote = 'Live session';
+    } else {
+      sessionNote = 'Closed session';
+    }
+
+    return { state: state, marketOpen: marketOpen, sessionNote: sessionNote, source: source };
+  }
+
+  // Returns trading-session calendar info for a given Date.
+  // All times are US/Eastern because the site targets a Canadian audience
+  // and the dashboards' LCR/VaR metrics align with NY close.
+  function getTradingSessionCalendar(now) {
+    // Day-of-week: 0=Sun, 1=Mon, ..., 6=Sat
+    var day = now.getDay();
+    var hoursUtc = now.getUTCHours();
+    var minsUtc = now.getUTCMinutes();
+    var minsSinceMidnightUtc = hoursUtc * 60 + minsUtc;
+
+    // ET is UTC-5 (EST) or UTC-4 (EDT). We'll use a simple approximation:
+    //   EDT (2nd Sun of March → 1st Sun of November): UTC-4
+    //   EST otherwise: UTC-5
+    // This is good enough for "is the market open" — off-by-an-hour only
+    // matters right at the open/close, and the brief isn't second-precise.
+    var month = now.getUTCMonth();  // 0=Jan ... 11=Dec
+    var isDST = (month >= 2 && month <= 10);  // Mar-Nov approximate
+    var etOffset = isDST ? -4 : -5;
+    var hoursET = (hoursUtc + etOffset + 24) % 24;
+    var minsET = minsUtc;
+    var minsSinceMidnightET = hoursET * 60 + minsET;
+
+    // ── Crypto: 24/7/365 ──
+    // (handled separately by caller — getTradingSessionCalendar returns
+    //  traditional-session info only.)
+
+    // ── Forex: 24/5, opens Sun 17:00 ET, closes Fri 17:00 ET ──
+    var forexOpen;
+    if (day === 0 /* Sun */) forexOpen = minsSinceMidnightET >= 17 * 60;
+    else if (day === 6 /* Sat */) forexOpen = false;
+    else if (day === 5 /* Fri */) forexOpen = minsSinceMidnightET < 17 * 60;
+    else forexOpen = true;
+
+    // ── US Equity Futures (GLOBEX/CME):
+    //    Opens Sun 18:00 ET → closes Fri 17:00 ET
+    //    Daily halt 17:00-18:00 ET (close-of-business buffer)
+    //    Also closed 16:15-16:30 ET daily for maintenance (ignored here — too narrow)
+    var globexOpen;
+    if (day === 0 /* Sun */) globexOpen = minsSinceMidnightET >= 18 * 60;
+    else if (day === 6 /* Sat */) globexOpen = false;
+    else if (day === 5 /* Fri */) globexOpen = minsSinceMidnightET < 17 * 60;
+    else globexOpen = !(minsSinceMidnightET >= 17 * 60 && minsSinceMidnightET < 18 * 60);
+
+    // ── US Equities (NYSE/Nasdaq): Mon-Fri 9:30-16:00 ET ──
+    var nyseOpen;
+    if (day === 0 || day === 6) nyseOpen = false;
+    else nyseOpen = minsSinceMidnightET >= (9 * 60 + 30) && minsSinceMidnightET < 16 * 60;
+
+    // ── Build session label ──
+    var sessionLabel;
+    if (day === 6) sessionLabel = 'Markets closed (weekend)';
+    else if (nyseOpen) sessionLabel = 'NYSE/Nasdaq cash session open';
+    else if (globexOpen) sessionLabel = 'GLOBEX futures session active (overnight)';
+    else if (forexOpen) sessionLabel = 'Forex session active';
+    else sessionLabel = 'Markets closed (after-hours)';
+
+    return {
+      forexOpen: forexOpen,
+      globexOpen: globexOpen,
+      nyseOpen: nyseOpen,
+      sessionLabel: sessionLabel,
+      hoursET: hoursET,
+      day: day,
+    };
   }
 
   // ─── Build the visual context from the JSON payload ─────────────────────
@@ -147,7 +322,45 @@
   }
 
   // ─── Honest system prompt — identical rules to visual-chat.js ────────────
-  function buildSystemPrompt(visualContext) {
+  // sessionState is the object returned by detectSessionState(): { state, marketOpen, sessionNote }.
+  // It drives verb tense: live → present continuous, closed → past tense.
+  function buildSystemPrompt(visualContext, sessionState) {
+    var tenseRule;
+    if (sessionState && sessionState.state === 'live') {
+      tenseRule = [
+        'TENSE RULE (LIVE SESSION):',
+        '- This is a LIVE session — data is current/streaming. Use PRESENT CONTINUOUS tense for all 4 sections:',
+        '  • "Revenue IS RISING 3% QoQ…" (NOT "Revenue rose 3% QoQ")',
+        '  • "Churn IS DECLINING…" (NOT "Churn declined")',
+        '  • "The dashboard IS SHOWING…" (NOT "The dashboard showed")',
+        '  • "Liquidity coverage IS HOLDING at 128%…" (NOT "Liquidity coverage held")',
+        '- For WHAT TO EXPECT: use present tense + future continuous — "if the trend CONTINUES, churn WILL LIKELY APPROACH 5% next quarter".',
+        '- For WHAT TO DO: still use imperative (e.g., "Reallocate capacity to…") — that section is always action-oriented.',
+        ''
+      ].join('\n');
+      if (sessionState.marketOpen === true || sessionState.marketOpen === false) {
+        tenseRule += 'MARKET CONTEXT: ' + sessionState.sessionNote + '. ';
+        tenseRule += sessionState.marketOpen
+          ? 'Markets are open — intraday flows and live quotes are affecting the metrics shown.'
+          : 'Markets are closed — metrics reflect the most recent session close.';
+        tenseRule += '\n';
+      } else {
+        tenseRule += 'SESSION: ' + sessionState.sessionNote + '\n';
+      }
+    } else {
+      tenseRule = [
+        'TENSE RULE (CLOSED SESSION):',
+        '- This is a CLOSED session — data is period-end / historical / finalized. Use PAST tense for all 4 sections:',
+        '  • "Revenue ROSE 3% QoQ…" (NOT "Revenue is rising")',
+        '  • "Churn DECLINED…" (NOT "Churn is declining")',
+        '  • "The period SHOWED…" (NOT "The period is showing")',
+        '  • "Liquidity coverage HELD at 128%…" (NOT "Liquidity coverage is holding")',
+        '- For WHAT TO EXPECT: still use future conditional — "if the trend HAD CONTINUED, churn WOULD LIKELY HAVE APPROACHED 5%".',
+        '- For WHAT TO DO: still use imperative (e.g., "Reallocate capacity to…") — that section is always action-oriented.',
+        ''
+      ].join('\n');
+    }
+
     return [
       'You are Dashboards Studio, an analytics assistant producing an executive brief for a specific dashboard.',
       'You have access to the dashboard\'s data payload below. Your job is to produce an honest, structured analysis.',
@@ -158,6 +371,7 @@
       '  WHAT TO EXPECT: <one sentence describing the direction the trend points IF IT CONTINUES. Do NOT produce a specific forecast number. Do NOT attach a confidence percentage. Use phrases like "if the current trend continues" or "the trajectory suggests">',
       '  WHAT TO DO: <one or two sentences of actionable recommendation grounded in the data pattern. If the data lacks the granularity to recommend a specific action, say what additional breakdown would be needed>',
       '',
+      tenseRule,
       'HARD RULES (non-negotiable):',
       '1. Every number you cite MUST come from the provided data. Do not invent metrics, percentages, or dollar figures.',
       '2. NEVER produce a calibrated confidence percentage (e.g., "82% confidence"). You are not a statistical model.',
@@ -165,6 +379,7 @@
       '4. NEVER attribute to specific stores, regions, or units unless the payload contains that granularity. If asked, say the payload is aggregated.',
       '5. NEVER compute "annualized opportunity" or "$X opportunity" unless the payload contains the full unit-economics chain.',
       '6. Keep the entire response under 200 words. Tight prose, no filler, no preamble before WHAT HAPPENED.',
+      '7. Apply the TENSE RULE above consistently across all 4 sections (except WHAT TO DO, which is always imperative).',
       '',
       'DASHBOARD DATA:',
       visualContext || '(no visual data loaded)'
@@ -298,6 +513,48 @@
     else txt.textContent = 'AI-wired';
   }
 
+  // ─── Session-state badge — sets LIVE / CLOSED indicator separately from the
+  // AI-wired badge. Both can show simultaneously (e.g., "LIVE · AI-wired").
+  // Renders a small pill above/beside the AI badge. If no session badge host
+  // exists in the DOM, creates one on first call.
+  function setSessionBadge(briefHost, sessionState) {
+    if (!briefHost || !sessionState) return;
+    var host = briefHost.querySelector('[data-session-badge]');
+    if (!host) {
+      // Create the session badge host as a sibling of the AI badge
+      var header = briefHost.querySelector('.exec-ai-brief-header') ||
+                   briefHost.querySelector('.exec-ai-brief-badge')?.parentElement;
+      if (!header) return;
+      host = document.createElement('span');
+      host.className = 'exec-session-badge';
+      host.setAttribute('data-session-badge', '');
+      host.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 7px;border-radius:12px;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-left:8px;';
+      header.appendChild(host);
+    }
+    var isLive = sessionState.state === 'live';
+    host.setAttribute('data-state', isLive ? 'live' : 'closed');
+    // Pulsing dot for live, hollow dot for closed
+    var dotHtml = isLive
+      ? '<span class="exec-session-dot" style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block;animation:exec-session-pulse 1.4s ease-in-out infinite;"></span>'
+      : '<span class="exec-session-dot" style="width:6px;height:6px;border-radius:50%;border:1px solid currentColor;display:inline-block;"></span>';
+    var label;
+    if (isLive) {
+      // For trading dashboards, show "LIVE · NYSE OPEN" or "LIVE · GLOBEX ACTIVE"
+      // For operational dashboards, show just "LIVE"
+      if (sessionState.marketOpen === true || sessionState.marketOpen === false) {
+        var marketLabel = sessionState.marketOpen ? 'MARKETS OPEN' : 'MARKETS CLOSED';
+        label = 'LIVE · ' + marketLabel;
+      } else {
+        label = 'LIVE';
+      }
+    } else {
+      label = 'CLOSED';
+    }
+    host.innerHTML = dotHtml + '<span>' + label + '</span>';
+    // Tooltip with the session note for hover context
+    host.title = sessionState.sessionNote || (isLive ? 'Live session' : 'Closed session');
+  }
+
   // ─── 1-hour localStorage cache for the AI Brief ─────────────────────────
   // The AI Brief auto-fires on every Chatters page load (~2400 tokens per
   // call). Without caching, 50 page refreshes = ~120K tokens = 60% of the
@@ -396,6 +653,7 @@
     // Truly no Groq proxy configured (not in localStorage, not in config JSON)
     if (CONFIG.provider !== 'groq' || !CONFIG.proxyUrl) {
       restoreStaticBrief(briefHost, payload);
+      setSessionBadge(briefHost, detectSessionState(payload));
       return;
     }
 
@@ -413,13 +671,16 @@
       });
       clearShimmer(briefHost);
       setBadgeState(briefHost, 'cached');
+      setSessionBadge(briefHost, detectSessionState(payload));
       return;
     }
 
     // ─── NO CACHE — call Groq and stream the response ─────────────────────
     var visualContext = buildVisualContext(payload);
+    var sessionState = detectSessionState(payload);
+    setSessionBadge(briefHost, sessionState);
     var messages = [
-      { role: 'system', content: buildSystemPrompt(visualContext) },
+      { role: 'system', content: buildSystemPrompt(visualContext, sessionState) },
       { role: 'user', content: 'Produce the 4-part brief (WHAT HAPPENED / WHY / WHAT TO EXPECT / WHAT TO DO) based strictly on the dashboard data. Respect every hard rule in the system prompt.' }
     ];
 

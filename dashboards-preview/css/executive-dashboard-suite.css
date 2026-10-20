@@ -500,6 +500,47 @@ body[data-variant="blue"] {
 
 .exec-ai-brief-badge-text { line-height: 1; }
 
+/* ─── Session-state badge (LIVE / CLOSED) — added 2026-10-21 ────
+   Shown alongside the AI-wired badge. Pulsing green dot = live session,
+   hollow dot = closed session. For trading dashboards the label expands
+   to "LIVE · MARKETS OPEN" / "LIVE · MARKETS CLOSED". */
+.exec-session-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px 3px 7px;
+    border-radius: 12px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-left: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: rgba(148, 163, 184, 0.10);
+    color: #64748b;
+    transition: border-color 200ms, background 200ms, color 200ms;
+}
+.exec-session-badge[data-state="live"] {
+    border-color: rgba(16, 185, 129, 0.45);
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+}
+.exec-session-badge[data-state="closed"] {
+    border-color: rgba(148, 163, 184, 0.35);
+    background: rgba(148, 163, 184, 0.10);
+    color: #64748b;
+}
+.exec-session-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+@keyframes exec-session-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.45; transform: scale(1.35); }
+}
+
 .exec-ai-brief-dot {
     width: 6px;
     height: 6px;
