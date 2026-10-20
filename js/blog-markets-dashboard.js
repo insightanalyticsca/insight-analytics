@@ -104,6 +104,10 @@
           <div class="bmd-ai-head">
             <div class="bmd-ai-spark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6m0 8v6m10-10h-6m-8 0H2m13.5-5.5l-2.5 2.5m-6 6l-2.5 2.5m11 0l-2.5-2.5m-6-6L4.5 4.5"/></svg></div>
             <div class="bmd-ai-title">AI Market Brief</div>
+            <span class="bmd-session-badge" data-session-badge>
+              <span class="bmd-session-dot"></span>
+              <span data-session-text>LIVE</span>
+            </span>
             <div class="bmd-ai-badge">
               <span class="bmd-ai-dot"></span>
               <span class="bmd-ai-badge-text">AI-wired</span>
@@ -321,24 +325,27 @@
         height: 1px;
         background: linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.45) 20%, rgba(6,182,212,0.45) 50%, rgba(139,92,246,0.45) 80%, transparent 100%);
       }
-      .bmd-ai-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+      .bmd-ai-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
       .bmd-ai-spark {
         display: grid; place-items: center;
         color: #6366f1;
         animation: bmdAiSparkSpin 4s ease-in-out infinite;
+        flex-shrink: 0;
       }
       @keyframes bmdAiSparkSpin {
         0%, 100% { transform: rotate(0deg) scale(1); }
         50% { transform: rotate(180deg) scale(1.1); }
       }
       .bmd-ai-title {
-        font-size: 13px; font-weight: 800;
+        font-size: 12px; font-weight: 800;
         letter-spacing: 0.02em;
         background: linear-gradient(135deg, #6366f1 0%, #06b6d4 50%, #8b5cf6 100%);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
         color: transparent;
+        flex: 0 1 auto;
+        min-width: 0;
       }
       .bmd-ai-badge {
         display: inline-flex; align-items: center; gap: 5px;
@@ -350,6 +357,57 @@
         font-size: 9px; font-weight: 700;
         letter-spacing: 0.06em; text-transform: uppercase;
         margin-left: auto;
+        flex-shrink: 0;
+      }
+      /* Session-state badge — pulsing LIVE indicator next to AI-wired badge.
+         Hidden by default; revealed by setMarketSessionBadge() when live
+         data is detected. */
+      .bmd-session-badge {
+        display: none;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px 3px 6px;
+        border-radius: 12px;
+        border: 1px solid rgba(16,185,129,0.45);
+        background: rgba(16,185,129,0.12);
+        color: #059669;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      .bmd-session-badge[data-state="live"] { display: inline-flex; }
+      .bmd-session-badge[data-state="closed"] {
+        display: inline-flex;
+        border-color: rgba(148, 163, 184, 0.35);
+        background: rgba(148, 163, 184, 0.10);
+        color: #94a3b8;
+      }
+      .bmd-session-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        display: inline-block;
+        background: currentColor;
+      }
+      .bmd-session-badge[data-state="live"] .bmd-session-dot {
+        animation: bmdSessionPulse 1.4s ease-in-out infinite;
+        box-shadow: 0 0 8px currentColor;
+      }
+      .bmd-session-badge[data-state="closed"] .bmd-session-dot {
+        background: transparent;
+        border: 1px solid currentColor;
+      }
+      @keyframes bmdSessionPulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%      { opacity: 0.45; transform: scale(1.35); }
+      }
+      @media (max-width: 640px) {
+        /* On mobile: shrink titles + badges further, allow wrap to next line
+           rather than distorting layout */
+        .bmd-ai-title { font-size: 11px; }
+        .bmd-ai-badge, .bmd-session-badge { font-size: 8px; padding: 2px 7px 2px 5px; }
+        .bmd-ai-head { gap: 6px; }
       }
       .bmd-ai-dot {
         width: 6px; height: 6px; border-radius: 50%;
@@ -1590,6 +1648,138 @@
     return parts.join('. ') + (parts.length ? '.' : '');
   }
 
+  // ─── Trading-session calendar — drives market-context for the prompt ────
+  // Returns info about which traditional markets are open RIGHT NOW. Crypto
+  // (BTC/ETH/SOL) is 24/7/365 and never pauses, so it's handled separately
+  // in the prompt-builder below.
+  function getTradingSessionState() {
+    var now = new Date();
+    var day = now.getDay();  // 0=Sun ... 6=Sat
+    var hoursUtc = now.getUTCHours();
+    var minsUtc = now.getUTCMinutes();
+    var month = now.getUTCMonth();  // 0=Jan ... 11=Dec
+    // EDT (2nd Sun March → 1st Sun November): UTC-4. Approximation good
+    // enough for market-open checks (off-by-an-hour only at open/close).
+    var isDST = (month >= 2 && month <= 10);
+    var etOffset = isDST ? -4 : -5;
+    var hoursET = (hoursUtc + etOffset + 24) % 24;
+    var minsET = minsUtc;
+    var minsSinceMidnightET = hoursET * 60 + minsET;
+
+    // Forex: 24/5, opens Sun 17:00 ET, closes Fri 17:00 ET
+    var forexOpen;
+    if (day === 0) forexOpen = minsSinceMidnightET >= 17 * 60;
+    else if (day === 6) forexOpen = false;
+    else if (day === 5) forexOpen = minsSinceMidnightET < 17 * 60;
+    else forexOpen = true;
+
+    // GLOBEX/CME Futures: Sun 18:00 ET → Fri 17:00 ET, daily halt 17-18 ET
+    var globexOpen;
+    if (day === 0) globexOpen = minsSinceMidnightET >= 18 * 60;
+    else if (day === 6) globexOpen = false;
+    else if (day === 5) globexOpen = minsSinceMidnightET < 17 * 60;
+    else globexOpen = !(minsSinceMidnightET >= 17 * 60 && minsSinceMidnightET < 18 * 60);
+
+    // NYSE/Nasdaq: Mon-Fri 9:30-16:00 ET
+    var nyseOpen;
+    if (day === 0 || day === 6) nyseOpen = false;
+    else nyseOpen = minsSinceMidnightET >= (9 * 60 + 30) && minsSinceMidnightET < 16 * 60;
+
+    // Crypto: 24/7/365
+    var cryptoOpen = true;
+
+    // Build label that the prompt + badge can use
+    var sessionLabel;
+    if (day === 6) sessionLabel = 'Markets closed (weekend)';
+    else if (nyseOpen) sessionLabel = 'NYSE/Nasdaq cash session open';
+    else if (globexOpen) sessionLabel = 'GLOBEX futures session active (overnight)';
+    else if (forexOpen) sessionLabel = 'Forex session active';
+    else sessionLabel = 'Markets closed (after-hours)';
+
+    return {
+      cryptoOpen: cryptoOpen,
+      forexOpen: forexOpen,
+      globexOpen: globexOpen,
+      nyseOpen: nyseOpen,
+      sessionLabel: sessionLabel,
+      hoursET: hoursET,
+      day: day,
+    };
+  }
+
+  // Build the AI brief prompt with session-aware tense rule.
+  // The markets dashboard is ALWAYS live (it pulls live Yahoo/Binance quotes),
+  // but the underlying traditional markets may be closed (after-hours /
+  // weekend / holiday). The prompt needs both pieces of context:
+  //   - LIVE data → use present continuous tense ("...is rising")
+  //   - Markets closed → crypto still trades, but equities/FX/commodities
+  //     reflect last session close
+  function buildAIBriefPrompt(summary, sessionState) {
+    var tradOpen = sessionState.nyseOpen || sessionState.globexOpen || sessionState.forexOpen;
+    var cryptoNote = sessionState.cryptoOpen
+      ? 'Crypto markets (BTC/ETH/SOL) never close (24/7/365) — those prices are ALWAYS live intraday.'
+      : '';
+    var tradNote = tradOpen
+      ? 'Traditional markets are OPEN right now — equity/index/commodity/FX prices reflect live intraday quotes.'
+      : 'Traditional markets are CLOSED right now (' + sessionState.sessionLabel + ') — equity/index/commodity/FX prices reflect the most recent session close, while crypto continues to trade live.';
+
+    return [
+      'You are an AI market analyst producing a live markets brief for an executive dashboard. The data below is LIVE — fetched from Yahoo Finance (indices, sectors, futures, FX) and Binance (crypto) at the moment this brief is generated.',
+      '',
+      'OUTPUT FORMAT — exactly 4 sections, each on its own line, starting with the section header in uppercase followed by a colon:',
+      '  WHAT HAPPENED: <2-3 sentences covering the most significant market moves — equities, crypto, commodities, FX. Cite specific instruments and percentage moves from the data.>',
+      '  WHY IT MATTERS: <2-3 sentences of business context — what is driving the moves (risk-on/off, sector rotation, macro data, commodity supply, FX positioning).>',
+      '  WHAT TO EXPECT: <2-3 sentences describing the direction the trend points IF IT CONTINUES. Direction only — no specific price targets, no confidence percentages.>',
+      '  WHAT TO DO: <2-3 sentences of positioning guidance grounded in the data pattern.>',
+      '',
+      'TENSE RULE (LIVE SESSION):',
+      '- This is a LIVE session — data is current/streaming. Use PRESENT CONTINUOUS tense for all 4 sections:',
+      '  • "Equities ARE POSTING a broad rally…" (NOT "Equities posted a rally")',
+      '  • "Bitcoin IS UP nearly 1%…" (NOT "Bitcoin was up nearly 1%")',
+      '  • "Natural gas IS DROPPING nearly 3%…" (NOT "Natural gas dropped nearly 3%")',
+      '  • "The S&P 500 IS LEADING gains…" (NOT "The S&P 500 led gains")',
+      '- For WHAT TO EXPECT: use present + future continuous — "if the rally CONTINUES, the S&P WILL LIKELY APPROACH 5,800 by week-end".',
+      '- For WHAT TO DO: use imperative — "Trim commodity exposure…", "Add to crypto positions…".',
+      '',
+      'MARKET CONTEXT:',
+      '- ' + cryptoNote,
+      '- ' + tradNote,
+      '',
+      'HARD RULES (non-negotiable):',
+      '1. Every number you cite MUST come from the provided data. Do not invent prices or percentages.',
+      '2. NEVER produce a calibrated confidence percentage (e.g., "82% confidence"). You are not a statistical model.',
+      '3. NEVER produce a specific price target (e.g., "BTC will hit $75,000 by Friday"). Direction only.',
+      '4. Plain English. Do NOT use markdown bold (no ** asterisks). Tight prose, no preamble before WHAT HAPPENED.',
+      '5. Apply the TENSE RULE above consistently across all 4 sections (except WHAT TO DO, which is always imperative).',
+      '6. When traditional markets are closed, mention that equity/index/commodity/FX prices reflect the most recent session close — but crypto prices are always live.',
+      '',
+      'LIVE MARKET SUMMARY:',
+      summary
+    ].join('\n');
+  }
+
+  // ─── Render the LIVE/CLOSED session badge ────────────────────────────────
+  // The markets dashboard is ALWAYS live (it pulls Yahoo/Binance quotes),
+  // but traditional markets have trading windows. So the badge shows:
+  //   - "LIVE · MARKETS OPEN" — green pulsing dot, when NYSE/GLOBEX/Forex open
+  //   - "LIVE · MARKETS CLOSED" — green pulsing dot, dimmer label, when
+  //     traditional markets closed (crypto always trades)
+  //   - "LIVE" — fallback if session state can't be determined
+  // Hover tooltip shows the full sessionNote (e.g. "GLOBEX futures session
+  // active (overnight)" or "Markets closed (weekend) — crypto still trades").
+  function setMarketSessionBadge(sessionState) {
+    var badge = document.querySelector('[data-session-badge]');
+    if (!badge) return;
+    var txt = badge.querySelector('[data-session-text]');
+    if (!txt) return;
+    // Markets dashboard is always live (live data fetched)
+    badge.setAttribute('data-state', 'live');
+    var tradOpen = sessionState.nyseOpen || sessionState.globexOpen || sessionState.forexOpen;
+    var label = tradOpen ? 'LIVE · MARKETS OPEN' : 'LIVE · MARKETS CLOSED';
+    txt.textContent = label;
+    badge.title = sessionState.sessionLabel + ' — Crypto markets (BTC/ETH/SOL) never close (24/7/365); traditional markets have specific trading windows.';
+  }
+
   function fetchAIBrief() {
     var summary = buildSummary();
     var ids = ['bmd-ai-happened', 'bmd-ai-why', 'bmd-ai-expect', 'bmd-ai-do'];
@@ -1603,8 +1793,11 @@
       return;
     }
 
-    var prompt = 'You are an AI market analyst. Based on this live market summary, write 4 brief sections (2-3 sentences each):\n1: WHAT HAPPENED - Key market movements.\n2: WHY IT MATTERS - Business context and drivers.\n3: WHAT TO EXPECT - Likely trajectory.\n4: WHAT TO DO - Suggested positioning.\nKeep each section 2-3 sentences. Plain English. Do NOT use markdown bold (no ** asterisks).\n\nLive market summary:\n' + summary;
+    // Detect trading-session state and show LIVE indicator
+    var sessionState = getTradingSessionState();
+    setMarketSessionBadge(sessionState);
 
+    var prompt = buildAIBriefPrompt(summary, sessionState);
     fetch('https://startling-belekoy-b0ec70.netlify.app/groq-proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
