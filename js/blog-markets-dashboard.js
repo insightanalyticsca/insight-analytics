@@ -1710,10 +1710,18 @@
   // Build the AI brief prompt with session-aware tense rule.
   // The markets dashboard is ALWAYS live (it pulls live Yahoo/Binance quotes),
   // but the underlying traditional markets may be closed (after-hours /
-  // weekend / holiday). The prompt needs both pieces of context:
-  //   - LIVE data → use present continuous tense ("...is rising")
-  //   - Markets closed → crypto still trades, but equities/FX/commodities
-  //     reflect last session close
+  // weekend / holiday). The prompt needs to differentiate per asset class:
+  //   - Crypto (BTC/ETH/SOL): always trades 24/7/365 → use present continuous
+  //     ("Bitcoin is up nearly 1%") because the price IS moving right now.
+  //   - Equities/indices (S&P/NASDAQ/Dow/TSX): when NYSE is OPEN → present
+  //     continuous ("S&P 500 is leading gains"). When NYSE is CLOSED → past
+  //     tense for the move + present stative for the level ("S&P 500 closed
+  //     up 0.45% at 5,801") because the price reflects the last session close.
+  //   - Forex (FX pairs): when forex is OPEN (Sun 17:00 ET → Fri 17:00 ET) →
+  //     present continuous. When closed → past tense.
+  //   - Futures/commodities (Crude, Gold, NatGas, Wheat, etc.): when GLOBEX
+  //     is OPEN → present continuous. When closed → past tense ("settled
+  //     lower" / "closed down").
   function buildAIBriefPrompt(summary, sessionState) {
     var tradOpen = sessionState.nyseOpen || sessionState.globexOpen || sessionState.forexOpen;
     var cryptoNote = sessionState.cryptoOpen
@@ -1723,23 +1731,61 @@
       ? 'Traditional markets are OPEN right now — equity/index/commodity/FX prices reflect live intraday quotes.'
       : 'Traditional markets are CLOSED right now (' + sessionState.sessionLabel + ') — equity/index/commodity/FX prices reflect the most recent session close, while crypto continues to trade live.';
 
+    // ─── Per-asset-class tense rules ────────────────────────────────────
+    // Different asset classes are in different trading states at any given
+    // moment. The brief must use the right tense per asset class — otherwise
+    // the model says "S&P 500 is posting gains" when in reality the S&P
+    // closed 4 hours ago and that price is static until tomorrow's open.
+    var cryptoTense = 'PRESENT CONTINUOUS — "Bitcoin is up nearly 1%", "Ethereum is surging over 2%" (crypto is trading live right now, prices are moving)';
+    var equitiesTense;
+    if (sessionState.nyseOpen) {
+      equitiesTense = 'PRESENT CONTINUOUS — "S&P 500 is leading gains at +0.45%", "NASDAQ is outperforming" (NYSE/Nasdaq cash session is open, prices are moving intraday)';
+    } else {
+      equitiesTense = 'PAST TENSE for the session move + PRESENT STATIVE for the level — "S&P 500 closed up 0.45% at 5,801", "Dow Jones finished 1.01% higher at 42,345" (NYSE/Nasdaq is closed — ' + sessionState.sessionLabel + ' — prices reflect the last session close, NOT live intraday movement)';
+    }
+    var fxTense;
+    if (sessionState.forexOpen) {
+      fxTense = 'PRESENT CONTINUOUS — "EUR/USD is firming", "USD/JPY is slipping" (forex session is active, prices are moving)';
+    } else {
+      fxTense = 'PAST TENSE — "EUR/USD closed higher", "USD/JPY finished lower" (forex is closed — prices reflect the last session close)';
+    }
+    var futuresTense;
+    if (sessionState.globexOpen) {
+      futuresTense = 'PRESENT CONTINUOUS — "Crude oil is slipping", "Natural gas is dropping nearly 3%", "Gold is firming" (GLOBEX futures session is open, prices are moving)';
+    } else {
+      futuresTense = 'PAST TENSE — "Crude oil settled lower", "Natural gas closed down 2.91%", "Gold finished firm" (GLOBEX is closed — prices reflect the last settlement)';
+    }
+
+    // Build the asset-class tense guide
+    var tenseGuide = [
+      'TENSE RULE — USE THE CORRECT TENSE PER ASSET CLASS:',
+      '',
+      'CRYPTO (BTC, ETH, SOL): ' + cryptoTense,
+      'EQUITIES & INDICES (S&P 500, NASDAQ, Dow, TSX): ' + equitiesTense,
+      'FX (EUR/USD, USD/JPY, GBP/USD, USD/CAD, etc.): ' + fxTense,
+      'FUTURES & COMMODITIES (Crude, Gold, NatGas, Wheat, Corn, Copper, Silver, Soybean, S&P ES, NASDAQ NQ, Dow YM, Russell RTY): ' + futuresTense,
+      '',
+      'CRITICAL: Do NOT apply present continuous (-ing) to a closed market. If NYSE is closed, "S&P 500 is posting gains" is WRONG — say "S&P 500 closed up 0.45%". If GLOBEX is closed, "Natural gas is dropping 3%" is WRONG — say "Natural gas settled down 2.91%". Crypto (BTC/ETH/SOL) is the exception — it trades 24/7, so present continuous is always correct for crypto.',
+      '',
+      'MIXED-ASSET EXAMPLES:',
+      '  • If NYSE open + crypto always open: "Equities are posting a broad rally while Bitcoin is up nearly 1%."',
+      '  • If NYSE closed + crypto always open: "S&P 500 closed up 0.45% in the prior session while Bitcoin is up nearly 1% overnight."',
+      '  • If all traditional closed (weekend): "Equities, FX, and commodities all reflect Friday\'s session close — Bitcoin is up nearly 1% over the weekend."',
+      '',
+      'For WHAT TO EXPECT: use future tense — "if the trend continues, the S&P will likely approach 5,800 by week-end". Do not say "is approaching" — futures are predictions, not present state.',
+      'For WHAT TO DO: use imperative — "Trim commodity exposure…", "Add to crypto positions…".',
+    ].join('\n');
+
     return [
       'You are an AI market analyst producing a live markets brief for an executive dashboard. The data below is LIVE — fetched from Yahoo Finance (indices, sectors, futures, FX) and Binance (crypto) at the moment this brief is generated.',
       '',
       'OUTPUT FORMAT — exactly 4 sections, each on its own line, starting with the section header in uppercase followed by a colon:',
-      '  WHAT HAPPENED: <2-3 sentences covering the most significant market moves — equities, crypto, commodities, FX. Cite specific instruments and percentage moves from the data.>',
-      '  WHY IT MATTERS: <2-3 sentences of business context — what is driving the moves (risk-on/off, sector rotation, macro data, commodity supply, FX positioning).>',
+      '  WHAT HAPPENED: <2-3 sentences covering the most significant market moves — equities, crypto, commodities, FX. Cite specific instruments and percentage moves from the data. Apply the TENSE RULE below per asset class.>',
+      '  WHY IT MATTERS: <2-3 sentences of business context — what is driving the moves (risk-on/off, sector rotation, macro data, commodity supply, FX positioning). Use present tense for ongoing drivers ("the move reflects…").>',
       '  WHAT TO EXPECT: <2-3 sentences describing the direction the trend points IF IT CONTINUES. Direction only — no specific price targets, no confidence percentages.>',
       '  WHAT TO DO: <2-3 sentences of positioning guidance grounded in the data pattern.>',
       '',
-      'TENSE RULE (LIVE SESSION):',
-      '- This is a LIVE session — data is current/streaming. Use PRESENT CONTINUOUS tense for all 4 sections:',
-      '  • "Equities are posting a broad rally…" (NOT "Equities posted a rally")',
-      '  • "Bitcoin is up nearly 1%…" (NOT "Bitcoin was up nearly 1%")',
-      '  • "Natural gas is dropping nearly 3%…" (NOT "Natural gas dropped nearly 3%")',
-      '  • "The S&P 500 is leading gains…" (NOT "The S&P 500 led gains")',
-      '- For WHAT TO EXPECT: use present + future continuous — "if the rally continues, the S&P will likely approach 5,800 by week-end".',
-      '- For WHAT TO DO: use imperative — "Trim commodity exposure…", "Add to crypto positions…".',
+      tenseGuide,
       '',
       'MARKET CONTEXT:',
       '- ' + cryptoNote,
@@ -1750,8 +1796,8 @@
       '2. NEVER produce a calibrated confidence percentage (e.g., "82% confidence"). You are not a statistical model.',
       '3. NEVER produce a specific price target (e.g., "BTC will hit $75,000 by Friday"). Direction only.',
       '4. Plain English. Do NOT use markdown bold (no ** asterisks). Tight prose, no preamble before WHAT HAPPENED.',
-      '5. Apply the TENSE RULE above consistently across all 4 sections (except WHAT TO DO, which is always imperative).',
-      '6. When traditional markets are closed, mention that equity/index/commodity/FX prices reflect the most recent session close — but crypto prices are always live.',
+      '5. Apply the TENSE RULE above PER ASSET CLASS — do not blanket-apply present continuous to closed markets. Crypto always trades, traditional markets have specific trading windows.',
+      '6. When traditional markets are closed, equity/index/commodity/FX prices reflect the most recent session close — crypto prices are always live.',
       '',
       'LIVE MARKET SUMMARY:',
       summary
@@ -1760,13 +1806,14 @@
 
   // ─── Render the LIVE/CLOSED session badge ────────────────────────────────
   // The markets dashboard is ALWAYS live (it pulls Yahoo/Binance quotes),
-  // but traditional markets have trading windows. So the badge shows:
-  //   - "LIVE · MARKETS OPEN" — green pulsing dot, when NYSE/GLOBEX/Forex open
-  //   - "LIVE · MARKETS CLOSED" — green pulsing dot, dimmer label, when
-  //     traditional markets closed (crypto always trades)
-  //   - "LIVE" — fallback if session state can't be determined
-  // Hover tooltip shows the full sessionNote (e.g. "GLOBEX futures session
-  // active (overnight)" or "Markets closed (weekend) — crypto still trades").
+  // but traditional markets have trading windows. The badge shows what's
+  // actually trading right now so the user understands why crypto uses -ing
+  // but equities might use past tense:
+  //   - "LIVE · NYSE OPEN" — green pulsing dot, when NYSE cash session open
+  //   - "LIVE · FUTURES OPEN" — when GLOBEX active overnight (no NYSE)
+  //   - "LIVE · FOREX OPEN" — when only forex is active (weekend edge)
+  //   - "LIVE · CRYPTO ONLY" — weekend, only crypto trades
+  // Hover tooltip shows the full sessionLabel.
   function setMarketSessionBadge(sessionState) {
     var badge = document.querySelector('[data-session-badge]');
     if (!badge) return;
@@ -1774,10 +1821,18 @@
     if (!txt) return;
     // Markets dashboard is always live (live data fetched)
     badge.setAttribute('data-state', 'live');
-    var tradOpen = sessionState.nyseOpen || sessionState.globexOpen || sessionState.forexOpen;
-    var label = tradOpen ? 'LIVE · MARKETS OPEN' : 'LIVE · MARKETS CLOSED';
+    var label;
+    if (sessionState.nyseOpen) {
+      label = 'LIVE · NYSE OPEN';
+    } else if (sessionState.globexOpen) {
+      label = 'LIVE · FUTURES OPEN';
+    } else if (sessionState.forexOpen) {
+      label = 'LIVE · FOREX OPEN';
+    } else {
+      label = 'LIVE · CRYPTO ONLY';
+    }
     txt.textContent = label;
-    badge.title = sessionState.sessionLabel + ' — Crypto markets (BTC/ETH/SOL) never close (24/7/365); traditional markets have specific trading windows.';
+    badge.title = sessionState.sessionLabel + ' — Crypto markets (BTC/ETH/SOL) never close (24/7/365); traditional markets have specific trading windows. AI Brief applies present-continuous tense to assets currently trading, past tense to closed-market prices.';
   }
 
   function fetchAIBrief() {
