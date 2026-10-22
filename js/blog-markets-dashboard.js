@@ -1724,12 +1724,10 @@
   //     lower" / "closed down").
   function buildAIBriefPrompt(summary, sessionState) {
     var tradOpen = sessionState.nyseOpen || sessionState.globexOpen || sessionState.forexOpen;
-    var cryptoNote = sessionState.cryptoOpen
-      ? 'Crypto markets (BTC/ETH/SOL) never close (24/7/365) — those prices are ALWAYS live intraday.'
-      : '';
+    var cryptoNote = 'Crypto markets (BTC/ETH/SOL) never close (24/7/365) — those prices are always live intraday.';
     var tradNote = tradOpen
       ? 'Traditional markets are OPEN right now — equity/index/commodity/FX prices reflect live intraday quotes.'
-      : 'Traditional markets are CLOSED right now (' + sessionState.sessionLabel + ') — equity/index/commodity/FX prices reflect the most recent session close, while crypto continues to trade live.';
+      : 'Traditional markets are CLOSED right now (' + sessionState.sessionLabel + '). Equity/index prices reflect the most recent session close. Crypto continues to trade live.';
 
     // ─── Per-asset-class tense rules ────────────────────────────────────
     // Different asset classes are in different trading states at any given
@@ -1738,54 +1736,91 @@
     // closed 4 hours ago and that price is static until tomorrow's open.
     var cryptoTense = 'PRESENT CONTINUOUS — "Bitcoin is up nearly 1%", "Ethereum is surging over 2%" (crypto is trading live right now, prices are moving)';
     var equitiesTense;
+    var equitiesBanned;
     if (sessionState.nyseOpen) {
       equitiesTense = 'PRESENT CONTINUOUS — "S&P 500 is leading gains at +0.45%", "NASDAQ is outperforming" (NYSE/Nasdaq cash session is open, prices are moving intraday)';
+      equitiesBanned = '';  // no banned phrases when market is open
     } else {
-      equitiesTense = 'PAST TENSE for the session move + PRESENT STATIVE for the level — "S&P 500 closed up 0.45% at 5,801", "Dow Jones finished 1.01% higher at 42,345" (NYSE/Nasdaq is closed — ' + sessionState.sessionLabel + ' — prices reflect the last session close, NOT live intraday movement)';
+      equitiesTense = 'PAST TENSE for the session move + PRESENT STATIVE for the level — "S&P 500 closed up 0.45% at 5,801", "Dow Jones finished 1.01% higher at 42,345", "NASDAQ ended the session up 1.05%" (NYSE/Nasdaq is closed — ' + sessionState.sessionLabel + ' — prices reflect the last session close, NOT live intraday movement)';
+      equitiesBanned = 'BANNED phrases for equities (NYSE is closed): "S&P 500 is up", "S&P 500 is posting", "NASDAQ is leading", "NASDAQ is outperforming", "Dow is rising", "equities are rallying", "indices are climbing". ' +
+        'USE INSTEAD: "S&P 500 closed up X%", "NASDAQ finished X% higher", "Dow ended the session at Y", "equities closed higher", "indices ended the day up".';
     }
     var fxTense;
+    var fxBanned;
     if (sessionState.forexOpen) {
       fxTense = 'PRESENT CONTINUOUS — "EUR/USD is firming", "USD/JPY is slipping" (forex session is active, prices are moving)';
+      fxBanned = '';
     } else {
       fxTense = 'PAST TENSE — "EUR/USD closed higher", "USD/JPY finished lower" (forex is closed — prices reflect the last session close)';
+      fxBanned = 'BANNED phrases for FX (forex is closed): "EUR/USD is firming", "USD/JPY is slipping", "USD/CAD is rising". USE INSTEAD: "EUR/USD closed higher", "USD/JPY finished lower".';
     }
     var futuresTense;
+    var futuresBanned;
     if (sessionState.globexOpen) {
       futuresTense = 'PRESENT CONTINUOUS — "Crude oil is slipping", "Natural gas is dropping nearly 3%", "Gold is firming" (GLOBEX futures session is open, prices are moving)';
+      futuresBanned = '';
     } else {
       futuresTense = 'PAST TENSE — "Crude oil settled lower", "Natural gas closed down 2.91%", "Gold finished firm" (GLOBEX is closed — prices reflect the last settlement)';
+      futuresBanned = 'BANNED phrases for futures/commodities (GLOBEX is closed): "Crude oil is slipping", "Natural gas is dropping", "Gold is firming", "Silver is falling". USE INSTEAD: "Crude oil settled lower", "Natural gas closed down", "Gold finished firm".';
     }
 
-    // Build the asset-class tense guide
+    // Build the asset-class tense guide — placed at TOP of prompt so Groq
+    // reads it FIRST, before any "live markets" framing biases it toward
+    // present continuous everywhere.
+    var nyseState = sessionState.nyseOpen ? 'OPEN' : 'CLOSED';
+    var globexState = sessionState.globexOpen ? 'OPEN' : 'CLOSED';
+    var forexState = sessionState.forexOpen ? 'OPEN' : 'CLOSED';
+    var cryptoState = 'OPEN (24/7/365)';
+
     var tenseGuide = [
-      'TENSE RULE — USE THE CORRECT TENSE PER ASSET CLASS:',
+      '═══════════════════════════════════════════════════════════════════════════',
+      'TENSE RULE — MOST IMPORTANT INSTRUCTION. READ THIS BEFORE WRITING ANYTHING.',
+      '═══════════════════════════════════════════════════════════════════════════',
+      '',
+      'Current trading session state (computed at brief-generation time):',
+      '  • NYSE / Nasdaq (equities & indices): ' + nyseState + (sessionState.nyseOpen ? '' : ' — ' + sessionState.sessionLabel),
+      '  • GLOBEX / CME (futures & commodities): ' + globexState + (sessionState.globexOpen ? '' : ' — ' + sessionState.sessionLabel),
+      '  • Forex (FX pairs): ' + forexState + (sessionState.forexOpen ? '' : ' — forex is closed'),
+      '  • Crypto (BTC/ETH/SOL): ' + cryptoState,
+      '',
+      'Each asset class has its own tense. Match the tense to the asset class:',
       '',
       'CRYPTO (BTC, ETH, SOL): ' + cryptoTense,
       'EQUITIES & INDICES (S&P 500, NASDAQ, Dow, TSX): ' + equitiesTense,
       'FX (EUR/USD, USD/JPY, GBP/USD, USD/CAD, etc.): ' + fxTense,
       'FUTURES & COMMODITIES (Crude, Gold, NatGas, Wheat, Corn, Copper, Silver, Soybean, S&P ES, NASDAQ NQ, Dow YM, Russell RTY): ' + futuresTense,
+      ''
+    ];
+    if (equitiesBanned) tenseGuide.push(equitiesBanned, '');
+    if (fxBanned) tenseGuide.push(fxBanned, '');
+    if (futuresBanned) tenseGuide.push(futuresBanned, '');
+    tenseGuide.push(
       '',
-      'CRITICAL: Do NOT apply present continuous (-ing) to a closed market. If NYSE is closed, "S&P 500 is posting gains" is WRONG — say "S&P 500 closed up 0.45%". If GLOBEX is closed, "Natural gas is dropping 3%" is WRONG — say "Natural gas settled down 2.91%". Crypto (BTC/ETH/SOL) is the exception — it trades 24/7, so present continuous is always correct for crypto.',
-      '',
-      'MIXED-ASSET EXAMPLES:',
-      '  • If NYSE open + crypto always open: "Equities are posting a broad rally while Bitcoin is up nearly 1%."',
-      '  • If NYSE closed + crypto always open: "S&P 500 closed up 0.45% in the prior session while Bitcoin is up nearly 1% overnight."',
-      '  • If all traditional closed (weekend): "Equities, FX, and commodities all reflect Friday\'s session close — Bitcoin is up nearly 1% over the weekend."',
+      'MIXED-ASSET EXAMPLES (these show the correct mixed-tense phrasing):',
+      '  • If NYSE OPEN + crypto always open: "Equities are posting a broad rally while Bitcoin is up nearly 1%."',
+      '  • If NYSE CLOSED + crypto always open: "S&P 500 closed up 0.45% in the prior session while Bitcoin is up nearly 1% overnight."',
+      '  • If all traditional CLOSED (weekend): "Equities, FX, and commodities all reflect Friday\'s session close — Bitcoin is up nearly 1% over the weekend."',
       '',
       'For WHAT TO EXPECT: use future tense — "if the trend continues, the S&P will likely approach 5,800 by week-end". Do not say "is approaching" — futures are predictions, not present state.',
       'For WHAT TO DO: use imperative — "Trim commodity exposure…", "Add to crypto positions…".',
-    ].join('\n');
+      '',
+      '═══════════════════════════════════════════════════════════════════════════',
+      'SELF-CHECK before outputting: scan each sentence for "-ing" verbs applied',
+      'to closed-market assets. If you find any (e.g., "S&P 500 is up" when NYSE',
+      'is closed), rewrite that sentence in past tense before finalizing.',
+      '═══════════════════════════════════════════════════════════════════════════',
+      ''
+    );
 
     return [
-      'You are an AI market analyst producing a live markets brief for an executive dashboard. The data below is LIVE — fetched from Yahoo Finance (indices, sectors, futures, FX) and Binance (crypto) at the moment this brief is generated.',
+      tenseGuide.join('\n'),
+      'You are an AI market analyst producing a markets brief for an executive dashboard. Data below is fetched from Yahoo Finance (indices, sectors, futures, FX) and Binance (crypto) at the moment this brief is generated. Prices for closed-market assets reflect their most recent session close; prices for open-market assets reflect live intraday quotes.',
       '',
       'OUTPUT FORMAT — exactly 4 sections, each on its own line, starting with the section header in uppercase followed by a colon:',
-      '  WHAT HAPPENED: <2-3 sentences covering the most significant market moves — equities, crypto, commodities, FX. Cite specific instruments and percentage moves from the data. Apply the TENSE RULE below per asset class.>',
+      '  WHAT HAPPENED: <2-3 sentences covering the most significant market moves — equities, crypto, commodities, FX. Cite specific instruments and percentage moves from the data. APPLY THE TENSE RULE ABOVE PER ASSET CLASS.>',
       '  WHY IT MATTERS: <2-3 sentences of business context — what is driving the moves (risk-on/off, sector rotation, macro data, commodity supply, FX positioning). Use present tense for ongoing drivers ("the move reflects…").>',
       '  WHAT TO EXPECT: <2-3 sentences describing the direction the trend points IF IT CONTINUES. Direction only — no specific price targets, no confidence percentages.>',
       '  WHAT TO DO: <2-3 sentences of positioning guidance grounded in the data pattern.>',
-      '',
-      tenseGuide,
       '',
       'MARKET CONTEXT:',
       '- ' + cryptoNote,
@@ -1796,8 +1831,8 @@
       '2. NEVER produce a calibrated confidence percentage (e.g., "82% confidence"). You are not a statistical model.',
       '3. NEVER produce a specific price target (e.g., "BTC will hit $75,000 by Friday"). Direction only.',
       '4. Plain English. Do NOT use markdown bold (no ** asterisks). Tight prose, no preamble before WHAT HAPPENED.',
-      '5. Apply the TENSE RULE above PER ASSET CLASS — do not blanket-apply present continuous to closed markets. Crypto always trades, traditional markets have specific trading windows.',
-      '6. When traditional markets are closed, equity/index/commodity/FX prices reflect the most recent session close — crypto prices are always live.',
+      '5. TENSE: Apply the TENSE RULE at the top of this prompt PER ASSET CLASS. The dashboard being "live" does NOT mean every asset is trading right now — only crypto trades 24/7. Equities trade only when NYSE is open. Futures trade only when GLOBEX is open. FX trades only when forex is open. Closed-market assets use past tense ("closed up", "finished higher", "settled lower"); open-market assets use present continuous ("is up", "is climbing", "is firming").',
+      '6. Before finalizing your output, RE-READ each sentence and verify the tense matches the asset class trading state. If NYSE is closed, "S&P 500 is up 0.58%" is WRONG — rewrite as "S&P 500 closed up 0.58%".',
       '',
       'LIVE MARKET SUMMARY:',
       summary
