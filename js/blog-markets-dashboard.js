@@ -1703,7 +1703,109 @@
       nyseOpen: nyseOpen,
       sessionLabel: sessionLabel,
       hoursET: hoursET,
+      minsSinceMidnightET: minsSinceMidnightET,
       day: day,
+    };
+  }
+
+  // ─── Determine what asset class should LEAD the brief ───────────────────
+  // After 10 PM ET overnight and before next morning's equity open, plus
+  // all through the weekend, stocks are static (reflecting last session
+  // close). The brief should LEAD with whatever is actually trading:
+  //
+  //   • Mon-Fri 9:30 AM - 4:00 PM ET  → equities-led (NYSE cash session)
+  //   • Mon-Thu 4:00 PM - 10:00 PM ET  → futures-led (GLOBEX overnight) +
+  //                                       brief recap of today's equity close
+  //   • Mon-Thu 10:00 PM - 9:30 AM ET → futures-led + crypto (deep overnight
+  //                                       + pre-market; user's request)
+  //   • Fri 4:00 PM - 10:00 PM ET      → futures-led + recap Friday close
+  //   • Fri 10:00 PM ET → Sun 6:00 PM ET → crypto-led (GLOBEX closed for
+  //                                       weekend; only crypto trades)
+  //   • Sun 6:00 PM - 9:30 AM Mon ET   → futures-led + weekend crypto recap
+  //
+  // Returns:
+  //   focus:          'equities' | 'futures' | 'crypto' | 'forex'
+  //   leadInstruction: prompt directive for WHAT HAPPENED section
+  //   badgeLabel:     short label for the session badge (e.g. "FUTURES FOCUS")
+  //   badgeTooltip:   longer explanation for hover
+  function getBriefFocus(sessionState) {
+    var hoursET = sessionState.hoursET;
+    var minsET = sessionState.minsSinceMidnightET;
+    var day = sessionState.day;
+
+    // ── Weekend: Friday 10 PM ET → Sunday 6 PM ET ──────────────────────
+    // GLOBEX closed Fri 17:00 ET, reopens Sun 18:00 ET.
+    // During this window, only crypto trades. Lead with crypto.
+    var isWeekendCrypto;
+    if (day === 6) isWeekendCrypto = true;  // Saturday all day
+    else if (day === 5 && minsET >= 22 * 60) isWeekendCrypto = true;  // Friday after 10 PM ET
+    else if (day === 0 && minsET < 18 * 60) isWeekendCrypto = true;  // Sunday before 6 PM ET
+    else isWeekendCrypto = false;
+
+    if (isWeekendCrypto) {
+      return {
+        focus: 'crypto',
+        leadInstruction: 'LEAD WITH CRYPTO. Open WHAT HAPPENED with the most significant crypto moves (BTC/ETH/SOL). Then briefly mention that equity/index/FX/commodity prices reflect Friday\'s session close. Futures (GLOBEX) resume Sunday 6 PM ET.',
+        badgeLabel: 'CRYPTO FOCUS',
+        badgeTooltip: 'Weekend — only crypto trades. Equities, FX, futures, and commodities all reflect Friday\'s session close. GLOBEX futures resume Sunday 6 PM ET.'
+      };
+    }
+
+    // ── Deep overnight / pre-market (Mon-Thu/Fri 10 PM ET → 9:30 AM ET next day) ──
+    // NYSE closed, GLOBEX active. User's specific request: lead with futures + crypto.
+    var isOvernight;
+    if (day >= 1 && day <= 5 && (minsET >= 22 * 60 || minsET < (9 * 60 + 30))) {
+      isOvernight = true;
+    }
+    // Sunday evening GLOBEX session: 6 PM → midnight (extends into Mon pre-market)
+    if (day === 0 && minsET >= 18 * 60) isOvernight = true;
+
+    if (isOvernight && sessionState.globexOpen) {
+      return {
+        focus: 'futures',
+        leadInstruction: 'LEAD WITH FUTURES + CRYPTO. Open WHAT HAPPENED with the most significant futures and crypto moves (Crude, Gold, NatGas, BTC, ETH, etc.) since these are the markets actually trading right now. Mention today\'s / Friday\'s equity close in ONE subordinate clause ("equities closed higher in the prior session"). Do NOT lead with equity recap.',
+        badgeLabel: 'FUTURES FOCUS',
+        badgeTooltip: 'Overnight / pre-market session. GLOBEX futures and crypto are trading live. Equities reflect the prior session close. NYSE reopens 9:30 AM ET.'
+      };
+    }
+
+    // ── Early after-hours (Mon-Thu 4:00 PM - 10:00 PM ET) ─────────────
+    // NYSE just closed, GLOBEX active. Lead with futures, recap equity close.
+    if (sessionState.globexOpen && !sessionState.nyseOpen && minsET >= 16 * 60 && minsET < 22 * 60) {
+      return {
+        focus: 'futures',
+        leadInstruction: 'LEAD WITH FUTURES. Open WHAT HAPPENED with the most significant overnight futures moves (Crude, Gold, NatGas, equity index futures ES/NQ/YM/RTY). Then briefly recap today\'s equity cash session close in one or two sentences. Crypto (BTC/ETH/SOL) is always live — mention if it\'s making a notable move.',
+        badgeLabel: 'FUTURES FOCUS',
+        badgeTooltip: 'After-hours GLOBEX session. Futures + crypto trading live. Equities reflect today\'s 4 PM ET close. NYSE reopens 9:30 AM ET tomorrow.'
+      };
+    }
+
+    // ── Standard cash session (Mon-Fri 9:30 AM - 4:00 PM ET) ──────────
+    if (sessionState.nyseOpen) {
+      return {
+        focus: 'equities',
+        leadInstruction: 'LEAD WITH EQUITIES. Open WHAT HAPPENED with the most significant equity/index moves (S&P 500, NASDAQ, Dow, TSX). Then cover other asset classes (crypto, commodities, FX) in priority order based on size of move.',
+        badgeLabel: 'NYSE OPEN',
+        badgeTooltip: 'NYSE/Nasdaq cash session is open. All asset classes trading live.'
+      };
+    }
+
+    // ── Forex-only window (rare edge case) ───────────────────────────
+    if (sessionState.forexOpen && !sessionState.globexOpen && !sessionState.nyseOpen) {
+      return {
+        focus: 'forex',
+        leadInstruction: 'LEAD WITH FX. Open WHAT HAPPENED with the most significant currency pair moves. Crypto (BTC/ETH/SOL) is always live — mention if notable. Equity/index/commodity prices reflect prior session close.',
+        badgeLabel: 'FOREX FOCUS',
+        badgeTooltip: 'Forex session active. Equities, futures, commodities reflect prior close. Crypto always trades.'
+      };
+    }
+
+    // ── Fallback (shouldn't usually hit) ──────────────────────────────
+    return {
+      focus: 'crypto',
+      leadInstruction: 'LEAD WITH CRYPTO. Crypto markets (BTC/ETH/SOL) never close. Other asset classes reflect their most recent session close.',
+      badgeLabel: 'CRYPTO FOCUS',
+      badgeTooltip: 'Only crypto is trading live right now. Other asset classes reflect prior session close.'
     };
   }
 
@@ -1722,7 +1824,7 @@
   //   - Futures/commodities (Crude, Gold, NatGas, Wheat, etc.): when GLOBEX
   //     is OPEN → present continuous. When closed → past tense ("settled
   //     lower" / "closed down").
-  function buildAIBriefPrompt(summary, sessionState) {
+  function buildAIBriefPrompt(summary, sessionState, briefFocus) {
     var tradOpen = sessionState.nyseOpen || sessionState.globexOpen || sessionState.forexOpen;
     var cryptoNote = 'Crypto markets (BTC/ETH/SOL) never close (24/7/365) — those prices are always live intraday.';
     var tradNote = tradOpen
@@ -1776,6 +1878,9 @@
       '═══════════════════════════════════════════════════════════════════════════',
       'TENSE RULE — MOST IMPORTANT INSTRUCTION. READ THIS BEFORE WRITING ANYTHING.',
       '═══════════════════════════════════════════════════════════════════════════',
+      '',
+      'BRIEF FOCUS: ' + (briefFocus ? briefFocus.focus.toUpperCase() : 'AUTO'),
+      (briefFocus ? briefFocus.leadInstruction : ''),
       '',
       'Current trading session state (computed at brief-generation time):',
       '  • NYSE / Nasdaq (equities & indices): ' + nyseState + (sessionState.nyseOpen ? '' : ' — ' + sessionState.sessionLabel),
@@ -1842,22 +1947,24 @@
   // ─── Render the LIVE/CLOSED session badge ────────────────────────────────
   // The markets dashboard is ALWAYS live (it pulls Yahoo/Binance quotes),
   // but traditional markets have trading windows. The badge shows what's
-  // actually trading right now so the user understands why crypto uses -ing
-  // but equities might use past tense:
-  //   - "LIVE · NYSE OPEN" — green pulsing dot, when NYSE cash session open
-  //   - "LIVE · FUTURES OPEN" — when GLOBEX active overnight (no NYSE)
-  //   - "LIVE · FOREX OPEN" — when only forex is active (weekend edge)
-  //   - "LIVE · CRYPTO ONLY" — weekend, only crypto trades
-  // Hover tooltip shows the full sessionLabel.
-  function setMarketSessionBadge(sessionState) {
+  // actually trading right now AND what the brief is leading with:
+  //   - "LIVE · NYSE OPEN"       — when NYSE cash session open
+  //   - "LIVE · FUTURES FOCUS"   — overnight / pre-market (GLOBEX active, NYSE closed)
+  //   - "LIVE · FOREX FOCUS"     — forex-only window (rare edge)
+  //   - "LIVE · CRYPTO FOCUS"    — weekend, only crypto trades
+  // Hover tooltip shows the full sessionLabel + briefFocus.badgeTooltip.
+  function setMarketSessionBadge(sessionState, briefFocus) {
     var badge = document.querySelector('[data-session-badge]');
     if (!badge) return;
     var txt = badge.querySelector('[data-session-text]');
     if (!txt) return;
     // Markets dashboard is always live (live data fetched)
     badge.setAttribute('data-state', 'live');
+    // Use briefFocus.badgeLabel if available (more specific than just session state)
     var label;
-    if (sessionState.nyseOpen) {
+    if (briefFocus && briefFocus.badgeLabel) {
+      label = 'LIVE · ' + briefFocus.badgeLabel;
+    } else if (sessionState.nyseOpen) {
       label = 'LIVE · NYSE OPEN';
     } else if (sessionState.globexOpen) {
       label = 'LIVE · FUTURES OPEN';
@@ -1867,7 +1974,13 @@
       label = 'LIVE · CRYPTO ONLY';
     }
     txt.textContent = label;
-    badge.title = sessionState.sessionLabel + ' — Crypto markets (BTC/ETH/SOL) never close (24/7/365); traditional markets have specific trading windows. AI Brief applies present-continuous tense to assets currently trading, past tense to closed-market prices.';
+    var tooltip = sessionState.sessionLabel;
+    if (briefFocus && briefFocus.badgeTooltip) {
+      tooltip += ' — ' + briefFocus.badgeTooltip;
+    } else {
+      tooltip += ' — Crypto markets (BTC/ETH/SOL) never close (24/7/365); traditional markets have specific trading windows. AI Brief applies present-continuous tense to assets currently trading, past tense to closed-market prices.';
+    }
+    badge.title = tooltip;
   }
 
   function fetchAIBrief() {
@@ -1883,11 +1996,12 @@
       return;
     }
 
-    // Detect trading-session state and show LIVE indicator
+    // Detect trading-session state, compute focus, and show LIVE indicator
     var sessionState = getTradingSessionState();
-    setMarketSessionBadge(sessionState);
+    var briefFocus = getBriefFocus(sessionState);
+    setMarketSessionBadge(sessionState, briefFocus);
 
-    var prompt = buildAIBriefPrompt(summary, sessionState);
+    var prompt = buildAIBriefPrompt(summary, sessionState, briefFocus);
     fetch('https://startling-belekoy-b0ec70.netlify.app/groq-proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
