@@ -330,6 +330,7 @@ html[data-theme="daybreak"] .trace-top{border-color:#15324c12}
 <label class="theme-choice" title="Solar: amber and molten orange"><input id="theme-solar" type="radio" name="atlas-theme" value="solar" data-set-theme="solar"><i class="theme-dot solar" aria-hidden="true"></i><span>Solar</span></label>
 <label class="theme-choice" title="Daybreak: a light palette with blue and violet"><input id="theme-daybreak" type="radio" name="atlas-theme" value="daybreak" data-set-theme="daybreak"><i class="theme-dot daybreak" aria-hidden="true"></i><span>Daybreak</span></label>
 </fieldset>
+    <a href="https://insight-analytics.ca/" style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid rgba(var(--rgb),.4);background:rgba(var(--rgb),.06);color:var(--accent);font-size:11px;font-weight:600;letter-spacing:.04em;border-radius:8px;text-decoration:none;white-space:nowrap;transition:background .2s,border-color .2s" onmouseover="this.style.background='rgba(var(--rgb),.12)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='rgba(var(--rgb),.06)';this.style.borderColor='rgba(var(--rgb),.4)'">← Insight Analytics</a>
   </header>
   <main id="top">
     <section class="hero reporting-hero" aria-labelledby="hero-title"><div class="hero-grid" aria-hidden="true"></div><div class="reporting-hero-layout"><div class="hero-copy"><p class="eyebrow"><span class="signal-dot"></span> THE APPS COLLECTION / 2026</p><h1 id="hero-title">AI &amp; automation.<br><span>Built into the work.</span></h1><p class="hero-description">Operational apps that ingest, validate, calculate, explain and deliver.<br>Explore the interface — then trace what happens underneath.</p><a class="primary-link" href="#projects">Explore the app previews <span aria-hidden="true">&#8599;</span></a><div class="reporting-stats"><div><strong><span data-project-count>36</span></strong><span>APPS, REPORTS &amp; TOOLS</span></div><div><strong><span data-ai-count>7</span></strong><span>AI / ML WORKFLOWS</span></div><div><strong>04</strong><span>VISUAL ATMOSPHERES</span></div></div><p class="hero-preview-note">Open any project to explore a representative experience, the evidence it consumes, and the production path behind it. Portfolio values and names are fictional.</p></div><div class="hero-app-preview"><!-- ATLAS_HERO_PREVIEW_START -->
@@ -1283,11 +1284,26 @@ initWorkflows();
   color: var(--text); cursor: pointer; font-size: 22px; font-weight: 200;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
   .mobile-nav-toggle { display: flex; }
   .kbd-hint { display: none; }  /* no keyboard on touch devices */
 }
 
+
+/* Ensure back-to-site button is visible on all mobile breakpoints */
+@media (max-width: 800px) {
+  .site-header > a[href*="insight-analytics.ca"] {
+    order: -1; /* show before the brand on mobile */
+    font-size: 10px !important;
+    padding: 6px 10px !important;
+  }
+}
+@media (max-width: 600px) {
+  .site-header > a[href*="insight-analytics.ca"] {
+    flex-basis: auto;
+    margin: 0 auto;
+  }
+}
 /* Console hint badge in header (small, top-right) */
 .showcase-badge {
   position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 40;

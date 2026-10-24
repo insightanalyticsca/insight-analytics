@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v5.12.0-solutions-showcase';
+const VERSION = 'v5.13.0-showcase-nav-fix';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -93,6 +93,12 @@ self.addEventListener('fetch', (event) => {
   // requests bypass the SW entirely, the iframe behaves like a normal same-origin
   // resource load and renders reliably on every browser.
   if (url.pathname.indexOf('/dashboards-preview/') === 0) return;
+
+  // CRITICAL: Skip /solutions-showcase/ — it's a large self-contained HTML
+  // page (~860KB) that should always load fresh from network (like
+  // /dashboards-preview/). Don't let the SW's stale-while-revalidate
+  // strategy serve a stale or 404 version.
+  if (url.pathname.indexOf('/solutions-showcase/') === 0) return;
 
   // NOTE: /blog/ and /js/blog-* bypass rules REMOVED in v4.72.2.
   // The bypass was originally added because the SW's stale-while-revalidate
