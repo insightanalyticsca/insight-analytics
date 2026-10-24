@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v5.13.0-showcase-nav-fix';
+const VERSION = 'v5.14.0-showcase-onclick-fix';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 

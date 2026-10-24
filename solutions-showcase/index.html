@@ -1322,18 +1322,18 @@ initWorkflows();
 <div class="kbd-hint" id="kbd-hint">Press <kbd>/</kbd> to search · <kbd>Esc</kbd> to close</div>
 <div class="showcase-badge" id="showcase-badge">Solutions Showcase</div>
 
-<button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu" aria-expanded="false">
+<button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu" aria-expanded="false" onclick="var d=document.getElementById('mobile-drawer');if(d){d.classList.toggle('open');d.setAttribute('aria-hidden',d.classList.contains('open')?'false':'true');this.setAttribute('aria-expanded',d.classList.contains('open')?'true':'false');document.body.style.overflow=d.classList.contains('open')?'hidden':'';}">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
     <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
   </svg>
 </button>
-<aside class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
-  <button class="mobile-drawer-close" id="mobile-drawer-close" aria-label="Close navigation">×</button>
+<aside class="mobile-drawer" id="mobile-drawer" aria-hidden="true" onclick="if(event.target===this){this.classList.remove('open');this.setAttribute('aria-hidden','true');document.body.style.overflow='';}">
+  <button class="mobile-drawer-close" id="mobile-drawer-close" aria-label="Close navigation" onclick="var d=document.getElementById('mobile-drawer');if(d){d.classList.remove('open');d.setAttribute('aria-hidden','true');document.body.style.overflow='';}">×</button>
   <nav aria-label="Mobile navigation">
-    <a href="#top">Top</a>
-    <a href="#intelligence">Intelligence <span>01</span></a>
-    <a href="#automation">Automation Flows <span>02</span></a>
-    <a href="#projects">The Projects <span>03</span></a>
+    <a href="#top" onclick="var d=document.getElementById('mobile-drawer');if(d){d.classList.remove('open');d.setAttribute('aria-hidden','true');document.body.style.overflow='';}">Top</a>
+    <a href="#intelligence" onclick="var d=document.getElementById('mobile-drawer');if(d){d.classList.remove('open');d.setAttribute('aria-hidden','true');document.body.style.overflow='';}">Intelligence <span>01</span></a>
+    <a href="#automation" onclick="var d=document.getElementById('mobile-drawer');if(d){d.classList.remove('open');d.setAttribute('aria-hidden','true');document.body.style.overflow='';}">Automation Flows <span>02</span></a>
+    <a href="#projects" onclick="var d=document.getElementById('mobile-drawer');if(d){d.classList.remove('open');d.setAttribute('aria-hidden','true');document.body.style.overflow='';}">The Projects <span>03</span></a>
     <a href="https://insight-analytics.ca/">← Back to Insight Analytics</a>
   </nav>
 </aside>
