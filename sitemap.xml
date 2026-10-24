@@ -1,255 +1,260 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
+<url>
     <loc>https://insight-analytics.ca/</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/blog/</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/blog/universal-dashboard-builder</loc>
     <lastmod>2026-10-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/blog/personalized-power-automate</loc>
     <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/blog/fuzzy-address-matching</loc>
     <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/blog/weather-load-forecast</loc>
     <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/blog/database-archaeology</loc>
     <lastmod>2026-10-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/blog/universal-time-series-prediction</loc>
     <lastmod>2026-10-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/parcel-shipping-costs-approach-record-high-as-extra-charges-stack-up</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/voices-on-planning-the-ai-powered-future-of-supply-chain</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/how-sustainability-transformations-quietly-lose-their-edge</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/turn-energy-efficiency-into-strategic-advantage</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/what-ceos-dont-hear-and-why-it-matters</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-    <url>
+<url>
     <loc>https://insight-analytics.ca/insights/a-low-tech-intervention-can-help-migrant-families-survive-the-lean-season</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/charting-the-us-china-trade-war-what-does-made-in-vietnam-mean</loc>
     <lastmod>2026-10-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/why-are-bond-yields-soaring</loc>
     <lastmod>2026-10-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/is-ai-scaling-your-worst-habits</loc>
     <lastmod>2026-10-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/reducing-emissions-and-costs-putting-your-products-on-a-low-carb-diet</loc>
     <lastmod>2026-10-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/radical-federalism-the-way-to-tackle-the-ai-velocity-problem</loc>
     <lastmod>2026-10-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/costco-ceo-ron-vachris-rose-from-forklift-driver-to-the-c-suite-without-a-colleg</loc>
     <lastmod>2026-10-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/scope-3-is-not-primarily-a-reporting-problem-it-is-a-supply-chain-data-problem</loc>
     <lastmod>2026-10-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/ai-evaluations-look-unbiased-without-being-fair</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/supply-chain-resilience-is-not-visibility-it-is-the-ability-to-execute-alternati</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/the-ceos-singular-impact-on-the-successor-failureof-ai-in-organizations</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/why-sustainability-leaders-need-to-think-like-change-managers</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-    <url>
+<url>
     <loc>https://insight-analytics.ca/insights/what-finance-can-tell-us-about-the-twin-crises-of-climate-change-and-biodiversit</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/lack-of-trust-drives-the-just-in-case-energy-era</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/are-we-headed-for-a-perfect-financial-storm</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/the-small-bottleneck-with-a-big-impact-why-automating-box-opening-could-be-the-next-frontier-in-warehouse-productivity</loc>
     <lastmod>2026-10-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/consumers-rethink-value-as-uncertainty-and-inflation-persist</loc>
     <lastmod>2026-10-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/spacex-reports-44-billion-profit-as-ai-and-starlink-businesses-expand</loc>
     <lastmod>2026-10-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/nuclear-powered-car-carriers-face-a-reality-test</loc>
     <lastmod>2026-10-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/never-let-them-see-you-sweat-maybe-thats-the-problem</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/ikea-ceo-juvencio-maeztu-leading-with-humility-simplicity-and-humanism</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/deposits-the-top-profitability-lever-for-retail-banks-ceos</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/why-cfos-need-to-become-keepers-of-culture</loc>
     <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/stocks-see-steepest-decline-in-months-amid-ai-worries</loc>
     <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/dispelling-the-myth-of-the-irreplaceable-founder</loc>
     <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/the-business-case-for-living-longer</loc>
     <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/why-ai-is-about-to-stress-test-your-cx-strategy</loc>
     <lastmod>2026-10-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://insight-analytics.ca/insights/three-key-steps-for-cfos-in-the-ai-era</loc>
     <lastmod>2026-10-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <loc>https://insight-analytics.ca/solutions-showcase/</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+>>>>>>> cf978a5 (Add Solutions Showcase tab — interactive application catalog with obfuscated industry references)
   </url>
 </urlset>
