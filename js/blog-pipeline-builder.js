@@ -47,9 +47,9 @@
   var MOUNT_ID         = 'pipeline-builder-mount';
   var GROQ_PROXY       = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
   var GROQ_MODEL       = 'qwen/qwen3.8-27b';
-  var STORAGE_KEY      = 'pipelineBuilder.saved';
-  var RATE_KEY         = 'pipelineBuilder.rate';
-  var SESSION_KEY      = 'pipelineBuilder.sessionId';
+  var STORAGE_KEY      = 'pipelineBuilder.saved.v2';
+  var RATE_KEY         = 'pipelineBuilder.rate.v2';
+  var SESSION_KEY      = 'pipelineBuilder.sessionId.v2';
   var MAX_GROQ_CALLS   = 10;
   var MAX_FILE_SIZE    = 5 * 1024 * 1024;   // 5 MB demo cap
   var GROQ_TIMEOUT_MS  = 25000;             // Groq can be slow on cold starts

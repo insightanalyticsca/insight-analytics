@@ -70,8 +70,8 @@
   var MOUNT_ID           = 'load-forecast-mount';
   var GROQ_PROXY         = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
   var GROQ_MODEL         = 'qwen/qwen3.8-27b';
-  var RATE_KEY           = 'loadForecast.rate';
-  var SESSION_KEY        = 'loadForecast.sessionId';
+  var RATE_KEY           = 'loadForecast.rate.v2';
+  var SESSION_KEY        = 'loadForecast.sessionId.v2';
   var MAX_GROQ_CALLS     = 10;
   var GEO_TIMEOUT_MS     = 10000;
   var WEATHER_TIMEOUT_MS = 15000;

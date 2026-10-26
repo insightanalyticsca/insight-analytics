@@ -58,8 +58,8 @@
   var GROQ_MODEL        = 'qwen/qwen3.8-27b';
   var NOMINATIM_URL     = 'https://nominatim.openstreetmap.org/search';
   var NOMINATIM_GAP_MS  = 1100;            // 1.1s — polite buffer over the 1/sec policy
-  var RATE_KEY          = 'fuzzyMatch.rate';
-  var SESSION_KEY       = 'fuzzyMatch.sessionId';
+  var RATE_KEY          = 'fuzzyMatch.rate.v2';
+  var SESSION_KEY       = 'fuzzyMatch.sessionId.v2';
   var MAX_GROQ_CALLS    = 10;
   var MAX_FILE_SIZE     = 5 * 1024 * 1024;  // 5 MB demo cap
   var GROQ_TIMEOUT_MS  = 30000;            // Groq can be slow on cold starts
