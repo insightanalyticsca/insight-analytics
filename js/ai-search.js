@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  var GROQ_PROXY = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
+  var GROQ_PROXY = 'https://groq-proxy.insight-analytics.workers.dev/groq-proxy';
   var GROQ_MODEL = 'qwen/qwen3.8-27b';
   var SITE_URL = 'https://insight-analytics.ca';
 

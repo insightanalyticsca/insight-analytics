@@ -2002,7 +2002,7 @@
     setMarketSessionBadge(sessionState, briefFocus);
 
     var prompt = buildAIBriefPrompt(summary, sessionState, briefFocus);
-    fetch('https://startling-belekoy-b0ec70.netlify.app/groq-proxy', {
+    fetch('https://groq-proxy.insight-analytics.workers.dev/groq-proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'qwen/qwen3.8-27b', messages: [{ role: 'user', content: prompt }], max_tokens: 1500, stream: true, temperature: 0.3 })
