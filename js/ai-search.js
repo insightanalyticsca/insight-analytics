@@ -345,19 +345,25 @@
       suggestionsEl.innerHTML = '';
       results.innerHTML = '<div class="ai-streaming">Searching...</div>';
 
-      var prompt = 'You are a helpful assistant for Insight Analytics, a Canadian analytics consultancy. ' +
+      var systemPrompt = 'You are a helpful assistant for Insight Analytics, a Canadian analytics consultancy. ' +
         'Answer the user\'s question based ONLY on the content below. ' +
         'If relevant, include 1-2 links using markdown: [link text](url). ' +
         'Keep the answer under 150 words. Be conversational and executive-oriented. ' +
         'Do not mention that you are an AI or that you are searching content.\n\n' +
-        'SITE CONTENT:\n' + CONTEXT + '\n\n' +
-        'USER QUESTION: ' + query;
+        'CONTACT INFORMATION (if asked about how to reach us):\n' +
+        '  - Email: dev@insight-analytics.ca\n' +
+        '  - Phone: (289) 635-3051 or (289) 635-9915\n' +
+        '  - Booking form: available on the home page at #contact section\n' +
+        'If the visitor asks for contact info, phone number, or email, give it out directly.\n\n' +
+        'SITE CONTENT:\n' + CONTEXT;
+
+      var userPrompt = 'USER QUESTION: ' + query;
 
       // Try streaming first
       fetch(GROQ_PROXY, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: GROQ_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.3, max_tokens: 600, stream: true })
+        body: JSON.stringify({ model: GROQ_MODEL, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }], temperature: 0.3, max_tokens: 600, stream: true })
       }).then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         var reader = res.body.getReader();
@@ -395,7 +401,7 @@
         return fetch(GROQ_PROXY, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ model: GROQ_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.3, max_tokens: 600, stream: false })
+          body: JSON.stringify({ model: GROQ_MODEL, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }], temperature: 0.3, max_tokens: 600, stream: false })
         }).then(function (res) { return res.json(); }).then(function (data) {
           return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
         }).then(renderResults);
