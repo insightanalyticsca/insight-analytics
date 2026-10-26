@@ -616,7 +616,16 @@
       tooltip: { trigger: 'item', confine: true, extraCssText: 'backdrop-filter:blur(8px);border-radius:8px;' },
       legend: { textStyle: { fontSize: 11 } }
     };
-    switch (chart.type) {
+    // Normalize the type — the model is told the enum is
+    // bar/line/area/stacked/pie/heatmap/gauge/scatter, but smaller models
+    // sometimes drift to synonyms like "donut", "column", "funnel", etc.
+    // Map known synonyms to canonical types so we don't fall through to bar.
+    var t = String(chart.type).toLowerCase().trim();
+    if (t === 'donut' || t === 'doughnut' || t === 'piechart') t = 'pie';
+    else if (t === 'column' || t === 'columns') t = 'bar';
+    else if (t === 'trend') t = 'line';
+    else if (t === 'funnel') t = 'bar';
+    switch (t) {
       case 'bar': return buildBarOption(chart, base, false);
       case 'line': return buildBarOption(chart, base, true);
       case 'area': return buildBarOption(chart, base, true, true);
