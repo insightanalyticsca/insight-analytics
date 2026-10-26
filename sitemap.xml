@@ -299,4 +299,10 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://insight-analytics.ca/insights/from-intelligence-to-execution-join-us-at-the-2027-arc-industry-leadership-forum</loc>
+    <lastmod>2026-10-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
