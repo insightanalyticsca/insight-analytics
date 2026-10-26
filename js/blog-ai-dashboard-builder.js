@@ -44,7 +44,7 @@
   // ─── Constants ────────────────────────────────────────────────────────────
 
   var MOUNT_ID         = 'ai-dashboard-builder-mount';
-  var GROQ_PROXY       = 'https://dashboards-groq-proxy.netlify.app/groq-proxy';
+  var GROQ_PROXY       = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
   var GROQ_MODEL       = 'qwen/qwen3.8-27b';
   var STORAGE_KEY      = 'aiDashboardBuilder.saved.v1';
   var RATE_KEY         = 'aiDashboardBuilder.rate.v1';
@@ -894,27 +894,6 @@
     }
   }
 
-  // ─── Bootstrap on DOM ready ──────────────────────────────────────────────
-  function init() {
-    var mount = document.getElementById(MOUNT_ID);
-    if (!mount) return;
-    // Inject the demo's CSS if it isn't already present
-    if (!document.getElementById('adb-styles')) {
-      var style = document.createElement('style');
-      style.id = 'adb-styles';
-      style.textContent = ADB_CSS;
-      document.head.appendChild(style);
-    }
-    loadSavedDashboards();
-    render();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
   // ─── Demo CSS (inlined so the JS is self-contained) ──────────────────────
   // Matches the visual language of the other blog demos (clean, light,
   // generous whitespace, rounded cards, subtle borders).
@@ -1060,4 +1039,26 @@
 [data-theme="dark"] .adb-live-foot { border-top-color: #1e293b; }
 .adb-live-hint { font-size: 0.78rem; color: #94a3b8; }
 `;
+
+  // ─── Bootstrap on DOM ready ──────────────────────────────────────────────
+  function init() {
+    var mount = document.getElementById(MOUNT_ID);
+    if (!mount) return;
+    // Inject the demo's CSS if it isn't already present
+    if (!document.getElementById('adb-styles')) {
+      var style = document.createElement('style');
+      style.id = 'adb-styles';
+      style.textContent = ADB_CSS;
+      document.head.appendChild(style);
+    }
+    loadSavedDashboards();
+    render();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
 })();

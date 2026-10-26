@@ -45,7 +45,7 @@
   // ─── Constants ────────────────────────────────────────────────────────────
 
   var MOUNT_ID         = 'pipeline-builder-mount';
-  var GROQ_PROXY       = 'https://dashboards-groq-proxy.netlify.app/groq-proxy';
+  var GROQ_PROXY       = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
   var GROQ_MODEL       = 'qwen/qwen3.8-27b';
   var STORAGE_KEY      = 'pipelineBuilder.saved.v2';
   var RATE_KEY         = 'pipelineBuilder.rate.v2';

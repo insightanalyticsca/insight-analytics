@@ -63,7 +63,7 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="stylesheet" href="/css/font-awesome.min.css">
   <link rel="stylesheet" href="../css/styles.css?v=4.92.0" />
-  <script src="../js/blog-ai-dashboard-builder.js?v=1.0.1-type-synonyms" defer></script>
+  <script src="../js/blog-ai-dashboard-builder.js?v=1.0.2-fix-css-and-cors" defer></script>
 
   <style>
     /* Disable scroll-snap on blog pages. The shared styles.css sets
@@ -188,7 +188,7 @@
     <ol>
       <li><strong>Read the brief</strong> — the user's plain-English description (or the preset template's pre-written brief). Max 800 characters. Sent to Groq as the user message in a chat completion request.</li>
       <li><strong>Sent a strict JSON-spec system prompt</strong> — the model is told exactly what shape the JSON must be: <code>{ title, description, kpis[4], charts[4] }</code>, with each chart having a type field restricted to bar / line / area / stacked / pie / heatmap / gauge / scatter. The model is also told to synthesize plausible-looking numeric data (no real data sources — this is a demo).</li>
-      <li><strong>Called Groq</strong> — via the Netlify-hosted proxy at <code>dashboards-groq-proxy.netlify.app</code>. The API key lives server-side as a Netlify env var; it never reaches the browser, never lives in the GitHub repo, never gets blocked by GitHub secret scanning.</li>
+      <li><strong>Called Groq</strong> — via the Netlify-hosted proxy at <code>startling-belekoy-b0ec70.netlify.app</code>. The API key lives server-side as a Netlify env var; it never reaches the browser, never lives in the GitHub repo, never gets blocked by GitHub secret scanning.</li>
       <li><strong>Parsed + validated the JSON</strong> — robust parsing that strips <code>```json</code> fences (in case the model adds them despite being told not to) and finds the outermost <code>{ ... }</code> in the response (in case the model adds prose before/after). Validation enforces exactly 4 KPIs and exactly 4 charts; if validation fails, the user sees the error and can regenerate.</li>
       <li><strong>Rendered the review card</strong> — the parsed spec is shown as a human-readable card: dashboard title, description, 4 KPI cards with values + deltas, 4 chart tiles with type tags + descriptions. The user can inspect, export the JSON, or click <strong>Render Live Dashboard</strong>.</li>
       <li><strong>Rendered the live dashboard</strong> — the spec becomes an actual ECharts dashboard. 4 KPI cards across the top (with delta arrows), 4 chart tiles in a 2×2 grid below, each rendered using the appropriate ECharts option builder for its type (bar / line / area / stacked / pie / heatmap / gauge / scatter). Same palette as production (PALETTE constant), same chart configuration patterns.</li>

@@ -54,7 +54,7 @@
 
   // ─── Constants ────────────────────────────────────────────────────────────
   var MOUNT_ID          = 'fuzzy-match-mount';
-  var GROQ_PROXY        = 'https://dashboards-groq-proxy.netlify.app/groq-proxy';
+  var GROQ_PROXY        = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
   var GROQ_MODEL        = 'qwen/qwen3.8-27b';
   var NOMINATIM_URL     = 'https://nominatim.openstreetmap.org/search';
   var NOMINATIM_GAP_MS  = 1100;            // 1.1s — polite buffer over the 1/sec policy
