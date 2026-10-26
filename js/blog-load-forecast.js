@@ -68,7 +68,7 @@
   // ─── Constants ────────────────────────────────────────────────────────────
 
   var MOUNT_ID           = 'load-forecast-mount';
-  var GROQ_PROXY         = 'https://groq-proxy.insight-analytics.workers.dev/groq-proxy';
+  var GROQ_PROXY         = 'https://dashboards-groq-proxy.netlify.app/groq-proxy';
   var GROQ_MODEL         = 'qwen/qwen3.8-27b';
   var RATE_KEY           = 'loadForecast.rate.v2';
   var SESSION_KEY        = 'loadForecast.sessionId.v2';
