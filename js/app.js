@@ -622,7 +622,7 @@
             }
             form.reset();
             setStatus(
-              "Thank you. Your request has been sent to dev@insight-analytics.ca as a branded HTML email. We'll reply within one business day — or call (289) 635-9915 directly.",
+              "Thank you. Your request has been sent to dev@insight-analytics.ca as a branded HTML email. We'll reply within one business day — or call (289) 635-3051 or (289) 635-9915 directly.",
               "success"
             );
             return;
@@ -635,7 +635,7 @@
               submitBtn.classList.remove("is-loading");
               submitBtn.removeAttribute("aria-busy");
             }
-            setStatus("You've sent several requests recently. Please wait an hour and try again, or call (289) 635-9915.", "error");
+            setStatus("You've sent several requests recently. Please wait an hour and try again, or call (289) 635-3051 or (289) 635-9915.", "error");
             return;
           }
 
@@ -652,7 +652,7 @@
           }
           form.reset();
           setStatus(
-            "Your email client is opening with a pre-filled, branded request to dev@insight-analytics.ca — send it to deliver. Or call (289) 635-9915 directly.",
+            "Your email client is opening with a pre-filled, branded request to dev@insight-analytics.ca — send it to deliver. Or call (289) 635-3051 or (289) 635-9915 directly.",
             "success"
           );
           window.location.href = mailtoFallback;

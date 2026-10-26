@@ -366,7 +366,7 @@
       "For platform-level questions about Insight Analytics (the 8-step methodology, PWA features, Netlify proxy, theming, etc.), open the **Contact bot** in the footer — it has the full knowledge base of all implemented solutions.\n\n" +
       "Or reach out directly:\n" +
       "  • Email: dev@insight-analytics.ca\n" +
-      "  • Phone: (289) 635-9915";
+      "  • Phone: (289) 635-3051 or (289) 635-9915";
     if (onToken) {
       var tokens = msg.match(/\S+\s*/g) || [msg];
       var i = 0;

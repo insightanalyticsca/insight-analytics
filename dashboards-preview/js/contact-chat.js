@@ -12,8 +12,10 @@
   // ─── Contact facts (single source of truth) ──────────────────────────────
   var CONTACT = {
     email: 'dev@insight-analytics.ca',
-    phone: '(289) 635-9915',
-    phoneTel: '+12896359915',
+    phone: '(289) 635-3051',
+    phoneTel: '+12896353051',
+    phone2: '(289) 635-9915',
+    phoneTel2: '+12896359915',
     brand: 'Insight Analytics',
     lead: 'Innovative dashboards & AI-integrated analytics for utilities and operations.'
   };
@@ -141,17 +143,17 @@
       '',
       'PART 1 — CONVEY CONTACT INFO. When the user opens the chat, and again whenever they ask how to reach us, present the contact info clearly:',
       '  Email: ' + CONTACT.email,
-      '  Phone: ' + CONTACT.phone,
+      '  Phone: ' + CONTACT.phone + ' or ' + CONTACT.phone2,
       'Tell the user both the email and phone are clickable in the panel above the chat input. Mention that email opens their mail client and phone opens their dialer.',
       '',
-      'PART 2 — ANSWER BASIC QUESTIONS. The user may ask about our services, capabilities, or approach. Answer ONLY using the known facts below. If a question asks about something not covered in the known facts (pricing, contracts, custom integrations we haven\'t built, named clients, timelines), do NOT invent an answer — say "That\'s outside what I can speak to here. Reach out to us at ' + CONTACT.email + ' or ' + CONTACT.phone + ' and we\'ll get you a real answer."',
+      'PART 2 — ANSWER BASIC QUESTIONS. The user may ask about our services, capabilities, or approach. Answer ONLY using the known facts below. If a question asks about something not covered in the known facts (pricing, contracts, custom integrations we haven\'t built, named clients, timelines), do NOT invent an answer — say "That\'s outside what I can speak to here. Reach out to us at ' + CONTACT.email + ' or ' + CONTACT.phone + ' or ' + CONTACT.phone2 + ' and we\'ll get you a real answer."',
       '',
       'HARD RULES:',
       '1. Never invent services, capabilities, pricing, or client names that aren\'t in the known facts.',
       '2. Never claim certifications, partnerships, or awards — Insight Analytics has not disclosed any in this prompt.',
       '3. Keep answers under 120 words. Tight prose.',
       '4. Always end your answer with one of:',
-      '   - If contact-relevant: "— " + CONTACT.email + " · " + CONTACT.phone',
+      '   - If contact-relevant: "— " + CONTACT.email + " · " + CONTACT.phone + " · " + CONTACT.phone2',
       '   - If deflecting: the deflection phrase above.',
       '5. Do not produce code, JSON, or technical specs. You are a contact bot, not an engineer.',
       '6. If asked about competitors, decline: "I can only speak to what Insight Analytics offers. For comparisons, please reach out directly."',
@@ -288,7 +290,7 @@
     var offlineMsg = 'AI is temporarily unavailable — our team is already on it and we should be back online shortly.\n\n' +
       'For a real answer in the meantime, reach out directly:\n' +
       '  • Email: ' + CONTACT.email + ' (clickable above)\n' +
-      '  • Phone: ' + CONTACT.phone + ' (clickable above)\n\n' +
+      '  • Phone: ' + CONTACT.phone + ' or ' + CONTACT.phone2 + ' (clickable above)\n\n' +
       'Or refresh the page in a moment if this is a temporary outage.';
     if (onToken) {
       var tokens = offlineMsg.match(/\S+\s*/g) || [offlineMsg];
@@ -353,9 +355,14 @@
         'aria-label="Email ' + escapeHtml(CONTACT.brand) + '" title="' + escapeHtml(CONTACT.email) + '">' +
         ICONS.mail +
       '</a>' +
-      // Tiny phone icon → tel:
+      // Tiny phone icon → tel: (first number)
       '<a class="contact-compact-iconbtn contact-compact-phone" href="tel:' + escapeHtml(CONTACT.phoneTel) + '" ' +
         'aria-label="Call ' + escapeHtml(CONTACT.brand) + '" title="' + escapeHtml(CONTACT.phone) + '">' +
+        ICONS.phone +
+      '</a>' +
+      // Tiny phone icon → tel: (second number)
+      '<a class="contact-compact-iconbtn contact-compact-phone" href="tel:' + escapeHtml(CONTACT.phoneTel2) + '" ' +
+        'aria-label="Call ' + escapeHtml(CONTACT.brand) + '" title="' + escapeHtml(CONTACT.phone2) + '">' +
         ICONS.phone +
       '</a>' +
       // Ask pill → opens full chat panel
@@ -444,6 +451,9 @@
           '<div style="flex:1;min-width:0;">' +
             '<div style="font-size:9px;color:var(--theme-muted,#94a3b8);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Phone</div>' +
             '<div style="font-size:12px;font-weight:600;">' + escapeHtml(CONTACT.phone) + '</div>' +
+        '<a href="tel:' + escapeHtml(CONTACT.phoneTel2) + '" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;text-decoration:none;color:var(--theme-text,#171777);background:var(--theme-panel-hover,rgba(0,0,0,0.03));border:1px solid var(--theme-border,rgba(0,0,0,0.06));transition:all 150ms;margin-top:6px;">' +
+          '<div style="font-size:12px;font-weight:600;">' + escapeHtml(CONTACT.phone2) + '</div>' +
+        '</a>' +
           '</div>' +
         '</a>' +
       '</div>' +
