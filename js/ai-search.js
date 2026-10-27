@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  var GROQ_PROXY = 'https://groq-proxy.insight-analytics.workers.dev/groq-proxy';
+  var GROQ_PROXY = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
   var GROQ_MODEL = 'qwen/qwen3.8-27b';
   var SITE_URL = 'https://insight-analytics.ca';
 
@@ -117,8 +117,10 @@
     { url: '/#services', title: 'Services', desc: 'Dashboard development, AI integration, data pipelines, predictive analytics, .NET web applications.' },
     { url: '/#dashboard', title: 'Live Dashboard Demo', desc: 'Interactive executive dashboards: supply chain, retail operations, IT service health, customer payments, eBill performance.' },
     { url: '/#cases', title: 'Case Studies', desc: '5 production deployments: supply chain OTIF, retail revenue mix, field operations, eBill adoption, IT service operations.' },
-    { url: '/blog/', title: 'Live Demos — Blog', desc: 'Production-ready demos: universal dashboard builder, weather load forecast, fuzzy address matching, power automate, database archaeology, time series prediction.' },
+    { url: '/blog/', title: 'Live Demos — Blog', desc: 'Production-ready demos: AI dashboard builder, universal dashboard builder, weather load forecast, fuzzy address matching, power automate, database archaeology, time series prediction.' },
+    { url: '/solutions-showcase/', title: 'Solutions Showcase', desc: 'Interactive application catalog with 36 projects + 7 AI/ML workflows. 5 visual themes (Insight/Ion/Nebula/Solar/Daybreak). Each project opens a detail dialog with illustrative data, architecture trace, and production path. Covers operational web apps, executive intelligence, finance automation, and integration monitoring.' },
     { url: '/insights/', title: 'AI Insights', desc: 'Auto-generated AI analysis on applied AI in business, logistics, supply chain. Updated twice daily.' },
+    { url: '/blog/ai-dashboard-builder', title: 'AI-Assisted Dashboard Builder', desc: 'Type a brief or pick a preset template, Groq generates a complete dashboard spec (4 KPIs + 4 chart tiles), renders live with ECharts. 6 presets: SaaS, utility, customer service, supply chain, banking, IT ops.' },
     { url: '/blog/universal-dashboard-builder', title: 'Universal Dashboard Builder', desc: 'A dashboard builder that takes any data source and produces interactive, AI-assisted executive dashboards. 50+ production deployments.' },
     { url: '/blog/weather-load-forecast', title: 'Weather-Driven Load Forecasting', desc: 'Real weather data, interpretable OLS model, 14-day forecast with operational recommendations.' },
     { url: '/blog/fuzzy-address-matching', title: 'Fuzzy Address Matching', desc: 'Fuzzy-matches customer records to service orders by address, validates against Geo API.' },
