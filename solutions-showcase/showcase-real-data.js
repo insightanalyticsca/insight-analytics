@@ -450,18 +450,21 @@
     var type = series.type;
 
     // Map ECharts series types to our chart kinds
-    if (type === 'line' && series.areaStyle) return 'area';
     if (type === 'line') return 'area';
-    if (type === 'bar') return 'bar';
+    if (type === 'bar') {
+      // Check if it's a stacked bar (multiple series) or a dumbbell (custom render)
+      if (option.series.length > 2 && option.series[0].renderItem) return 'bar'; // dumbbell → bar
+      return 'bar';
+    }
     if (type === 'pie') return 'donut';
     if (type === 'heatmap') return 'heatmap';
     if (type === 'scatter') return 'scatter';
     if (type === 'radar') return 'radar';
     if (type === 'funnel') return 'funnel';
     if (type === 'gauge') return 'gauge';
+    if (type === 'custom') return 'bar'; // dumbbell uses custom renderItem → map to bar
     if (type === 'treemap') return 'treemap';
     if (type === 'sankey') return 'sankey';
-    if (type === 'waterfall' || (type === 'bar' && option.xAxis && option.xAxis.data && option.xAxis.data[0] === 'Start')) return 'waterfall';
     if (type === 'boxplot') return 'boxplot';
     if (type === 'graph') return 'graph';
     return type;
