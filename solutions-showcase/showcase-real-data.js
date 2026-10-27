@@ -392,38 +392,56 @@
   };
 
   // ─── Monkey-patch echarts.init to intercept chart creation ────────────────
-  // The showcase's hydrateVisuals() calls window.echarts.init(surface) to
-  // create chart instances, then calls chart.setOption(visualOption(...)).
-  // We wrap setOption so that when the showcase passes generic data, we
-  // replace it with project-specific real data from REAL_DATA.
-  var originalEchartsInit = window.echarts.init;
-  window.echarts.init = function() {
-    var chart = originalEchartsInit.apply(window.echarts, arguments);
-    var originalSetOption = chart.setOption.bind(chart);
+  // The showcase loads ECharts asynchronously (via a script loader), so
+  // window.echarts may not exist yet when this file runs. We use a polling
+  // check + Object.defineProperty to intercept echarts.init as soon as the
+  // library is loaded.
+  function patchEcharts() {
+    if (!window.echarts || !window.echarts.init || window.echarts.__realDataPatched) {
+      return false;
+    }
 
-    chart.setOption = function(option, opts) {
-      // Check if we have real data for the currently-open project
-      var projectId = getActiveProjectId();
-      var projectData = projectId ? REAL_DATA[projectId] : null;
+    var originalEchartsInit = window.echarts.init;
+    window.echarts.__realDataPatched = true;
 
-      if (projectData && projectData.charts) {
-        // Determine the chart kind from the option's series type
-        var kind = detectChartKind(option);
-        var realChart = projectData.charts[kind];
+    window.echarts.init = function() {
+      var chart = originalEchartsInit.apply(window.echarts, arguments);
+      var originalSetOption = chart.setOption.bind(chart);
 
-        if (realChart) {
-          // Replace the generic option with our real data option
-          var realOption = buildRealOption(kind, realChart, option);
-          return originalSetOption(realOption, opts);
+      chart.setOption = function(option, opts) {
+        // Check if we have real data for the currently-open project
+        var projectId = getActiveProjectId();
+        var projectData = projectId ? REAL_DATA[projectId] : null;
+
+        if (projectData && projectData.charts) {
+          var kind = detectChartKind(option);
+          var realChart = projectData.charts[kind];
+
+          if (realChart) {
+            var realOption = buildRealOption(kind, realChart, option);
+            return originalSetOption(realOption, opts);
+          }
         }
-      }
 
-      // No override — pass through to original
-      return originalSetOption(option, opts);
+        return originalSetOption(option, opts);
+      };
+
+      return chart;
     };
 
-    return chart;
-  };
+    return true;
+  }
+
+  // Try immediately, then poll every 200ms until ECharts is loaded
+  if (!patchEcharts()) {
+    var patchInterval = setInterval(function() {
+      if (patchEcharts()) {
+        clearInterval(patchInterval);
+      }
+    }, 200);
+    // Give up after 30 seconds
+    setTimeout(function() { clearInterval(patchInterval); }, 30000);
+  }
 
   // ─── Detect chart kind from an ECharts option object ─────────────────────
   function detectChartKind(option) {
