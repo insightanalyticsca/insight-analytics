@@ -2,13 +2,14 @@
    showcase-real-data.js — Override generic chart data with plausible
    industry-specific data for the top 6 showcase projects.
 
-   This file hooks into the showcase's existing ECharts rendering pipeline
-   by overriding the baseVisualOption() and sampleRows() functions with
-   project-aware versions that return real-looking data based on which
-   project's dialog is currently open.
+   This file monkey-patches the showcase's hydrateVisuals() function to
+   intercept chart.setOption() calls and replace the generic data
+   ("Group A", "Sample B") with project-specific real data.
 
-   Data is synthetic but plausible — real KPI names, realistic magnitudes,
-   proper industry-standard chart configurations. No "Group A" or "Sample B".
+   The showcase's own visualOption() and baseVisualOption() are local
+   functions inside an IIFE — they can't be overridden via window. So
+   instead we override the ECharts instance's setOption method on
+   each chart container after it's been initialized by the showcase.
    ════════════════════════════════════════════════════════════════════════════ */
 
 (function () {
@@ -390,201 +391,178 @@
     }
   };
 
-  // ─── Override baseVisualOption with real data ─────────────────────────────
-  // Store original function
-  if (typeof window._originalBaseVisualOption === 'undefined') {
-    window._originalBaseVisualOption = window.baseVisualOption || function(){};
+  // ─── Monkey-patch echarts.init to intercept chart creation ────────────────
+  // The showcase's hydrateVisuals() calls window.echarts.init(surface) to
+  // create chart instances, then calls chart.setOption(visualOption(...)).
+  // We wrap setOption so that when the showcase passes generic data, we
+  // replace it with project-specific real data from REAL_DATA.
+  var originalEchartsInit = window.echarts.init;
+  window.echarts.init = function() {
+    var chart = originalEchartsInit.apply(window.echarts, arguments);
+    var originalSetOption = chart.setOption.bind(chart);
+
+    chart.setOption = function(option, opts) {
+      // Check if we have real data for the currently-open project
+      var projectId = getActiveProjectId();
+      var projectData = projectId ? REAL_DATA[projectId] : null;
+
+      if (projectData && projectData.charts) {
+        // Determine the chart kind from the option's series type
+        var kind = detectChartKind(option);
+        var realChart = projectData.charts[kind];
+
+        if (realChart) {
+          // Replace the generic option with our real data option
+          var realOption = buildRealOption(kind, realChart, option);
+          return originalSetOption(realOption, opts);
+        }
+      }
+
+      // No override — pass through to original
+      return originalSetOption(option, opts);
+    };
+
+    return chart;
+  };
+
+  // ─── Detect chart kind from an ECharts option object ─────────────────────
+  function detectChartKind(option) {
+    if (!option || !option.series || !option.series.length) return null;
+    var series = option.series[0];
+    var type = series.type;
+
+    // Map ECharts series types to our chart kinds
+    if (type === 'line' && series.areaStyle) return 'area';
+    if (type === 'line') return 'area';
+    if (type === 'bar') return 'bar';
+    if (type === 'pie') return 'donut';
+    if (type === 'heatmap') return 'heatmap';
+    if (type === 'scatter') return 'scatter';
+    if (type === 'radar') return 'radar';
+    if (type === 'funnel') return 'funnel';
+    if (type === 'gauge') return 'gauge';
+    if (type === 'treemap') return 'treemap';
+    if (type === 'sankey') return 'sankey';
+    if (type === 'waterfall' || (type === 'bar' && option.xAxis && option.xAxis.data && option.xAxis.data[0] === 'Start')) return 'waterfall';
+    if (type === 'boxplot') return 'boxplot';
+    if (type === 'graph') return 'graph';
+    return type;
   }
 
-  window.baseVisualOption = function(kind, scenario, light) {
-    var projectId = getActiveProjectId();
-    var projectData = projectId ? REAL_DATA[projectId] : null;
-
-    // If no real data for this project, fall back to original
-    if (!projectData || !projectData.charts || !projectData.charts[kind]) {
-      return window._originalBaseVisualOption(kind, scenario, light);
-    }
-
-    var chartData = projectData.charts[kind];
+  // ─── Build a real-data ECharts option from our data ──────────────────────
+  function buildRealOption(kind, chartData, originalOption) {
+    // Start from the original option (preserves colors, fonts, theme)
+    var opt = JSON.parse(JSON.stringify(originalOption));
     var color = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#a78bfa', '#f472b6'];
-    var fg = light ? '#45536b' : '#bec9df';
-    var line = light ? '#5065871c' : '#e4eafa16';
+    opt.color = color;
+    opt.animation = true;
+    opt.animationDuration = 600;
 
-    var base = {
-      color: color,
-      backgroundColor: 'transparent',
-      animation: true,
-      animationDuration: 600,
-      textStyle: { color: fg, fontFamily: 'Inter, Segoe UI, sans-serif', fontSize: 10 },
-      tooltip: {
-        trigger: 'item',
-        confine: true,
-        backgroundColor: light ? '#f6f7ffed' : '#1b233ced',
-        borderColor: '#b9b5df66',
-        textStyle: { color: fg, fontSize: 11 }
-      },
-      legend: { show: false },
-      series: []
-    };
-
-    var axis = {
-      axisLine: { show: false },
-      axisTick: { show: false },
-      axisLabel: { color: fg, fontSize: 9 },
-      splitLine: { lineStyle: { color: line } }
-    };
-
-    var cart = {
-      grid: { left: 38, right: 22, top: 23, bottom: 28 },
-      xAxis: Object.assign({}, axis, { type: 'category', data: chartData.xAxis || [] }),
-      yAxis: Object.assign({}, axis, { type: 'value' })
-    };
-
-    if (kind === 'area') {
-      Object.assign(base, cart, {
-        tooltip: Object.assign({}, base.tooltip, { trigger: 'axis' }),
-        legend: { show: true, top: 2, textStyle: { color: fg, fontSize: 9 } },
-        series: chartData.series.map(function(s, i) {
-          return {
-            name: s.name,
-            type: 'line',
-            smooth: true,
-            symbolSize: 5,
-            data: s.data,
-            lineStyle: { width: 3 },
-            areaStyle: { opacity: 0.18 }
-          };
-        })
+    if (kind === 'area' || (kind === 'line' && chartData.series)) {
+      opt.legend = { show: true, top: 2, textStyle: { fontSize: 9 } };
+      if (chartData.xAxis) opt.xAxis.data = chartData.xAxis;
+      opt.tooltip = Object.assign(opt.tooltip || {}, { trigger: 'axis' });
+      opt.series = chartData.series.map(function(s, i) {
+        return {
+          name: s.name,
+          type: 'line',
+          smooth: true,
+          symbolSize: 5,
+          data: s.data,
+          lineStyle: { width: 3 },
+          areaStyle: { opacity: 0.18 }
+        };
       });
-    } else if (kind === 'bar') {
-      Object.assign(base, cart, {
-        legend: { show: true, top: 2, textStyle: { color: fg, fontSize: 9 } },
-        series: chartData.series.map(function(s) {
-          return {
-            name: s.name,
-            type: 'bar',
-            stack: 'total',
-            data: s.data,
-            itemStyle: { borderRadius: [0, 0, 4, 4] },
-            barMaxWidth: 32
-          };
-        })
+    } else if (kind === 'bar' && chartData.series) {
+      opt.legend = { show: true, top: 2, textStyle: { fontSize: 9 } };
+      if (chartData.xAxis) opt.xAxis.data = chartData.xAxis;
+      opt.series = chartData.series.map(function(s) {
+        return {
+          name: s.name,
+          type: 'bar',
+          stack: 'total',
+          data: s.data,
+          itemStyle: { borderRadius: [0, 0, 4, 4] },
+          barMaxWidth: 32
+        };
       });
-    } else if (kind === 'donut') {
-      base.series = [{
-        name: chartData.label || 'Distribution',
+    } else if (kind === 'donut' && chartData.data) {
+      opt.series = [{
+        name: 'Distribution',
         type: 'pie',
         radius: ['48%', '72%'],
         center: ['50%', '49%'],
         padAngle: 3,
         itemStyle: { borderRadius: 6 },
-        label: { color: fg, fontSize: 9, formatter: '{b}\n{d}%' },
+        label: { fontSize: 9, formatter: '{b}\n{d}%' },
         data: chartData.data
       }];
-    } else if (kind === 'heatmap') {
+    } else if (kind === 'heatmap' && chartData.xAxis) {
       var hmData = typeof chartData.data === 'function' ? chartData.data() : chartData.data;
-      Object.assign(base, {
-        grid: { left: 35, right: 15, top: 17, bottom: 28 },
-        xAxis: Object.assign({}, axis, { type: 'category', data: chartData.xAxis, splitArea: { show: false } }),
-        yAxis: Object.assign({}, axis, { type: 'category', data: chartData.yAxis }),
-        visualMap: {
-          show: false, min: 0, max: 100,
-          inRange: { color: light ? ['#e7edfb', '#b9d8ea', '#6366f1', '#4338ca'] : ['#263347', '#607c9b', '#6366f1', '#a78bfa'] }
-        },
-        series: [{
-          type: 'heatmap',
-          data: hmData,
-          itemStyle: { borderWidth: 4, borderColor: light ? '#eef1fb' : '#1d283a', borderRadius: 5 },
-          emphasis: { itemStyle: { shadowBlur: 8, shadowColor: '#b5c8ff' } }
-        }]
+      opt.xAxis.data = chartData.xAxis;
+      opt.yAxis.data = chartData.yAxis;
+      opt.visualMap = { show: false, min: 0, max: 100, inRange: { color: ['#e7edfb', '#b9d8ea', '#6366f1', '#4338ca'] } };
+      opt.series = [{
+        type: 'heatmap',
+        data: hmData,
+        itemStyle: { borderWidth: 4, borderColor: '#eef1fb', borderRadius: 5 }
+      }];
+    } else if (kind === 'scatter' && chartData.series) {
+      opt.xAxis = { type: 'value', name: 'Temperature (°C)', axisLabel: { fontSize: 9 } };
+      opt.yAxis = { type: 'value', name: 'Load (MW)', axisLabel: { fontSize: 9 } };
+      opt.series = chartData.series.map(function(s) {
+        return {
+          name: s.name,
+          type: 'scatter',
+          symbolSize: function(point) { return point[2]; },
+          itemStyle: { opacity: 0.65 },
+          data: s.data
+        };
       });
-    } else if (kind === 'scatter') {
-      Object.assign(base, cart, {
-        xAxis: Object.assign({}, axis, { type: 'value', name: 'Temperature (°C)' }),
-        yAxis: Object.assign({}, axis, { type: 'value', name: 'Load (MW)' }),
-        series: chartData.series.map(function(s) {
-          return {
-            name: s.name,
-            type: 'scatter',
-            symbolSize: function(point) { return point[2]; },
-            itemStyle: { opacity: 0.65 },
-            data: s.data
-          };
+    } else if (kind === 'radar' && chartData.indicators) {
+      opt.radar = {
+        radius: '68%',
+        indicator: chartData.indicators,
+        axisName: { fontSize: 9 },
+        splitArea: { show: false }
+      };
+      opt.legend = { show: true, top: 2, textStyle: { fontSize: 9 } };
+      opt.series = [{
+        type: 'radar',
+        symbolSize: 4,
+        data: chartData.series.map(function(s) {
+          return { name: s.name, value: s.value, areaStyle: { opacity: 0.18 } };
         })
-      });
-    } else if (kind === 'radar') {
-      Object.assign(base, {
-        radar: {
-          radius: '68%',
-          indicator: chartData.indicators,
-          axisName: { color: fg, fontSize: 9 },
-          splitLine: { lineStyle: { color: line } },
-          splitArea: { show: false },
-          axisLine: { lineStyle: { color: line } }
-        },
-        legend: { show: true, top: 2, textStyle: { color: fg, fontSize: 9 } },
-        series: [{
-          type: 'radar',
-          symbolSize: 4,
-          data: chartData.series.map(function(s) {
-            return { name: s.name, value: s.value, areaStyle: { opacity: 0.18 } };
-          })
-        }]
-      });
-    } else if (kind === 'funnel') {
-      base.series = [{
+      }];
+    } else if (kind === 'funnel' && chartData.data) {
+      opt.series = [{
         name: 'Flow',
         type: 'funnel',
         left: '16%', right: '16%', top: 16, bottom: 20, gap: 6,
-        label: { position: 'inside', color: '#28344d', fontSize: 10 },
+        label: { position: 'inside', fontSize: 10 },
         itemStyle: { borderWidth: 0, borderRadius: 5 },
         data: chartData.data
       }];
-    } else if (kind === 'gauge') {
-      base.series = [{
+    } else if (kind === 'gauge' && chartData.value != null) {
+      opt.series = [{
         type: 'gauge',
         startAngle: 210, endAngle: -30, min: 0, max: 100,
         radius: '88%', center: ['50%', '57%'],
-        progress: { show: true, width: 16, itemStyle: { color: color[3] } },
-        axisLine: { lineStyle: { width: 16, color: [[1, line]] } },
-        axisTick: { show: false },
-        splitLine: { show: false },
-        axisLabel: { color: fg, distance: 20, fontSize: 9 },
+        progress: { show: true, width: 16 },
         pointer: { show: false },
-        detail: { fontSize: 32, color: fg, offsetCenter: [0, '-2%'], formatter: '{value}%' },
-        title: { color: fg, fontSize: 10, offsetCenter: [0, '28%'] },
+        detail: { fontSize: 32, formatter: '{value}%' },
+        title: { fontSize: 10 },
         data: [{ value: chartData.value, name: chartData.name }]
       }];
     }
 
-    return base;
-  };
-
-  // ─── Override sampleRows with real pipeline data ──────────────────────────
-  if (typeof window._originalSampleRows === 'undefined') {
-    window._originalSampleRows = window.sampleRows || function(){ return []; };
+    return opt;
   }
 
-  window.sampleRows = function(project, scenario) {
-    var projectId = project ? project.id : null;
-    var projectData = projectId ? REAL_DATA[projectId] : null;
-
-    if (!projectData || !projectData.pipeline) {
-      return window._originalSampleRows(project, scenario);
-    }
-
-    // Return pipeline stage data as table rows
-    var stages = projectData.pipeline.stages;
-    return stages.map(function(stage, i) {
-      return [
-        '0' + (i + 1) + ' / ' + stage.name,
-        stage.rows.toLocaleString() + ' rows',
-        stage.cols.slice(0, 3).join(', ') + (stage.cols.length > 3 ? '...' : ''),
-        i < stages.length - 1 ? '→ ' + stages[i + 1].name : 'Complete',
-        i < stages.length - 1 ? 'Transform' : 'Output'
-      ];
-    });
-  };
+  // ─── Override sampleRows with real pipeline data ──────────────────────────
+  // sampleRows is a local function in the showcase's IIFE — we can't override
+  // it directly. Instead, the MutationObserver below replaces the rendered
+  // table content after the dialog opens.
 
   // ─── Replace KPI cards with real data ──────────────────────────────────────
   function injectRealKPIs() {
