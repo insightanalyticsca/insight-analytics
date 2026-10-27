@@ -688,4 +688,21 @@
     }, { passive: true });
   }
 
+  // Expose for debugging + manual triggering
+  window._showcaseRealData = { forceInit: forceInitDialogCharts, injectKPIs: injectRealKPIs, REAL_DATA: REAL_DATA };
+
+  // Also poll every 2 seconds for the first 30 seconds — catches cases where
+  // the MutationObserver misses (dialog content set before observer started,
+  // or dialog opened via a code path the observer doesn't catch)
+  var pollCount = 0;
+  var pollInterval = setInterval(function() {
+    var d = document.getElementById('project-dialog');
+    if (d && d.hasAttribute('open')) {
+      forceInitDialogCharts();
+      injectRealKPIs();
+    }
+    pollCount++;
+    if (pollCount >= 15) clearInterval(pollInterval);
+  }, 2000);
+
 })();
