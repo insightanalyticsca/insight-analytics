@@ -617,14 +617,23 @@
     hosts.forEach(function(host) {
       var surface = host.querySelector('.chart-renderer');
       if (!surface) return;
-      if (host.classList.contains('echarts-ready')) return; // already done
 
+      // Check if an instance already exists
+      var existing = window.echarts.getInstanceByDom(surface);
+      if (existing) {
+        // Instance exists — just make sure it's visible
+        host.classList.add('echarts-ready');
+        var svg = host.querySelector('.visual-fallback');
+        if (svg) svg.style.visibility = 'hidden';
+        var caption = host.parentElement.querySelector('.visual-engine');
+        if (caption) caption.textContent = 'ECharts · interactive';
+        return;
+      }
+
+      // No instance — create one
       try {
         var chart = window.echarts.init(surface, null, {renderer: 'svg'});
-        // Build a simple option — the monkey-patched setOption will
-        // replace the data with real project data automatically
         var kind = host.dataset.visualKind || 'area';
-        var scenario = Number(host.dataset.visualScenario || 0);
 
         // Create a minimal option that triggers the patch
         var fakeOption = {series: [{type: 'line', data: [1,2,3]}]};
@@ -639,12 +648,12 @@
 
         chart.setOption(fakeOption);
         host.classList.add('echarts-ready');
+        var svg2 = host.querySelector('.visual-fallback');
+        if (svg2) svg2.style.visibility = 'hidden';
 
-        // Update the caption to say "ECharts · interactive"
-        var caption = host.parentElement.querySelector('.visual-engine');
-        if (caption) caption.textContent = 'ECharts · interactive';
+        var caption2 = host.parentElement.querySelector('.visual-engine');
+        if (caption2) caption2.textContent = 'ECharts · interactive';
       } catch(e) {
-        // Fall back to SVG — log to console for debugging
         console.warn('[showcase-real-data] Chart init failed for kind=' + kind + ':', e.message);
       }
     });
