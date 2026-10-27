@@ -54,10 +54,41 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
   background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#fff;text-decoration:none;white-space:nowrap;
 }
-/* Hide the showcase's theme atmosphere fieldset — site has its own theme toggle */
-.site-header .atmosphere{display:none}
 /* Hide the Insight Analytics return link — it's now the brand */
 .site-header > a[style*="Insight Analytics"]{display:none}
+
+/* ─── Theme selector (5 themes from the original) ────────────────────── */
+/* The showcase has its own theme system (Insight/Ion/Nebula/Solar/Daybreak)
+   with data-set-theme attributes hooked into the showcase's JS. These are
+   NOT the same as the site's light/dark toggle — they're 5 visual palettes
+   that change the entire page's color scheme. */
+.atmosphere{margin:0;padding:3px;border:1px solid var(--line);display:flex;align-items:center;gap:2px;background:rgba(var(--rgb),.018);flex-shrink:0;border-radius:8px}
+.theme-choice{position:relative;display:flex;align-items:center;gap:6px;padding:7px 9px;border:1px solid transparent;cursor:pointer;font-size:10px;color:var(--muted);transition:background .2s,border-color .2s,color .2s;border-radius:6px}
+.theme-choice input{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden}
+.theme-choice:has(input:checked){color:var(--accent);background:rgba(var(--rgb),.07);border-color:rgba(var(--rgb),.3)}
+.theme-choice:hover{color:var(--text);background:rgba(var(--rgb),.04)}
+.theme-choice:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:3px}
+.theme-dot{width:9px;height:9px;border-radius:50%;box-shadow:0 0 9px #0002;flex-shrink:0}
+.theme-dot.ion{background:linear-gradient(135deg,#82ffe2,#3093ff)}
+.theme-dot.nebula{background:linear-gradient(135deg,#d8b4ff,#f166d8)}
+.theme-dot.solar{background:linear-gradient(135deg,#ffda8a,#ff734a)}
+.theme-dot.daybreak{background:linear-gradient(135deg,#e9f4ff,#593bce);border:1px solid #7281b5}
+.theme-dot.insight{background:linear-gradient(135deg,#06b6d4,#6366f1)}
+
+/* Theme palettes (each changes --bg, --accent, etc. via :root[data-theme])
+   — these are the same as the original showcase, preserved for the theme
+   switcher to work. */
+:root[data-theme=ion]{color-scheme:dark;--bg:#060a10;--panel:#0b121c;--panel2:#0e1925;--text:#edf4fa;--muted:#8f9fae;--line:#ffffff14;--accent:#82ffe2;--accent2:#3093ff;--rgb:130,255,226;--rgb2:48,147,255}
+:root[data-theme=nebula]{--bg:#0c0813;--panel:#140d20;--panel2:#1e142d;--accent:#d8b4ff;--accent2:#f166d8;--rgb:216,180,255;--rgb2:241,102,216}
+:root[data-theme=solar]{--bg:#100b08;--panel:#1a120e;--panel2:#261a10;--accent:#ffda8a;--accent2:#ff734a;--rgb:255,218,138;--rgb2:255,115,74}
+:root[data-theme="insight"]{color-scheme:dark;--bg:#0b1120;--panel:#111a2e;--panel2:#172042;--text:#e2e8f0;--muted:#7a8aa0;--line:#ffffff14;--accent:#06b6d4;--accent2:#6366f1;--rgb:6,182,212;--rgb2:99,102,241;--sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"JetBrains Mono",Consolas,"Courier New",monospace}
+:root[data-theme="daybreak"]{color-scheme:light;--bg:#eef2fa;--panel:#ffffff;--panel2:#e9eef6;--text:#2c3158;--muted:#5c6188;--line:#2c315822;--accent:#593bce;--accent2:#0891b2;--rgb:89,59,206;--rgb2:8,145,178;--sans:"Inter",system-ui,sans-serif;--mono:"JetBrains Mono",Consolas,monospace}
+/* :has() selector for theme radio buttons (modern browsers) */
+:root:has(#theme-insight:checked){color-scheme:dark;--bg:#0b1120;--panel:#111a2e;--panel2:#172042;--text:#e2e8f0;--muted:#7a8aa0;--line:#ffffff14;--accent:#06b6d4;--accent2:#6366f1;--rgb:6,182,212;--rgb2:99,102,241;--sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"JetBrains Mono",Consolas,"Courier New",monospace}
+:root:has(#theme-ion:checked){color-scheme:dark;--bg:#060a10;--panel:#0b121c;--panel2:#0e1925;--text:#edf4fa;--muted:#8f9fae;--line:#ffffff14;--accent:#82ffe2;--accent2:#3093ff;--rgb:130,255,226;--rgb2:48,147,255}
+:root:has(#theme-nebula:checked){--bg:#0c0813;--panel:#140d20;--panel2:#1e142d;--text:#edf4fa;--muted:#8f9fae;--line:#ffffff14;--accent:#d8b4ff;--accent2:#f166d8;--rgb:216,180,255;--rgb2:241,102,216}
+:root:has(#theme-solar:checked){--bg:#100b08;--panel:#1a120e;--panel2:#261a10;--text:#edf4fa;--muted:#8f9fae;--line:#ffffff14;--accent:#ffda8a;--accent2:#ff734a;--rgb:255,218,138;--rgb2:255,115,74}
+:root:has(#theme-daybreak:checked){color-scheme:light;--bg:#eef2fa;--panel:#ffffff;--panel2:#e9eef6;--text:#2c3158;--muted:#5c6188;--line:#2c315822;--accent:#593bce;--accent2:#0891b2;--rgb:89,59,206;--rgb2:8,145,178}
 
 /* ─── Mobile menu (hamburger) ───────────────────────────────────────── */
 .menu-toggle{display:none;width:40px;height:40px;border:0;background:transparent;cursor:pointer;align-items:center;justify-content:center}
@@ -530,10 +561,14 @@ html[data-theme="daybreak"] .trace-top{border-color:#15324c12}
         <a href="/blog/" class="nav-link">Live Demos</a>
         <a href="/#contact" class="nav-link">Contact</a>
       </nav>
+      <fieldset class="atmosphere" aria-label="Visual theme"><legend class="sr-only">Choose a visual theme</legend>
+        <label class="theme-choice" title="Insight: indigo and cyan on navy (matches insight-analytics.ca)"><input id="theme-insight" type="radio" name="atlas-theme" value="insight" data-set-theme="insight" checked><i class="theme-dot insight" aria-hidden="true"></i><span>Insight</span></label>
+        <label class="theme-choice" title="Ion: cyan and electric blue"><input id="theme-ion" type="radio" name="atlas-theme" value="ion" data-set-theme="ion"><i class="theme-dot ion" aria-hidden="true"></i><span>Ion</span></label>
+        <label class="theme-choice" title="Nebula: violet and ultraviolet"><input id="theme-nebula" type="radio" name="atlas-theme" value="nebula" data-set-theme="nebula"><i class="theme-dot nebula" aria-hidden="true"></i><span>Nebula</span></label>
+        <label class="theme-choice" title="Solar: amber and molten orange"><input id="theme-solar" type="radio" name="atlas-theme" value="solar" data-set-theme="solar"><i class="theme-dot solar" aria-hidden="true"></i><span>Solar</span></label>
+        <label class="theme-choice" title="Daybreak: a light palette with blue and violet"><input id="theme-daybreak" type="radio" name="atlas-theme" value="daybreak" data-set-theme="daybreak"><i class="theme-dot daybreak" aria-hidden="true"></i><span>Daybreak</span></label>
+      </fieldset>
       <div class="nav-actions">
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme">
-          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i><span class="theme-label" id="theme-label">Light</span>
-        </button>
         <a href="/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check" aria-hidden="true"></i> Book a Demo</a>
         <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
           <span class="menu-toggle-bars" aria-hidden="true"><span></span></span>
@@ -1801,8 +1836,12 @@ initWorkflows();
 </script>
 <!-- ═══ End showcase interactivity enhancements ═══ -->
 
-<!-- Site-wide JS (nav toggle + theme switcher) -->
-<script src="/js/app.js?v=4.98.0" defer></script>
-<script src="/js/sw-register.js?v=4.99.0" defer></script>
+<!-- NOTE: site app.js is intentionally NOT loaded here — the showcase has
+     its own JS that handles scroll, project cards, search, themes, and
+     dialog interactions. Loading app.js caused scroll to break + arrow
+     clicks to stop working (the two JS files conflicted on event
+     handlers). The showcase's own script block at the top of this file
+     handles all interactivity. -->
+
 </body>
 </html>
