@@ -644,7 +644,8 @@
         var caption = host.parentElement.querySelector('.visual-engine');
         if (caption) caption.textContent = 'ECharts · interactive';
       } catch(e) {
-        // Fall back to SVG
+        // Fall back to SVG — log to console for debugging
+        console.warn('[showcase-real-data] Chart init failed for kind=' + kind + ':', e.message);
       }
     });
   }
