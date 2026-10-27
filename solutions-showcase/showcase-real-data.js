@@ -472,17 +472,24 @@
 
   // ─── Build a real-data ECharts option from our data ──────────────────────
   function buildRealOption(kind, chartData, originalOption) {
-    // Start from the original option (preserves colors, fonts, theme)
-    var opt = JSON.parse(JSON.stringify(originalOption));
-    var color = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#a78bfa', '#f472b6'];
-    opt.color = color;
+    // Start from a shallow copy of the original option (preserves colors, fonts, theme)
+    // NOTE: Can't use JSON.parse(JSON.stringify()) because some chart types
+    // (dumbbell, custom) have renderItem functions that get stripped by JSON.
+    // Instead, shallow-copy the option and replace only the data-bearing parts.
+    var opt = Object.assign({}, originalOption);
+    if (originalOption.color) opt.color = originalOption.color.slice();
+    if (originalOption.textStyle) opt.textStyle = Object.assign({}, originalOption.textStyle);
+    opt.color = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#a78bfa', '#f472b6'];
     opt.animation = true;
     opt.animationDuration = 600;
 
     if (kind === 'area' || (kind === 'line' && chartData.series)) {
       opt.legend = { show: true, top: 2, textStyle: { fontSize: 9 } };
-      if (chartData.xAxis) opt.xAxis.data = chartData.xAxis;
-      opt.tooltip = Object.assign(opt.tooltip || {}, { trigger: 'axis' });
+      if (chartData.xAxis) {
+        if (Array.isArray(opt.xAxis)) opt.xAxis[0].data = chartData.xAxis;
+        else opt.xAxis.data = chartData.xAxis;
+      }
+      if (opt.tooltip) opt.tooltip.trigger = 'axis';
       opt.series = chartData.series.map(function(s, i) {
         return {
           name: s.name,
@@ -496,7 +503,10 @@
       });
     } else if (kind === 'bar' && chartData.series) {
       opt.legend = { show: true, top: 2, textStyle: { fontSize: 9 } };
-      if (chartData.xAxis) opt.xAxis.data = chartData.xAxis;
+      if (chartData.xAxis) {
+        if (Array.isArray(opt.xAxis)) opt.xAxis[0].data = chartData.xAxis;
+        else opt.xAxis.data = chartData.xAxis;
+      }
       opt.series = chartData.series.map(function(s) {
         return {
           name: s.name,
