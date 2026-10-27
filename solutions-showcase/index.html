@@ -27,6 +27,13 @@
 /* Force light theme + site typography */
 :root{color-scheme:light;--bg:#ffffff;--panel:#ffffff;--panel2:#f8fafc;--text:#1e293b;--muted:#64748b;--line:#e2e8f0;--accent:#6366f1;--accent2:#06b6d4;--rgb:99,102,241;--rgb2:6,182,212;--mono:'JetBrains Mono',Consolas,"Courier New",monospace;--sans:'Inter','Segoe UI',Arial,sans-serif}
 
+/* CRITICAL: disable the site's scroll-snap-type (set in styles.css line 99).
+   The site uses scroll-snap to snap between .section elements. The showcase
+   doesn't have .section elements, so the snap behavior has no targets —
+   causing Page Up/Down to jump to top/bottom instead of scrolling smoothly,
+   and arrow keys to not work at all. Same fix as blog pages use. */
+html{scroll-snap-type:none !important}
+
 body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6}
 
 /* ─── Site navbar styling (override the showcase's site-header) ──────── */
