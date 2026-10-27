@@ -1270,6 +1270,9 @@
         ip: v.ip || 'unknown',
         loc: (v.city && v.city !== 'unknown' ? v.city + ', ' : '') + (v.country || 'unknown'),
         ipType: v.ipType || 'Unknown',
+        realLabel: v.realLabel || 'Unknown',
+        realScore: v.realScore != null ? v.realScore : 50,
+        realReason: v.realReason || '',
         page: v.page || '—',
         client: parseClient(v.ua),
         os: parseClientOS(v.ua)
@@ -1294,7 +1297,7 @@
           cur.lastLabel = v.tsLabel;
         } else {
           if (cur) sessions.push(cur);
-          cur = { ts: v.ts, tsLabel: v.tsLabel, ip: v.ip, loc: v.loc, ipType: v.ipType, page: v.page, client: v.client, reloads: 1, lastTs: v.ts, lastLabel: v.tsLabel };
+          cur = { ts: v.ts, tsLabel: v.tsLabel, ip: v.ip, loc: v.loc, ipType: v.ipType, realLabel: v.realLabel, realScore: v.realScore, realReason: v.realReason, page: v.page, client: v.client, reloads: 1, lastTs: v.ts, lastLabel: v.tsLabel };
         }
       });
       if (cur) sessions.push(cur);
@@ -1368,7 +1371,7 @@
     breakdown += '</table></div>';
 
     var html = '<div style="overflow-x:auto;border:1px solid var(--card-border,rgba(0,0,0,0.12));border-radius:10px;"><table style="border-collapse:collapse;font-size:11px;width:100%;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">';
-    html += '<thead><tr style="background:rgba(99,102,241,0.06);border-bottom:2px solid var(--card-border,rgba(0,0,0,0.12));color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:9px;"><th style="padding:10px 14px;text-align:left;white-space:nowrap;">When</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">IP</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Type</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">From</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Page</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Client</th><th style="padding:10px 14px;text-align:center;white-space:nowrap;">Reloads</th></tr></thead><tbody>';
+    html += '<thead><tr style="background:rgba(99,102,241,0.06);border-bottom:2px solid var(--card-border,rgba(0,0,0,0.12));color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:9px;"><th style="padding:10px 14px;text-align:left;white-space:nowrap;">When</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">IP</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Type</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Real?</th><th style="padding:10px 14px;text-align:center;white-space:nowrap;">Score</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Reason</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">From</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Page</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Client</th><th style="padding:10px 14px;text-align:center;white-space:nowrap;">Reloads</th></tr></thead><tbody>';
     function ipTypeColor(t) {
       if (!t) return 'var(--muted,#94a3b8)';
       if (t.indexOf('Verified Bot') === 0 || t.indexOf('Search Engine') === 0) return '#0891b2';
@@ -1378,9 +1381,18 @@
       if (t.indexOf('Other') === 0) return 'var(--text-soft,#475569)';
       return 'var(--muted,#94a3b8)';
     }
+    function realLabelBg(l) {
+      if (!l) return 'background:rgba(148,163,184,0.1);color:var(--muted,#94a3b8);';
+      if (l === 'Likely Human') return 'background:rgba(16,185,129,0.12);color:#10b981;';
+      if (l === 'Likely Bot') return 'background:rgba(239,68,68,0.12);color:#ef4444;';
+      if (l === 'Verified Bot') return 'background:rgba(8,145,178,0.12);color:#0891b2;';
+      if (l.indexOf('Uncertain') === 0) return 'background:rgba(245,158,11,0.12);color:#f59e0b;';
+      return 'background:rgba(148,163,184,0.1);color:var(--muted,#94a3b8);';
+    }
     sessions.forEach(function(s, i) {
       var bg = i % 2 === 0 ? 'transparent' : 'rgba(99,102,241,0.025)';
-      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:7px 14px;white-space:nowrap;color:var(--text,#0f172a);font-weight:600;">' + s.tsLabel + '</td><td style="padding:7px 14px;white-space:nowrap;font-family:monospace;color:var(--text-soft,#475569);">' + (s.ip || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:' + ipTypeColor(s.ipType) + ';font-weight:600;">' + (s.ipType || 'Unknown') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--text-soft,#475569);">' + (s.loc || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--primary,#6366f1);font-weight:500;">' + (s.page || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--muted,#94a3b8);">' + s.client + '</td>';
+      var scoreColor = s.realScore >= 80 ? '#ef4444' : s.realScore >= 60 ? '#f59e0b' : s.realScore >= 40 ? '#94a3b8' : s.realScore >= 20 ? '#10b981' : '#10b981';
+      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:7px 14px;white-space:nowrap;color:var(--text,#0f172a);font-weight:600;">' + s.tsLabel + '</td><td style="padding:7px 14px;white-space:nowrap;font-family:monospace;color:var(--text-soft,#475569);">' + (s.ip || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:' + ipTypeColor(s.ipType) + ';font-weight:600;">' + (s.ipType || 'Unknown') + '</td><td style="padding:7px 14px;white-space:nowrap;"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;' + realLabelBg(s.realLabel) + '">' + (s.realLabel || '?') + '</span></td><td style="padding:7px 14px;text-align:center;white-space:nowrap;font-weight:700;color:' + scoreColor + ';">' + (s.realScore != null ? s.realScore : '?') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--muted,#94a3b8);font-style:italic;font-size:10px;">' + (s.realReason || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--text-soft,#475569);">' + (s.loc || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--primary,#6366f1);font-weight:500;">' + (s.page || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--muted,#94a3b8);">' + s.client + '</td>';
       var rs = s.reloads > 1 ? 'color:#f59e0b;font-weight:700;background:rgba(245,158,11,0.08);border-radius:12px;padding:2px 8px;display:inline-block;' : 'color:var(--muted,#94a3b8);';
       var rt = s.reloads > 1 ? s.reloads + '×' : '1';
       html += '<td style="padding:7px 14px;text-align:center;white-space:nowrap;"><span style="' + rs + '">' + rt + '</span></td></tr>';
