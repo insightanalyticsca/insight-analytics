@@ -604,11 +604,59 @@
     });
   }
 
+  // ─── Force-init charts inside the dialog ──────────────────────────────────
+  // The showcase's hydrateVisuals() skips chart containers that are below the
+  // viewport fold. But charts inside the dialog are positioned relative to the
+  // page (not the dialog's scroll), so they appear "below fold" even when
+  // visible inside the dialog. We force-init them after the dialog opens.
+  function forceInitDialogCharts() {
+    var content = document.getElementById('dialog-content');
+    if (!content || !window.echarts) return;
+
+    var hosts = content.querySelectorAll('[data-visual-kind]');
+    hosts.forEach(function(host) {
+      var surface = host.querySelector('.chart-renderer');
+      if (!surface) return;
+      if (host.classList.contains('echarts-ready')) return; // already done
+
+      try {
+        var chart = window.echarts.init(surface, null, {renderer: 'svg'});
+        // Build a simple option — the monkey-patched setOption will
+        // replace the data with real project data automatically
+        var kind = host.dataset.visualKind || 'area';
+        var scenario = Number(host.dataset.visualScenario || 0);
+
+        // Create a minimal option that triggers the patch
+        var fakeOption = {series: [{type: 'line', data: [1,2,3]}]};
+        if (kind === 'bar' || kind === 'dumbbell' || kind === 'waterfall') fakeOption.series[0].type = 'bar';
+        if (kind === 'donut' || kind === 'pie') fakeOption.series[0].type = 'pie';
+        if (kind === 'heatmap') fakeOption.series[0].type = 'heatmap';
+        if (kind === 'scatter') fakeOption.series[0].type = 'scatter';
+        if (kind === 'radar') fakeOption.series[0].type = 'radar';
+        if (kind === 'funnel') fakeOption.series[0].type = 'funnel';
+        if (kind === 'gauge') fakeOption.series[0].type = 'gauge';
+        if (kind === 'custom') fakeOption.series[0].type = 'custom';
+
+        chart.setOption(fakeOption);
+        host.classList.add('echarts-ready');
+
+        // Update the caption to say "ECharts · interactive"
+        var caption = host.parentElement.querySelector('.visual-engine');
+        if (caption) caption.textContent = 'ECharts · interactive';
+      } catch(e) {
+        // Fall back to SVG
+      }
+    });
+  }
+
   // Run after dialog content is rendered
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(m) {
       if (m.type === 'childList' && m.addedNodes.length > 0) {
-        setTimeout(injectRealKPIs, 50);
+        setTimeout(function() {
+          injectRealKPIs();
+          forceInitDialogCharts();
+        }, 100);
       }
     });
   });
@@ -624,10 +672,20 @@
   if (dialog) {
     var dialogObserver = new MutationObserver(function() {
       if (dialog.hasAttribute('open')) {
-        setTimeout(injectRealKPIs, 100);
+        setTimeout(function() {
+          injectRealKPIs();
+          forceInitDialogCharts();
+        }, 200);
       }
     });
     dialogObserver.observe(dialog, { attributes: true, attributeFilter: ['open'] });
+  }
+
+  // Also re-init charts when the dialog scrolls (new charts may become visible)
+  if (dialog) {
+    dialog.addEventListener('scroll', function() {
+      setTimeout(forceInitDialogCharts, 50);
+    }, { passive: true });
   }
 
 })();
