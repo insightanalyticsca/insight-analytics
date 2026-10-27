@@ -443,13 +443,34 @@
       var cardsHtml = '';
       if (links.length > 0) {
         cardsHtml = '<div class="ai-section-label">Relevant Pages</div>';
-        links.slice(0, 3).forEach(function (link) {
-          var page = PAGES.find(function (p) { return p.url === link.url || link.url.indexOf(p.url) >= 0 || p.url.indexOf(link.url) >= 0; });
+        var seenUrls = {};
+        links.forEach(function (link) {
+          // Normalize the URL for matching (strip trailing slash, resolve relative)
+          var linkUrl = link.url.replace(/\/$/, '');
+          // Find the BEST matching page — exact match first, then startsWith
+          // (NOT indexOf — that matches '/' against everything and always
+          // returns the Home page)
+          var page = PAGES.find(function (p) {
+            var pUrl = p.url.replace(/\/$/, '').replace(/^https?:\/\/[^/]+/, '');
+            return pUrl === linkUrl || pUrl === link.url;
+          });
+          if (!page) {
+            // Fallback: find page whose URL starts with the link URL (or vice versa)
+            page = PAGES.find(function (p) {
+              var pUrl = p.url.replace(/\/$/, '').replace(/^https?:\/\/[^/]+/, '');
+              return pUrl && (pUrl.startsWith(linkUrl) || linkUrl.startsWith(pUrl)) && pUrl.length > 1;
+            });
+          }
+          // Deduplicate — don't show the same page twice
+          var pageKey = page ? page.url : link.url;
+          if (seenUrls[pageKey]) return;
+          seenUrls[pageKey] = true;
+
           var title = page ? page.title : link.text;
           var desc = page ? page.desc : '';
-          cardsHtml += '<a href="' + escAttr(link.url) + '" class="ai-link-card" target="_blank" rel="noopener">' +
+          cardsHtml += '<a href="' + escAttr(link.url.startsWith('http') ? link.url : (SITE_URL + link.url)) + '" class="ai-link-card" target="_blank" rel="noopener">' +
             '<div class="ai-link-title">' + escHtml(title) + '</div>' +
-            (desc ? '<div class="ai-link-desc">' + escHtml(desc.slice(0, 100)) + '</div>' : '') + '</a>';
+            (desc ? '<div class="ai-link-desc">' + escHtml(desc.slice(0, 120)) + '</div>' : '') + '</a>';
         });
       }
       results.innerHTML = cleanText + cardsHtml;
