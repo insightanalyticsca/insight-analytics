@@ -39,30 +39,38 @@
         { label: 'Outbound Dials', value: '1,203', delta: '+89', dir: 'up' }
       ],
       charts: {
-        // Call volume by day (area chart)
-        area: {
-          xAxis: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        // Dumbbell — calls context (prior vs current comparison)
+        dumbbell: {
+          yAxis: ['Billing', 'Tech Support', 'Sales', 'Retention', 'General'],
           series: [
-            { name: 'Inbound', data: [412, 467, 389, 503, 445, 218, 163] },
-            { name: 'Outbound', data: [198, 223, 187, 241, 214, 89, 51] }
+            { name: 'Prior', data: [2280, 2650, 1820, 1380, 1940] },
+            { name: 'Current', data: [2560, 2890, 1980, 1470, 2072] }
           ]
         },
-        // Call handling breakdown (bar chart)
-        bar: {
-          xAxis: ['<30s', '30-60s', '60-120s', '>120s', 'Abandoned'],
-          series: [
-            { name: 'Answered', data: [1864, 542, 298, 143, 0] },
-            { name: 'Abandoned', data: [0, 0, 0, 0, 189] }
-          ]
-        },
-        // E-Bill adoption (donut chart)
+        // Donut — E-Bill adoption context
         donut: {
           data: [
             { name: 'E-Bill', value: 2812 },
             { name: 'Paper', value: 596 }
           ]
         },
-        // Call volume heatmap by hour × day
+        // Bar — key account activity context
+        bar: {
+          xAxis: ['Billing', 'Tech Support', 'Sales', 'Retention', 'General'],
+          series: [
+            { name: 'Answered', data: [2560, 2890, 1980, 1470, 2072] },
+            { name: 'Abandoned', data: [142, 198, 89, 67, 122] }
+          ]
+        },
+        // Area — outbound dialing context
+        area: {
+          xAxis: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          series: [
+            { name: 'Inbound', data: [1842, 2103, 1768, 2245, 1987, 892, 613] },
+            { name: 'Outbound', data: [798, 912, 734, 1023, 847, 312, 178] }
+          ]
+        },
+        // Heatmap — call volume by hour × day (used in the visual explorer)
         heatmap: {
           xAxis: ['6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm'],
           yAxis: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -78,7 +86,29 @@
             }
             return d;
           }
-        }
+        },
+        // Scatter — also used in the visual explorer
+        scatter: {
+          series: [
+            { name: 'Call Duration vs Wait', data: Array.from({length: 30}, function(_, i) {
+              var wait = Math.round(10 + Math.random() * 180);
+              var dur = Math.round(60 + Math.random() * 300);
+              return [wait, dur, 6 + Math.random() * 14];
+            }) }
+          ]
+        },
+        // Funnel — call handling funnel
+        funnel: {
+          data: [
+            { name: 'Total Calls', value: 12450 },
+            { name: 'Answered', value: 11832 },
+            { name: 'Within 30s', value: 8640 },
+            { name: 'Within 60s', value: 10240 },
+            { name: 'Within 120s', value: 11289 }
+          ]
+        },
+        // Gauge — SLA compliance
+        gauge: { value: 94.7, name: 'SLA Compliance' }
       },
       // Pipeline trace
       pipeline: {
@@ -462,7 +492,9 @@
     if (type === 'radar') return 'radar';
     if (type === 'funnel') return 'funnel';
     if (type === 'gauge') return 'gauge';
-    if (type === 'custom') return 'bar'; // dumbbell uses custom renderItem → map to bar
+    if (type === 'custom') return 'dumbbell'; // dumbbell uses custom renderItem
+    // Dumbbell charts also appear as scatter + custom series combo
+    if (type === 'scatter' && option.series.length >= 3) return 'dumbbell';
     if (type === 'treemap') return 'treemap';
     if (type === 'sankey') return 'sankey';
     if (type === 'boxplot') return 'boxplot';
@@ -501,6 +533,28 @@
           areaStyle: { opacity: 0.18 }
         };
       });
+    } else if (kind === 'dumbbell' && chartData.series) {
+      // Dumbbell = prior vs current comparison per group
+      var yLabels = chartData.yAxis || ['G1','G2','G3','G4','G5'];
+      var prior = chartData.series[0] ? chartData.series[0].data : [];
+      var current = chartData.series[1] ? chartData.series[1].data : [];
+      opt.legend = { show: true, top: 2, textStyle: { fontSize: 9 } };
+      opt.xAxis = { type: 'value', axisLabel: { fontSize: 9 }, axisLine: { show: false }, splitLine: { lineStyle: { color: '#5065871c' } } };
+      opt.yAxis = { type: 'category', data: yLabels, axisTick: { show: false }, axisLine: { show: false }, axisLabel: { fontSize: 9 } };
+      // Build dumbbell: line + two scatter series
+      var dumbbellData = prior.map(function(p, i) { return [p, current[i], i]; });
+      opt.series = [
+        // Connector lines
+        { name: 'Change', type: 'custom', data: dumbbellData, encode: { x: [0, 1], y: 2 }, renderItem: function(params, api) {
+          var a = api.coord([api.value(0), api.value(2)]);
+          var b = api.coord([api.value(1), api.value(2)]);
+          return { type: 'line', shape: { x1: a[0], y1: a[1], x2: b[0], y2: b[1] }, style: { stroke: '#a78bfa', lineWidth: 5, opacity: 0.45 } };
+        }},
+        // Prior dots
+        { name: chartData.series[0].name, type: 'scatter', symbolSize: 10, data: prior.map(function(v, i) { return [v, i]; }) },
+        // Current dots
+        { name: chartData.series[1].name, type: 'scatter', symbolSize: 10, itemStyle: { color: '#06b6d4' }, data: current.map(function(v, i) { return [v, i]; }) }
+      ];
     } else if (kind === 'bar' && chartData.series) {
       opt.legend = { show: true, top: 2, textStyle: { fontSize: 9 } };
       if (chartData.xAxis) {
@@ -654,7 +708,14 @@
         if (kind === 'radar') fakeOption.series[0].type = 'radar';
         if (kind === 'funnel') fakeOption.series[0].type = 'funnel';
         if (kind === 'gauge') fakeOption.series[0].type = 'gauge';
-        if (kind === 'custom') fakeOption.series[0].type = 'custom';
+        if (kind === 'custom' || kind === 'dumbbell') {
+          // For dumbbell, create a multi-series option so detectChartKind catches it
+          fakeOption = { series: [
+            { type: 'custom', renderItem: function(){}, data: [1,2,3] },
+            { type: 'scatter', data: [1,2,3] },
+            { type: 'scatter', data: [1,2,3] }
+          ]};
+        }
 
         chart.setOption(fakeOption);
         host.classList.add('echarts-ready');
