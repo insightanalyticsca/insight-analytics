@@ -347,4 +347,10 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://insight-analytics.ca/insights/federal-permittings-uneven-economic-impact-and-what-companies-can-do-about-it</loc>
+    <lastmod>2026-10-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
