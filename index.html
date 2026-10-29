@@ -1023,55 +1023,57 @@
     </section>
   </main>
 
-  <!-- ============================ FAQ (SEO) ============================ -->
-  <section class="section" id="faq" style="padding:80px 0;">
-    <div class="container" style="max-width:760px;">
-      <span class="eyebrow reveal"><span class="dot"></span> FAQ</span>
-      <h2 class="section-title reveal" style="margin-bottom:32px;">Common Questions</h2>
-
-      <details style="border:1px solid var(--border);border-radius:12px;padding:0;margin-bottom:12px;overflow:hidden;">
-        <summary style="padding:18px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--text);">How do you build an AI dashboard?</summary>
-        <div style="padding:0 24px 18px;font-size:0.95rem;line-height:1.7;color:var(--text-muted);">
-          Type a brief in plain English — or pick a preset template — and our AI dashboard builder generates a complete dashboard spec (KPIs + chart tiles) using Groq. The spec renders live with ECharts, the same engine used in 50+ production deployments. <a href="/blog/ai-dashboard-builder" style="color:var(--accent);">Try the live AI dashboard builder →</a>
-        </div>
+  <!-- ============================ FAQ (collapsed, SEO-friendly) ============= -->
+  <!-- Single pill that expands. Keeps the page clean while giving Google
+       the FAQ content + FAQPage schema for rich results. -->
+  <details id="faq" style="max-width:760px;margin:0 auto;padding:0 24px 24px;">
+    <summary style="cursor:pointer;padding:14px 20px;border:1px solid var(--border);border-radius:999px;font-size:0.82rem;font-weight:600;color:var(--text-muted);background:var(--surface);display:inline-flex;align-items:center;gap:8px;transition:all .2s ease;list-style:none;">
+      <i class="fas fa-circle-question" aria-hidden="true"></i>
+      Frequently Asked Questions
+      <i class="fas fa-chevron-down" aria-hidden="true" style="font-size:0.7rem;margin-left:4px;"></i>
+    </summary>
+    <div style="margin-top:20px;">
+      <details style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">
+        <summary style="padding:16px 20px;cursor:pointer;font-weight:600;font-size:0.92rem;color:var(--text);list-style:none;">How do you build an AI dashboard?<i class="fas fa-plus" aria-hidden="true" style="float:right;font-size:0.75rem;color:var(--text-muted);"></i></summary>
+        <div style="padding:0 20px 16px;font-size:0.9rem;line-height:1.7;color:var(--text-muted);">Type a brief in plain English — "build me a SaaS growth dashboard with MRR, NRR, churn" — and the AI dashboard builder generates a complete spec: 4 KPI cards + 4 chart tiles with realistic data, chart type selection, and live ECharts rendering. The same engine powers 50+ production dashboards. <a href="/blog/ai-dashboard-builder" style="color:var(--accent);font-weight:500;">Try the live builder →</a></div>
       </details>
-
-      <details style="border:1px solid var(--border);border-radius:12px;padding:0;margin-bottom:12px;overflow:hidden;">
-        <summary style="padding:18px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--text);">What is automated data pipeline automation?</summary>
-        <div style="padding:0 24px 18px;font-size:0.95rem;line-height:1.7;color:var(--text-muted);">
-          A data pipeline automatically collects, validates, standardizes, and delivers data from your existing systems (SQL Server, Oracle, APIs, Excel, files) into dashboards, reports, and AI models — without manual reconciliation. Our 6-stage pipeline (Signals → Integrate → Standardize → Intelligence → Deliver → Act & Learn) runs end-to-end with governance at every stage. <a href="/solutions-showcase/" style="color:var(--accent);">See the pipeline in action →</a>
-        </div>
+      <details style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">
+        <summary style="padding:16px 20px;cursor:pointer;font-weight:600;font-size:0.92rem;color:var(--text);list-style:none;">What is automated data pipeline automation?<i class="fas fa-plus" aria-hidden="true" style="float:right;font-size:0.75rem;color:var(--text-muted);"></i></summary>
+        <div style="padding:0 20px 16px;font-size:0.9rem;line-height:1.7;color:var(--text-muted);">A data pipeline automatically collects, validates, standardizes, and delivers data from your existing systems (SQL Server, Oracle, APIs, Excel, SaaS apps) into dashboards, reports, and AI models — without manual reconciliation. Our 6-stage pipeline (Signals → Integrate → Standardize → Intelligence → Deliver → Act & Learn) runs end-to-end with governance at every stage. No human asks for definitions mid-pipeline — they were extracted before it started. <a href="/solutions-showcase/" style="color:var(--accent);font-weight:500;">See the pipeline →</a></div>
       </details>
-
-      <details style="border:1px solid var(--border);border-radius:12px;padding:0;margin-bottom:12px;overflow:hidden;">
-        <summary style="padding:18px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--text);">How is this different from Power BI?</summary>
-        <div style="padding:0 24px 18px;font-size:0.95rem;line-height:1.7;color:var(--text-muted);">
-          Power BI demos look great in slides. When you put real data into it, match your real KPI definitions, and deliver to real users on real devices, it takes months. Our dashboards use the same ECharts engine, the same KPI definitions, and the same chart patterns as 50+ production deployments — the first dashboard ships in weeks, not months. Plus: AI is at the center (deterministic discovery + narration), not bolted on as a feature. <a href="/blog/universal-dashboard-builder" style="color:var(--accent);">See the dashboard builder demo →</a>
-        </div>
+      <details style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">
+        <summary style="padding:16px 20px;cursor:pointer;font-weight:600;font-size:0.92rem;color:var(--text);list-style:none;">How is this different from Power BI?<i class="fas fa-plus" aria-hidden="true" style="float:right;font-size:0.75rem;color:var(--text-muted);"></i></summary>
+        <div style="padding:0 20px 16px;font-size:0.9rem;line-height:1.7;color:var(--text-muted);">Power BI looks great in demos. Then you put your real data into it, match your real KPI definitions, replicate your real layout requirements, and deliver to real users on real devices — months later you have a dashboard half the team trusts. Our dashboards use the same ECharts engine, the same KPI definitions, and the same chart patterns as 50+ production deployments. AI is at the center (deterministic discovery + narration), not bolted on as a feature. <a href="/blog/universal-dashboard-builder" style="color:var(--accent);font-weight:500;">See the demo →</a></div>
       </details>
-
-      <details style="border:1px solid var(--border);border-radius:12px;padding:0;margin-bottom:12px;overflow:hidden;">
-        <summary style="padding:18px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--text);">What is deterministic AI metadata discovery?</summary>
-        <div style="padding:0 24px 18px;font-size:0.95rem;line-height:1.7;color:var(--text-muted);">
-          Metadata discovery applications walk your databases — including legacy SQL Server, Oracle, multidimensional cubes — and extract actual business rules from stored procedures, functions, and view definitions. The discovered rules are deterministic (source code, parsed and structured), not model output. The AI then narrates what the deterministic layer has already proved — no hallucination surface, because the model is never asked to invent the underlying facts. <a href="/solutions-showcase/" style="color:var(--accent);">Explore the solutions showcase →</a>
-        </div>
+      <details style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">
+        <summary style="padding:16px 20px;cursor:pointer;font-weight:600;font-size:0.92rem;color:var(--text);list-style:none;">What is deterministic AI metadata discovery?<i class="fas fa-plus" aria-hidden="true" style="float:right;font-size:0.75rem;color:var(--text-muted);"></i></summary>
+        <div style="padding:0 20px 16px;font-size:0.9rem;line-height:1.7;color:var(--text-muted);">Metadata discovery applications walk even less-documented backends — legacy SQL Server, Oracle, multidimensional cubes, controlled files, SaaS APIs — and extract the actual business rules from stored procedures, functions, and view definitions. The discovered rules are deterministic (source code, parsed and structured), not model output. The AI narrates what the deterministic layer already proved — no hallucination surface, because the model never invents the facts. <a href="/solutions-showcase/" style="color:var(--accent);font-weight:500;">Explore the showcase →</a></div>
       </details>
-
-      <details style="border:1px solid var(--border);border-radius:12px;padding:0;margin-bottom:12px;overflow:hidden;">
-        <summary style="padding:18px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--text);">Can I see live dashboard demos?</summary>
-        <div style="padding:0 24px 18px;font-size:0.95rem;line-height:1.7;color:var(--text-muted);">
-          Yes — 16+ interactive dashboards are live right now: executive operations (Meridian supply chain, Velocity SaaS growth, Sentinel banking risk, Chatters retail operations), CSR dashboards (AR aging, payment trends, customer service), and IT operations (ticket SLA, security posture, uptime). Each with AI executive briefs. <a href="https://insightanalyticsca.github.io/dashboards/" style="color:var(--accent);">Open the dashboards gallery →</a>
-        </div>
+      <details style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">
+        <summary style="padding:16px 20px;cursor:pointer;font-weight:600;font-size:0.92rem;color:var(--text);list-style:none;">Can I see live dashboard demos?<i class="fas fa-plus" aria-hidden="true" style="float:right;font-size:0.75rem;color:var(--text-muted);"></i></summary>
+        <div style="padding:0 20px 16px;font-size:0.9rem;line-height:1.7;color:var(--text-muted);">Yes — 16+ interactive dashboards are live: supply chain operations (OTIF, carrier scorecards, AI disruption prediction), SaaS growth (ARR, cohort retention, NRR), banking risk (LCR, VaR, fraud alerts), retail operations, IT service health, AR aging, payment trends, security posture. Each with AI executive briefs grounded in the dashboard data. <a href="https://insightanalyticsca.github.io/dashboards/" style="color:var(--accent);font-weight:500;">Open the gallery →</a></div>
       </details>
-
-      <details style="border:1px solid var(--border);border-radius:12px;padding:0;margin-bottom:12px;overflow:hidden;">
-        <summary style="padding:18px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--text);">Do you work with Canadian companies?</summary>
-        <div style="padding:0 24px 18px;font-size:0.95rem;line-height:1.7;color:var(--text-muted);">
-          Yes — Insight Analytics is based in Ontario, Canada. We serve mid-market Canadian and US companies ($5M–$50M revenue) with operations reporting that has gone stale: dashboards half the team trusts, refresh cadences that miss the standup, KPI definitions that drift. <a href="#contact" style="color:var(--accent);">Book a working session →</a>
-        </div>
+      <details style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">
+        <summary style="padding:16px 20px;cursor:pointer;font-weight:600;font-size:0.92rem;color:var(--text);list-style:none;">What technology stack do you use?<i class="fas fa-plus" aria-hidden="true" style="float:right;font-size:0.75rem;color:var(--text-muted);"></i></summary>
+        <div style="padding:0 20px 16px;font-size:0.9rem;line-height:1.7;color:var(--text-muted);">ECharts 5.5 for visualization (same engine across all deployments), Groq for AI narration (via Netlify edge proxy — key never reaches the browser), static hosting on GitHub Pages (zero ops), SQL Server / Snowflake / BigQuery / Postgres / Oracle as data sources. Technology-agnostic — we don't require you to rip and replace your stack. We require you to standardize the definitions, keys, and KPI rules.</div>
+      </details>
+      <details style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">
+        <summary style="padding:16px 20px;cursor:pointer;font-weight:600;font-size:0.92rem;color:var(--text);list-style:none;">Do you work with Canadian companies?<i class="fas fa-plus" aria-hidden="true" style="float:right;font-size:0.75rem;color:var(--text-muted);"></i></summary>
+        <div style="padding:0 20px 16px;font-size:0.9rem;line-height:1.7;color:var(--text-muted);">Yes — Insight Analytics is based in Ontario, Canada. We serve mid-market Canadian and US companies ($5M–$50M revenue) with operations reporting that has gone stale: dashboards half the team trusts, refresh cadences that miss the standup, KPI definitions that drift from how the business actually counts them. <a href="#contact" style="color:var(--accent);font-weight:500;">Book a working session →</a></div>
+      </details>
+      <details style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">
+        <summary style="padding:16px 20px;cursor:pointer;font-weight:600;font-size:0.92rem;color:var(--text);list-style:none;">How long does a dashboard project take?<i class="fas fa-plus" aria-hidden="true" style="float:right;font-size:0.75rem;color:var(--text-muted);"></i></summary>
+        <div style="padding:0 20px 16px;font-size:0.9rem;line-height:1.7;color:var(--text-muted);">The foundation (pipelines, governed metrics, web apps, dashboards, automated delivery) is already running in production. Your engagement configures that foundation to your systems — not rebuilds from scratch. Most engagements start with a working dashboard in weeks, not months. The exact timeline depends on data source complexity and how many KPI definitions need standardization.</div>
       </details>
     </div>
-  </section>
+  </details>
+  <style>
+    #faq summary::-webkit-details-marker { display: none; }
+    #faq summary:hover { border-color: var(--accent); color: var(--accent); }
+    #faq > div > details summary::-webkit-details-marker { display: none; }
+    #faq > div > details[open] summary i.fa-plus::before { content: "\\f068"; }
+    #faq > div > details summary:hover { color: var(--accent); }
+  </style>
 
   <!-- FAQ structured data for Google rich results -->
   <script type="application/ld+json">
@@ -1079,12 +1081,14 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-      {"@type":"Question","name":"How do you build an AI dashboard?","acceptedAnswer":{"@type":"Answer","text":"Type a brief in plain English or pick a preset template, and our AI dashboard builder generates a complete dashboard spec using Groq. The spec renders live with ECharts, the same engine used in 50+ production deployments."}},
+      {"@type":"Question","name":"How do you build an AI dashboard?","acceptedAnswer":{"@type":"Answer","text":"Type a brief in plain English and the AI dashboard builder generates a complete spec with KPIs and chart tiles using Groq. Renders live with ECharts, the same engine used in 50+ production deployments."}},
       {"@type":"Question","name":"What is automated data pipeline automation?","acceptedAnswer":{"@type":"Answer","text":"A data pipeline automatically collects, validates, standardizes, and delivers data from your existing systems into dashboards, reports, and AI models without manual reconciliation. Our 6-stage pipeline runs end-to-end with governance at every stage."}},
-      {"@type":"Question","name":"How is this different from Power BI?","acceptedAnswer":{"@type":"Answer","text":"Our dashboards use the same ECharts engine and KPI definitions as 50+ production deployments. The first dashboard ships in weeks not months. AI is at the center (deterministic discovery and narration), not bolted on as a feature."}},
+      {"@type":"Question","name":"How is this different from Power BI?","acceptedAnswer":{"@type":"Answer","text":"Our dashboards use the same ECharts engine and KPI definitions as 50+ production deployments. AI is at the center (deterministic discovery and narration), not bolted on as a feature. The first dashboard ships in weeks not months."}},
       {"@type":"Question","name":"What is deterministic AI metadata discovery?","acceptedAnswer":{"@type":"Answer","text":"Metadata discovery applications walk your databases and extract actual business rules from stored procedures, functions, and view definitions. The AI narrates what the deterministic layer has already proved, with no hallucination surface."}},
-      {"@type":"Question","name":"Can I see live dashboard demos?","acceptedAnswer":{"@type":"Answer","text":"Yes, 16+ interactive dashboards are live including executive operations, CSR, and IT operations dashboards, each with AI executive briefs."}},
-      {"@type":"Question","name":"Do you work with Canadian companies?","acceptedAnswer":{"@type":"Answer","text":"Yes, Insight Analytics is based in Ontario, Canada and serves mid-market Canadian and US companies."}}
+      {"@type":"Question","name":"Can I see live dashboard demos?","acceptedAnswer":{"@type":"Answer","text":"Yes, 16+ interactive dashboards are live including supply chain, SaaS growth, banking risk, retail operations, IT service health, and AR aging dashboards, each with AI executive briefs."}},
+      {"@type":"Question","name":"What technology stack do you use?","acceptedAnswer":{"@type":"Answer","text":"ECharts 5.5 for visualization, Groq for AI narration via Netlify edge proxy, static hosting on GitHub Pages, SQL Server/Snowflake/BigQuery/Postgres/Oracle as data sources. Technology-agnostic."}},
+      {"@type":"Question","name":"Do you work with Canadian companies?","acceptedAnswer":{"@type":"Answer","text":"Yes, Insight Analytics is based in Ontario, Canada and serves mid-market Canadian and US companies."}},
+      {"@type":"Question","name":"How long does a dashboard project take?","acceptedAnswer":{"@type":"Answer","text":"The foundation is already running in production. Your engagement configures it to your systems. Most engagements start with a working dashboard in weeks, not months."}}
     ]
   }
   </script>
