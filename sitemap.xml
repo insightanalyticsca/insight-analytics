@@ -55,6 +55,12 @@
     <priority>0.7</priority>
   </url>
 <url>
+    <loc>https://insight-analytics.ca/faq/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+<url>
     <loc>https://insight-analytics.ca/insights/</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>daily</changefreq>

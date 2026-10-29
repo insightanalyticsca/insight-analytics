@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
+  <title>FAQ — AI Dashboards, Data Pipelines, Metadata Discovery | Insight Analytics</title>
+  <meta name="description" content="Answers to common questions about AI dashboard building, automated data pipelines, deterministic metadata discovery, ECharts visualization, Groq AI integration, and 50+ production dashboard deployments. Ontario, Canada." />
+  <meta name="keywords" content="AI dashboard builder FAQ, data pipeline automation, ECharts dashboards, Groq AI, metadata discovery, deterministic AI, no-hallucination AI, natural language to dashboard, Power BI alternative, supply chain dashboards, banking risk dashboards, IT operations dashboards, utility analytics, SaaS growth dashboards, AR aging dashboards, contact center analytics, security training dashboards, predictive analytics, Excel to dashboard, fuzzy address matching" />
+  <meta name="author" content="Insight Analytics" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://insight-analytics.ca/faq/" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="/icons/favicon.ico" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="FAQ — AI Dashboards, Data Pipelines, Metadata Discovery" />
+  <meta property="og:description" content="Answers about AI dashboard building, automated data pipelines, deterministic metadata discovery, ECharts visualization, Groq AI, and 50+ production deployments." />
+  <meta property="og:url" content="https://insight-analytics.ca/faq/" />
+  <meta property="og:site_name" content="Insight Analytics" />
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="stylesheet" href="/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/css/styles.css?v=4.94.0" />
+  <style>
+    html { scroll-snap-type: none !important; }
+    .faq-hero { padding: calc(var(--nav-h, 64px) + 60px) 0 32px; text-align: center; }
+    .faq-hero h1 { font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .faq-hero p { font-size: 1rem; color: var(--text-muted); max-width: 560px; margin: 0 auto; }
+    .faq-list { max-width: 760px; margin: 0 auto; padding: 24px; }
+    .faq-item { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+    .faq-item summary { padding: 16px 20px; cursor: pointer; font-weight: 600; font-size: 0.95rem; color: var(--text); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary:hover { color: var(--accent); }
+    .faq-item summary i { font-size: 0.75rem; color: var(--text-muted); transition: transform .2s ease; }
+    .faq-item[open] summary i { transform: rotate(45deg); }
+    .faq-item[open] summary { color: var(--accent); }
+    .faq-answer { padding: 0 20px 16px; font-size: 0.92rem; line-height: 1.7; color: var(--text-muted); }
+    .faq-answer a { color: var(--accent); font-weight: 500; }
+    .faq-category { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin: 28px 0 12px; }
+    .faq-cta { text-align: center; padding: 48px 24px; max-width: 600px; margin: 0 auto; }
+    .faq-cta h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 12px; }
+    .faq-cta p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="brand" aria-label="Insight Analytics home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGrad)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGrad)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGrad)"/></svg></span>
+        <span class="brand-name">Insight <b>Analytics</b></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="/#services" class="nav-link">Services</a>
+        <a href="/#dashboard" class="nav-link">Dashboard</a>
+        <a href="/#cases" class="nav-link">Case Studies</a>
+        <a href="/solutions-showcase/" class="nav-link">Solutions Showcase</a>
+        <a href="/insights/" class="nav-link">AI Insights</a>
+        <a href="/blog/" class="nav-link">Live Demos</a>
+        <a href="/faq/" class="nav-link">FAQ</a>
+        <a href="/#contact" class="nav-link">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme">
+          <i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i><span class="theme-label" id="theme-label">Light</span>
+        </button>
+        <a href="/#contact" class="btn btn-primary nav-cta"><i class="fas fa-calendar-check" aria-hidden="true"></i> Book a Demo</a>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <span class="menu-toggle-bars" aria-hidden="true"><span></span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="mobile-menu" id="mobile-menu" role="menu" aria-label="Mobile navigation">
+    <a href="/#services" class="nav-link" role="menuitem">Services</a>
+    <a href="/#dashboard" class="nav-link" role="menuitem">Dashboard</a>
+    <a href="/#cases" class="nav-link" role="menuitem">Case Studies</a>
+    <a href="/solutions-showcase/" class="nav-link" role="menuitem">Solutions Showcase</a>
+    <a href="/insights/" class="nav-link" role="menuitem">AI Insights</a>
+    <a href="/blog/" class="nav-link" role="menuitem">Live Demos</a>
+    <a href="/faq/" class="nav-link" role="menuitem">FAQ</a>
+    <a href="/#contact" class="nav-link" role="menuitem">Contact</a>
+    <a href="/#contact" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Book a Demo</a>
+  </div>
+
+  <section class="faq-hero">
+    <div class="container">
+      <a href="/" style="font-size:0.85rem;color:var(--text-muted);text-decoration:none;margin-bottom:16px;display:inline-flex;align-items:center;gap:6px;">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Insight Analytics
+      </a>
+      <div style="font-family:var(--font-head);font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;">Frequently Asked Questions</div>
+      <h1>AI Dashboards, Data Pipelines &amp; Metadata Discovery</h1>
+      <p>Answers about building AI-powered dashboards, automating data pipelines, deterministic metadata discovery, ECharts visualization, Groq AI integration, and 50+ production deployments.</p>
+    </div>
+  </section>
+
+  <div class="faq-list">
+    <div class="faq-category">Getting Started</div>
+    <details class="faq-item"><summary>How do you build an AI dashboard?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Type a brief in plain English — "build me a SaaS growth dashboard with MRR, NRR, churn" — and the AI dashboard builder generates a complete spec: 4 KPI cards + 4 chart tiles with realistic data, chart type selection, and live ECharts rendering. The same engine powers 50+ production dashboards. <a href="/blog/ai-dashboard-builder">Try the live builder &rarr;</a></div></details>
+    <details class="faq-item"><summary>What is natural language to dashboard?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Describe what you want in plain English and the system generates a complete dashboard spec with KPI cards and chart tiles that renders live. No SQL, no configuration, no drag-and-drop. <a href="/blog/ai-dashboard-builder">Try it yourself &rarr;</a></div></details>
+    <details class="faq-item"><summary>Can I see live dashboard demos?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes — 16+ interactive dashboards are live: supply chain operations (OTIF, carrier scorecards, AI disruption prediction), SaaS growth (ARR, cohort retention, NRR), banking risk (LCR, VaR, fraud alerts), retail operations, IT service health, AR aging, payment trends, security posture. Each with AI executive briefs. <a href="https://insightanalyticsca.github.io/dashboards/">Open the dashboards gallery &rarr;</a></div></details>
+    <details class="faq-item"><summary>Is the dashboard data real or synthetic?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">All dashboard data on the live demos is synthetic — realistic but not from real clients. Real customer data never ships to the browser. In production, the same dashboard code reads from your actual SQL Server, Snowflake, or BigQuery — the engine doesn't change, only the data source behind it.</div></details>
+
+    <div class="faq-category">Technology &amp; Architecture</div>
+    <details class="faq-item"><summary>What technology stack do you use?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">ECharts 5.5 for visualization (same engine across all deployments), Groq for AI narration (via Netlify edge proxy — key never reaches the browser), static hosting on GitHub Pages (zero ops), SQL Server / Snowflake / BigQuery / Postgres / Oracle as data sources. Technology-agnostic — we don't require you to rip and replace your stack. We require you to standardize the definitions, keys, and KPI rules.</div></details>
+    <details class="faq-item"><summary>What is ECharts and why do you use it?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">ECharts is an open-source JavaScript visualization library (Apache-licensed) that renders interactive charts — bar, line, area, pie, heatmap, scatter, radar, gauge, treemap, sankey, funnel, boxplot, and more. We use it because it's free, performant (canvas + SVG rendering), mobile-friendly, and supports streaming animations. The same charts you see in our live demos run in 50+ production deployments.</div></details>
+    <details class="faq-item"><summary>What is Groq and how does the AI work?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Groq is a fast AI inference engine that runs open-source models like Qwen 3.8-27B. Our AI integration uses Groq via a Netlify edge proxy — the API key stays server-side, never reaches the browser, and never lives in the code repository. The AI narrates what the deterministic metadata discovery layer already proved: it writes briefs, answers questions, and explains trends — but never invents data or KPIs. No hallucination surface.</div></details>
+    <details class="faq-item"><summary>Do you work with SQL Server, Oracle, and Snowflake?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. Our data pipelines connect to SQL Server, Oracle, Snowflake, BigQuery, Postgres, MySQL, and any system with an API. We don't require you to rip and replace your stack — we connect to what you already have. The dashboard engine is technology-agnostic; only the data source behind it changes.</div></details>
+    <details class="faq-item"><summary>How is this different from Power BI?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Power BI looks great in demos. Then you put your real data into it, match your real KPI definitions, replicate your real layout requirements, and deliver to real users on real devices — months later you have a dashboard half the team trusts. Our dashboards use the same ECharts engine, the same KPI definitions, and the same chart patterns as 50+ production deployments. AI is at the center (deterministic discovery + narration), not bolted on as a feature. <a href="/blog/universal-dashboard-builder">See the demo &rarr;</a></div></details>
+
+    <div class="faq-category">AI &amp; Intelligence</div>
+    <details class="faq-item"><summary>What is deterministic AI metadata discovery?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Metadata discovery applications walk even less-documented backends — legacy SQL Server, Oracle, multidimensional cubes, controlled files, SaaS APIs — and extract the actual business rules from stored procedures, functions, and view definitions. The discovered rules are deterministic (source code, parsed and structured), not model output. The AI narrates what the deterministic layer already proved — no hallucination surface. <a href="/solutions-showcase/">Explore the showcase &rarr;</a></div></details>
+    <details class="faq-item"><summary>What is a no-hallucination AI dashboard?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">A no-hallucination AI dashboard uses deterministic metadata discovery to extract business rules from source code — not from AI generation. The AI then narrates what the deterministic layer already proved. The model is never asked to invent KPI definitions, guess column meanings, or fabricate data. Every claim links back to a discovered rule the analyst can audit.</div></details>
+    <details class="faq-item"><summary>What is an AI executive brief?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">An AI executive brief is a 4-part narrative generated on page load: What happened (the headline change), Why (likely drivers), What to expect (direction only, no point forecast), What to do (recommended action). It's grounded in the dashboard's actual data — the AI reads the same KPIs the charts show, then writes a concise brief executives can act on. No invented numbers, no hallucinated confidence percentages.</div></details>
+    <details class="faq-item"><summary>What is metadata discovery and data lineage?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Metadata discovery walks your database schema, stored procedures, functions, and view definitions to extract the actual business rules — KPI calculations, joins, filters, transformations — that already exist in your code. Data lineage traces how data flows from source tables through transformations to final reports. Together, they eliminate the "six-week discovery phase" where analysts manually read code to understand what the data means.</div></details>
+
+    <div class="faq-category">Data Pipelines &amp; Automation</div>
+    <details class="faq-item"><summary>What is automated data pipeline automation?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">A data pipeline automatically collects, validates, standardizes, and delivers data from your existing systems (SQL Server, Oracle, APIs, Excel, SaaS apps) into dashboards, reports, and AI models — without manual reconciliation. Our 6-stage pipeline (Signals &rarr; Integrate &rarr; Standardize &rarr; Intelligence &rarr; Deliver &rarr; Act &amp; Learn) runs end-to-end with governance at every stage. No human asks for definitions mid-pipeline — they were extracted before it started. <a href="/solutions-showcase/">See the pipeline &rarr;</a></div></details>
+    <details class="faq-item"><summary>What is the Monday-morning operating model?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">The Monday-morning operating model replaces manual report assembly with an automated brief that arrives before the meeting. At 6:45 AM the brief is ready. At 7:00 AM the AI has already ranked material changes, explained likely drivers, and flagged emerging risks. By 8:00 AM each role sees the view it needs. By Friday the company remembers what worked. No human spends the morning collecting the business — they spend it shaping it.</div></details>
+    <details class="faq-item"><summary>Can you automate PowerPoint and Excel report generation?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. We schedule governed extracts, run variance analysis, and generate Excel workbooks, PowerPoint decks, and PDF packs automatically — routed to the right recipients with approvals and exception handling. Skilled attention moves from recurring assembly to advice and control.</div></details>
+    <details class="faq-item"><summary>Do you offer Excel to dashboard conversion?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. We replace Excel-based reporting with live dashboards. Upload an Excel workbook, describe what you want to do with it (filter, summarize, sort, email), and the system constructs an executable pipeline that produces a live dashboard. <a href="/blog/personalized-power-automate">See the Excel-to-pipeline demo &rarr;</a></div></details>
+    <details class="faq-item"><summary>What is fuzzy address matching and data integration?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Fuzzy address matching reconciles records across systems that don't share a common key — matching customer records to service orders by address, even when addresses are formatted differently. We use Jaro-Winkler similarity scoring and validate against the Nominatim Geo API (OpenStreetMap). AI narrates the match quality and flags uncertain pairs for review. <a href="/blog/fuzzy-address-matching">See the fuzzy matching demo &rarr;</a></div></details>
+
+    <div class="faq-category">Industry Dashboards</div>
+    <details class="faq-item"><summary>Can you build supply chain dashboards?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. Our Meridian supply chain dashboard tracks OTIF (on-time-in-full) across an 18-DC logistics network, carrier scorecards, lane performance heatmaps, and AI disruption prediction 48 hours ahead. <a href="https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian.html">See the live supply chain dashboard &rarr;</a></div></details>
+    <details class="faq-item"><summary>Can you build banking and treasury risk dashboards?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. Our Sentinel dashboard is a $4.8B bank risk command center: LCR (liquidity coverage ratio), VaR (value at risk), live fraud alerts AI-scored at 92% precision, credit risk heatmap by sector &times; rating, 30-day liquidity waterfall. <a href="https://insightanalyticsca.github.io/dashboards/custom-html/executive-sentinel.html">See the live banking risk dashboard &rarr;</a></div></details>
+    <details class="faq-item"><summary>Can you build IT operations and service desk dashboards?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. We track ticket SLA performance, uptime by service vs SLA target, security posture (phishing simulation results, KB4 training compliance), ticket volume by priority and channel, and MTTR. Full IT operations suite with AI executive briefs. <a href="https://insightanalyticsca.github.io/dashboards/custom-html/its-service-health.html">See the live IT ops dashboard &rarr;</a></div></details>
+    <details class="faq-item"><summary>Can you build utility and energy analytics dashboards?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. We build electricity load forecasting dashboards (weather-driven demand, OLS regression with change-point detection, 14-day forecast with operational recommendations), AR aging dashboards (residential/commercial arrears, payment trends, collection performance), and utility usage explorers. <a href="/blog/weather-load-forecast">See the load forecasting demo &rarr;</a></div></details>
+    <details class="faq-item"><summary>Can you build SaaS growth and retention dashboards?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. Our Velocity dashboard tracks $142M ARR, NRR 118%, cohort retention heatmap, ARR waterfall bridge (new/expanded/churned), customer health scoring, and AI-generated save plays for at-risk accounts. <a href="https://insightanalyticsca.github.io/dashboards/custom-html/executive-velocity.html">See the live SaaS dashboard &rarr;</a></div></details>
+    <details class="faq-item"><summary>Can you build AR aging and collections dashboards?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. We track accounts receivable aging (current, 1-30, 31-60, 61-90, 90+ days) by customer type (residential, commercial, industrial, agricultural), payment trends, collection performance, and recovery funnels. Enriched with customer context from the billing system. <a href="https://insightanalyticsca.github.io/dashboards/custom-html/csr-aging-overview.html">See the live AR aging dashboard &rarr;</a></div></details>
+    <details class="faq-item"><summary>Do you offer contact center analytics?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. We integrate with Genesys Cloud and other contact center platforms to track call volume, handling times (30s/60s/120s thresholds), abandoned calls, outbound dialing campaigns, E-Bill adoption, and key-account activity. The Genesys ETL pipeline converts raw call analytics into repeatable CX reporting measures. <a href="/solutions-showcase/">See the CX dashboard in the showcase &rarr;</a></div></details>
+    <details class="faq-item"><summary>Can you build security awareness training dashboards?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. We track KnowBe4 phishing simulation results, security training completion rates, and security posture scores across 5 dimensions (phishing, training, patching, access control, incident response). <a href="https://insightanalyticsca.github.io/dashboards/custom-html/its-security-posture.html">See the live security dashboard &rarr;</a></div></details>
+
+    <div class="faq-category">Advanced Capabilities</div>
+    <details class="faq-item"><summary>Do you offer predictive analytics and forecasting?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. We build forecasting models using OLS regression, change-point detection, and time series prediction. Our universal predictor takes any time series (earthquakes, crypto, climate, economic data) and produces forecasts with model benchmarks and AI insights. We also build custom predictive models for demand forecasting, churn prediction, and anomaly detection. <a href="/blog/universal-time-series-prediction">See the prediction demo &rarr;</a></div></details>
+    <details class="faq-item"><summary>Do you build custom web applications, not just dashboards?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes. Our production portfolio includes operational web applications — service-layout workflows, transformer inventory management, location records, lifecycle transactions — that support day-to-day operating work, not just reports about it. These are full CRUD applications connected to SQL Server, with the same visual engine as the dashboards.</div></details>
+
+    <div class="faq-category">Business &amp; Engagement</div>
+    <details class="faq-item"><summary>How long does a dashboard project take?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">The foundation (pipelines, governed metrics, web apps, dashboards, automated delivery) is already running in production. Your engagement configures that foundation to your systems — not rebuilds from scratch. Most engagements start with a working dashboard in weeks, not months. The exact timeline depends on data source complexity and how many KPI definitions need standardization.</div></details>
+    <details class="faq-item"><summary>Do you work with Canadian companies?<i class="fas fa-plus" aria-hidden="true"></i></summary><div class="faq-answer">Yes — Insight Analytics is based in Ontario, Canada. We serve mid-market Canadian and US companies ($5M–$50M revenue) with operations reporting that has gone stale: dashboards half the team trusts, refresh cadences that miss the standup, KPI definitions that drift from how the business actually counts them. <a href="/#contact">Book a working session &rarr;</a></div></details>
+  </div>
+
+  <div class="faq-cta">
+    <h2>Still have questions?</h2>
+    <p>Book a working session — bring your data warehouse connection and a list of KPIs. We'll set up a working dashboard before the meeting ends.</p>
+    <a href="/#contact" class="btn btn-primary btn-lg"><i class="fas fa-calendar-check" aria-hidden="true"></i> <span class="btn-text">Book a Demo</span></a>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a href="https://insight-analytics.ca/" class="brand footer-brand" aria-label="Insight Analytics home">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="iaGradFooter" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="30%" stop-color="#80deea"/><stop offset="60%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><rect x="2" y="8" width="16" height="84" fill="url(#iaGradFooter)"/><polygon points="21,92 34,92 60,8 47,8" fill="url(#iaGradFooter)"/><polygon points="85,92 98,92 73,8 60,8" fill="url(#iaGradFooter)"/></svg></span>
+          <span class="brand-name">Insight <b>Analytics</b></span>
+        </a>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="https://insight-analytics.ca/#services">Services</a>
+          <a href="https://insight-analytics.ca/#dashboard">Dashboard</a>
+          <a href="/blog/">Live Demos</a>
+          <a href="https://insight-analytics.ca/#contact">Contact</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-tagline">Insight Analytics · <em>Live truth on every desk.</em></span>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span>
+        <div class="social">
+          <a href="mailto:dev@insight-analytics.ca" aria-label="Email"><i class="fas fa-envelope"></i></a>
+          <a href="https://insight-analytics.ca/#dashboard" aria-label="Live Dashboards"><i class="fas fa-chart-pie"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do you build an AI dashboard?","acceptedAnswer":{"@type":"Answer","text":"Type a brief in plain English and the AI dashboard builder generates a complete spec with KPIs and chart tiles using Groq. Renders live with ECharts."}},{"@type":"Question","name":"What is natural language to dashboard?","acceptedAnswer":{"@type":"Answer","text":"Describe what you want in plain English and the system generates a complete dashboard spec that renders live. No SQL, no configuration."}},{"@type":"Question","name":"Can I see live dashboard demos?","acceptedAnswer":{"@type":"Answer","text":"Yes, 16+ interactive dashboards are live including supply chain, SaaS growth, banking risk, IT service health, and AR aging."}},{"@type":"Question","name":"Is the dashboard data real or synthetic?","acceptedAnswer":{"@type":"Answer","text":"All demo data is synthetic. Real customer data never ships to the browser."}},{"@type":"Question","name":"What technology stack do you use?","acceptedAnswer":{"@type":"Answer","text":"ECharts 5.5, Groq AI via Netlify edge proxy, GitHub Pages, SQL Server/Snowflake/BigQuery/Postgres/Oracle."}},{"@type":"Question","name":"What is ECharts?","acceptedAnswer":{"@type":"Answer","text":"Open-source JavaScript visualization library. Free, performant, mobile-friendly."}},{"@type":"Question","name":"What is Groq?","acceptedAnswer":{"@type":"Answer","text":"Fast AI inference engine running Qwen 3.8-27B. API key stays server-side."}},{"@type":"Question","name":"Do you work with SQL Server, Oracle, and Snowflake?","acceptedAnswer":{"@type":"Answer","text":"Yes. Technology-agnostic data pipelines."}},{"@type":"Question","name":"How is this different from Power BI?","acceptedAnswer":{"@type":"Answer","text":"Same ECharts engine as 50+ production deployments. AI at the center. Ships in weeks not months."}},{"@type":"Question","name":"What is deterministic AI metadata discovery?","acceptedAnswer":{"@type":"Answer","text":"Walks databases and extracts business rules from stored procedures. AI narrates what was proved. No hallucination."}},{"@type":"Question","name":"What is a no-hallucination AI dashboard?","acceptedAnswer":{"@type":"Answer","text":"Uses deterministic metadata discovery. AI never invents KPIs or fabricates data."}},{"@type":"Question","name":"What is an AI executive brief?","acceptedAnswer":{"@type":"Answer","text":"4-part narrative: What happened, Why, What to expect, What to do. Grounded in actual data."}},{"@type":"Question","name":"What is metadata discovery and data lineage?","acceptedAnswer":{"@type":"Answer","text":"Extracts business rules from code. Traces data flow from source to reports."}},{"@type":"Question","name":"What is automated data pipeline automation?","acceptedAnswer":{"@type":"Answer","text":"6-stage pipeline: Signals, Integrate, Standardize, Intelligence, Deliver, Act & Learn."}},{"@type":"Question","name":"What is the Monday-morning operating model?","acceptedAnswer":{"@type":"Answer","text":"Automated brief arrives before the meeting. AI ranks changes, explains drivers, flags risks."}},{"@type":"Question","name":"Can you automate PowerPoint and Excel?","acceptedAnswer":{"@type":"Answer","text":"Yes. Governed extracts, variance analysis, Excel/PowerPoint/PDF generation."}},{"@type":"Question","name":"Do you offer Excel to dashboard conversion?","acceptedAnswer":{"@type":"Answer","text":"Yes. Upload Excel, describe what to do, system builds an executable pipeline."}},{"@type":"Question","name":"What is fuzzy address matching?","acceptedAnswer":{"@type":"Answer","text":"Reconciles records without a common key using Jaro-Winkler and Nominatim Geo API."}},{"@type":"Question","name":"Can you build supply chain dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. OTIF, carrier scorecards, lane heatmaps, AI disruption prediction."}},{"@type":"Question","name":"Can you build banking risk dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. LCR, VaR, fraud alerts, credit risk heatmap, liquidity waterfall."}},{"@type":"Question","name":"Can you build IT operations dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. Ticket SLA, uptime, security posture, MTTR."}},{"@type":"Question","name":"Can you build utility analytics dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. Load forecasting, AR aging, usage explorers."}},{"@type":"Question","name":"Can you build SaaS growth dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. ARR, NRR, cohort retention, waterfall, save plays."}},{"@type":"Question","name":"Can you build AR aging dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. Aging by customer type, payment trends, collections."}},{"@type":"Question","name":"Do you offer contact center analytics?","acceptedAnswer":{"@type":"Answer","text":"Yes. Genesys Cloud integration, call volume, handling times, abandoned calls."}},{"@type":"Question","name":"Can you build security training dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. KnowBe4 phishing, training completion, security posture."}},{"@type":"Question","name":"Do you offer predictive analytics?","acceptedAnswer":{"@type":"Answer","text":"Yes. OLS regression, change-point detection, time series prediction."}},{"@type":"Question","name":"Do you build custom web applications?","acceptedAnswer":{"@type":"Answer","text":"Yes. Operational web apps, inventory, lifecycle transactions."}},{"@type":"Question","name":"How long does a dashboard project take?","acceptedAnswer":{"@type":"Answer","text":"Foundation already running. Weeks not months."}},{"@type":"Question","name":"Do you work with Canadian companies?","acceptedAnswer":{"@type":"Answer","text":"Yes. Ontario-based. Serves CA and US mid-market."}}]}
+  </script>
+
+  <script src="/js/app.js?v=4.98.0" defer></script>
+  <script src="/js/sw-register.js?v=4.99.0" defer></script>
+</body>
+</html>
