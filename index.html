@@ -1173,11 +1173,11 @@
   }
 
   // Footer badge fetch
-  fetch(EP + '?op=stats', { headers: { 'Origin': ORIGIN } })
+  fetch(EP + '?op=stats&cb=' + Date.now(), { cache: 'no-store', headers: { 'Origin': ORIGIN } })
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var el = document.getElementById('signalValue');
-      if (el) el.textContent = d.visits || 0;
+      if (el) el.textContent = (d.visits || 0) + ' · ' + (d.ips || 0);
     })
     .catch(function() {});
 
@@ -1241,7 +1241,7 @@
   function fetchState() {
     var siteQs = currentSite !== 'combined' ? '&site=' + currentSite : '';
     var url = EP + '?op=visits&password=' + encodeURIComponent(key) + siteQs;
-    fetch(url, { headers: { 'Origin': ORIGIN } })
+    fetch(url, { cache: 'no-store', headers: { 'Origin': ORIGIN } })
       .then(function(r) { return r.status === 403 ? null : r.json(); })
       .then(function(data) {
         if (!data) { stopRefresh(); panel.style.display = 'none'; return; }
@@ -1249,7 +1249,7 @@
       })
       .catch(function() {});
     var devUrl = EP + '?op=devices&password=' + encodeURIComponent(key) + siteQs;
-    fetch(devUrl, { headers: { 'Origin': ORIGIN } })
+    fetch(devUrl, { cache: 'no-store', headers: { 'Origin': ORIGIN } })
       .then(function(r) { return r.status === 403 ? null : r.json(); })
       .then(function(d) {
         if (d) renderAllHistory(d);
@@ -1452,7 +1452,7 @@
     var k = input.value;
     if (!k) { error.textContent = 'Enter access key'; error.style.display = 'block'; return; }
     var url = EP + '?op=visits&password=' + encodeURIComponent(k);
-    fetch(url, { headers: { 'Origin': ORIGIN } })
+    fetch(url, { cache: 'no-store', headers: { 'Origin': ORIGIN } })
       .then(function(r) {
         if (r.status === 403) { error.textContent = 'Wrong access key'; error.style.display = 'block'; return null; }
         return r.json();
