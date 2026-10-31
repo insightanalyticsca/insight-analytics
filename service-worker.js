@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.98.0-nuclear-cache-clear';
+const VERSION = 'v5.22.0-faq-nav';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,16 +19,12 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './css/styles.css?v=4.93.0',
-  './js/app.js?v=4.93.0',
-  './js/hero-animation.js?v=4.93.0',
-  './js/pull-to-refresh.js?v=4.93.0',
-  './js/assistant.js?v=4.93.0',
-  './js/blog-markets-dashboard.js?v=4.93.0',
-  './js/blog-pipeline-builder.js?v=4.93.0',
-  './js/blog-fuzzy-match.js?v=4.93.0',
-  './js/sw-register.js?v=4.93.0',
-  './js/blog-load-forecast.js?v=4.93.0',
+  './css/styles.css?v=4.94.0',
+  './js/app.js?v=4.99.5-dual-phone',
+  './js/hero-animation.js?v=4.94.0',
+  './js/pull-to-refresh.js?v=4.94.0',
+  './js/sw-register.js?v=4.99.0',
+  './js/ai-search.js?v=3.1.0-fix-links',
   './data/groq-config.json',
   './manifest.json',
   './icons/icon-192.png',
@@ -50,17 +46,14 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  // NUCLEAR: delete ALL caches (including current ones) to force
-  // complete re-fetch of every resource. This fixes the PWA showing
-  // stale data because old cached HTML/JS was being served.
   event.waitUntil(
     caches.keys().then((keys) => {
-      console.log('[SW] Deleting ALL caches:', keys);
-      return Promise.all(keys.map((key) => caches.delete(key)));
-    }).then(() => {
-      console.log('[SW] All caches deleted. Forcing fresh fetch.');
-      return self.clients.claim();
-    })
+      return Promise.all(
+        keys
+          .filter((key) => key !== STATIC_CACHE && key !== RUNTIME_CACHE)
+          .map((key) => caches.delete(key))
+      );
+    }).then(() => self.clients.claim()) // Take control of open tabs immediately
   );
 });
 
