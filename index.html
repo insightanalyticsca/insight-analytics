@@ -1173,7 +1173,7 @@
   }
 
   // Footer badge fetch
-  fetch(EP + '?op=stats&_t=' + Date.now()&cb=' + Date.now(), { cache: 'no-store', headers: { 'Origin': ORIGIN } })
+  fetch(EP + '?op=stats&_t=' + Date.now(), { cache: 'no-store', headers: { 'Origin': ORIGIN } })
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var el = document.getElementById('signalValue');
