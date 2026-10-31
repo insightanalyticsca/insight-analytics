@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v4.97.0-fix-ep-to-netlify';
+const VERSION = 'v4.98.0-nuclear-cache-clear';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -50,14 +50,17 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
+  // NUCLEAR: delete ALL caches (including current ones) to force
+  // complete re-fetch of every resource. This fixes the PWA showing
+  // stale data because old cached HTML/JS was being served.
   event.waitUntil(
     caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((key) => key !== STATIC_CACHE && key !== RUNTIME_CACHE)
-          .map((key) => caches.delete(key))
-      );
-    }).then(() => self.clients.claim()) // Take control of open tabs immediately
+      console.log('[SW] Deleting ALL caches:', keys);
+      return Promise.all(keys.map((key) => caches.delete(key)));
+    }).then(() => {
+      console.log('[SW] All caches deleted. Forcing fresh fetch.');
+      return self.clients.claim();
+    })
   );
 });
 
