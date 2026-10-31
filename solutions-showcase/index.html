@@ -114,6 +114,32 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
   .site-header.menu-open nav[aria-label="Main navigation"] a{width:100%}
 }
 
+/* ─── Showcase navbar mobile fix ─────────────────────────────────────
+   The .atmosphere fieldset (5 theme radios) lives inline in the site navbar
+   (.navbar from /css/styles.css). On phones it eats ~250px+ and pushes the
+   hamburger (.menu-toggle) off the right edge of the screen — making the
+   mobile menu unreachable. Hide .atmosphere inline on small screens and
+   surface the same theme picker inside the .mobile-menu drawer instead.
+   --------------------------------------------------------------------- */
+@media (max-width: 860px){
+  .navbar .atmosphere{display:none}
+  .mobile-menu .atmosphere{
+    display:flex;flex-wrap:wrap;gap:6px;margin-top:18px;padding-top:18px;
+    border-top:1px solid var(--border);
+  }
+  .mobile-menu .atmosphere legend{display:block;width:100%;font-size:0.7rem;
+    text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);
+    margin-bottom:10px;font-weight:600}
+  .mobile-menu .atmosphere .theme-choice{
+    flex:1 1 calc(50% - 6px);min-width:120px;justify-content:flex-start;
+    padding:9px 12px;font-size:0.72rem;border:1px solid var(--border);border-radius:8px}
+  .mobile-menu .atmosphere .theme-choice span{font-size:0.72rem}
+  .mobile-menu .atmosphere .theme-dot{width:12px;height:12px}
+}
+@media (min-width: 861px){
+  .mobile-menu .atmosphere{display:none}
+}
+
 /* ─── Content area — apply site's rounded card style ─────────────────── */
 main{max-width:1200px;margin:0 auto;padding:40px 24px}
 .hero,.reporting-hero{
@@ -593,6 +619,14 @@ html[data-theme="daybreak"] .trace-top{border-color:#15324c12}
     <a href="/blog/" class="nav-link" role="menuitem">Live Demos</a>
     <a href="/#contact" class="nav-link" role="menuitem">Contact</a>
     <a href="/#contact" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Book a Demo</a>
+    <fieldset class="atmosphere" aria-label="Visual theme">
+      <legend>Visual theme</legend>
+      <label class="theme-choice" title="Insight: indigo and cyan on navy (matches insight-analytics.ca)"><input type="radio" name="atlas-theme-mobile" value="insight" data-set-theme="insight" checked><i class="theme-dot insight" aria-hidden="true"></i><span>Insight</span></label>
+      <label class="theme-choice" title="Ion: cyan and electric blue"><input type="radio" name="atlas-theme-mobile" value="ion" data-set-theme="ion"><i class="theme-dot ion" aria-hidden="true"></i><span>Ion</span></label>
+      <label class="theme-choice" title="Nebula: violet and ultraviolet"><input type="radio" name="atlas-theme-mobile" value="nebula" data-set-theme="nebula"><i class="theme-dot nebula" aria-hidden="true"></i><span>Nebula</span></label>
+      <label class="theme-choice" title="Solar: amber and molten orange"><input type="radio" name="atlas-theme-mobile" value="solar" data-set-theme="solar"><i class="theme-dot solar" aria-hidden="true"></i><span>Solar</span></label>
+      <label class="theme-choice" title="Daybreak: a light palette with blue and violet"><input type="radio" name="atlas-theme-mobile" value="daybreak" data-set-theme="daybreak"><i class="theme-dot daybreak" aria-hidden="true"></i><span>Daybreak</span></label>
+    </fieldset>
   </div>
   <main id="top">
     <section class="hero reporting-hero" aria-labelledby="hero-title"><div class="hero-grid" aria-hidden="true"></div><div class="reporting-hero-layout"><div class="hero-copy"><p class="eyebrow"><span class="signal-dot"></span> THE APPS COLLECTION / 2026</p><h1 id="hero-title">AI &amp; automation.<br><span>Built into the work.</span></h1><p class="hero-description">Operational apps that ingest, validate, calculate, explain and deliver.<br>Explore the interface — then trace what happens underneath.</p><a class="primary-link" href="#projects">Explore the app previews <span aria-hidden="true">&#8599;</span></a><div class="reporting-stats"><div><strong><span data-project-count>36</span></strong><span>APPS, REPORTS &amp; TOOLS</span></div><div><strong><span data-ai-count>7</span></strong><span>AI / ML WORKFLOWS</span></div><div><strong>04</strong><span>VISUAL ATMOSPHERES</span></div></div><p class="hero-preview-note">Open any project to explore a representative experience, the evidence it consumes, and the production path behind it. Portfolio values and names are fictional.</p></div><div class="hero-app-preview"><!-- ATLAS_HERO_PREVIEW_START -->
@@ -1627,6 +1661,44 @@ initWorkflows();
 <script>
 (function() {
   'use strict';
+
+  // ─── Mobile nav menu (hamburger) ────────────────────────────────────
+  // The site's app.js (which normally wires this up) is intentionally not
+  // loaded on the showcase page — see bottom comment. Without this, tapping
+  // the hamburger on mobile does nothing. Wire it up here.
+  var menuToggle = document.getElementById('menu-toggle');
+  var mobileMenu = document.getElementById('mobile-menu');
+  function openMobileMenu() {
+    if (!mobileMenu) return;
+    mobileMenu.classList.add('is-open');
+    if (menuToggle) { menuToggle.classList.add('is-open'); menuToggle.setAttribute('aria-expanded', 'true'); }
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMobileMenu() {
+    if (!mobileMenu) return;
+    mobileMenu.classList.remove('is-open');
+    if (menuToggle) { menuToggle.classList.remove('is-open'); menuToggle.setAttribute('aria-expanded', 'false'); }
+    document.body.style.overflow = '';
+  }
+  function toggleMobileMenu() {
+    if (!mobileMenu) return;
+    if (mobileMenu.classList.contains('is-open')) closeMobileMenu();
+    else openMobileMenu();
+  }
+  if (menuToggle) menuToggle.addEventListener('click', function(e){ e.stopPropagation(); toggleMobileMenu(); });
+  document.addEventListener('click', function(e) {
+    if (!mobileMenu || !mobileMenu.classList.contains('is-open')) return;
+    if (mobileMenu.contains(e.target) || (menuToggle && menuToggle.contains(e.target))) return;
+    closeMobileMenu();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('is-open')) closeMobileMenu();
+  });
+  if (mobileMenu) {
+    mobileMenu.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', closeMobileMenu);
+    });
+  }
 
   // ─── Console banner ────────────────────────────────────────────────
   console.log(

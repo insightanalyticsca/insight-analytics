@@ -707,7 +707,7 @@ No H2 headers. No bullet lists. No preamble like "Here is the summary". No news-
       });
       
       writeFileSync(join(REPO_ROOT, 'insights', slug + '.html'), postHTML);
-      generated.push({ slug, title: cleanTitle, category, dateStr: DATE_STR, readTime: 3 });
+      generated.push({ slug, title: cleanTitle, category, dateStr: DATE_STR, readTime: 3, sourceName: item.feedName || 'Original article' });
       console.log(`  ✅ Generated: insights/${slug}.html (category=${category})`);
     }
   }
@@ -731,6 +731,7 @@ No H2 headers. No bullet lists. No preamble like "Here is the summary". No news-
       // Build the new card HTML FIRST
       const newCards = generated.map(post => {
         const dateFormatted = new Date(post.dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const sourceLine = post.sourceName ? `\n    <div class=\"card-source\" style=\"margin-top:8px;font-size:0.78rem;color:var(--muted,#94a3b8);font-weight:500;\">${escHtml(post.sourceName)}</div>` : '';
         return `    <a href="/insights/${post.slug}" class="insight-card">
       <div class="card-eyebrow">${post.category}</div>
       <h2>${escHtml(post.title.replace(/&#8217;/g, "'").replace(/&#8216;/g, "'").replace(/&amp;/g, '&').replace(/&#8211;/g, '-'))}</h2>
@@ -741,7 +742,7 @@ No H2 headers. No bullet lists. No preamble like "Here is the summary". No news-
         <span>${dateFormatted}</span>
         <span class="sep">·</span>
         <span>${post.readTime} min read</span>
-      </div>
+      </div>${sourceLine}
     </a>
 `;
       }).join('');
