@@ -114,6 +114,15 @@
 
   var PAGES = [
     { url: '/', title: 'Home — Insight Analytics', desc: 'Executive operating dashboards, AI-assisted briefs, automated data pipelines. 8-step methodology, 50+ production deployments.' },
+    { url: '/demos/', title: 'Live Demos — Production-Ready Pipelines', desc: '7 interactive demos: AI dashboard builder, universal dashboard builder, weather load forecast, fuzzy address matching, power automate, database archaeology, time series prediction. Each runs the same code as production.' },
+    { url: '/demos/ai-dashboard-builder', title: 'AI-Assisted Dashboard Builder', desc: 'Type a brief or pick a preset template, Groq generates a complete dashboard spec (4 KPIs + 4 chart tiles), renders live with ECharts. 6 presets: SaaS, utility, customer service, supply chain, banking, IT ops.' },
+    { url: '/demos/universal-dashboard-builder', title: 'Universal Dashboard Builder', desc: 'Live markets & finance dashboard: S&P 500, NASDAQ, crypto (BTC/ETH), sector heatmap, FX rates, AI market brief streaming from Groq. All data live from Yahoo Finance + Binance.' },
+    { url: '/demos/weather-load-forecast', title: 'Weather-Driven Load Forecasting', desc: 'Real weather data, interpretable OLS model, 14-day forecast with operational recommendations + AI explanations.' },
+    { url: '/demos/fuzzy-address-matching', title: 'Fuzzy Address Matching', desc: 'Fuzzy-matches customer records to service orders by address, validates against Nominatim Geo API, AI narrates results.' },
+    { url: '/demos/personalized-power-automate', title: 'Personalized Power Automate', desc: 'Upload Excel/Word/PDF, describe what to do in plain English, AI constructs an executable pipeline (filter, summarize, sort, email).' },
+    { url: '/demos/database-archaeology', title: 'Database Archaeology', desc: 'Automated archaeologist that walks through legacy databases, mapping dependencies and explaining logic with AI.' },
+    { url: '/demos/universal-time-series-prediction', title: 'Universal Time Series Prediction', desc: 'A predictor that takes any time series — earthquakes, crypto, climate — and produces forecasts with model benchmarks + AI insights.' },
+
     { url: '/#services', title: 'Services', desc: 'Dashboard development, AI integration, data pipelines, predictive analytics, .NET web applications.' },
     { url: '/#dashboard', title: 'Live Dashboard Demo', desc: 'Interactive executive dashboards: supply chain, retail operations, IT service health, customer payments, eBill performance.' },
     { url: '/#cases', title: 'Case Studies', desc: '5 production deployments: supply chain OTIF, retail revenue mix, field operations, eBill adoption, IT service operations.' },
