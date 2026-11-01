@@ -75,13 +75,6 @@
 
     '═══ SITE ASSETS (all live URLs) ═══',
     'Main site: insight-analytics.ca — landing page with services, dashboard showcase, case studies, contact form, live visitor tracker, and the contact bot.',
-    'Live Demos (blog): insight-analytics.ca/blog/ — 6 interactive demos, each running the same code as production:',
-    '  1. AI-Assisted Dashboard Builder — insight-analytics.ca/blog/ai-dashboard-builder — type a brief or pick a preset, Groq generates a complete dashboard spec (4 KPIs + 4 chart tiles), renders live with ECharts. 6 preset templates (SaaS / utility / customer service / supply chain / banking / IT ops).',
-    '  2. Universal Dashboard Builder — insight-analytics.ca/blog/universal-dashboard-builder — the original dashboard builder demo, markets the platform across 50+ production deployments.',
-    '  3. Weather-Driven Load Forecasting — insight-analytics.ca/blog/weather-load-forecast — real weather from Open-Meteo + interpretable OLS regression model with change-point detection. 14-day forecast with AI explanations.',
-    '  4. Fuzzy Address Matching — insight-analytics.ca/blog/fuzzy-address-matching — fuzzy-matches customer records to service orders by address, validates against Nominatim Geo API, AI narrates results.',
-    '  5. Personalized Power Automate — insight-analytics.ca/blog/personalized-power-automate — upload Excel/Word/PDF, describe what to do in plain English, AI constructs an executable pipeline (filter, summarize, sort, email).',
-    '  6. Universal Time Series Prediction — insight-analytics.ca/blog/universal-time-series-prediction — takes any time series (earthquakes, crypto, climate, economic data), produces forecasts + model benchmarks + AI insights.',
     'Solutions Showcase: insight-analytics.ca/solutions-showcase/ — interactive application catalog with 36 projects + 7 AI/ML workflows. 5 visual themes (Insight/Ion/Nebula/Solar/Daybreak). Each project opens a detail dialog with illustrative data, architecture trace, and production path.',
     'AI Insights: insight-analytics.ca/insights/ — curated business strategy articles covering AI, supply chain, sustainability, finance, and leadership topics.',
     'Dashboards gallery: insightanalyticsca.github.io/dashboards/ — 16+ interactive dashboards across executive operations, CSR (customer service), and IT service management. Includes AR aging, payment trends, ticket SLA, security posture, uptime monitoring, and more. Each with AI executive briefs.',

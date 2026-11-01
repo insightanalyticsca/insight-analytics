@@ -1,14 +1,14 @@
 /*
  * sw-register.js — shared service worker registration + update flow.
  *
- * Included on ALL pages (main site + blog posts) so that:
+ * Included on ALL pages so that:
  *   1. reg.update() is called on every page load → browser checks for new
  *      SW immediately (bypasses the 24h throttle)
  *   2. controllerchange listener reloads the page when a new SW activates
  *   3. Force-refresh button appears when an update is pending
  *
  * Uses ABSOLUTE paths (/service-worker.js, scope: /) so it works from
- * any page on the site regardless of URL depth (e.g. /blog/some-post).
+ * any page on the site regardless of URL depth.
  */
 (function () {
   'use strict';
