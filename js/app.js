@@ -272,7 +272,11 @@
     "IntersectionObserver" in window
   ) {
     const src = showcaseFrame.getAttribute("data-src");
-    if (src) showcaseFrame.removeAttribute("src");
+    // Only set up the lazy-load IntersectionObserver if we're NOT navigating to a hash.
+    // If we ARE (e.g. user clicked /#contact in the hamburger menu), the
+    // applyHashTargetFix() already forced iframe.src to load eagerly — don't
+    // remove it again or the iframe never loads and target position is wrong.
+    if (src && !location.hash) showcaseFrame.removeAttribute("src");
     const fio = new IntersectionObserver(
       function (entries, observer) {
         entries.forEach(function (entry) {
