@@ -164,13 +164,25 @@
       el.classList.add('is-visible');
     });
     var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
-    requestAnimationFrame(function() {
+    // Force iframe to load eagerly (in case it hasn't started yet)
+    var iframe = document.getElementById("dashboard-iframe");
+    var iframeJustStarted = false;
+    if (iframe && iframe.dataset.src && !iframe.src) {
+      iframe.src = iframe.dataset.src;
+      iframeJustStarted = true;
+    }
+    function doScroll() {
       var top = target.getBoundingClientRect().top + window.scrollY - navH;
-      // Use 'auto' (instant) instead of 'smooth' — smooth-scroll takes 1+ second
-      // during which the iframe loads + grows the page, causing the target
-      // position to shift by the time the animation finishes.
-      window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
-    });
+      window.scrollTo(0, Math.max(0, top));
+    }
+    // If we just kicked off the iframe load, the page height is going to
+    // change dramatically when it finishes (iframe is ~628px tall).
+    // Do an immediate scroll (so user sees something happen), then again
+    // after iframe loads (final position).
+    doScroll();
+    if (iframe && iframeJustStarted) {
+      iframe.addEventListener("load", doScroll, { once: true });
+    }
   }
 
   // Intercept same-page hash link clicks across the whole document

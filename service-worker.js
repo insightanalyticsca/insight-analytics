@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v5.38.0-capture';
+const VERSION = 'v5.39.0-iframe-load';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -20,7 +20,7 @@ const APP_SHELL = [
   './',
   './index.html',
   './css/styles.css?v=4.94.0',
-  './js/app.js?v=5.38.0-capture',
+  './js/app.js?v=5.39.0-iframe-load',
   './js/hero-animation.js?v=4.94.0',
   './js/pull-to-refresh.js?v=4.94.0',
   './js/sw-register.js?v=4.99.0',
