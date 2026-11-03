@@ -158,7 +158,7 @@
       iframe.src = iframe.dataset.src;
     }
 
-    // 3. Scroll to target. Repeat 4x: now, after iframe loads, at 1s, at 2s.
+    // 3. Scroll to target. Multiple retries to cover iframe settling + image loads.
     var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
     function scrollToTarget() {
       var top = target.getBoundingClientRect().top + window.scrollY - navH;
@@ -168,8 +168,10 @@
     if (iframe) {
       iframe.addEventListener("load", scrollToTarget);
     }
-    setTimeout(scrollToTarget, 1000);
-    setTimeout(scrollToTarget, 2000);
+    // Safety: scroll at 500ms, 1.5s, 3s to cover iframe settling + image loads
+    setTimeout(scrollToTarget, 500);
+    setTimeout(scrollToTarget, 1500);
+    setTimeout(scrollToTarget, 3000);
   }
 
   if (document.readyState !== "loading") {
