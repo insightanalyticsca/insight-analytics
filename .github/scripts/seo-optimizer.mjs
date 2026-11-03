@@ -27,7 +27,7 @@ const TODAY = NOW.split('T')[0];
 
 // ─── Page classifier: determines page type for schema ────────────────────
 function classifyPage(relPath, html) {
-  if (relPath === "index.html") return { type: "home",, schemaType: 'WebSite', priority: '1.0' };
+  if (relPath === "index.html") return { type: "home", schemaType: 'WebSite', priority: '1.0' };
   if (relPath === 'visuals.html') return { type: 'gallery', schemaType: 'CollectionPage', priority: '0.9' };
   if (relPath.includes('executive')) return { type: 'executive', schemaType: 'Article', priority: '0.8' };
   if (relPath.includes('csr-')) return { type: 'csr', schemaType: 'Article', priority: '0.7' };
@@ -674,7 +674,7 @@ Content: ${content.text.slice(0, 800)}`);
         if (html.match(/<meta\s+name=["']keywords["']/i)) {
           html = html.replace(/<meta\s+name=["']keywords["']\s+content=["'][^"']*["']/is, `<meta name="keywords" content="${escAttr(seo.keywords)}">`);
         } else {
-          html = html.replace(/</head>/i, m => `  <meta name="keywords" content="${escAttr(seo.keywords)}">\n${m}`);
+          html = html.replace(/<\/head>/i, m => `  <meta name="keywords" content="${escAttr(seo.keywords)}">\n${m}`);
         }
         changeLog.keywords = seo.keywords;
       }
