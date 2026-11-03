@@ -130,6 +130,59 @@
   }
 
   /* ------------------------------------------------------------------
+   * Hash-link scroll fix — when you click /#contact from another page,
+   * the browser navigates to / and tries to scroll to #contact. But the
+   * page has reveal animations + lazy-loaded content (dashboard iframe,
+   * images) that change layout height AFTER the initial scroll. Result:
+   * the browser scrolled to where #contact WAS before the reveals
+   * triggered, which is somewhere in the middle of the page.
+   *
+   * Fix: on page load, if URL has a hash, find the target element, then
+   * poll its position for ~2s and re-scroll to it whenever its position
+   * changes. Stops as soon as the position is stable.
+   * ------------------------------------------------------------------ */
+  function scrollToHashTarget() {
+    if (!location.hash) return;
+    var targetId = location.hash.slice(1);
+    var target = document.getElementById(targetId);
+    if (!target) return;
+
+    // Account for fixed navbar height so target section isn't hidden behind it
+    var navH = 72;
+    var navbar = document.getElementById("navbar");
+    if (navbar) navH = navbar.offsetHeight || 72;
+
+    var lastTop = -1;
+    var stableCount = 0;
+    var attempts = 0;
+    var maxAttempts = 40; // 40 × 50ms = 2s max
+
+    function doScroll() {
+      var rect = target.getBoundingClientRect();
+      var newTop = Math.round(rect.top + window.scrollY) - navH;
+      if (newTop !== lastTop) {
+        lastTop = newTop;
+        stableCount = 0;
+        window.scrollTo(0, Math.max(0, newTop));
+      } else {
+        stableCount++;
+      }
+      attempts++;
+      if (stableCount < 3 && attempts < maxAttempts) {
+        setTimeout(doScroll, 50);
+      }
+    }
+    // Run after a small delay to let the browser's own hash-scroll attempt finish
+    setTimeout(doScroll, 100);
+  }
+
+  if (document.readyState === "complete") {
+    scrollToHashTarget();
+  } else {
+    window.addEventListener("load", scrollToHashTarget);
+  }
+
+  /* ------------------------------------------------------------------
    * Scroll-reveal animations (IntersectionObserver)
    * ------------------------------------------------------------------ */
   const revealEls = document.querySelectorAll(".reveal");
