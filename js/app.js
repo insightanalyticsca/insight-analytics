@@ -130,23 +130,19 @@
   }
 
   /* ------------------------------------------------------------------
-   * Hash-link scroll fix — make it work like the native browser behavior
-   * (instant scroll to #target).
+   * Hash-link scroll fix — restore instant native anchor-link UX.
    *
-   * Why this is needed: the dashboard iframe is lazy-loaded AND there are
-   * scroll-reveal animations. Both defer the page's final layout. When you
-   * arrive with /#contact, the browser tries to scroll before layout is
-   * settled, landing you in the middle of the page.
+   * Root cause: dashboard iframe is lazy-loaded via IntersectionObserver +
+   * data-src attribute. When you arrive with /#contact, the iframe hasn't
+   * loaded yet, but the IntersectionObserver that would lazy-load it isn't
+   * set up yet either. The browser tries to scroll before any of this
+   * settles, landing in the middle of the page.
    *
    * Fix:
-   *   1. Mark all .reveal elements visible immediately (so they take their
-   *      final layout slot).
-   *   2. Eagerly load the dashboard iframe (skip lazy-load). The iframe
-   *      parent .browser-frame already has fixed CSS height (960px desktop,
-   *      560px mobile), so the iframe loading doesn't shift page layout.
-   *   3. Wait for window 'load' event (not DOMContentLoaded) — that fires
-   *      after all images + iframe have finished loading, so layout is
-   *      truly settled. Then do ONE scroll call.
+   *   1. Mark all .reveal elements visible immediately.
+   *   2. Eagerly set iframe.src.
+   *   3. Single scroll call after a requestAnimationFrame (lets layout
+   *      recalc from steps 1+2 flush before measuring target position).
    * ------------------------------------------------------------------ */
   function applyHashTargetFix() {
     if (!location.hash) return;
@@ -159,18 +155,15 @@
     });
 
     // 2. Force eager-load of dashboard iframe (skip lazy-load delay).
-    //    The IntersectionObserver below is gated on !location.hash
-    //    so it won't strip the src we just set.
     var iframe = document.getElementById("dashboard-iframe");
     if (iframe && iframe.dataset.src && !iframe.src) {
       iframe.src = iframe.dataset.src;
     }
 
-    // 3. Scroll to target. Use a microtask (Promise.resolve) to let the
-    //    layout recalc from steps 1+2 flush before we measure target position.
-    //    This gives us the FINAL position in one scroll — no retries.
+    // 3. Single scroll call after a rAF — lets the layout recalc flush.
+    //    No retries, no staged scrolling.
     var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
-    Promise.resolve().then(function() {
+    requestAnimationFrame(function() {
       var top = target.getBoundingClientRect().top + window.scrollY - navH;
       window.scrollTo(0, Math.max(0, top));
     });
