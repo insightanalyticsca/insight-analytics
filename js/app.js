@@ -159,6 +159,9 @@
     }
 
     // 3. Scroll to target. Multiple retries to cover iframe settling + image loads.
+    //    The dashboard iframe can take 3+ seconds to fully load on real devices,
+    //    and its load event fires BEFORE its internal layout settles, so we need
+    //    retries at progressively later time points.
     var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
     function scrollToTarget() {
       var top = target.getBoundingClientRect().top + window.scrollY - navH;
@@ -168,10 +171,11 @@
     if (iframe) {
       iframe.addEventListener("load", scrollToTarget);
     }
-    // Safety: scroll at 500ms, 1.5s, 3s to cover iframe settling + image loads
+    // Safety: scroll at 500ms, 1.5s, 3s, 4.5s to cover iframe settling + image loads
     setTimeout(scrollToTarget, 500);
     setTimeout(scrollToTarget, 1500);
     setTimeout(scrollToTarget, 3000);
+    setTimeout(scrollToTarget, 4500);
   }
 
   if (document.readyState !== "loading") {
