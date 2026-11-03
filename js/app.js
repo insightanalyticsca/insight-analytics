@@ -130,133 +130,45 @@
   }
 
   /* ------------------------------------------------------------------
-   * Smooth-scroll for same-page hash links (in the mobile menu).
+   * Smooth scroll for in-page anchors — RESTORED from the original
+   * implementation (commit 73dd1ea). Extended to also match "/#foo"
+   * links when we're on the home page, since the site nav now uses
+   * absolute paths ("/#services") instead of pure hashes ("#services").
    *
-   * When you click /#contact from the homepage itself (not from another
-   * page), the browser's default behavior is to jump to #contact. But
-   * with reveal animations + lazy iframe, the page layout isn't settled
-   * and the browser's hash-scroll lands wrong + keeps re-scrolling as
-   * layout shifts (the "staged scrolling" UX problem).
-   *
-   * Fix: intercept clicks on hash links pointing to the current page.
-   * Mark all reveals visible + scroll to target in one smooth motion.
-   * Use history.pushState so the URL bar updates without triggering the
-   * browser's native hash-scroll.
+   * This is the handler that made hash links feel instant when the site
+   * was first built: click → preventDefault → one smooth scroll. No
+   * reveal forcing, no iframe eager-loading, no retry loops.
    * ------------------------------------------------------------------ */
-  function isSamePageHashLink(href) {
-    if (!href || !href.includes('#')) return false;
-    var path = href.split('#')[0];
-    var hash = href.split('#')[1];
-    if (!hash) return false;
-    // Same page if path is empty, '/', or matches current path
-    if (!path || path === '' || path === '/' || path === window.location.pathname ||
-        path === window.location.origin + window.location.pathname) {
-      return true;
-    }
-    return false;
-  }
-
-  function smoothScrollToTarget(targetId) {
-    var target = document.getElementById(targetId);
-    if (!target) return;
-    // Mark all reveals visible so layout is settled before we measure
-    document.querySelectorAll('.reveal, [data-stagger-item]').forEach(function(el) {
-      el.classList.add('is-visible');
+  document.querySelectorAll('a[href^="#"], a[href^="/#"]').forEach(function (link) {
+    link.addEventListener("click", function (e) {
+      const href = link.getAttribute("href");
+      if (!href || href === "#" || href.length < 2) return;
+      const hashIndex = href.indexOf("#");
+      if (hashIndex === -1) return;
+      const hash = href.slice(hashIndex); // e.g. "#contact"
+      const pathPart = href.slice(0, hashIndex); // e.g. "" or "/"
+      // Only intercept same-page links:
+      //   "#foo"      → pathPart "" → always same page
+      //   "/#foo"     → pathPart "/" → same page only if we're on "/"
+      //   "/faq/#foo" → pathPart "/faq/" → same page only if we're on "/faq/"
+      if (pathPart && pathPart !== window.location.pathname) return;
+      const target = document.querySelector(hash);
+      if (!target) return;
+      e.preventDefault();
+      const navHeight = nav ? nav.offsetHeight : 0;
+      const top =
+        target.getBoundingClientRect().top + window.scrollY - navHeight - 12;
+      window.scrollTo({ top: top, behavior: "smooth" });
+      // Close mobile menu if open
+      closeMobileMenu();
     });
-    var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
-    // Force iframe to load eagerly (in case it hasn't started yet)
-    var iframe = document.getElementById("dashboard-iframe");
-    var iframeJustStarted = false;
-    if (iframe && iframe.dataset.src && !iframe.src) {
-      iframe.src = iframe.dataset.src;
-      iframeJustStarted = true;
-    }
-    function doScroll() {
-      var top = target.getBoundingClientRect().top + window.scrollY - navH;
-      window.scrollTo(0, Math.max(0, top));
-    }
-    // If we just kicked off the iframe load, the page height is going to
-    // change dramatically when it finishes (iframe is ~628px tall).
-    // Do an immediate scroll (so user sees something happen), then again
-    // after iframe loads (final position).
-    doScroll();
-    if (iframe && iframeJustStarted) {
-      iframe.addEventListener("load", doScroll, { once: true });
-    }
-  }
-
-  // Intercept same-page hash link clicks across the whole document
-  document.addEventListener("click", function(e) {
-    var link = e.target.closest('a');
-    if (!link) return;
-    var href = link.getAttribute('href');
-    if (!isSamePageHashLink(href)) return;
-    var hash = href.split('#')[1];
-    if (!hash) return;
-    e.preventDefault();
-    smoothScrollToTarget(hash);
-    // Update URL bar without triggering browser's native scroll
-    history.pushState(null, '', '#' + hash);
-  }, true);  // capture phase — runs BEFORE browser's default action
-
-  /* ------------------------------------------------------------------
-   * Hash-link scroll fix — restore instant native anchor-link UX.
-   *
-   * Root cause: dashboard iframe is lazy-loaded via IntersectionObserver +
-   * data-src attribute. When you arrive with /#contact, the iframe hasn't
-   * loaded yet, but the IntersectionObserver that would lazy-load it isn't
-   * set up yet either. The browser tries to scroll before any of this
-   * settles, landing in the middle of the page.
-   *
-   * Fix:
-   *   1. Mark all .reveal elements visible immediately.
-   *   2. Eagerly set iframe.src.
-   *   3. Single scroll call after a requestAnimationFrame (lets layout
-   *      recalc from steps 1+2 flush before measuring target position).
-   * ------------------------------------------------------------------ */
-  function applyHashTargetFix() {
-    if (!location.hash) return;
-    var target = document.getElementById(location.hash.slice(1));
-    if (!target) return;
-
-    // 1. Mark all reveal elements as visible — layout settles immediately
-    document.querySelectorAll('.reveal, [data-stagger-item]').forEach(function(el) {
-      el.classList.add('is-visible');
-    });
-
-    // 2. Force eager-load of dashboard iframe (skip lazy-load delay).
-    var iframe = document.getElementById("dashboard-iframe");
-    if (iframe && iframe.dataset.src && !iframe.src) {
-      iframe.src = iframe.dataset.src;
-    }
-
-    // 3. Single scroll call after a rAF — lets the layout recalc flush.
-    //    No retries, no staged scrolling.
-    var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
-    requestAnimationFrame(function() {
-      var top = target.getBoundingClientRect().top + window.scrollY - navH;
-      window.scrollTo(0, Math.max(0, top));
-    });
-  }
-
-  if (document.readyState !== "loading") {
-    applyHashTargetFix();
-  } else {
-    document.addEventListener("DOMContentLoaded", applyHashTargetFix);
-  }
+  });
 
   /* ------------------------------------------------------------------
    * Scroll-reveal animations (IntersectionObserver)
    * ------------------------------------------------------------------ */
   const revealEls = document.querySelectorAll(".reveal");
-  // If we're navigating to a hash target, all reveal elements have already
-  // been marked visible by applyHashTargetFix(). Skip setting up the IO so
-  // it doesn't re-trigger transitions on already-visible elements.
-  if (location.hash) {
-    revealEls.forEach(function (el) {
-      el.classList.add("is-visible");
-    });
-  } else if ("IntersectionObserver" in window && revealEls.length) {
+  if ("IntersectionObserver" in window && revealEls.length) {
     const io = new IntersectionObserver(
       function (entries, observer) {
         entries.forEach(function (entry) {
@@ -346,11 +258,7 @@
     "IntersectionObserver" in window
   ) {
     const src = showcaseFrame.getAttribute("data-src");
-    // Only set up the lazy-load IntersectionObserver if we're NOT navigating to a hash.
-    // If we ARE (e.g. user clicked /#contact in the hamburger menu), the
-    // applyHashTargetFix() already forced iframe.src to load eagerly — don't
-    // remove it again or the iframe never loads and target position is wrong.
-    if (src && !location.hash) showcaseFrame.removeAttribute("src");
+    if (src) showcaseFrame.removeAttribute("src");
     const fio = new IntersectionObserver(
       function (entries, observer) {
         entries.forEach(function (entry) {
