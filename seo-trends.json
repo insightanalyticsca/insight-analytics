@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-03T03:23:04.246Z",
+  "collectedAt": "2026-11-03T13:32:41.876Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -37,7 +37,7 @@
     "organizational culture",
     "change management"
   ],
-  "totalTerms": 419,
+  "totalTerms": 411,
   "trends": [
     {
       "term": "ai dashboard",
@@ -52,13 +52,13 @@
       "seed": "executive dashboard"
     },
     {
-      "term": "business intelligence",
+      "term": "business intelligence analyst",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline",
+      "term": "data pipelines",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "data pipeline"
@@ -70,7 +70,7 @@
       "seed": "data lineage"
     },
     {
-      "term": "metadata discovery only supports temp tables when analyzing a single-statement batch",
+      "term": "metadata discovery",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
@@ -88,7 +88,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics jobs",
+      "term": "energy analytics",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -106,7 +106,7 @@
       "seed": "supply chain dashboard"
     },
     {
-      "term": "risk dashboard european banking authority",
+      "term": "bank risk dashboard",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "banking risk dashboard"
@@ -166,25 +166,25 @@
       "seed": "risk management"
     },
     {
-      "term": "mergers acquisitions and corporate restructurings",
+      "term": "mergers acquisitions and other restructuring activities",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation line",
+      "term": "capital allocation",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management 中文",
+      "term": "treasury management",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "treasury management"
     },
     {
-      "term": "supply chain resilience 中文",
+      "term": "supply chain resilience",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "supply chain resilience"
@@ -196,13 +196,13 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions 中文",
+      "term": "carbon emissions",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance asia",
+      "term": "climate finance",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "climate finance"
@@ -214,7 +214,7 @@
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership pathway",
+      "term": "executive leadership council",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "executive leadership"
@@ -244,12 +244,6 @@
       "seed": "change management"
     },
     {
-      "term": "future",
-      "volume": 100,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "business",
       "volume": 100,
       "source": "industry-rss",
@@ -262,43 +256,37 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "financial",
-      "volume": 100,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "ai dashboard design",
+      "term": "ai dashboard generator",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "ai dashboard"
     },
     {
-      "term": "executive dashboard excel",
+      "term": "executive dashboard examples",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "executive dashboard"
     },
     {
-      "term": "business intelligence 中文",
+      "term": "business intelligence",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline 中文",
+      "term": "data pipeline meaning",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "data pipeline"
     },
     {
-      "term": "data lineage 中文",
+      "term": "data lineage meaning",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "data lineage"
     },
     {
-      "term": "metadata discovery",
+      "term": "metadata discovery tools",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
@@ -316,22 +304,28 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics lab",
+      "term": "energy analytics jobs",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "energy analytics"
     },
     {
-      "term": "time series prediction machine learning",
+      "term": "time series prediction models",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "time series prediction"
     },
     {
-      "term": "supply chain dashboard excel template free download",
+      "term": "supply chain dashboard examples",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "supply chain dashboard"
+    },
+    {
+      "term": "bank risk management dashboard",
+      "volume": 90,
+      "source": "google-autocomplete",
+      "seed": "banking risk dashboard"
     },
     {
       "term": "ar aging dashboard excel",
@@ -340,31 +334,31 @@
       "seed": "ar aging dashboard"
     },
     {
-      "term": "ai & generative ai executive briefing",
+      "term": "ai executive summary",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "ai executive brief"
     },
     {
-      "term": "ai strategy bernard marr",
+      "term": "ai strategy jobs",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "ai strategy"
     },
     {
-      "term": "ai roi cung se khac",
+      "term": "ai roi cung se khac lyrics",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption guide for government bureaux and departments",
+      "term": "ai adoption rate",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation specialist",
+      "term": "ai implementation jobs",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -376,67 +370,67 @@
       "seed": "cost optimization"
     },
     {
-      "term": "profitability analysis formula",
+      "term": "profitability analysis example",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management 出路",
+      "term": "risk management jobs",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "risk management"
     },
     {
-      "term": "mergers acquisitions and corporate restructuring pdf",
+      "term": "mergers acquisitions and buyouts",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation 中文",
+      "term": "capital allocation line",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management",
+      "term": "treasury management services",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "treasury management"
     },
     {
-      "term": "supply chain resilience",
+      "term": "supply chain resilience meaning",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "supply chain resilience"
     },
     {
-      "term": "sustainability strategy job",
+      "term": "sustainability strategy jobs",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions",
+      "term": "carbon emissions by country",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance",
+      "term": "climate finance solutions",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance 中文",
+      "term": "corporate governance definition",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership 中文",
+      "term": "executive leadership",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "executive leadership"
@@ -448,61 +442,67 @@
       "seed": "cfo strategy"
     },
     {
-      "term": "ceo decision making process",
+      "term": "ceo decision making in the age of ai",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture and leadership",
+      "term": "organizational culture definition",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management 中文",
+      "term": "change management certification",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "change management"
     },
     {
-      "term": "ai dashboard skill",
+      "term": "future",
+      "volume": 90,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "ai dashboard design",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "ai dashboard"
     },
     {
-      "term": "executive dashboard design",
+      "term": "executive dashboard templates",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "executive dashboard"
     },
     {
-      "term": "business intelligence analyst",
+      "term": "business intelligence analyst salary",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline 是什麼",
+      "term": "data pipeline tools",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "data pipeline"
     },
     {
-      "term": "data lineage meaning",
+      "term": "data lineage tools",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "data lineage"
     },
     {
-      "term": "metadata discovery tools",
+      "term": "mcp metadata discovery",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
     },
     {
-      "term": "ai copilot power automate",
+      "term": "ai power automation course",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "ai power automate"
@@ -514,22 +514,28 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics course",
+      "term": "energy analytics lab",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "energy analytics"
     },
     {
-      "term": "time series prediction models",
+      "term": "time series prediction machine learning",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "time series prediction"
     },
     {
-      "term": "supply chain dashboard template",
+      "term": "supply chain dashboard power bi",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "supply chain dashboard"
+    },
+    {
+      "term": "european banking authority risk dashboard",
+      "volume": 80,
+      "source": "google-autocomplete",
+      "seed": "banking risk dashboard"
     },
     {
       "term": "ar aging dashboard power bi",
@@ -538,109 +544,109 @@
       "seed": "ar aging dashboard"
     },
     {
-      "term": "ai daily brief executive catch up",
+      "term": "ai executive summary generator",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "ai executive brief"
     },
     {
-      "term": "ai strategy bernard marr pdf",
+      "term": "ai strategy certification",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "ai strategy"
     },
     {
-      "term": "ai roic",
+      "term": "ai roi conference",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption 中文",
+      "term": "ai adoption specialist",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation plan",
+      "term": "ai implementation consultant",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization hub aws",
+      "term": "cost optimization meaning",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "cost optimization"
     },
     {
-      "term": "profitability analysis of nabil bank",
+      "term": "profitability analysis formula",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management 人工 lihkg",
+      "term": "risk management certification",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "risk management"
     },
     {
-      "term": "mergers acquisitions and other restructuring activities pdf",
+      "term": "mergers acquisitions",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation process",
+      "term": "capital allocation meaning",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management system",
+      "term": "treasury management systems",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "treasury management"
     },
     {
-      "term": "supply chain resilience definition review and theoretical foundations for further study",
+      "term": "supply chain resilience certificate",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "supply chain resilience"
     },
     {
-      "term": "sustainability strategy pdf",
+      "term": "sustainability strategy examples",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions and financial flexibility international evidence",
+      "term": "carbon emissions per capita by country",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance conference",
+      "term": "climate finance jobs",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance code",
+      "term": "corporate governance jobs",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership team",
+      "term": "executive leadership program",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "executive leadership"
     },
     {
-      "term": "cfo strategy presentation",
+      "term": "cfo strategy summit",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "cfo strategy"
@@ -652,22 +658,16 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture and leadership 5th edition",
+      "term": "organizational culture and leadership",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management 意思",
+      "term": "change management meaning",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "change management"
-    },
-    {
-      "term": "leadership",
-      "volume": 80,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
     },
     {
       "term": "2026",
@@ -682,31 +682,31 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "times",
+      "term": "financial",
       "volume": 80,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "ai dashboard icon",
+      "term": "ai dashboard builder",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai dashboard"
     },
     {
-      "term": "executive dashboard ppt",
+      "term": "executive dashboard excel",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "executive dashboard"
     },
     {
-      "term": "business intelligence (bi)",
+      "term": "business intelligence analyst jobs",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline 意思",
+      "term": "data pipelines examples",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "data pipeline"
@@ -718,40 +718,46 @@
       "seed": "data lineage"
     },
     {
-      "term": "metadata discovery only supports temp tables",
+      "term": "metadata and discovery group",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
     },
     {
-      "term": "power automate claude ai",
+      "term": "ai builder power automate pricing",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai power automate"
     },
     {
-      "term": "fuzzy matching algorithm",
+      "term": "fuzzy matching meaning",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics lab iit kanpur",
+      "term": "energy analytics course",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "energy analytics"
     },
     {
-      "term": "time series prediction algorithms",
+      "term": "time series prediction based on lstm-attention-lstm model",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "time series prediction"
     },
     {
-      "term": "supply chain dashboard design",
+      "term": "supply chain dashboard template",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "supply chain dashboard"
+    },
+    {
+      "term": "global banking network risk dashboard",
+      "volume": 70,
+      "source": "google-autocomplete",
+      "seed": "banking risk dashboard"
     },
     {
       "term": "ar aging dashboard.html",
@@ -760,109 +766,109 @@
       "seed": "ar aging dashboard"
     },
     {
-      "term": "ai daily brief executive training",
+      "term": "ai executive summary generator free",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai executive brief"
     },
     {
-      "term": "ai strategy singapore",
+      "term": "ai strategy consulting",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai strategy"
     },
     {
-      "term": "ai roi cũng khác",
+      "term": "ai roi calculator",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption rate",
+      "term": "ai adoption curve",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation framework",
+      "term": "ai implementation specialist",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization icon",
+      "term": "cost optimization hub aws",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "cost optimization"
     },
     {
-      "term": "profitability analysis pdf",
+      "term": "profitability analysis definition",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management 中文",
+      "term": "risk management jobs texas",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "risk management"
     },
     {
-      "term": "mergers acquisitions and other restructuring activities",
+      "term": "mergers acquisitions and corporate restructurings",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation",
+      "term": "capital allocation process",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management international",
+      "term": "treasury management officer salary",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "treasury management"
     },
     {
-      "term": "supply chain resilience should policy promote diversification or reshoring",
+      "term": "supply chain resilience initiative",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "supply chain resilience"
     },
     {
-      "term": "sustainability strategy consultant",
+      "term": "sustainability strategy & analysis lead bloomberg",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions and the bank-lending channel",
+      "term": "carbon emissions meaning",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance forum",
+      "term": "climate finance fellowship",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance guide for boards and directors",
+      "term": "corporate governance an international review",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership",
+      "term": "executive leadership training",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "executive leadership"
     },
     {
-      "term": "cfo strategy summit",
+      "term": "cfo strategy presentation",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "cfo strategy"
@@ -874,13 +880,13 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture assessment instrument",
+      "term": "organizational culture examples",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management theory",
+      "term": "change management process",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "change management"
@@ -898,19 +904,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "next",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "management",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "8217",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -922,70 +916,82 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "ai dashboard prompt",
+      "term": "times",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "ai dashboard examples",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ai dashboard"
     },
     {
-      "term": "executive dashboard meaning",
+      "term": "executive dashboard power bi",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "executive dashboard"
     },
     {
-      "term": "business intelligence 工作 內容",
+      "term": "business intelligence jobs",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "business intelligence"
     },
     {
-      "term": "data pipelines meaning",
+      "term": "data pipeline architecture",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "data pipeline"
     },
     {
-      "term": "data lineage意思",
+      "term": "data lineage vs data provenance",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "data lineage"
     },
     {
-      "term": "mcp metadata discovery",
+      "term": "metadata and discovery librarian",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
     },
     {
-      "term": "agent ai power automate",
+      "term": "ai hub power automate",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ai power automate"
     },
     {
-      "term": "fuzzy matching methods",
+      "term": "fuzzy matching algorithms",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics companies",
+      "term": "energy analytics lab iit kanpur",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "energy analytics"
     },
     {
-      "term": "time series prediction forecasting the future and understanding the past",
+      "term": "time series prediction meaning",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "time series prediction"
     },
     {
-      "term": "supply chain dashboard tableau",
+      "term": "supply chain dashboard template free",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "supply chain dashboard"
+    },
+    {
+      "term": "banking dashboard examples",
+      "volume": 60,
+      "source": "google-autocomplete",
+      "seed": "banking risk dashboard"
     },
     {
       "term": "ar aging report dashboard",
@@ -994,136 +1000,130 @@
       "seed": "ar aging dashboard"
     },
     {
-      "term": "ai daily brief executive",
+      "term": "ai executive summary writer",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ai executive brief"
     },
     {
-      "term": "ai strategy jobs",
+      "term": "ai strategy game",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ai strategy"
     },
     {
-      "term": "ai roi tracker",
+      "term": "ai roi study",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption manager",
+      "term": "ai adoption jobs",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation in banking",
+      "term": "ai implementation company",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization hub api",
+      "term": "cost optimization aws",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "cost optimization"
     },
     {
-      "term": "profitability analysis of nepal bank limited",
+      "term": "profitability analysis in sap",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management 人工",
+      "term": "risk management jobs california",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "risk management"
     },
     {
-      "term": "mergers & acquisitions",
+      "term": "mergers acquisitions and divestitures",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation model",
+      "term": "capital allocation line formula",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management system (tms)",
+      "term": "treasury management banking",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "treasury management"
     },
     {
-      "term": "supply chain resilience a literature review based on bibliometric analysis",
+      "term": "supply chain resilience examples",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "supply chain resilience"
     },
     {
-      "term": "sustainability strategy framework",
+      "term": "sustainability strategy consulting jobs",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions calculator",
+      "term": "carbon emissions by year",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance bench",
+      "term": "climate finance columbia",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance code hkex",
+      "term": "corporate governance certification",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership pathway cpa australia",
+      "term": "executive leadership team",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "executive leadership"
     },
     {
-      "term": "cfo strategy books",
+      "term": "cfo strategy consulting",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "cfo strategy"
     },
     {
-      "term": "ceo decision making in the age of ai",
+      "term": "ceo decision making examples",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture can it be a source of sustained competitive advantage",
+      "term": "organizational culture theory",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management model",
+      "term": "change management jobs",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "change management"
-    },
-    {
-      "term": "intelligence",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
     },
     {
       "term": "value",
@@ -1132,7 +1132,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "growth",
+      "term": "next",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1150,7 +1150,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "digital",
+      "term": "supply",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "8217",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1168,31 +1174,25 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "china",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "ai dashboard generator free",
+      "term": "ai dashboard creator",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai dashboard"
     },
     {
-      "term": "executive dashboard templates",
+      "term": "executive dashboard design",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "executive dashboard"
     },
     {
-      "term": "business intelligence tools",
+      "term": "business intelligence engineer",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline design",
+      "term": "data pipeline engineer",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "data pipeline"
@@ -1204,133 +1204,145 @@
       "seed": "data lineage"
     },
     {
-      "term": "mcp inspector metadata discovery",
+      "term": "oauth metadata discovery",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
     },
     {
-      "term": "agentic ai power automate",
+      "term": "ai agent power automate",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai power automate"
     },
     {
-      "term": "fuzzy matching java",
+      "term": "fuzzy matching sql",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics software",
+      "term": "energy analytics companies",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "energy analytics"
     },
     {
-      "term": "time series prediction using transformers",
+      "term": "time series prediction methods",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "time series prediction"
     },
     {
-      "term": "supply chain dashboard power bi github",
+      "term": "supply chain dashboard design",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "supply chain dashboard"
     },
     {
-      "term": "executive briefing.artificial intelligence (ai) + chatgpt udemy",
+      "term": "what does a risk analyst do in a bank",
+      "volume": 50,
+      "source": "google-autocomplete",
+      "seed": "banking risk dashboard"
+    },
+    {
+      "term": "what is ar aging",
+      "volume": 50,
+      "source": "google-autocomplete",
+      "seed": "ar aging dashboard"
+    },
+    {
+      "term": "ai daily brief executive catch up",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai executive brief"
     },
     {
-      "term": "ai strategy canada",
+      "term": "ai strategy and leadership program",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai strategy"
     },
     {
-      "term": "ai roi mckinsey",
+      "term": "ai roi meaning",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption guide",
+      "term": "ai adoption by software engineers",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation strategy",
+      "term": "ai implementation certification",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization of low-salt-rejection reverse osmosis",
+      "term": "cost optimization hub pricing",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "cost optimization"
     },
     {
-      "term": "profitability analysis of nic asia bank",
+      "term": "profitability analysis of nabil bank",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management 課程",
+      "term": "risk management definition",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "risk management"
     },
     {
-      "term": "mergers & acquisitions 中文",
+      "term": "mergers acquisitions and corporate restructurings pdf",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation line equation",
+      "term": "capital allocation strategy",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management association",
+      "term": "treasury management officer",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "treasury management"
     },
     {
-      "term": "supply chain resilience for single and multiple sourcing in the presence of disruption risks",
+      "term": "supply chain resilience strategies",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "supply chain resilience"
     },
     {
-      "term": "sustainability strategy usyd",
+      "term": "sustainability strategy meaning",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions and climate change",
+      "term": "carbon emissions by source",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance asia limited",
+      "term": "climate finance action",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance and compliance",
+      "term": "corporate governance law",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "corporate governance"
@@ -1342,31 +1354,43 @@
       "seed": "executive leadership"
     },
     {
-      "term": "cfo strategy jobs",
+      "term": "cfo strategy books",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "cfo strategy"
     },
     {
-      "term": "ceo decision making examples",
+      "term": "founder decision making",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture psychology",
+      "term": "organizational culture synonym",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management process",
+      "term": "change management models",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "change management"
     },
     {
+      "term": "intelligence",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "system",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "growth",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1390,199 +1414,205 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "supply",
+      "term": "energy",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "best",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "ai dashboard ui kit",
+      "term": "ai dashboard generator free",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai dashboard"
     },
     {
-      "term": "executive dashboard icon",
+      "term": "executive dashboard template free",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "executive dashboard"
     },
     {
-      "term": "business intelligence analyst 中文",
+      "term": "business intelligence developer",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline icon",
+      "term": "data pipeline diagram",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "data pipeline"
     },
     {
-      "term": "data lineage aws",
+      "term": "data lineage databricks",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "data lineage"
     },
     {
-      "term": "volumio music metadata discovery",
+      "term": "metadata and discovery group in scotland",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
     },
     {
-      "term": "azure ai power automate",
+      "term": "ai prompt power automate",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai power automate"
     },
     {
-      "term": "fuzzy matching ai",
+      "term": "fuzzy matching power query",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics engineer",
+      "term": "energy analytics institute",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "energy analytics"
     },
     {
-      "term": "time series prediction google",
+      "term": "time series prediction model google",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "time series prediction"
     },
     {
-      "term": "supply chain dashboards power bi",
+      "term": "supply chain dashboard power bi github",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "supply chain dashboard"
     },
     {
-      "term": "executive briefing artificial intelligence ai chatgpt",
+      "term": "what are the risks in banking industry",
+      "volume": 40,
+      "source": "google-autocomplete",
+      "seed": "banking risk dashboard"
+    },
+    {
+      "term": "what is an ar aging report",
+      "volume": 40,
+      "source": "google-autocomplete",
+      "seed": "ar aging dashboard"
+    },
+    {
+      "term": "ai daily brief executive training",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai executive brief"
     },
     {
-      "term": "ai strategy for business leaders from hype to impact",
+      "term": "ai strategy for business leaders",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai strategy"
     },
     {
-      "term": "ai roi news",
+      "term": "ai roi cung gia lyric",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption jobs",
+      "term": "ai adoption maturity model",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation phases",
+      "term": "ai implementation consultant jobs",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization pillar",
+      "term": "cost optimization strategies",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "cost optimization"
     },
     {
-      "term": "profitability analysis of global ime bank",
+      "term": "profitability analysis of nepal bank limited",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management cuhk",
+      "term": "risk management framework",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "risk management"
     },
     {
-      "term": "mergers & acquisitions m&a",
+      "term": "mergers acquisitions and takeovers",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation principles strategies and processes for creating long-term shareholder value",
+      "term": "capital allocation framework",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management the practitioner's guide",
+      "term": "treasury management specialist salary",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "treasury management"
     },
     {
-      "term": "supply chain resilience conceptualization and scale development using dynamic capability theory",
+      "term": "supply chain resilience jobs",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "supply chain resilience"
     },
     {
-      "term": "sustainability strategy anglo american",
+      "term": "sustainability strategy pdf",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions synonym",
+      "term": "carbon emissions data centers",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance 2026",
+      "term": "climate finance llc",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance master",
+      "term": "corporate governance guidelines",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership development program",
+      "term": "executive leadership coaching",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "executive leadership"
     },
     {
-      "term": "cfo strategy consulting",
+      "term": "cfo strategy jobs",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "cfo strategy"
     },
     {
-      "term": "bursa malaysia ceo decision making",
+      "term": "owner decision making",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture of google",
+      "term": "organizational culture assessment instrument",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -1606,18 +1636,6 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "scaling",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "energy",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "economic",
       "volume": 40,
       "source": "industry-rss",
@@ -1630,7 +1648,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "three",
+      "term": "billion",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1642,19 +1660,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "capital",
+      "term": "digital",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "research",
+      "term": "2027",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "tech",
+      "term": "data",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1666,13 +1684,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "leaders",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "time",
+      "term": "best",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1702,169 +1714,169 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "markets",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "ai dashboard template",
+      "term": "ai dashboard ui",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "ai dashboard"
     },
     {
-      "term": "executive dashboard template free",
+      "term": "executive dashboard examples power bi",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "executive dashboard"
     },
     {
-      "term": "business intelligence system",
+      "term": "business intelligence tools",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline etl",
+      "term": "data pipeline design",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "data pipeline"
     },
     {
-      "term": "data lineage framework",
+      "term": "data lineage in snowflake",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "data lineage"
     },
     {
-      "term": "oauth metadata discovery",
+      "term": "saml metadata discovery endpoints",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
     },
     {
-      "term": "microsoft ai power automate",
+      "term": "ai credits power automate",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "ai power automate"
     },
     {
-      "term": "fuzzy matching salesforce",
+      "term": "fuzzy matching in r",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics dashboard",
+      "term": "energy analytics kazakhstan",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "energy analytics"
     },
     {
-      "term": "time series prediction pdf",
+      "term": "time series prediction algorithms",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "time series prediction"
     },
     {
-      "term": "supply chain dashboard ideas",
+      "term": "supply chain dashboard excel",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "supply chain dashboard"
     },
     {
-      "term": "ai strategy consultant",
+      "term": "ai & generative ai executive briefing",
+      "volume": 30,
+      "source": "google-autocomplete",
+      "seed": "ai executive brief"
+    },
+    {
+      "term": "ai strategy courses",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "ai strategy"
     },
     {
-      "term": "ai roi cung khác",
+      "term": "ai rồi cũng sẽ khác",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption maturity model",
+      "term": "ai adoption meaning",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation lab",
+      "term": "ai implementation specialist salary",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization 中文",
+      "term": "cost optimization jobs",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "cost optimization"
     },
     {
-      "term": "profitability analysis definition",
+      "term": "profitability analysis of nic asia bank",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management science",
+      "term": "risk management salary",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "risk management"
     },
     {
-      "term": "mergers & acquisitions from a to z",
+      "term": "mergers acquisitions & capital markets",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation vs asset allocation",
+      "term": "capital allocation partners",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management centre malaysia",
+      "term": "treasury management salary",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "treasury management"
     },
     {
-      "term": "supply chain resilience journal",
+      "term": "supply chain resilience evidence from indian firms",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "supply chain resilience"
     },
     {
-      "term": "sustainability strategy imperial",
+      "term": "sustainability strategy manager",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions mutual fund trading and the liquidity of corporate bonds",
+      "term": "carbon emissions calculator",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance book",
+      "term": "climate finance courses",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance code 中文",
+      "term": "corporate governance institute",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership courses",
+      "term": "executive leadership solutions",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "executive leadership"
@@ -1876,25 +1888,31 @@
       "seed": "cfo strategy"
     },
     {
-      "term": "organizational culture model",
+      "term": "ceo / decision maker",
+      "volume": 30,
+      "source": "google-autocomplete",
+      "seed": "ceo decision making"
+    },
+    {
+      "term": "organizational culture is best described as",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management skills",
+      "term": "change management plan",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "change management"
     },
     {
-      "term": "closing",
+      "term": "opportunity",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "decision",
+      "term": "leadership",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1912,43 +1930,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "model",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "rewiring",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "does",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "stock",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "billion",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "hidden",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "trade",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1972,6 +1960,12 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "capital",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "projects",
       "volume": 30,
       "source": "industry-rss",
@@ -1984,37 +1978,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "million",
+      "term": "failure",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "need",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "stop",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "2027",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "data",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "innovation",
+      "term": "tech",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2026,13 +1996,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "five",
+      "term": "needs",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "edge",
+      "term": "design",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "five",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2044,19 +2020,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "record",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "funds",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "summit",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2116,12 +2080,6 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "transformation",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "according",
       "volume": 30,
       "source": "industry-rss",
@@ -2146,13 +2104,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "2024",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "artificial",
+      "term": "research",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2164,253 +2116,247 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "para",
+      "term": "stocks",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "control",
+      "term": "election",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "stay",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "change",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "hopes",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "ai dashboard google",
+      "term": "ai dashboard ideas",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "ai dashboard"
     },
     {
-      "term": "executive dashboard.html",
+      "term": "executive dashboard layout",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "executive dashboard"
     },
     {
-      "term": "business intelligence engineer",
+      "term": "business intelligence meaning",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline aws",
+      "term": "data pipeline icon",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "data pipeline"
     },
     {
-      "term": "data lineage mapping",
+      "term": "data lineage documentation",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "data lineage"
     },
     {
-      "term": "use fmtonly metadata discovery",
+      "term": "dod discovery metadata specification",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
     },
     {
-      "term": "generative ai power automate",
+      "term": "ai builder power automate license",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "ai power automate"
     },
     {
-      "term": "fuzzy matching in r",
+      "term": "fuzzy matching power bi",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics platform",
+      "term": "energy analytics software",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "energy analytics"
     },
     {
-      "term": "time series prediction algorithm for intelligent predictive maintenance",
+      "term": "time series prediction python",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "time series prediction"
     },
     {
-      "term": "supply chain dashboard github",
+      "term": "supply chain dashboard power bi template",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "supply chain dashboard"
     },
     {
-      "term": "ai strategy game",
+      "term": "ai daily brief executive",
+      "volume": 20,
+      "source": "google-autocomplete",
+      "seed": "ai executive brief"
+    },
+    {
+      "term": "ai strategy roles",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "ai strategy"
     },
     {
-      "term": "ai roi calculator",
+      "term": "ai roi reddit",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption and inequality",
+      "term": "ai adoption by country",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation process",
+      "term": "ai implementation engineer",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization hub pricing",
+      "term": "cost optimization icon",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "cost optimization"
     },
     {
-      "term": "profitability analysis template",
+      "term": "profitability analysis of commercial banks in nepal",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management hku",
+      "term": "risk management insurance",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "risk management"
     },
     {
-      "term": "mergers & acquisitions lawyer",
+      "term": "mergers acquisitions divestitures and other restructurings",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation and productivity in south europe",
+      "term": "capital allocation book",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management support specialist",
+      "term": "treasury management tompkins",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "treasury management"
     },
     {
-      "term": "supply chain resilience icon",
+      "term": "supply chain resilience theory",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "supply chain resilience"
     },
     {
-      "term": "sustainability strategy for walmart",
+      "term": "sustainability strategy diagram",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions and stock returns evidence from the eu emissions trading scheme",
+      "term": "carbon emissions from ai",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance gap",
+      "term": "climate finance masters",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance guide for boards and directors 中文",
+      "term": "corporate governance documents",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership solutions",
+      "term": "executive leadership meaning",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "executive leadership"
     },
     {
-      "term": "cfo strategy pwc",
+      "term": "cfo strategy talk",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "cfo strategy"
     },
     {
-      "term": "organizational culture assessment instrument (ocai)",
+      "term": "ceo decision making process",
+      "volume": 20,
+      "source": "google-autocomplete",
+      "seed": "ceo decision making"
+    },
+    {
+      "term": "organizational culture in healthcare",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management certification",
+      "term": "change management jobs remote",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "change management"
     },
     {
-      "term": "ai dashboard for excel",
+      "term": "ai dashboard google",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "ai dashboard"
     },
     {
-      "term": "executive dashboard example",
+      "term": "executive dashboard ideas",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "executive dashboard"
     },
     {
-      "term": "business intelligence specialist",
+      "term": "business intelligence developer salary",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline tool",
+      "term": "data pipelines pocket reference",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "data pipeline"
     },
     {
-      "term": "data lineage ui",
+      "term": "data lineage mapping",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "data lineage"
     },
     {
-      "term": "saml metadata discovery endpoints",
+      "term": "metadata for resource discovery",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
     },
     {
-      "term": "gen ai power automate",
+      "term": "ai builder power automate credits",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "ai power automate"
@@ -2422,133 +2368,139 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics meaning",
+      "term": "energy analytics engineer",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "energy analytics"
     },
     {
-      "term": "time series prediction using deep learning methods in healthcare",
+      "term": "time series prediction using lstm",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "time series prediction"
     },
     {
-      "term": "supply chain dashboard ui",
+      "term": "ai brief introduction",
       "volume": 10,
       "source": "google-autocomplete",
-      "seed": "supply chain dashboard"
+      "seed": "ai executive brief"
     },
     {
-      "term": "ai strategy for business leaders",
+      "term": "ai strategy consultant jobs",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "ai strategy"
     },
     {
-      "term": "ai roi study",
+      "term": "ai roi news",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption in higher education",
+      "term": "ai adoption statistics",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation companies",
+      "term": "ai implementation courses",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization opportunities",
+      "term": "cost optimization workshop",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "cost optimization"
     },
     {
-      "term": "profitability analysis report",
+      "term": "profitability analysis of global ime bank",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management 做 咩",
+      "term": "risk management association",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "risk management"
     },
     {
-      "term": "mergers acquisitions and corporate",
+      "term": "mergers acquisitions due diligence",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation icon",
+      "term": "capital allocation synonym",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management book",
+      "term": "treasury management simmons bank",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "treasury management"
     },
     {
-      "term": "supply chain resilience in the global financial crisis an empirical study",
+      "term": "supply chain resilience meaning in hindi",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "supply chain resilience"
     },
     {
-      "term": "sustainability strategy uefa",
+      "term": "sustainability strategy consultant",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions peak",
+      "term": "carbon emissions graph",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance solutions",
+      "term": "climate finance access network",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance 出路",
+      "term": "corporate governance awards",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership meaning",
+      "term": "executive leadership development program",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "executive leadership"
     },
     {
-      "term": "cfo strategy talk",
+      "term": "cfo strategy pwc",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "cfo strategy"
     },
     {
-      "term": "organizational culture in healthcare",
+      "term": "bursa malaysia ceo decision making",
+      "volume": 10,
+      "source": "google-autocomplete",
+      "seed": "ceo decision making"
+    },
+    {
+      "term": "organizational culture assessment instrument (ocai)",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management template",
+      "term": "change management training",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "change management"
