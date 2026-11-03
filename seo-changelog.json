@@ -1,0 +1,4 @@
+{
+  "_comment": "Append-only changelog of every adaptive SEO rewrite. Each entry is one rewrite action. Used for rollback + audit. Do not edit — only append via adaptive-seo.mjs.",
+  "entries": []
+}

@@ -1,0 +1,10 @@
+{
+  "_comment": "Lock file — paths listed here NEVER get auto-rewritten by adaptive-seo.mjs. Manual curation wins. Add a path (relative to repo root, no leading slash) to lock it.",
+  "_format": "Array of {path, reason}. 'path' is the file path. 'reason' is a human note for why it's locked.",
+  "locked": [
+    {"path": "index.html", "reason": "Homepage — hand-tuned for brand + primary keywords. Too high-impact to auto-rewrite."},
+    {"path": "solutions-showcase/index.html", "reason": "Showcase page — hand-tuned. Auto-rewrite would corrupt the carefully-crafted demo copy."},
+    {"path": "faq/index.html", "reason": "FAQ structure is hand-curated. Adaptive-seo may APPEND new items but never rewrite or delete existing ones."},
+    {"path": "insights/index.html", "reason": "Insights listing page — hand-tuned. Individual articles are fair game."}
+  ]
+}

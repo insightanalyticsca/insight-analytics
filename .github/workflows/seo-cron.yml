@@ -2,7 +2,7 @@ name: SEO Optimization Cron
 
 on:
   schedule:
-    # Run daily at 6:00 AM UTC
+    # Run daily at 6:00 AM UTC — collects trends + (on Sundays) applies rewrites
     - cron: '0 6 * * *'
   workflow_dispatch:
 
@@ -24,8 +24,25 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run SEO optimizer
+      # Step 1: existing static SEO optimizer (schema, preloading, etc.)
+      - name: Run static SEO optimizer
         run: node .github/scripts/seo-optimizer.mjs
+
+      # Step 2: adaptive SEO rewriter
+      # - Daily: collects trends (Google Autocomplete + industry RSS) → seo-trends.json
+      # - Sundays only: actually rewrites titles/descriptions/FAQ
+      # - Force mode (workflow_dispatch): always rewrites regardless of day
+      - name: Run adaptive SEO (trend collection + weekly rewrite)
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          # Detect if this is a manual trigger (workflow_dispatch) — if so, use --force
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual trigger — running with --force"
+            node .github/scripts/adaptive-seo.mjs --force
+          else
+            node .github/scripts/adaptive-seo.mjs
+          fi
 
       - name: Check for changes
         id: changes
@@ -42,7 +59,26 @@ jobs:
         run: |
           git config user.name "SEO Bot"
           git config user.email "seo-bot@insightanalyticsca.github.io"
-          git commit -m "chore(seo): automated optimization — all P0-P3 techniques
+
+          # Get a summary of what changed
+          SUMMARY=$(git diff --cached --stat | tail -1)
+
+          # Detect day-of-week for commit message
+          DOW=$(date -u +%w)
+          if [ "$DOW" = "0" ]; then
+            MODE="weekly rewrite (Sunday) + daily scan"
+          else
+            MODE="daily scan only (rewrite fires Sunday)"
+          fi
+
+          git commit -m "chore(seo): ${MODE}
+
+          ${SUMMARY}
+
+          Adaptive SEO state files:
+          - seo-trends.json: latest trend collection (Google Autocomplete + industry RSS)
+          - seo-state.json: per-URL rewrite history + cooldowns
+          - seo-changelog.json: append-only audit log of every rewrite
 
           [skip ci]"
           git push

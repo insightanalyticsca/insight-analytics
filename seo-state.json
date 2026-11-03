@@ -1,0 +1,23 @@
+{
+  "_comment": "Adaptive SEO state — tracks per-URL rewrite history + cooldowns. Updated by .github/scripts/adaptive-seo.mjs on every run. DO NOT edit by hand unless rolling back.",
+  "_schema": {
+    "url": {
+      "currentTargetTerm": "string — the trending term currently targeted in title/meta",
+      "currentTermVolume": "number — relative search volume score 0-100 (from Google Autocomplete rank)",
+      "lastRewriteDate": "ISO date string — when the SEO was last rewritten for this URL",
+      "variantHistory": [
+        {
+          "date": "ISO date",
+          "targetTerm": "string",
+          "termVolume": "number",
+          "titleBefore": "string",
+          "titleAfter": "string",
+          "descBefore": "string",
+          "descAfter": "string",
+          "reason": "string — why the rewrite was made"
+        }
+      ]
+    }
+  },
+  "urls": {}
+}
