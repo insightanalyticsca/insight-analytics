@@ -130,6 +130,61 @@
   }
 
   /* ------------------------------------------------------------------
+   * Smooth-scroll for same-page hash links (in the mobile menu).
+   *
+   * When you click /#contact from the homepage itself (not from another
+   * page), the browser's default behavior is to jump to #contact. But
+   * with reveal animations + lazy iframe, the page layout isn't settled
+   * and the browser's hash-scroll lands wrong + keeps re-scrolling as
+   * layout shifts (the "staged scrolling" UX problem).
+   *
+   * Fix: intercept clicks on hash links pointing to the current page.
+   * Mark all reveals visible + scroll to target in one smooth motion.
+   * Use history.pushState so the URL bar updates without triggering the
+   * browser's native hash-scroll.
+   * ------------------------------------------------------------------ */
+  function isSamePageHashLink(href) {
+    if (!href || !href.includes('#')) return false;
+    var path = href.split('#')[0];
+    var hash = href.split('#')[1];
+    if (!hash) return false;
+    // Same page if path is empty, '/', or matches current path
+    if (!path || path === '' || path === '/' || path === window.location.pathname ||
+        path === window.location.origin + window.location.pathname) {
+      return true;
+    }
+    return false;
+  }
+
+  function smoothScrollToTarget(targetId) {
+    var target = document.getElementById(targetId);
+    if (!target) return;
+    // Mark all reveals visible so layout is settled before we measure
+    document.querySelectorAll('.reveal, [data-stagger-item]').forEach(function(el) {
+      el.classList.add('is-visible');
+    });
+    var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
+    requestAnimationFrame(function() {
+      var top = target.getBoundingClientRect().top + window.scrollY - navH;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    });
+  }
+
+  // Intercept same-page hash link clicks across the whole document
+  document.addEventListener("click", function(e) {
+    var link = e.target.closest('a');
+    if (!link) return;
+    var href = link.getAttribute('href');
+    if (!isSamePageHashLink(href)) return;
+    var hash = href.split('#')[1];
+    if (!hash) return;
+    e.preventDefault();
+    smoothScrollToTarget(hash);
+    // Update URL bar without triggering browser's native scroll
+    history.pushState(null, '', '#' + hash);
+  });
+
+  /* ------------------------------------------------------------------
    * Hash-link scroll fix — restore instant native anchor-link UX.
    *
    * Root cause: dashboard iframe is lazy-loaded via IntersectionObserver +
