@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v5.36.0-intercept';
+const VERSION = 'v5.37.0-instant';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -20,7 +20,7 @@ const APP_SHELL = [
   './',
   './index.html',
   './css/styles.css?v=4.94.0',
-  './js/app.js?v=5.36.0-intercept',
+  './js/app.js?v=5.37.0-instant',
   './js/hero-animation.js?v=4.94.0',
   './js/pull-to-refresh.js?v=4.94.0',
   './js/sw-register.js?v=4.99.0',

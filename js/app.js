@@ -166,7 +166,10 @@
     var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
     requestAnimationFrame(function() {
       var top = target.getBoundingClientRect().top + window.scrollY - navH;
-      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      // Use 'auto' (instant) instead of 'smooth' — smooth-scroll takes 1+ second
+      // during which the iframe loads + grows the page, causing the target
+      // position to shift by the time the animation finishes.
+      window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
     });
   }
 
