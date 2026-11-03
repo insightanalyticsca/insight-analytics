@@ -2,6 +2,12 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
@@ -20,7 +26,6 @@
   <meta property="og:url" content="https://insight-analytics.ca/faq/" />
   <meta property="og:site_name" content="Insight Analytics" />
   <link rel="stylesheet" href="/css/fonts.css">
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="stylesheet" href="/css/font-awesome.min.css">
   <link rel="stylesheet" href="/css/styles.css?v=4.94.0" />
   <style>
@@ -43,6 +48,27 @@
     .faq-cta h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 12px; }
     .faq-cta p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px; }
   </style>
+
+  <style>
+  /* P1: content-visibility: auto — skip rendering off-screen sections (50-80% INP win) */
+  main > section:nth-child(n+3),
+  .canvas-grid > .canvas-tile:nth-child(n+5),
+  .grid-analytics > div:nth-child(n+5),
+  .sector-block:nth-child(n+3),
+  #analytics,
+  #library {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+  /* CSS containment — isolate layout/paint */
+  .canvas-tile, .exec-visual, .card, .tile {
+    contain: layout style paint;
+  }
+  </style>
+
+  <meta name="dateModified" content="2026-11-03T03:27:19.870Z">
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"WebPage","@id":"https://insight-analytics.ca/faq/index.html#page","name":"FAQ — AI Dashboards, Data Pipelines, Metadata Discovery | Insight Analytics","description":"Answers to common questions about AI dashboard building, automated data pipelines, deterministic metadata discovery, ECharts visualization, Groq AI integration, and 50+ production dashboard deployments. Ontario, Canada.","url":"https://insight-analytics.ca/faq/index.html","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"FAQ","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-03","dateModified":"2026-11-03T03:27:19.870Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Faq","item":"https://insight-analytics.ca/faq.html"},{"@type":"ListItem","position":3,"name":"Index","item":"https://insight-analytics.ca/faq/index.html"}]}]}</script>
 </head>
 <body>
   <header class="navbar" id="navbar">
@@ -161,10 +187,6 @@
       </div>
     </div>
   </footer>
-
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do you build an AI dashboard?","acceptedAnswer":{"@type":"Answer","text":"Type a brief in plain English and the AI dashboard builder generates a complete spec with KPIs and chart tiles using Groq. Renders live with ECharts."}},{"@type":"Question","name":"What is natural language to dashboard?","acceptedAnswer":{"@type":"Answer","text":"Describe what you want in plain English and the system generates a complete dashboard spec that renders live. No SQL, no configuration."}},{"@type":"Question","name":"Can I see live dashboard demos?","acceptedAnswer":{"@type":"Answer","text":"Yes, 16+ interactive dashboards are live including supply chain, SaaS growth, banking risk, IT service health, and AR aging."}},{"@type":"Question","name":"Is the dashboard data real or synthetic?","acceptedAnswer":{"@type":"Answer","text":"All demo data is synthetic. Real customer data never ships to the browser."}},{"@type":"Question","name":"What technology stack do you use?","acceptedAnswer":{"@type":"Answer","text":"ECharts 5.5, Groq AI via Netlify edge proxy, GitHub Pages, SQL Server/Snowflake/BigQuery/Postgres/Oracle."}},{"@type":"Question","name":"What is ECharts?","acceptedAnswer":{"@type":"Answer","text":"Open-source JavaScript visualization library. Free, performant, mobile-friendly."}},{"@type":"Question","name":"What is Groq?","acceptedAnswer":{"@type":"Answer","text":"Fast AI inference engine running Qwen 3.8-27B. API key stays server-side."}},{"@type":"Question","name":"Do you work with SQL Server, Oracle, and Snowflake?","acceptedAnswer":{"@type":"Answer","text":"Yes. Technology-agnostic data pipelines."}},{"@type":"Question","name":"How is this different from Power BI?","acceptedAnswer":{"@type":"Answer","text":"Same ECharts engine as 50+ production deployments. AI at the center. Ships in weeks not months."}},{"@type":"Question","name":"What is deterministic AI metadata discovery?","acceptedAnswer":{"@type":"Answer","text":"Walks databases and extracts business rules from stored procedures. AI narrates what was proved. No hallucination."}},{"@type":"Question","name":"What is a no-hallucination AI dashboard?","acceptedAnswer":{"@type":"Answer","text":"Uses deterministic metadata discovery. AI never invents KPIs or fabricates data."}},{"@type":"Question","name":"What is an AI executive brief?","acceptedAnswer":{"@type":"Answer","text":"4-part narrative: What happened, Why, What to expect, What to do. Grounded in actual data."}},{"@type":"Question","name":"What is metadata discovery and data lineage?","acceptedAnswer":{"@type":"Answer","text":"Extracts business rules from code. Traces data flow from source to reports."}},{"@type":"Question","name":"What is automated data pipeline automation?","acceptedAnswer":{"@type":"Answer","text":"6-stage pipeline: Signals, Integrate, Standardize, Intelligence, Deliver, Act & Learn."}},{"@type":"Question","name":"What is the Monday-morning operating model?","acceptedAnswer":{"@type":"Answer","text":"Automated brief arrives before the meeting. AI ranks changes, explains drivers, flags risks."}},{"@type":"Question","name":"Can you automate PowerPoint and Excel?","acceptedAnswer":{"@type":"Answer","text":"Yes. Governed extracts, variance analysis, Excel/PowerPoint/PDF generation."}},{"@type":"Question","name":"Do you offer Excel to dashboard conversion?","acceptedAnswer":{"@type":"Answer","text":"Yes. Upload Excel, describe what to do, system builds an executable pipeline."}},{"@type":"Question","name":"What is fuzzy address matching?","acceptedAnswer":{"@type":"Answer","text":"Reconciles records without a common key using Jaro-Winkler and Nominatim Geo API."}},{"@type":"Question","name":"Can you build supply chain dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. OTIF, carrier scorecards, lane heatmaps, AI disruption prediction."}},{"@type":"Question","name":"Can you build banking risk dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. LCR, VaR, fraud alerts, credit risk heatmap, liquidity waterfall."}},{"@type":"Question","name":"Can you build IT operations dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. Ticket SLA, uptime, security posture, MTTR."}},{"@type":"Question","name":"Can you build utility analytics dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. Load forecasting, AR aging, usage explorers."}},{"@type":"Question","name":"Can you build SaaS growth dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. ARR, NRR, cohort retention, waterfall, save plays."}},{"@type":"Question","name":"Can you build AR aging dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. Aging by customer type, payment trends, collections."}},{"@type":"Question","name":"Do you offer contact center analytics?","acceptedAnswer":{"@type":"Answer","text":"Yes. Genesys Cloud integration, call volume, handling times, abandoned calls."}},{"@type":"Question","name":"Can you build security training dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes. KnowBe4 phishing, training completion, security posture."}},{"@type":"Question","name":"Do you offer predictive analytics?","acceptedAnswer":{"@type":"Answer","text":"Yes. OLS regression, change-point detection, time series prediction."}},{"@type":"Question","name":"Do you build custom web applications?","acceptedAnswer":{"@type":"Answer","text":"Yes. Operational web apps, inventory, lifecycle transactions."}},{"@type":"Question","name":"How long does a dashboard project take?","acceptedAnswer":{"@type":"Answer","text":"Foundation already running. Weeks not months."}},{"@type":"Question","name":"Do you work with Canadian companies?","acceptedAnswer":{"@type":"Answer","text":"Yes. Ontario-based. Serves CA and US mid-market."}}]}
-  </script>
 
   <script src="/js/app.js?v=4.98.0" defer></script>
   <script src="/js/sw-register.js?v=4.99.0" defer></script>

@@ -2,6 +2,12 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
@@ -42,25 +48,8 @@
   <meta name="twitter:image:alt" content="AI-Assisted Dashboard Builder — Plain English to Live Executive Dashboard" />
 
   <!-- Article structured data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "AI-Assisted Dashboard Builder: Plain English to Live Executive Dashboard",
-    "description": "Type a brief — or pick a preset template — and Groq generates a complete dashboard spec on the fly. Renders live in your browser using the same ECharts engine as our 50+ production deployments.",
-    "author": { "@type": "Organization", "name": "Insight Analytics", "url": "https://insight-analytics.ca/" },
-    "publisher": { "@type": "Organization", "name": "Insight Analytics", "logo": { "@type": "ImageObject", "url": "https://insight-analytics.ca/icons/icon-512.png" } },
-    "datePublished": "2026-10-27",
-    "dateModified": "2026-10-27",
-    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://insight-analytics.ca/demos/ai-dashboard-builder" },
-    "articleSection": "Generative Business Intelligence",
-    "keywords": ["AI dashboard builder", "Groq AI dashboards", "generative dashboards", "ECharts", "natural language to dashboard", "AI-assisted BI"]
-  }
-  </script>
-
   <!-- Fonts -->
   <link rel="stylesheet" href="/css/fonts.css">
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="stylesheet" href="/css/font-awesome.min.css">
   <link rel="stylesheet" href="../css/styles.css?v=4.92.0" />
   <script src="../js/blog-ai-dashboard-builder.js?v=1.0.2-fix-css-and-cors" defer></script>
@@ -113,6 +102,25 @@
       #ai-dashboard-builder-mount { padding: 0 8px; }
     }
   </style>
+
+  <style>
+  /* P1: content-visibility: auto — skip rendering off-screen sections (50-80% INP win) */
+  main > section:nth-child(n+3),
+  .canvas-grid > .canvas-tile:nth-child(n+5),
+  .grid-analytics > div:nth-child(n+5),
+  .sector-block:nth-child(n+3),
+  #analytics,
+  #library {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+  /* CSS containment — isolate layout/paint */
+  .canvas-tile, .exec-visual, .card, .tile {
+    contain: layout style paint;
+  }
+  </style>
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"WebPage","@id":"https://insight-analytics.ca/demos/ai-dashboard-builder.html#page","name":"AI-Assisted Dashboard Builder: Plain English to Live Executive Dashboard | Insight Analytics","description":"Type a brief — or pick a preset template — and Groq generates a complete dashboard spec (4 KPIs + 4 chart tiles) on the fly. Renders live in your browser using the same ECharts engine as our 50+ production deployments.","url":"https://insight-analytics.ca/demos/ai-dashboard-builder.html","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"AI","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-03","dateModified":"2026-11-03T03:27:19.870Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Demos","item":"https://insight-analytics.ca/demos.html"},{"@type":"ListItem","position":3,"name":"Ai Dashboard Builder","item":"https://insight-analytics.ca/demos/ai-dashboard-builder.html"}]},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does Insight Analytics' AI-Assisted Dashboard Builder turn plain English into a live executive dashboard?","acceptedAnswer":{"@type":"Answer","text":"You type a one‑line brief (e.g., \"build me a SaaS churn dashboard\") and the AI automatically selects data sources, generates appropriate visualizations, and assembles a fully interactive dashboard without any manual coding."}},{"@type":"Question","name":"How much time can the AI dashboard builder save compared to manual development?","acceptedAnswer":{"@type":"Answer","text":"The demo shows a reduction from the typical two‑week development cycle to a matter of minutes—often under five minutes to generate a complete, live dashboard."}},{"@type":"Question","name":"What makes Insight Analytics' AI dashboard demo different from other AI dashboard tools?","acceptedAnswer":{"@type":"Answer","text":"Unlike most AI demos that only suggest chart types or summarize data, Insight Analytics' builder actually constructs the entire dashboard, handling data wiring, layout, and interactivity end‑to‑end."}},{"@type":"Question","name":"Can I create a SaaS churn dashboard using just a one‑line brief with Insight Analytics?","acceptedAnswer":{"@type":"Answer","text":"Yes, the system can interpret a brief like \"build me a SaaS churn dashboard\" and instantly produce a fully functional executive dashboard with relevant metrics and visualizations."}}]}]}</script>
 </head>
 <body>
 

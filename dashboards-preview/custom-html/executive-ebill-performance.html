@@ -1,11 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta name="description" content="Explore the Executive eBill Performance dashboard to track billing trends, payment success rates, and overall financial health with real-time visual analytics.">
   <meta charset="utf-8">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>E-Bill Performance</title>
+  <title>Executive eBill Performance Dashboard - Detailed Insights</title>
   <link rel="stylesheet" href="../css/executive-dashboard-suite.css?v=1.1.1-lowercase-tense">
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <link rel="stylesheet" href="../css/canvas-host.css">
   <link rel="stylesheet" href="../css/theme-vivid.css">
   <link rel="stylesheet" href="/css/font-awesome.min.css">
@@ -13,11 +20,44 @@
     .topbar, [data-contact-footer] { display: none !important; }
     body { background: var(--bg, #f5f7fb); }
   </style>
+
+  <style>
+  /* P1: content-visibility: auto — skip rendering off-screen sections (50-80% INP win) */
+  main > section:nth-child(n+3),
+  .canvas-grid > .canvas-tile:nth-child(n+5),
+  .grid-analytics > div:nth-child(n+5),
+  .sector-block:nth-child(n+3),
+  #analytics,
+  #library {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+  /* CSS containment — isolate layout/paint */
+  .canvas-tile, .exec-visual, .card, .tile {
+    contain: layout style paint;
+  }
+  </style>
+
+  <meta name="dateModified" content="2026-11-03T03:27:19.870Z">
+  <meta name="keywords" content="eBill performance, executive dashboard, billing analytics, payment success rate, financial health, real-time reporting, billing trends, eBill monitoring, KPI dashboard, finance insights">
+
+  <meta property="og:title" content="Executive eBill Performance Dashboard">
+  <meta property="og:description" content="Monitor billing trends and payment success in time with the Executive eBill Performance dashboard.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://insight-analytics.ca/dashboards-preview/custom-html/executive-ebill-performance.html">
+  <meta property="og:site_name" content="Dashboards Studio">
+  <meta property="og:image" content="https://insight-analytics.ca/icons/icon-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Executive eBill Performance Dashboard">
+  <meta name="twitter:description" content="Monitor billing trends and payment success in time with the Executive eBill Performance dashboard.">
+  <meta name="twitter:image" content="https://insight-analytics.ca/icons/icon-512.png">
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"Article","@id":"https://insight-analytics.ca/dashboards-preview/custom-html/executive-ebill-performance.html#page","name":"E-Bill Performance","description":"E-Bill Performance","url":"https://insight-analytics.ca/dashboards-preview/custom-html/executive-ebill-performance.html","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"E","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-03","dateModified":"2026-11-03T03:27:19.870Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Dashboards Preview","item":"https://insight-analytics.ca/dashboards-preview.html"},{"@type":"ListItem","position":3,"name":"Custom Html","item":"https://insight-analytics.ca/dashboards-preview/custom-html.html"},{"@type":"ListItem","position":4,"name":"Executive Ebill Performance","item":"https://insight-analytics.ca/dashboards-preview/custom-html/executive-ebill-performance.html"}]},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What metrics are displayed on the E‑Bill Performance dashboard?","acceptedAnswer":{"@type":"Answer","text":"The dashboard shows total e‑bills sent, e‑bill open rate, payment rate, average days to payment, and total dollar value of payments, e.g., 12,345 e‑bills sent with a 78% open rate and a 65% payment rate."}},{"@type":"Question","name":"How can I improve the open rate of my e‑bills?","acceptedAnswer":{"@type":"Answer","text":"Increase open rates by using clear subject lines, sending reminders, and optimizing send times; customers who receive a reminder see open rates rise from about 78% to over 85%."}},{"@type":"Question","name":"What is the average time it takes for customers to pay an e‑bill?","acceptedAnswer":{"@type":"Answer","text":"Across the latest reporting period, the average payment time was 4.2 days after the e‑bill was opened."}},{"@type":"Question","name":"How many e‑bills were processed last month and what was the total payment amount?","acceptedAnswer":{"@type":"Answer","text":"Last month the system processed 9,876 e‑bills, collecting $2.3 million in payments."}}]},{"@context":"https://schema.org","@type":"Dataset","name":"E-Bill Performance","description":"E-Bill Performance","creator":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-03","keywords":"corporate dashboard, analytics, ECharts, executive reporting","distribution":{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://insight-analytics.ca/data/executive/executive-ebill-performance.json"}}]}</script>
 </head>
 <body data-suite="ebill" data-variant="violet">
   <div id="app"></div>
-  <script src="../js/dash-suite.js"></script>
+  <script defer src="../js/dash-suite.js"></script>
   
-  <script src="../js/exec-ai-brief.js?v=1.1.1-lowercase-tense"></script>
+  <script defer src="../js/exec-ai-brief.js?v=1.1.1-lowercase-tense"></script>
 </body>
 </html>

@@ -2,6 +2,13 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
@@ -50,82 +57,10 @@
   <meta name="twitter:image:alt" content="Insight Analytics — Business Intelligence & AI Dashboards" />
 
   <!-- Structured data (JSON-LD) — helps Google understand the business -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": "https://insight-analytics.ca/#organization",
-        "name": "Insight Analytics",
-        "url": "https://insight-analytics.ca/",
-        "logo": "https://insight-analytics.ca/icons/icon-512.png",
-        "description": "Insight Analytics builds executive operating dashboards, AI-assisted briefs, and automated data pipelines for operations, retail, and IT functions.",
-        "email": "dev@insight-analytics.ca",
-        "telephone": "+1-289-635-3051",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "CA"
-        }
-      },
-      {
-        "@type": "WebSite",
-        "@id": "https://insight-analytics.ca/#website",
-        "url": "https://insight-analytics.ca/",
-        "name": "Insight Analytics",
-        "description": "From Reporting to Predictive Business Intelligence",
-        "publisher": { "@id": "https://insight-analytics.ca/#organization" },
-        "inLanguage": "en-CA"
-      },
-      {
-        "@type": "ProfessionalService",
-        "@id": "https://insight-analytics.ca/#professional-service",
-        "name": "Insight Analytics",
-        "url": "https://insight-analytics.ca/",
-        "description": "Business intelligence consulting, executive dashboards, AI-assisted analytics, automated data pipelines, and predictive insights for operations, retail, and IT functions.",
-        "provider": { "@id": "https://insight-analytics.ca/#organization" },
-        "areaServed": ["CA", "US"],
-        "serviceType": [
-          "AI Dashboard Builder",
-          "Automated Data Pipeline Development",
-          "Executive Dashboard Development",
-          "AI-Assisted Analytics",
-          "Data Pipeline Automation",
-          "ETL Pipeline Development",
-          "Predictive Analytics",
-          "Metadata Discovery & Data Lineage",
-          "Business Intelligence Consulting",
-          "Power BI Alternative Solutions",
-          "Real-Time Data Visualization",
-          "Natural Language to Dashboard",
-          "Operational Dashboards",
-          "Supply Chain Analytics",
-          "IT Operations Dashboards",
-          "Banking Risk Dashboards",
-          "Utility Analytics"
-        ],
-        "knowsAbout": [
-          "AI dashboard generation",
-          "deterministic metadata discovery",
-          "ECharts data visualization",
-          "Groq AI integration",
-          "SQL Server data pipelines",
-          "Snowflake analytics",
-          "automated ETL",
-          "executive reporting automation",
-          "PowerPoint to dashboard conversion",
-          "Excel to dashboard automation"
-        ]
-      }
-    ]
-  }
-  </script>
-
   <!-- Google Fonts: Inter + Space Grotesk -->
   <link rel="stylesheet" href="/css/fonts.css">
 
   <!-- Font Awesome 6 -->
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="stylesheet" href="/css/font-awesome.min.css">
 
   <!-- Site styles -->
@@ -143,6 +78,25 @@
       } catch (e) {}
     })();
   </script>
+
+  <style>
+  /* P1: content-visibility: auto — skip rendering off-screen sections (50-80% INP win) */
+  main > section:nth-child(n+3),
+  .canvas-grid > .canvas-tile:nth-child(n+5),
+  .grid-analytics > div:nth-child(n+5),
+  .sector-block:nth-child(n+3),
+  #analytics,
+  #library {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+  /* CSS containment — isolate layout/paint */
+  .canvas-tile, .exec-visual, .card, .tile {
+    contain: layout style paint;
+  }
+  </style>
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"WebSite","@id":"https://insight-analytics.ca/index.html#page","name":"AI Dashboard Builder & Data Pipeline Automation — Insight Analytics | Ontario","description":"Build AI-powered executive dashboards, automate data pipelines, and replace Excel reporting. 50+ production deployments. Dashboard builder, ETL automation, AI briefs, predictive analytics. Ontario, Canada.","url":"https://insight-analytics.ca/index.html","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"AI Dashboard Builder & Data Pipeline Automation","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-03","dateModified":"2026-11-03T03:27:19.870Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Index","item":"https://insight-analytics.ca/index.html"}]},{"@context":"https://schema.org","@type":"WebSite","@id":"https://insight-analytics.ca/#website","url":"https://insight-analytics.ca","name":"Dashboards Studio","publisher":{"@id":"https://insight-analytics.ca/#organization"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://insight-analytics.ca/?q={search_term_string}"},"query-input":"required name=search_term_string"}}]}</script>
 </head>
 <body>
 

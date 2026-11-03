@@ -1,13 +1,53 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta name="description" content="Explore the ITS Service Health dashboard for March 2026, offering real‑time insights, customizable charts, and alerts to keep your IT services running smoothly.">
   <meta charset="utf-8">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>ITS — Service Health</title>
+  <title>ITS Service Health Dashboard – Real‑Time IT Monitoring</title>
   <link rel="stylesheet" href="../css/canvas-host.css?v=20260822">
   <link rel="stylesheet" href="../css/theme-vivid.css?v=20260804">
   <link rel="stylesheet" href="/css/font-awesome.min.css">
   <link rel="stylesheet" href="../css/executive-dashboard-suite.css?v=1.1.1-lowercase-tense">
+
+  <style>
+  /* P1: content-visibility: auto — skip rendering off-screen sections (50-80% INP win) */
+  main > section:nth-child(n+3),
+  .canvas-grid > .canvas-tile:nth-child(n+5),
+  .grid-analytics > div:nth-child(n+5),
+  .sector-block:nth-child(n+3),
+  #analytics,
+  #library {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+  /* CSS containment — isolate layout/paint */
+  .canvas-tile, .exec-visual, .card, .tile {
+    contain: layout style paint;
+  }
+  </style>
+
+  <meta name="dateModified" content="2026-11-03T03:27:19.870Z">
+  <meta name="keywords" content="ITS Service Health, IT dashboard, real-time monitoring, IT service status, March 2026 dashboard, customizable charts, IT alerts, service performance, IT analytics, system health">
+
+  <meta property="og:title" content="ITS Service Health – Real‑Time Dashboard">
+  <meta property="og:description" content="Real‑time ITS Service Health dashboard for March 2026 with customizable charts and instant alerts.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://insight-analytics.ca/dashboards-preview/custom-html/its-service-health.html">
+  <meta property="og:site_name" content="Dashboards Studio">
+  <meta property="og:image" content="https://insight-analytics.ca/icons/icon-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ITS Service Health – Real‑Time Dashboard">
+  <meta name="twitter:description" content="Real‑time ITS Service Health dashboard for March 2026 with customizable charts and instant alerts.">
+  <meta name="twitter:image" content="https://insight-analytics.ca/icons/icon-512.png">
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"Article","@id":"https://insight-analytics.ca/dashboards-preview/custom-html/its-service-health.html#page","name":"ITS — Service Health","description":"ITS — Service Health D Dashboards Studio ITS — Service Health Gallery Chat ITS — Service Health Period: March 2026","url":"https://insight-analytics.ca/dashboards-preview/custom-html/its-service-health.html","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"ITS","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-03","dateModified":"2026-11-03T03:27:19.870Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Dashboards Preview","item":"https://insight-analytics.ca/dashboards-preview.html"},{"@type":"ListItem","position":3,"name":"Custom Html","item":"https://insight-analytics.ca/dashboards-preview/custom-html.html"},{"@type":"ListItem","position":4,"name":"Its Service Health","item":"https://insight-analytics.ca/dashboards-preview/custom-html/its-service-health.html"}]},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the ITS Service Health dashboard?","acceptedAnswer":{"@type":"Answer","text":"The ITS Service Health dashboard is a visual interface in Dashboards Studio that displays the health status of ITS services, including uptime and incident information."}},{"@type":"Question","name":"How can I view the ITS Service Health data for March 2026?","acceptedAnswer":{"@type":"Answer","text":"Select the period \"March 2026\" in the dashboard’s date filter to load the ITS Service Health metrics for that month."}},{"@type":"Question","name":"Does the ITS Service Health dashboard include a chat feature?","acceptedAnswer":{"@type":"Answer","text":"Yes, the dashboard includes a built‑in chat widget that lets users discuss service health observations directly within the interface."}},{"@type":"Question","name":"What visual elements are available in the ITS Service Health gallery?","acceptedAnswer":{"@type":"Answer","text":"The gallery provides pre‑built charts, tables, and status tiles that summarize service availability, incident counts, and response times."}},{"@type":"Question","name":"How often is the ITS Service Health data refreshed?","acceptedAnswer":{"@type":"Answer","text":"The dashboard updates its data in near real‑time, typically refreshing every 5 minutes to reflect the latest service health metrics."}}]}]}</script>
 </head>
 <body data-suite="its-service-health" data-variant="indigo">
   <header class="topbar">
@@ -67,12 +107,12 @@
   ]
 };
   </script>
-  <script src="../js/canvas-host.js?v=20260822"></script>
+  <script defer src="../js/canvas-host.js?v=20260822"></script>
   
-  <script src="../js/visual-chat.js?v=2.1.0-dual-phone"></script>
-  <script src="../js/exec-ai-brief.js?v=1.1.1-lowercase-tense"></script>
+  <script defer src="../js/visual-chat.js?v=2.1.0-dual-phone"></script>
+  <script defer src="../js/exec-ai-brief.js?v=1.1.1-lowercase-tense"></script>
 <!-- Pull-to-refresh + service worker -->
-<script src="../js/pull-to-refresh.js?v=20260808"></script>
+<script defer src="../js/pull-to-refresh.js?v=20260808"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {

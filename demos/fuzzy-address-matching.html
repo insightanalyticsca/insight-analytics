@@ -2,13 +2,19 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
 
   <!-- SEO -->
-  <title>Fuzzy Address Matching: Turning Siloed Systems into One Map | Insight Analytics</title>
-  <meta name="description" content="Two transactional tables. Free-form addresses. No shared key. This demo fuzzy-matches customer records to service orders by address, validates against the Nominatim Geo API, and uses AI to narrate the results." />
+  <title>Fuzzy Matching: Resolve Siloed Data in Minutes | Insight Analytics</title>
+  <meta name="description" content="Unify siloed systems using fuzzy matching. Resolve unmatched records instantly, validate with geo APIs, and gain a single source of truth for your data.">
   <meta name="keywords" content="fuzzy address matching, master data management, customer 360, geocoding, OpenStreetMap, Nominatim, Jaro-Winkler, data integration, AI-assisted matching" />
   <meta name="author" content="Insight Analytics" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -21,8 +27,8 @@
 
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Fuzzy Address Matching: Turning Siloed Systems into One Map" />
-  <meta property="og:description" content="Two transactional tables. Free-form addresses. No shared key. Fuzzy-match + geocode + AI narrate — try the live demo." />
+  <meta property="og:title" content="Fuzzy Matching: Resolve Siloed Data in Minutes | Insight Analytics">
+  <meta property="og:description" content="Unify siloed systems using fuzzy matching. Resolve unmatched records instantly, validate with geo APIs, and gain a single source of truth for your data.">
   <meta property="og:url" content="https://insight-analytics.ca/demos/fuzzy-address-matching" />
   <meta property="og:site_name" content="Insight Analytics" />
   <meta property="og:locale" content="en_CA" />
@@ -42,25 +48,8 @@
   <meta name="twitter:image:alt" content="Fuzzy Address Matching — Turning Siloed Systems into One Map" />
 
   <!-- Article structured data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "Fuzzy Address Matching: Turning Siloed Systems into One Map",
-    "description": "Two transactional tables with free-form addresses and no shared key. This demo fuzzy-matches customer records to service orders by address, validates against the Nominatim Geo API, and uses AI to narrate the results.",
-    "author": { "@type": "Organization", "name": "Insight Analytics", "url": "https://insight-analytics.ca/" },
-    "publisher": { "@type": "Organization", "name": "Insight Analytics", "logo": { "@type": "ImageObject", "url": "https://insight-analytics.ca/icons/icon-512.png" } },
-    "datePublished": "2026-10-07",
-    "dateModified": "2026-10-07",
-    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://insight-analytics.ca/demos/fuzzy-address-matching" },
-    "articleSection": "Data Integration",
-    "keywords": ["fuzzy address matching", "master data management", "customer 360", "geocoding", "Nominatim", "Jaro-Winkler"]
-  }
-  </script>
-
   <!-- Fonts -->
   <link rel="stylesheet" href="/css/fonts.css">
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="stylesheet" href="/css/font-awesome.min.css">
   <link rel="stylesheet" href="../css/styles.css?v=4.74.0" />
   <script src="../js/blog-fuzzy-match.js?v=2.1.0-reset-counters" defer></script>
@@ -114,6 +103,25 @@
       #fuzzy-match-mount { padding: 0 8px; }
     }
   </style>
+
+  <style>
+  /* P1: content-visibility: auto — skip rendering off-screen sections (50-80% INP win) */
+  main > section:nth-child(n+3),
+  .canvas-grid > .canvas-tile:nth-child(n+5),
+  .grid-analytics > div:nth-child(n+5),
+  .sector-block:nth-child(n+3),
+  #analytics,
+  #library {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+  /* CSS containment — isolate layout/paint */
+  .canvas-tile, .exec-visual, .card, .tile {
+    contain: layout style paint;
+  }
+  </style>
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"WebPage","@id":"https://insight-analytics.ca/demos/fuzzy-address-matching.html#page","name":"Fuzzy Address Matching: Turning Siloed Systems into One Map | Insight Analytics","description":"Two transactional tables. Free-form addresses. No shared key. This demo fuzzy-matches customer records to service orders by address, validates against the Nominatim Geo API, and uses AI to narrate the results.","url":"https://insight-analytics.ca/demos/fuzzy-address-matching.html","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"Fuzzy Address Matching: Turning Siloed Systems into One Map | Insight Analytics","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-03","dateModified":"2026-11-03T03:27:19.870Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Demos","item":"https://insight-analytics.ca/demos.html"},{"@type":"ListItem","position":3,"name":"Fuzzy Address Matching","item":"https://insight-analytics.ca/demos/fuzzy-address-matching.html"}]}]}</script>
 </head>
 <body>
 

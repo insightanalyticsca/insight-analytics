@@ -1,4 +1,65 @@
 {
   "_comment": "Append-only changelog of every adaptive SEO rewrite. Each entry is one rewrite action. Used for rollback + audit. Do not edit — only append via adaptive-seo.mjs.",
-  "entries": []
+  "entries": [
+    {
+      "date": "2026-11-03T03:29:22.219Z",
+      "relPath": "demos/fuzzy-address-matching.html",
+      "action": "rewrite-seo",
+      "targetTerm": "fuzzy matching",
+      "termVolume": 100,
+      "titleBefore": "Fuzzy Address Matching: Turning Siloed Systems into One Map | Insight Analytics",
+      "titleAfter": "Fuzzy Matching: Resolve Siloed Data in Minutes | Insight Analytics",
+      "descBefore": "Two transactional tables. Free-form addresses. No shared key. This demo fuzzy-matches customer records to service orders by address, validates against the Nominatim Geo API, and uses AI to narrate the results.",
+      "descAfter": "Unify siloed systems using fuzzy matching. Resolve unmatched records instantly, validate with geo APIs, and gain a single source of truth for your data.",
+      "reason": "trend match 75%, vol 100 (source: google-autocomplete)"
+    },
+    {
+      "date": "2026-11-03T03:29:22.219Z",
+      "relPath": "insights/executives-and-entrepreneurs-analyze-the-challenges-of-ai-adoption-in-business-at-iese.html",
+      "action": "rewrite-seo",
+      "targetTerm": "ai adoption",
+      "termVolume": 100,
+      "titleBefore": "Executives and entrepreneurs analyze the challenges of AI adoption in business at IESE | Insight Analytics",
+      "titleAfter": "AI Adoption: 2026 C-Suite Strategy & ROI | Insight Analytics",
+      "descBefore": "The primary strategic imperative for the C-suite is that AI adoption is no longer a discretionary technology upgrade but a critical determinant of operatin",
+      "descAfter": "Quantify the impact of AI adoption on operating margins. This analyst report details how executives leverage generative AI to secure resilience and drive measurable business value.",
+      "reason": "trend match 67%, vol 100 (source: google-autocomplete)"
+    },
+    {
+      "date": "2026-11-03T03:29:22.219Z",
+      "relPath": "insights/how-sustainability-transformations-quietly-lose-their-edge.html",
+      "action": "rewrite-seo",
+      "targetTerm": "capital allocation",
+      "termVolume": 100,
+      "titleBefore": "How Sustainability Transformations Quietly Lose Their Edge | Insight Analytics",
+      "titleAfter": "Capital Allocation: Fixing Sustainability's Value Leak | Insight Analytics",
+      "descBefore": "Sustainability initiatives are currently eroding shareholder value by failing to demonstrate a positive NPV against rising compliance costs, forcing a stra",
+      "descAfter": "Master capital allocation to stop sustainability initiatives from eroding shareholder value. Apply rigorous NPV discipline to transform ethical signaling into measurable financial returns.",
+      "reason": "trend match 67%, vol 100 (source: google-autocomplete)"
+    },
+    {
+      "date": "2026-11-03T03:29:22.219Z",
+      "relPath": "insights/shareholder-activism-is-changing-are-companies-ready.html",
+      "action": "rewrite-seo",
+      "targetTerm": "capital allocation",
+      "termVolume": 100,
+      "titleBefore": "Shareholder activism is changing. Are companies ready? | Insight Analytics",
+      "titleAfter": "Capital Allocation: The New Activism Metric | Insight Analytics",
+      "descBefore": "The primary strategic imperative for corporate leadership is to decouple value creation from defensive posture, recognizing that modern shareholder activis",
+      "descAfter": "Analyze how shareholder activism drives capital allocation efficiency. Use our analytics to benchmark portfolio rationalization against peer performance.",
+      "reason": "trend match 58%, vol 100 (source: google-autocomplete)"
+    },
+    {
+      "date": "2026-11-03T03:29:22.219Z",
+      "relPath": "insights/stocks-see-steepest-decline-in-months-amid-ai-worries.html",
+      "action": "rewrite-seo",
+      "targetTerm": "capital allocation",
+      "termVolume": 100,
+      "titleBefore": "Stocks See Steepest Decline in Months Amid A.I. Worries | Insight Analytics",
+      "titleAfter": "Capital Allocation: AI ROI Shifts Market Strategy | Insight Analytics",
+      "descBefore": "The S&amp;P 500 and Nasdaq have experienced their steepest monthly declines since mid-2026, signaling a sharp compression in tech valuations driven by heighten",
+      "descAfter": "Reassess capital allocation as AI ROI scrutiny compresses tech valuations. Our data reveals how shifting investment priorities are redefining market leadership.",
+      "reason": "trend match 58%, vol 100 (source: google-autocomplete)"
+    }
+  ]
 }

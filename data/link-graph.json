@@ -1,0 +1,358 @@
+{
+  "dashboards-preview/custom-html/executive-customer-payments.html": {
+    "related": [],
+    "topic": "executive"
+  },
+  "dashboards-preview/custom-html/executive-ebill-performance.html": {
+    "related": [],
+    "topic": "executive"
+  },
+  "dashboards-preview/custom-html/its-service-health.html": {
+    "related": [],
+    "topic": "its"
+  },
+  "demos/ai-dashboard-builder.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "demos/database-archaeology.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "demos/fuzzy-address-matching.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "demos/index.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "demos/personalized-power-automate.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "demos/universal-dashboard-builder.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "demos/universal-time-series-prediction.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "demos/weather-load-forecast.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "faq/index.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "index.html": {
+    "related": [],
+    "topic": "home"
+  },
+  "insights/a-low-tech-intervention-can-help-migrant-families-survive-the-lean-season.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/adobe-y-la-democratizacin-a-travs-de-la-inteligencia-artificial.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/agentic-ai-in-strategic-sourcing-hype-or-hero.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/ai-evaluations-look-unbiased-without-being-fair.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/ai-is-everywhere-where-are-the-profits.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/ai-search-is-growing-faster-than-its-business-model.html": {
+    "related": [],
+    "topic": "its"
+  },
+  "insights/air-canada-shares-sink-amid-jet-fuel-costs-lower-profit-outlook.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/alphabet-just-had-its-worst-day-as-a-public-company-bofa-now-values-google-search-at-a-lower-multiple-than-fossil-fuel-s.html": {
+    "related": [],
+    "topic": "its"
+  },
+  "insights/anthropics-founders-letter-has-the-right-ideals-but-reality-will-decide.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/anthropics-ipo-reveals-a-430-billion-ai-supply-chain-bet.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/are-we-headed-for-a-perfect-financial-storm.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/before-enacting-medicare-for-all-fix-the-medicare-of-today-here-are-some-ideas.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/beyond-the-silos-five-marketmaps-shaping-the-next-supply-chain-technology-architecture.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/beyond-wms-where-warehouse-execution-is-headed-next.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/buying-the-robots-is-the-easy-part-why-warehouse-modernization-requires-an-operating-model-rethink.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/charting-the-us-china-trade-war-what-does-made-in-vietnam-mean.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/closing-bankings-ai-value-gap-a-ceo-guide.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/consumers-rethink-value-as-uncertainty-and-inflation-persist.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/costco-ceo-ron-vachris-rose-from-forklift-driver-to-the-c-suite-without-a-colleg.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/de-risking-risk-management-with-ai-how-rbi-built-for-quality-and-speed.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/deposits-the-top-profitability-lever-for-retail-banks-ceos.html": {
+    "related": [],
+    "topic": "its"
+  },
+  "insights/dispelling-the-myth-of-the-irreplaceable-founder.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/economic-mobility-making-lives-better-nowand-for-the-long-term.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/evaluating-the-revenue-potential-of-energy-storage-technologies.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/executives-and-entrepreneurs-analyze-the-challenges-of-ai-adoption-in-business-at-iese.html": {
+    "related": [],
+    "topic": "executive"
+  },
+  "insights/fed-looks-set-to-pause-after-september-rate-hike.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/federal-permittings-uneven-economic-impact-and-what-companies-can-do-about-it.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/forget-the-subsidy-race-how-smaller-economies-build-export-winners.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/from-discovery-to-delivery-finding-an-investment-edge-in-biopharma-services.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/from-intelligence-to-execution-join-us-at-the-2027-arc-industry-leadership-forum.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/from-resilience-to-antifragility-how-boards-can-profit-from-uncertainty.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/how-ai-is-transforming-strategy-development.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/how-is-pgs-ceo-getting-inflation-weary-shoppers-to-pay-more-it-starts-with-cashmere-like-diapers.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/how-sustainability-transformations-quietly-lose-their-edge.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/ikea-ceo-juvencio-maeztu-leading-with-humility-simplicity-and-humanism.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/im-digging-into-price-optimization-and-management-heres-what-im-learning.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/index.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/indias-semiconductor-push-tests-logistics-readiness.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/inflation-accelerated-in-october-pce-index-shows.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/is-ai-scaling-your-worst-habits.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/lack-of-trust-drives-the-just-in-case-energy-era.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/never-let-them-see-you-sweat-maybe-thats-the-problem.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/nuclear-powered-car-carriers-face-a-reality-test.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/parcel-shipping-costs-approach-record-high-as-extra-charges-stack-up.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/persistent-oil-prices-threaten-inflation-outlook.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/radical-federalism-the-way-to-tackle-the-ai-velocity-problem.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/reducing-emissions-and-costs-putting-your-products-on-a-low-carb-diet.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/rethinking-your-companys-clean-power-strategy.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/scope-3-is-not-primarily-a-reporting-problem-it-is-a-supply-chain-data-problem.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/shareholder-activism-is-changing-are-companies-ready.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/spacex-reports-44-billion-profit-as-ai-and-starlink-businesses-expand.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/stocks-see-steepest-decline-in-months-amid-ai-worries.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/supply-chain-resilience-is-not-visibility-it-is-the-ability-to-execute-alternati.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/the-ai-bubble-meets-the-supply-chain-where-is-the-productivity.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/the-business-case-for-living-longer.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/the-ceos-singular-impact-on-the-successor-failureof-ai-in-organizations.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/the-rise-of-the-agentic-coworker-a-banking-cios-guide-to-the-next-wave-of-ai.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/the-small-bottleneck-with-a-big-impact-why-automating-box-opening-could-be-the-next-frontier-in-warehouse-productivity.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/the-view-from-the-moon-how-to-rethink-your-global-strategy.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/three-key-steps-for-cfos-in-the-ai-era.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/tokenomics-the-economics-of-ai-value-realization.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/turn-energy-efficiency-into-strategic-advantage.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/turning-executive-judgment-into-organizational-intelligence-leveraging-ai-in-ceo-leadership.html": {
+    "related": [],
+    "topic": "executive"
+  },
+  "insights/us-tech-stocks-fall-after-earnings-fuel-ai-spending-concerns.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/voices-on-planning-the-ai-powered-future-of-supply-chain.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/were-human-beings-not-human-doings-why-always-on-culture-weakens-productivity.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/what-ceos-dont-hear-and-why-it-matters.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/what-finance-can-tell-us-about-the-twin-crises-of-climate-change-and-biodiversity-loss.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/what-finance-can-tell-us-about-the-twin-crises-of-climate-change-and-biodiversity.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/why-ai-is-about-to-stress-test-your-cx-strategy.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/why-are-bond-yields-soaring.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/why-cfos-need-to-become-keepers-of-culture.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/why-great-leaders-focus-on-double-roi.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/why-sustainability-leaders-need-to-think-like-change-managers.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "solutions-showcase/index-original.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "solutions-showcase/index.html": {
+    "related": [],
+    "topic": "general"
+  }
+}

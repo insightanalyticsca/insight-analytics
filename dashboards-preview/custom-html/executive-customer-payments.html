@@ -2,10 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Customer Payments</title>
   <link rel="stylesheet" href="../css/executive-dashboard-suite.css?v=1.1.1-lowercase-tense">
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <link rel="stylesheet" href="../css/canvas-host.css">
   <link rel="stylesheet" href="../css/theme-vivid.css">
   <link rel="stylesheet" href="/css/font-awesome.min.css">
@@ -13,11 +19,32 @@
     .topbar, [data-contact-footer] { display: none !important; }
     body { background: var(--bg, #f5f7fb); }
   </style>
+
+  <style>
+  /* P1: content-visibility: auto — skip rendering off-screen sections (50-80% INP win) */
+  main > section:nth-child(n+3),
+  .canvas-grid > .canvas-tile:nth-child(n+5),
+  .grid-analytics > div:nth-child(n+5),
+  .sector-block:nth-child(n+3),
+  #analytics,
+  #library {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+  /* CSS containment — isolate layout/paint */
+  .canvas-tile, .exec-visual, .card, .tile {
+    contain: layout style paint;
+  }
+  </style>
+
+  <meta name="dateModified" content="2026-11-03T03:27:19.870Z">
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"Article","@id":"https://insight-analytics.ca/dashboards-preview/custom-html/executive-customer-payments.html#page","name":"Customer Payments","description":"Customer Payments","url":"https://insight-analytics.ca/dashboards-preview/custom-html/executive-customer-payments.html","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"Customer Payments","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-03","dateModified":"2026-11-03T03:27:19.870Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Dashboards Preview","item":"https://insight-analytics.ca/dashboards-preview.html"},{"@type":"ListItem","position":3,"name":"Custom Html","item":"https://insight-analytics.ca/dashboards-preview/custom-html.html"},{"@type":"ListItem","position":4,"name":"Executive Customer Payments","item":"https://insight-analytics.ca/dashboards-preview/custom-html/executive-customer-payments.html"}]},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What key metrics does the Customer Payments dashboard display?","acceptedAnswer":{"@type":"Answer","text":"The Customer Payments dashboard shows total payment volume, average payment amount, number of transactions, and top‑paying customers, with data refreshed hourly."}},{"@type":"Question","name":"Can I filter the Customer Payments view by date range or payment method?","acceptedAnswer":{"@type":"Answer","text":"Yes, you can apply custom date ranges and filter by payment method (credit card, ACH, PayPal, etc.) using the dropdown menus at the top of the dashboard."}},{"@type":"Question","name":"How often is the data on the Customer Payments dashboard updated?","acceptedAnswer":{"@type":"Answer","text":"Payment data is synchronized and updated every hour, ensuring you see near‑real‑time figures for the current day."}},{"@type":"Question","name":"Is it possible to export the Customer Payments data for further analysis?","acceptedAnswer":{"@type":"Answer","text":"The dashboard includes an Export button that lets you download the displayed data as a CSV or Excel file, preserving all applied filters and columns."}}]},{"@context":"https://schema.org","@type":"Dataset","name":"Customer Payments","description":"Customer Payments","creator":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-03","keywords":"corporate dashboard, analytics, ECharts, executive reporting","distribution":{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://insight-analytics.ca/data/executive/executive-customer-payments.json"}}]}</script>
 </head>
 <body data-suite="payments" data-variant="blue">
   <div id="app"></div>
-  <script src="../js/dash-suite.js"></script>
+  <script defer src="../js/dash-suite.js"></script>
   
-  <script src="../js/exec-ai-brief.js?v=1.1.1-lowercase-tense"></script>
+  <script defer src="../js/exec-ai-brief.js?v=1.1.1-lowercase-tense"></script>
 </body>
 </html>

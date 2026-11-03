@@ -2,6 +2,13 @@
 <html lang="en" data-theme="ion">
 <head>
   <meta charset="utf-8">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="canonical" href="https://insight-analytics.ca/solutions-showcase/">
   <meta property="og:url" content="https://insight-analytics.ca/solutions-showcase/">
   <meta property="og:title" content="Solutions Showcase — Interactive Application Catalog | Insight Analytics">
@@ -352,6 +359,27 @@ html[data-theme="daybreak"] .trace-top{border-color:#15324c12}
 @media (max-width:720px){.trace-pipeline,.trace-outcome,.automation-chain,.automation-evidence,.atlas-category-grid,.atlas-mini-chain,.atlas-architecture-strip{grid-template-columns:1fr 1fr}.project-card.featured{grid-column:span 1;display:flex}.project-card.featured .card-art{order:-1}.collection-toolbar{position:static}.automation-stage{grid-template-columns:1fr}.workflow-stages{grid-template-columns:1fr 1fr}.project-dossier-copy h2{font-size:30px}}
 </style>
 
+
+  <style>
+  /* P1: content-visibility: auto — skip rendering off-screen sections (50-80% INP win) */
+  main > section:nth-child(n+3),
+  .canvas-grid > .canvas-tile:nth-child(n+5),
+  .grid-analytics > div:nth-child(n+5),
+  .sector-block:nth-child(n+3),
+  #analytics,
+  #library {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+  /* CSS containment — isolate layout/paint */
+  .canvas-tile, .exec-visual, .card, .tile {
+    contain: layout style paint;
+  }
+  </style>
+
+  <meta name="dateModified" content="2026-11-03T03:27:19.870Z">
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"WebPage","@id":"https://insight-analytics.ca/solutions-showcase/index-original.html#page","name":"Solutions Showcase — Interactive Application Catalog | Insight Analytics","description":"Solutions Showcase: AI and automation embedded in reports and workflows. Explore the application catalog through illustrative interactive interfaces.","url":"https://insight-analytics.ca/solutions-showcase/index-original.html","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"Solutions Showcase","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-03","dateModified":"2026-11-03T03:27:19.870Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Solutions Showcase","item":"https://insight-analytics.ca/solutions-showcase.html"},{"@type":"ListItem","position":3,"name":"Index Original","item":"https://insight-analytics.ca/solutions-showcase/index-original.html"}]}]}</script>
 </head>
 <body>
   <a class="skip-link" href="#projects">Skip to projects</a>

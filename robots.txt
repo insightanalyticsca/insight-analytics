@@ -1,7 +1,7 @@
-# Insight Analytics — robots.txt
-# Allow all search engines to crawl all content
 User-agent: *
 Allow: /
+Disallow: /netlify/
+Disallow: /data/
 
 # Allow Googlebot-Extended for AI Overview / AI Mode inclusion
 User-agent: Googlebot-Extended

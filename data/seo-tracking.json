@@ -1,0 +1,1398 @@
+{
+  "history": [
+    {
+      "runAt": "2026-11-03T03:27:19.870Z",
+      "pagesOptimized": 89,
+      "totalPages": 89,
+      "techniques": [
+        "googlebot-extended",
+        "preconnect-preload",
+        "defer-scripts",
+        "content-visibility",
+        "faq-schema",
+        "howto-schema",
+        "org-person-schema",
+        "auto-linking",
+        "fact-density",
+        "freshness",
+        "breadcrumbs",
+        "speakable",
+        "dataset-schema",
+        "image-seo",
+        "social-tags",
+        "json-ld-graph"
+      ],
+      "changes": [
+        {
+          "page": "dashboards-preview/custom-html/executive-customer-payments.html",
+          "techniques": [
+            "resource-hints",
+            "defer-scripts",
+            "content-visibility",
+            "freshness",
+            "faq-schema",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 6,
+            "vagueWords": 0,
+            "numbers": 6,
+            "density": "1.00",
+            "score": "good"
+          }
+        },
+        {
+          "page": "dashboards-preview/custom-html/executive-ebill-performance.html",
+          "techniques": [
+            "resource-hints",
+            "defer-scripts",
+            "content-visibility",
+            "freshness",
+            "faq-schema",
+            "title-opt",
+            "description-opt",
+            "social-tags",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 6,
+            "vagueWords": 0,
+            "numbers": 6,
+            "density": "1.00",
+            "score": "good"
+          },
+          "keywords": "eBill performance, executive dashboard, billing analytics, payment success rate, financial health, real-time reporting, billing trends, eBill monitoring, KPI dashboard, finance insights"
+        },
+        {
+          "page": "dashboards-preview/custom-html/its-service-health.html",
+          "techniques": [
+            "resource-hints",
+            "defer-scripts",
+            "content-visibility",
+            "freshness",
+            "faq-schema",
+            "title-opt",
+            "description-opt",
+            "social-tags",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 14,
+            "vagueWords": 0,
+            "numbers": 17,
+            "density": "1.21",
+            "score": "good"
+          },
+          "keywords": "ITS Service Health, IT dashboard, real-time monitoring, IT service status, March 2026 dashboard, customizable charts, IT alerts, service performance, IT analytics, system health"
+        },
+        {
+          "page": "demos/ai-dashboard-builder.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "faq-schema",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 132,
+            "vagueWords": 0,
+            "numbers": 113,
+            "density": "0.86",
+            "score": "good"
+          }
+        },
+        {
+          "page": "demos/database-archaeology.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 149,
+            "vagueWords": 4,
+            "numbers": 96,
+            "density": "0.64",
+            "score": "good"
+          }
+        },
+        {
+          "page": "demos/fuzzy-address-matching.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 110,
+            "vagueWords": 4,
+            "numbers": 107,
+            "density": "0.97",
+            "score": "good"
+          }
+        },
+        {
+          "page": "demos/index.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "freshness",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 72,
+            "vagueWords": 0,
+            "numbers": 106,
+            "density": "1.47",
+            "score": "good"
+          }
+        },
+        {
+          "page": "demos/personalized-power-automate.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 102,
+            "vagueWords": 0,
+            "numbers": 80,
+            "density": "0.78",
+            "score": "good"
+          }
+        },
+        {
+          "page": "demos/universal-dashboard-builder.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 195,
+            "vagueWords": 4,
+            "numbers": 144,
+            "density": "0.74",
+            "score": "good"
+          }
+        },
+        {
+          "page": "demos/universal-time-series-prediction.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 121,
+            "vagueWords": 3,
+            "numbers": 96,
+            "density": "0.79",
+            "score": "good"
+          }
+        },
+        {
+          "page": "demos/weather-load-forecast.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 130,
+            "vagueWords": 0,
+            "numbers": 129,
+            "density": "0.99",
+            "score": "good"
+          }
+        },
+        {
+          "page": "faq/index.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "freshness",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 232,
+            "vagueWords": 1,
+            "numbers": 72,
+            "density": "0.31",
+            "score": "good"
+          }
+        },
+        {
+          "page": "index.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 450,
+            "vagueWords": 1,
+            "numbers": 251,
+            "density": "0.56",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/a-low-tech-intervention-can-help-migrant-families-survive-the-lean-season.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "faq-schema",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 56,
+            "vagueWords": 2,
+            "numbers": 54,
+            "density": "0.96",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/adobe-y-la-democratizacin-a-travs-de-la-inteligencia-artificial.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 1,
+            "numbers": 45,
+            "density": "0.85",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/agentic-ai-in-strategic-sourcing-hype-or-hero.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 57,
+            "vagueWords": 3,
+            "numbers": 45,
+            "density": "0.79",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/ai-evaluations-look-unbiased-without-being-fair.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 58,
+            "vagueWords": 3,
+            "numbers": 47,
+            "density": "0.81",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/ai-is-everywhere-where-are-the-profits.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 7,
+            "numbers": 45,
+            "density": "0.85",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/ai-search-is-growing-faster-than-its-business-model.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 4,
+            "numbers": 46,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/air-canada-shares-sink-amid-jet-fuel-costs-lower-profit-outlook.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 62,
+            "vagueWords": 2,
+            "numbers": 47,
+            "density": "0.76",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/alphabet-just-had-its-worst-day-as-a-public-company-bofa-now-values-google-search-at-a-lower-multiple-than-fossil-fuel-s.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 55,
+            "vagueWords": 11,
+            "numbers": 48,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/anthropics-founders-letter-has-the-right-ideals-but-reality-will-decide.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 50,
+            "vagueWords": 3,
+            "numbers": 48,
+            "density": "0.96",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/anthropics-ipo-reveals-a-430-billion-ai-supply-chain-bet.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 3,
+            "numbers": 52,
+            "density": "0.98",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/are-we-headed-for-a-perfect-financial-storm.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 57,
+            "vagueWords": 3,
+            "numbers": 45,
+            "density": "0.79",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/before-enacting-medicare-for-all-fix-the-medicare-of-today-here-are-some-ideas.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 56,
+            "vagueWords": 7,
+            "numbers": 58,
+            "density": "1.04",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/beyond-the-silos-five-marketmaps-shaping-the-next-supply-chain-technology-architecture.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 54,
+            "vagueWords": 5,
+            "numbers": 45,
+            "density": "0.83",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/beyond-wms-where-warehouse-execution-is-headed-next.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 55,
+            "vagueWords": 0,
+            "numbers": 45,
+            "density": "0.82",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/buying-the-robots-is-the-easy-part-why-warehouse-modernization-requires-an-operating-model-rethink.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 54,
+            "vagueWords": 4,
+            "numbers": 47,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/charting-the-us-china-trade-war-what-does-made-in-vietnam-mean.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 6,
+            "numbers": 45,
+            "density": "0.85",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/closing-bankings-ai-value-gap-a-ceo-guide.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/consumers-rethink-value-as-uncertainty-and-inflation-persist.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 1,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/costco-ceo-ron-vachris-rose-from-forklift-driver-to-the-c-suite-without-a-colleg.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 51,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.88",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/de-risking-risk-management-with-ai-how-rbi-built-for-quality-and-speed.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 2,
+            "numbers": 45,
+            "density": "0.85",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/deposits-the-top-profitability-lever-for-retail-banks-ceos.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 51,
+            "vagueWords": 3,
+            "numbers": 38,
+            "density": "0.75",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/dispelling-the-myth-of-the-irreplaceable-founder.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/economic-mobility-making-lives-better-nowand-for-the-long-term.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "title-opt",
+            "description-opt",
+            "social-tags",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 56,
+            "vagueWords": 1,
+            "numbers": 45,
+            "density": "0.80",
+            "score": "good"
+          },
+          "keywords": "economic mobility, consumer markets, TAM, ROI, ESG, human capital, income polarization, middle class, systemic risk, sustainable growth"
+        },
+        {
+          "page": "insights/evaluating-the-revenue-potential-of-energy-storage-technologies.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/executives-and-entrepreneurs-analyze-the-challenges-of-ai-adoption-in-business-at-iese.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 50,
+            "vagueWords": 2,
+            "numbers": 45,
+            "density": "0.90",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/fed-looks-set-to-pause-after-september-rate-hike.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 1,
+            "numbers": 48,
+            "density": "0.91",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/federal-permittings-uneven-economic-impact-and-what-companies-can-do-about-it.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 50,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.90",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/forget-the-subsidy-race-how-smaller-economies-build-export-winners.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 51,
+            "vagueWords": 3,
+            "numbers": 38,
+            "density": "0.75",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/from-discovery-to-delivery-finding-an-investment-edge-in-biopharma-services.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 55,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.82",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/from-intelligence-to-execution-join-us-at-the-2027-arc-industry-leadership-forum.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 2,
+            "numbers": 49,
+            "density": "0.94",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/from-resilience-to-antifragility-how-boards-can-profit-from-uncertainty.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 51,
+            "vagueWords": 2,
+            "numbers": 45,
+            "density": "0.88",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/how-ai-is-transforming-strategy-development.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 56,
+            "vagueWords": 3,
+            "numbers": 49,
+            "density": "0.88",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/how-is-pgs-ceo-getting-inflation-weary-shoppers-to-pay-more-it-starts-with-cashmere-like-diapers.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 55,
+            "vagueWords": 2,
+            "numbers": 47,
+            "density": "0.85",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/how-sustainability-transformations-quietly-lose-their-edge.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 2,
+            "numbers": 56,
+            "density": "1.06",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/ikea-ceo-juvencio-maeztu-leading-with-humility-simplicity-and-humanism.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.85",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/im-digging-into-price-optimization-and-management-heres-what-im-learning.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 7,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/index.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "freshness",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 114,
+            "vagueWords": 2,
+            "numbers": 321,
+            "density": "2.82",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/indias-semiconductor-push-tests-logistics-readiness.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 2,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/inflation-accelerated-in-october-pce-index-shows.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/is-ai-scaling-your-worst-habits.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 59,
+            "vagueWords": 3,
+            "numbers": 45,
+            "density": "0.76",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/lack-of-trust-drives-the-just-in-case-energy-era.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 55,
+            "vagueWords": 1,
+            "numbers": 45,
+            "density": "0.82",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/never-let-them-see-you-sweat-maybe-thats-the-problem.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 54,
+            "vagueWords": 2,
+            "numbers": 38,
+            "density": "0.70",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/nuclear-powered-car-carriers-face-a-reality-test.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 2,
+            "numbers": 38,
+            "density": "0.73",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/parcel-shipping-costs-approach-record-high-as-extra-charges-stack-up.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 54,
+            "vagueWords": 1,
+            "numbers": 45,
+            "density": "0.83",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/persistent-oil-prices-threaten-inflation-outlook.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 57,
+            "vagueWords": 3,
+            "numbers": 45,
+            "density": "0.79",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/radical-federalism-the-way-to-tackle-the-ai-velocity-problem.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 3,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/reducing-emissions-and-costs-putting-your-products-on-a-low-carb-diet.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 50,
+            "vagueWords": 1,
+            "numbers": 38,
+            "density": "0.76",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/rethinking-your-companys-clean-power-strategy.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 48,
+            "vagueWords": 4,
+            "numbers": 43,
+            "density": "0.90",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/scope-3-is-not-primarily-a-reporting-problem-it-is-a-supply-chain-data-problem.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 57,
+            "vagueWords": 1,
+            "numbers": 56,
+            "density": "0.98",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/shareholder-activism-is-changing-are-companies-ready.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 1,
+            "numbers": 45,
+            "density": "0.85",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/spacex-reports-44-billion-profit-as-ai-and-starlink-businesses-expand.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 59,
+            "vagueWords": 3,
+            "numbers": 59,
+            "density": "1.00",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/stocks-see-steepest-decline-in-months-amid-ai-worries.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 56,
+            "vagueWords": 3,
+            "numbers": 52,
+            "density": "0.93",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/supply-chain-resilience-is-not-visibility-it-is-the-ability-to-execute-alternati.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 61,
+            "vagueWords": 5,
+            "numbers": 45,
+            "density": "0.74",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/the-ai-bubble-meets-the-supply-chain-where-is-the-productivity.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 57,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.79",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/the-business-case-for-living-longer.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 3,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/the-ceos-singular-impact-on-the-successor-failureof-ai-in-organizations.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 54,
+            "vagueWords": 3,
+            "numbers": 45,
+            "density": "0.83",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/the-rise-of-the-agentic-coworker-a-banking-cios-guide-to-the-next-wave-of-ai.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 2,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/the-small-bottleneck-with-a-big-impact-why-automating-box-opening-could-be-the-next-frontier-in-warehouse-productivity.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.85",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/the-view-from-the-moon-how-to-rethink-your-global-strategy.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/three-key-steps-for-cfos-in-the-ai-era.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 51,
+            "vagueWords": 2,
+            "numbers": 45,
+            "density": "0.88",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/tokenomics-the-economics-of-ai-value-realization.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 54,
+            "vagueWords": 2,
+            "numbers": 38,
+            "density": "0.70",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/turn-energy-efficiency-into-strategic-advantage.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 2,
+            "numbers": 53,
+            "density": "1.02",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/turning-executive-judgment-into-organizational-intelligence-leveraging-ai-in-ceo-leadership.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 3,
+            "numbers": 45,
+            "density": "0.87",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/us-tech-stocks-fall-after-earnings-fuel-ai-spending-concerns.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 52,
+            "vagueWords": 6,
+            "numbers": 49,
+            "density": "0.94",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/voices-on-planning-the-ai-powered-future-of-supply-chain.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 56,
+            "vagueWords": 3,
+            "numbers": 53,
+            "density": "0.95",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/were-human-beings-not-human-doings-why-always-on-culture-weakens-productivity.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 2,
+            "numbers": 45,
+            "density": "0.85",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/what-ceos-dont-hear-and-why-it-matters.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 50,
+            "vagueWords": 3,
+            "numbers": 38,
+            "density": "0.76",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/what-finance-can-tell-us-about-the-twin-crises-of-climate-change-and-biodiversity-loss.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 50,
+            "vagueWords": 2,
+            "numbers": 45,
+            "density": "0.90",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/what-finance-can-tell-us-about-the-twin-crises-of-climate-change-and-biodiversity.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 51,
+            "vagueWords": 1,
+            "numbers": 47,
+            "density": "0.92",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/why-ai-is-about-to-stress-test-your-cx-strategy.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 54,
+            "vagueWords": 2,
+            "numbers": 45,
+            "density": "0.83",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/why-are-bond-yields-soaring.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "title-opt",
+            "description-opt",
+            "social-tags",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 62,
+            "vagueWords": 2,
+            "numbers": 49,
+            "density": "0.79",
+            "score": "good"
+          },
+          "keywords": "bond yields, soaring yields, treasury yields, corporate finance, debt cost, leverage strategy, cash flow, interest rates, market repricing, financial risk"
+        },
+        {
+          "page": "insights/why-cfos-need-to-become-keepers-of-culture.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 53,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.85",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/why-great-leaders-focus-on-double-roi.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 54,
+            "vagueWords": 3,
+            "numbers": 45,
+            "density": "0.83",
+            "score": "good"
+          }
+        },
+        {
+          "page": "insights/why-sustainability-leaders-need-to-think-like-change-managers.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 54,
+            "vagueWords": 4,
+            "numbers": 45,
+            "density": "0.83",
+            "score": "good"
+          }
+        },
+        {
+          "page": "solutions-showcase/index-original.html",
+          "techniques": [
+            "resource-hints",
+            "content-visibility",
+            "freshness",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 5326,
+            "vagueWords": 10,
+            "numbers": 5128,
+            "density": "0.96",
+            "score": "good"
+          }
+        },
+        {
+          "page": "solutions-showcase/index.html",
+          "techniques": [
+            "resource-hints",
+            "defer-scripts",
+            "content-visibility",
+            "freshness",
+            "json-ld-graph"
+          ],
+          "factDensity": {
+            "sentences": 5458,
+            "vagueWords": 10,
+            "numbers": 5277,
+            "density": "0.97",
+            "score": "good"
+          }
+        }
+      ]
+    }
+  ],
+  "lastRun": "2026-11-03T03:27:19.870Z"
+}
