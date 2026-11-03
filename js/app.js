@@ -132,28 +132,44 @@
   /* ------------------------------------------------------------------
    * Hash-link scroll fix — when you click /#contact from another page,
    * the browser navigates to / and tries to scroll to #contact. But the
-   * page has scroll-reveal animations that hide content (opacity:0 +
-   * translateY) until it enters the viewport. Sections ABOVE the target
-   * are still hidden when the browser tries to compute the target's
-   * position, throwing off the layout calculations.
+   * page has scroll-reveal animations AND a lazy-loaded dashboard iframe
+   * that take 2-3s to settle. The browser scrolls before layout is
+   * stable, landing you in the middle of the page instead of at the target.
    *
-   * Simple fix: on page load, if URL has a hash, immediately mark ALL
-   * .reveal elements as visible. Layout settles in <1 frame, browser's
-   * native hash-scroll lands at the right spot. No polling, no jank.
+   * Fix: when arriving with a hash:
+   *   1. Immediately mark all .reveal elements visible (layout settles).
+   *   2. Eagerly load the dashboard iframe (force its src) so its height
+   *      is known ASAP instead of waiting for lazy-load to trigger.
+   *   3. Scroll to target 4 times: now, after iframe loads, at 1s, at 2s.
    * ------------------------------------------------------------------ */
   function applyHashTargetFix() {
     if (!location.hash) return;
     var target = document.getElementById(location.hash.slice(1));
     if (!target) return;
-    // Mark all reveal elements as visible — layout settles immediately
+
+    // 1. Mark all reveal elements as visible — layout settles immediately
     document.querySelectorAll('.reveal, [data-stagger-item]').forEach(function(el) {
       el.classList.add('is-visible');
     });
-    // Browser's native hash-scroll will handle this, but also re-scroll
-    // once after the current task completes (in case browser already fired)
+
+    // 2. Force eager-load of dashboard iframe (skip lazy-load delay)
+    var iframe = document.getElementById("dashboard-iframe");
+    if (iframe && iframe.dataset.src && !iframe.src) {
+      iframe.src = iframe.dataset.src;
+    }
+
+    // 3. Scroll to target. Repeat 4x: now, after iframe loads, at 1s, at 2s.
     var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
-    var top = target.getBoundingClientRect().top + window.scrollY - navH;
-    window.scrollTo(0, Math.max(0, top));
+    function scrollToTarget() {
+      var top = target.getBoundingClientRect().top + window.scrollY - navH;
+      window.scrollTo(0, Math.max(0, top));
+    }
+    scrollToTarget();
+    if (iframe) {
+      iframe.addEventListener("load", scrollToTarget);
+    }
+    setTimeout(scrollToTarget, 1000);
+    setTimeout(scrollToTarget, 2000);
   }
 
   if (document.readyState !== "loading") {
