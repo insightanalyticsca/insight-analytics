@@ -167,11 +167,16 @@ function deferScripts(html) {
 }
 
 // ─── P1: content-visibility CSS ─────────────────────────────────────────
+// NOTE: do NOT apply content-visibility to main > section. Collapsed sections
+// (500px placeholder) make hash-link targets compute at the WRONG position,
+// and sections expand mid-scroll shifting everything below — this broke
+// nav-link scrolling (clicking Contact landed in the middle of the page).
+// Only apply to leaf dashboard elements that are never hash targets.
 function addContentVisibility(html) {
   const css = `
   <style>
-  /* P1: content-visibility: auto — skip rendering off-screen sections (50-80% INP win) */
-  main > section:nth-child(n+3),
+  /* P1: content-visibility: auto — skip rendering off-screen elements.
+     Deliberately NOT applied to main > section (breaks hash-link scrolling). */
   .canvas-grid > .canvas-tile:nth-child(n+5),
   .grid-analytics > div:nth-child(n+5),
   .sector-block:nth-child(n+3),

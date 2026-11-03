@@ -81,8 +81,12 @@
   </script>
 
   <style>
-  /* P1: content-visibility: auto — skip rendering off-screen sections (50-80% INP win) */
-  main > section:nth-child(n+3),
+  /* P1: content-visibility: auto — skip rendering off-screen elements.
+     NOTE: deliberately NOT applied to main > section — collapsed sections
+     (500px placeholder) make hash-link targets compute at the WRONG position,
+     and sections expand mid-scroll shifting everything below. This broke
+     nav-link scrolling (Contact landing in the middle of the page). Only
+     safe on leaf elements that are never hash targets. */
   .canvas-grid > .canvas-tile:nth-child(n+5),
   .grid-analytics > div:nth-child(n+5),
   .sector-block:nth-child(n+3),
@@ -631,9 +635,8 @@
             </div>
             <iframe
               id="dashboard-iframe"
-              data-src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian-universal.html"
+              src="https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian-universal.html?v=universal31"
               title="Live dashboard — interactive demo"
-              loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               allow="fullscreen"
               scrolling="yes"
@@ -1001,7 +1004,7 @@
   </footer>
 
   <!-- Scripts (relative paths for GitHub Pages subdirectory serving) -->
-  <script src="./js/app.js?v=5.40.0-original-scroll" defer></script>
+  <script src="./js/app.js?v=5.41.0-cv-fix" defer></script>
   <script src="./js/hero-animation.js?v=4.94.0" defer></script>
   <script src="./js/pull-to-refresh.js?v=4.94.0" defer></script>
 

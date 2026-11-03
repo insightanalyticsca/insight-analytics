@@ -70,25 +70,6 @@
   onNavScroll();
 
   /* ------------------------------------------------------------------
-   * Smooth scroll for in-page anchors
-   * ------------------------------------------------------------------ */
-  document.querySelectorAll('a[href^="#"]').forEach(function (link) {
-    link.addEventListener("click", function (e) {
-      const href = link.getAttribute("href");
-      if (!href || href === "#" || href.length < 2) return;
-      const target = document.querySelector(href);
-      if (!target) return;
-      e.preventDefault();
-      const navHeight = nav ? nav.offsetHeight : 0;
-      const top =
-        target.getBoundingClientRect().top + window.scrollY - navHeight - 12;
-      window.scrollTo({ top: top, behavior: "smooth" });
-      // Close mobile menu if open
-      closeMobileMenu();
-    });
-  });
-
-  /* ------------------------------------------------------------------
    * Mobile nav menu
    * ------------------------------------------------------------------ */
   const menuToggle = document.getElementById("menu-toggle");
