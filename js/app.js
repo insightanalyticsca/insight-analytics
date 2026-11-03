@@ -132,93 +132,34 @@
   /* ------------------------------------------------------------------
    * Hash-link scroll fix — when you click /#contact from another page,
    * the browser navigates to / and tries to scroll to #contact. But the
-   * page has reveal animations + lazy-loaded content (dashboard iframe,
-   * images) that change layout height AFTER the initial scroll. Result:
-   * the browser scrolled to where #contact WAS before the reveals
-   * triggered, which is somewhere in the middle of the page.
+   * page has scroll-reveal animations that hide content (opacity:0 +
+   * translateY) until it enters the viewport. Sections ABOVE the target
+   * are still hidden when the browser tries to compute the target's
+   * position, throwing off the layout calculations.
    *
-   * Fix: on page load, if URL has a hash, find the target element, then
-   * keep re-scrolling to it for up to 8 seconds (200 × 40ms). Also use
-   * a ResizeObserver to catch layout shifts in real time. Stops as soon
-   * as the target's position is stable AND in viewport.
+   * Simple fix: on page load, if URL has a hash, immediately mark ALL
+   * .reveal elements as visible. Layout settles in <1 frame, browser's
+   * native hash-scroll lands at the right spot. No polling, no jank.
    * ------------------------------------------------------------------ */
-  function scrollToHashTarget() {
+  function applyHashTargetFix() {
     if (!location.hash) return;
-    var targetId = location.hash.slice(1);
-    var target = document.getElementById(targetId);
+    var target = document.getElementById(location.hash.slice(1));
     if (!target) return;
-
-    var navH = 72;
-    var navbar = document.getElementById("navbar");
-    if (navbar) navH = navbar.offsetHeight || 72;
-
-    var attempts = 0;
-    var maxAttempts = 200; // 200 × 40ms = 8s max
-    var lastTop = -1;
-    var stableCount = 0;
-
-    function getTargetTop() {
-      var rect = target.getBoundingClientRect();
-      return Math.max(0, Math.round(rect.top + window.scrollY) - navH);
-    }
-
-    function isInViewport() {
-      var rect = target.getBoundingClientRect();
-      var viewportH = window.innerHeight;
-      // Element is in viewport if its top is within the top 60% of the screen
-      return rect.top >= -navH && rect.top <= viewportH * 0.6;
-    }
-
-    function doScroll() {
-      var newTop = getTargetTop();
-      if (newTop !== lastTop) {
-        lastTop = newTop;
-        stableCount = 0;
-        window.scrollTo(0, newTop);
-      } else {
-        stableCount++;
-      }
-      attempts++;
-      // Stop after we've been stable AND target is in viewport, or after maxAttempts
-      if (stableCount >= 5 && isInViewport()) {
-        return;
-      }
-      if (attempts < maxAttempts) {
-        setTimeout(doScroll, 40);
-      }
-    }
-    // Run after a small delay to let the browser's own hash-scroll attempt finish
-    setTimeout(doScroll, 100);
-
-    // Also: use a ResizeObserver on body to catch layout shifts that happen
-    // after our polling loop ends.
-    if ("ResizeObserver" in window) {
-      var ro = new ResizeObserver(function() {
-        if (isInViewport()) {
-          ro.disconnect();
-          return;
-        }
-        window.scrollTo(0, getTargetTop());
-      });
-      ro.observe(document.body);
-      // Safety: disconnect after 15s so we don't observe forever
-      setTimeout(function() { ro.disconnect(); }, 15000);
-    }
-
-    // Finally: when the dashboard iframe finishes loading, that's a major
-    // layout shift — re-scroll immediately.
-    var dashboardIframe = document.getElementById("dashboard-iframe");
-    if (dashboardIframe) {
-      dashboardIframe.addEventListener("load", function() {
-        window.scrollTo(0, getTargetTop());
-      });
-    }
+    // Mark all reveal elements as visible — layout settles immediately
+    document.querySelectorAll('.reveal, [data-stagger-item]').forEach(function(el) {
+      el.classList.add('is-visible');
+    });
+    // Browser's native hash-scroll will handle this, but also re-scroll
+    // once after the current task completes (in case browser already fired)
+    var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
+    var top = target.getBoundingClientRect().top + window.scrollY - navH;
+    window.scrollTo(0, Math.max(0, top));
   }
 
-  if (document.readyState === "complete") {
-    scrollToHashTarget();
+  if (document.readyState !== "loading") {
+    applyHashTargetFix();
   } else {
-    window.addEventListener("load", scrollToHashTarget);
+    document.addEventListener("DOMContentLoaded", applyHashTargetFix);
   }
 
   /* ------------------------------------------------------------------

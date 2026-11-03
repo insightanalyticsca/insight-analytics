@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v5.27.0-hash-scroll-v2';
+const VERSION = 'v5.28.0-instant-hash';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -20,7 +20,7 @@ const APP_SHELL = [
   './',
   './index.html',
   './css/styles.css?v=4.94.0',
-  './js/app.js?v=5.27.0-hash-scroll-v2',
+  './js/app.js?v=5.28.0-instant-hash',
   './js/hero-animation.js?v=4.94.0',
   './js/pull-to-refresh.js?v=4.94.0',
   './js/sw-register.js?v=4.99.0',
