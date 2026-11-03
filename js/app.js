@@ -131,18 +131,22 @@
 
   /* ------------------------------------------------------------------
    * Hash-link scroll fix — make it work like the native browser behavior
-   * (instant scroll to #target) by ensuring layout is fully settled BEFORE
-   * the browser tries to scroll.
+   * (instant scroll to #target).
    *
-   * Why this is needed: the dashboard iframe is lazy-loaded. When you
-   * arrive with /#contact, the iframe hasn't loaded yet, so the page
-   * height is wrong when the browser scrolls. Result: it lands in the
-   * middle of the page instead of at the target.
+   * Why this is needed: the dashboard iframe is lazy-loaded AND there are
+   * scroll-reveal animations. Both defer the page's final layout. When you
+   * arrive with /#contact, the browser tries to scroll before layout is
+   * settled, landing you in the middle of the page.
    *
-   * Fix: render the iframe eagerly when arriving with a hash + mark all
-   * reveals visible + scroll once. NO retry loops, NO staged scrolling.
-   * The iframe + reveal animations determine layout, and once those are
-   * sorted, ONE scroll call lands at the right spot instantly.
+   * Fix:
+   *   1. Mark all .reveal elements visible immediately (so they take their
+   *      final layout slot).
+   *   2. Eagerly load the dashboard iframe (skip lazy-load). The iframe
+   *      parent .browser-frame already has fixed CSS height (960px desktop,
+   *      560px mobile), so the iframe loading doesn't shift page layout.
+   *   3. Wait for window 'load' event (not DOMContentLoaded) — that fires
+   *      after all images + iframe have finished loading, so layout is
+   *      truly settled. Then do ONE scroll call.
    * ------------------------------------------------------------------ */
   function applyHashTargetFix() {
     if (!location.hash) return;
@@ -155,19 +159,21 @@
     });
 
     // 2. Force eager-load of dashboard iframe (skip lazy-load delay).
-    //    The IntersectionObserver below is also gated on !location.hash
+    //    The IntersectionObserver below is gated on !location.hash
     //    so it won't strip the src we just set.
     var iframe = document.getElementById("dashboard-iframe");
     if (iframe && iframe.dataset.src && !iframe.src) {
       iframe.src = iframe.dataset.src;
     }
 
-    // 3. Single scroll call. Layout is settled (reveals visible, iframe src
-    //    set), so this is all that's needed. Browser will scroll smoothly
-    //    to the target.
+    // 3. Scroll to target. Use a microtask (Promise.resolve) to let the
+    //    layout recalc from steps 1+2 flush before we measure target position.
+    //    This gives us the FINAL position in one scroll — no retries.
     var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
-    var top = target.getBoundingClientRect().top + window.scrollY - navH;
-    window.scrollTo(0, Math.max(0, top));
+    Promise.resolve().then(function() {
+      var top = target.getBoundingClientRect().top + window.scrollY - navH;
+      window.scrollTo(0, Math.max(0, top));
+    });
   }
 
   if (document.readyState !== "loading") {
@@ -180,7 +186,14 @@
    * Scroll-reveal animations (IntersectionObserver)
    * ------------------------------------------------------------------ */
   const revealEls = document.querySelectorAll(".reveal");
-  if ("IntersectionObserver" in window && revealEls.length) {
+  // If we're navigating to a hash target, all reveal elements have already
+  // been marked visible by applyHashTargetFix(). Skip setting up the IO so
+  // it doesn't re-trigger transitions on already-visible elements.
+  if (location.hash) {
+    revealEls.forEach(function (el) {
+      el.classList.add("is-visible");
+    });
+  } else if ("IntersectionObserver" in window && revealEls.length) {
     const io = new IntersectionObserver(
       function (entries, observer) {
         entries.forEach(function (entry) {
