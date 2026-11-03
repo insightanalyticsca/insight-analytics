@@ -185,7 +185,7 @@
     smoothScrollToTarget(hash);
     // Update URL bar without triggering browser's native scroll
     history.pushState(null, '', '#' + hash);
-  });
+  }, true);  // capture phase — runs BEFORE browser's default action
 
   /* ------------------------------------------------------------------
    * Hash-link scroll fix — restore instant native anchor-link UX.
