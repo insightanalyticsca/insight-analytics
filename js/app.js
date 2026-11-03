@@ -130,17 +130,19 @@
   }
 
   /* ------------------------------------------------------------------
-   * Hash-link scroll fix — when you click /#contact from another page,
-   * the browser navigates to / and tries to scroll to #contact. But the
-   * page has scroll-reveal animations AND a lazy-loaded dashboard iframe
-   * that take 2-3s to settle. The browser scrolls before layout is
-   * stable, landing you in the middle of the page instead of at the target.
+   * Hash-link scroll fix — make it work like the native browser behavior
+   * (instant scroll to #target) by ensuring layout is fully settled BEFORE
+   * the browser tries to scroll.
    *
-   * Fix: when arriving with a hash:
-   *   1. Immediately mark all .reveal elements visible (layout settles).
-   *   2. Eagerly load the dashboard iframe (force its src) so its height
-   *      is known ASAP instead of waiting for lazy-load to trigger.
-   *   3. Scroll to target 4 times: now, after iframe loads, at 1s, at 2s.
+   * Why this is needed: the dashboard iframe is lazy-loaded. When you
+   * arrive with /#contact, the iframe hasn't loaded yet, so the page
+   * height is wrong when the browser scrolls. Result: it lands in the
+   * middle of the page instead of at the target.
+   *
+   * Fix: render the iframe eagerly when arriving with a hash + mark all
+   * reveals visible + scroll once. NO retry loops, NO staged scrolling.
+   * The iframe + reveal animations determine layout, and once those are
+   * sorted, ONE scroll call lands at the right spot instantly.
    * ------------------------------------------------------------------ */
   function applyHashTargetFix() {
     if (!location.hash) return;
@@ -152,30 +154,20 @@
       el.classList.add('is-visible');
     });
 
-    // 2. Force eager-load of dashboard iframe (skip lazy-load delay)
+    // 2. Force eager-load of dashboard iframe (skip lazy-load delay).
+    //    The IntersectionObserver below is also gated on !location.hash
+    //    so it won't strip the src we just set.
     var iframe = document.getElementById("dashboard-iframe");
     if (iframe && iframe.dataset.src && !iframe.src) {
       iframe.src = iframe.dataset.src;
     }
 
-    // 3. Scroll to target. Multiple retries to cover iframe settling + image loads.
-    //    The dashboard iframe can take 3+ seconds to fully load on real devices,
-    //    and its load event fires BEFORE its internal layout settles, so we need
-    //    retries at progressively later time points.
+    // 3. Single scroll call. Layout is settled (reveals visible, iframe src
+    //    set), so this is all that's needed. Browser will scroll smoothly
+    //    to the target.
     var navH = (document.getElementById("navbar") || {}).offsetHeight || 72;
-    function scrollToTarget() {
-      var top = target.getBoundingClientRect().top + window.scrollY - navH;
-      window.scrollTo(0, Math.max(0, top));
-    }
-    scrollToTarget();
-    if (iframe) {
-      iframe.addEventListener("load", scrollToTarget);
-    }
-    // Safety: scroll at 500ms, 1.5s, 3s, 4.5s to cover iframe settling + image loads
-    setTimeout(scrollToTarget, 500);
-    setTimeout(scrollToTarget, 1500);
-    setTimeout(scrollToTarget, 3000);
-    setTimeout(scrollToTarget, 4500);
+    var top = target.getBoundingClientRect().top + window.scrollY - navH;
+    window.scrollTo(0, Math.max(0, top));
   }
 
   if (document.readyState !== "loading") {
