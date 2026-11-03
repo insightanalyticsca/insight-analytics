@@ -138,8 +138,9 @@
    * triggered, which is somewhere in the middle of the page.
    *
    * Fix: on page load, if URL has a hash, find the target element, then
-   * poll its position for ~2s and re-scroll to it whenever its position
-   * changes. Stops as soon as the position is stable.
+   * keep re-scrolling to it for up to 8 seconds (200 × 40ms). Also use
+   * a ResizeObserver to catch layout shifts in real time. Stops as soon
+   * as the target's position is stable AND in viewport.
    * ------------------------------------------------------------------ */
   function scrollToHashTarget() {
     if (!location.hash) return;
@@ -147,33 +148,71 @@
     var target = document.getElementById(targetId);
     if (!target) return;
 
-    // Account for fixed navbar height so target section isn't hidden behind it
     var navH = 72;
     var navbar = document.getElementById("navbar");
     if (navbar) navH = navbar.offsetHeight || 72;
 
+    var attempts = 0;
+    var maxAttempts = 200; // 200 × 40ms = 8s max
     var lastTop = -1;
     var stableCount = 0;
-    var attempts = 0;
-    var maxAttempts = 40; // 40 × 50ms = 2s max
+
+    function getTargetTop() {
+      var rect = target.getBoundingClientRect();
+      return Math.max(0, Math.round(rect.top + window.scrollY) - navH);
+    }
+
+    function isInViewport() {
+      var rect = target.getBoundingClientRect();
+      var viewportH = window.innerHeight;
+      // Element is in viewport if its top is within the top 60% of the screen
+      return rect.top >= -navH && rect.top <= viewportH * 0.6;
+    }
 
     function doScroll() {
-      var rect = target.getBoundingClientRect();
-      var newTop = Math.round(rect.top + window.scrollY) - navH;
+      var newTop = getTargetTop();
       if (newTop !== lastTop) {
         lastTop = newTop;
         stableCount = 0;
-        window.scrollTo(0, Math.max(0, newTop));
+        window.scrollTo(0, newTop);
       } else {
         stableCount++;
       }
       attempts++;
-      if (stableCount < 3 && attempts < maxAttempts) {
-        setTimeout(doScroll, 50);
+      // Stop after we've been stable AND target is in viewport, or after maxAttempts
+      if (stableCount >= 5 && isInViewport()) {
+        return;
+      }
+      if (attempts < maxAttempts) {
+        setTimeout(doScroll, 40);
       }
     }
     // Run after a small delay to let the browser's own hash-scroll attempt finish
     setTimeout(doScroll, 100);
+
+    // Also: use a ResizeObserver on body to catch layout shifts that happen
+    // after our polling loop ends.
+    if ("ResizeObserver" in window) {
+      var ro = new ResizeObserver(function() {
+        if (isInViewport()) {
+          ro.disconnect();
+          return;
+        }
+        window.scrollTo(0, getTargetTop());
+      });
+      ro.observe(document.body);
+      // Safety: disconnect after 15s so we don't observe forever
+      setTimeout(function() { ro.disconnect(); }, 15000);
+    }
+
+    // Finally: when the dashboard iframe finishes loading, that's a major
+    // layout shift — re-scroll immediately.
+    var dashboardIframe = document.getElementById("dashboard-iframe");
+    if (dashboardIframe) {
+      dashboardIframe.addEventListener("load", function() {
+        window.scrollTo(0, getTargetTop());
+      });
+    }
   }
 
   if (document.readyState === "complete") {
