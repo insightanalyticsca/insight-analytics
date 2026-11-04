@@ -1283,6 +1283,26 @@
     return [d.totalVisits, d.distinctDevices, d.distinctIPs, devs, ips].join('∥');
   }
 
+  // Latest known recent (72h) + all-time counters — updated by every
+  // fetchState() tick (from op=visits AND op=devices responses), so the
+  // 3 summary cards + cfgUpdated stamp always refresh even when
+  // renderState() is skipped because of an unchanged-data signature.
+  var latestRecent = { total: 0, ips: 0, devices: 0 };
+  var latestAllTime = { totalVisits: 0, distinctIPs: 0, distinctDevices: 0 };
+  function updateSummaryCards() {
+    var elT = document.getElementById('cfgTotal');
+    var elI = document.getElementById('cfgIPs');
+    var elD = document.getElementById('cfgDevices');
+    var elU = document.getElementById('cfgUpdated');
+    if (elT) elT.textContent = latestRecent.total;
+    if (elI) elI.textContent = latestRecent.ips;
+    if (elD) elD.textContent = latestRecent.devices;
+    if (elU) elU.textContent = '· ' + new Date().toLocaleTimeString() + ' · all-time: ' +
+      (latestAllTime.totalVisits || 0) + ' total, ' +
+      (latestAllTime.distinctIPs || 0) + ' endpoints, ' +
+      (latestAllTime.distinctDevices || 0) + ' clients';
+  }
+
   function fetchState() {
     var siteQs = currentSite !== 'combined' ? '&site=' + currentSite : '';
     var url = EP + '?op=visits&password=' + encodeURIComponent(key) + siteQs;
@@ -1290,6 +1310,25 @@
       .then(function(r) { return r.status === 403 ? null : r.json(); })
       .then(function(data) {
         if (!data) { stopRefresh(); panel.style.display = 'none'; return; }
+        // Update recent (72h) counts + all-time totals from the visits
+        // payload — every tick, even if we're skipping the table rebuild,
+        // so the 3 summary cards + cfgUpdated stamp always refresh.
+        var v = data.visits || [];
+        var cum = data.cumulative || {};
+        // Recent IPs + devices derived client-side from the visit log
+        var ipSet = {}, devSet = {};
+        v.forEach(function(x) {
+          if (x.ip) ipSet[x.ip] = (ipSet[x.ip] || 0) + 1;
+          var os = parseClientOS(x.ua || '');
+          if (os) devSet[os] = (devSet[os] || 0) + 1;
+        });
+        latestRecent.total = v.length;
+        latestRecent.ips = Object.keys(ipSet).length;
+        latestRecent.devices = Object.keys(devSet).length;
+        if (cum.totalVisits != null) latestAllTime.totalVisits = cum.totalVisits;
+        if (cum.distinctIPs != null) latestAllTime.distinctIPs = cum.distinctIPs;
+        if (cum.distinctDevices != null) latestAllTime.distinctDevices = cum.distinctDevices;
+        updateSummaryCards();
         // Skip the table rebuild if the meaningful fields haven't changed
         // since the last render. Prevents the 5s poll from snapping the
         // user's <details> open/close choices back to default every tick.
@@ -1304,6 +1343,16 @@
       .then(function(r) { return r.status === 403 ? null : r.json(); })
       .then(function(d) {
         if (!d) return;
+        // op=devices is the authoritative source for all-time counts — it
+        // reads straight from the persistent KV store. Update the stamp
+        // even if the devices payload signature matches (which means the
+        // counts haven't changed since the last tick — but the time the
+        // stamp displays still needs to refresh, otherwise the user
+        // thinks the panel is frozen).
+        if (d.totalVisits != null) latestAllTime.totalVisits = d.totalVisits;
+        if (d.distinctIPs != null) latestAllTime.distinctIPs = d.distinctIPs;
+        if (d.distinctDevices != null) latestAllTime.distinctDevices = d.distinctDevices;
+        updateSummaryCards();
         // Same pattern for the historical card + pie chart: skip the full
         // rebuild (and the ECharts dispose + re-init) when the devices
         // payload hasn't changed since last tick. Saves the pie flicker.
@@ -1522,10 +1571,12 @@
     var recentIPs = Object.keys(ipMap).length;
     var recentDevs = Object.keys(devMap).length;
     var recentTotal = rows.length;
-    document.getElementById('cfgTotal').textContent = recentTotal;
-    document.getElementById('cfgIPs').textContent = recentIPs;
-    document.getElementById('cfgDevices').textContent = recentDevs;
-    document.getElementById('cfgUpdated').textContent = '· ' + new Date().toLocaleTimeString() + ' · all-time: ' + (cum.totalVisits || 0) + ' total, ' + (cum.distinctIPs || 0) + ' endpoints, ' + (cum.distinctDevices || 0) + ' clients';
+    // Note: the 3 summary cards (cfgTotal / cfgIPs / cfgDevices) and the
+    // cfgUpdated stamp are updated by updateSummaryCards() in fetchState()
+    // BEFORE this function is called — so they refresh on every poll,
+    // even when this function is skipped because of an unchanged-data
+    // signature. We don't re-write them here (that would just duplicate
+    // the work and could mask bugs in the fetchState path).
 
     var breakdown = '<details style="margin-top:8px;"><summary style="cursor:pointer;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);padding:4px 0;">Recent visitors (' + recentIPs + ' unique, last 72h) — click to expand</summary><div style="margin-top:4px;padding:6px 8px;border-radius:6px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:rgba(99,102,241,0.03);">';
     var all = data.visits || [];
