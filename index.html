@@ -1030,37 +1030,37 @@
   </div>
 </div>
 
-<div id="cfgPanel" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg,#f8fafc);overflow-y:auto;">
-  <div style="max-width:1100px;margin:0 auto;padding:20px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;animation:cfgPulse 2s ease-in-out infinite;"></span>
-        <span style="font-size:16px;font-weight:700;color:var(--text,#0f172a);">Activity</span>
-        <span id="cfgUpdated" style="font-size:10px;color:var(--muted,#94a3b8);"></span>
+<div id="cfgPanel" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg,#f8fafc);overflow-y:auto;overflow-x:hidden;">
+  <div style="max-width:1400px;margin:0 auto;padding:10px 14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;animation:cfgPulse 2s ease-in-out infinite;"></span>
+        <span style="font-size:13px;font-weight:700;color:var(--text,#0f172a);">Activity</span>
+        <span id="cfgUpdated" style="font-size:9px;color:var(--muted,#94a3b8);"></span>
       </div>
-      <button id="cfgClose" style="padding:6px 14px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:8px;background:transparent;color:var(--text-soft,#64748b);font-size:12px;cursor:pointer;">✕ Close</button>
+      <button id="cfgClose" style="padding:4px 10px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:6px;background:transparent;color:var(--text-soft,#64748b);font-size:11px;cursor:pointer;">✕ Close</button>
     </div>
     <style>@keyframes cfgPulse{0%,100%{opacity:0.7;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}</style>
 
     <!-- Site selector tab bar — filter the activity panel by site -->
-    <div id="cfgTabs" style="display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--card-border,rgba(0,0,0,0.08));padding-bottom:8px;">
-      <button data-site="combined" class="cfg-tab" style="padding:6px 14px;border:0;border-radius:8px;background:linear-gradient(135deg,var(--primary,#6366f1),var(--accent,#06b6d4));color:#fff;font-size:11px;font-weight:600;cursor:pointer;">Combined</button>
-      <button data-site="main" class="cfg-tab" style="padding:6px 14px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:8px;background:transparent;color:var(--text-soft,#64748b);font-size:11px;font-weight:600;cursor:pointer;">Main</button>
-      <button data-site="dashboards" class="cfg-tab" style="padding:6px 14px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:8px;background:transparent;color:var(--text-soft,#64748b);font-size:11px;font-weight:600;cursor:pointer;">Dashboards</button>
+    <div id="cfgTabs" style="display:flex;gap:3px;margin-bottom:10px;border-bottom:1px solid var(--card-border,rgba(0,0,0,0.08));padding-bottom:6px;">
+      <button data-site="combined" class="cfg-tab" style="padding:3px 10px;border:0;border-radius:6px;background:linear-gradient(135deg,var(--primary,#6366f1),var(--accent,#06b6d4));color:#fff;font-size:10px;font-weight:600;cursor:pointer;">Combined</button>
+      <button data-site="main" class="cfg-tab" style="padding:3px 10px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:6px;background:transparent;color:var(--text-soft,#64748b);font-size:10px;font-weight:600;cursor:pointer;">Main</button>
+      <button data-site="dashboards" class="cfg-tab" style="padding:3px 10px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:6px;background:transparent;color:var(--text-soft,#64748b);font-size:10px;font-weight:600;cursor:pointer;">Dashboards</button>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
-      <div style="padding:16px 20px;border-radius:12px;border:1px solid rgba(99,102,241,0.15);background:linear-gradient(135deg,rgba(99,102,241,0.06),rgba(6,182,212,0.04));">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted,#94a3b8);margin-bottom:4px;">Total</div>
-        <div id="cfgTotal" style="font-size:28px;font-weight:800;color:var(--text,#0f172a);line-height:1;">—</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+      <div style="padding:6px 10px;border-radius:8px;border:1px solid rgba(99,102,241,0.15);background:linear-gradient(135deg,rgba(99,102,241,0.06),rgba(6,182,212,0.04));">
+        <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted,#94a3b8);margin-bottom:2px;">Total</div>
+        <div id="cfgTotal" style="font-size:18px;font-weight:800;color:var(--text,#0f172a);line-height:1;">—</div>
       </div>
-      <div style="padding:16px 20px;border-radius:12px;border:1px solid rgba(16,185,129,0.15);background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(34,197,94,0.04));">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted,#94a3b8);margin-bottom:4px;">Endpoints</div>
-        <div id="cfgIPs" style="font-size:28px;font-weight:800;color:#10b981;line-height:1;">—</div>
+      <div style="padding:6px 10px;border-radius:8px;border:1px solid rgba(16,185,129,0.15);background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(34,197,94,0.04));">
+        <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted,#94a3b8);margin-bottom:2px;">Endpoints</div>
+        <div id="cfgIPs" style="font-size:18px;font-weight:800;color:#10b981;line-height:1;">—</div>
       </div>
-      <div style="padding:16px 20px;border-radius:12px;border:1px solid rgba(245,158,11,0.15);background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(239,68,68,0.04));">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted,#94a3b8);margin-bottom:4px;">Clients</div>
-        <div id="cfgDevices" style="font-size:28px;font-weight:800;color:#f59e0b;line-height:1;">—</div>
+      <div style="padding:6px 10px;border-radius:8px;border:1px solid rgba(245,158,11,0.15);background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(239,68,68,0.04));">
+        <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted,#94a3b8);margin-bottom:2px;">Clients</div>
+        <div id="cfgDevices" style="font-size:18px;font-weight:800;color:#f59e0b;line-height:1;">—</div>
       </div>
     </div>
 
@@ -1211,13 +1211,13 @@
     var ips = data.ips || [];
     var total = data.totalVisits || 0;
     if (devices.length === 0 && ips.length === 0) {
-      container.innerHTML = '<div style="padding:12px;font-size:11px;color:var(--muted,#94a3b8);">No cumulative data yet.</div>';
+      container.innerHTML = '<div style="padding:8px;font-size:9px;color:var(--muted,#94a3b8);">No cumulative data yet.</div>';
       return;
     }
-    var html = '<div style="margin-top:16px;padding:14px;border-radius:12px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:linear-gradient(135deg,rgba(99,102,241,0.04),rgba(6,182,212,0.03));">';
-    html += '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:10px;">All-time (' + devices.length + ' types, ' + ips.length + ' endpoints, ' + total + ' total)</div>';
-    html += '<table style="width:100%;border-collapse:collapse;font-size:11px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">';
-    html += '<thead><tr style="border-bottom:1px solid rgba(0,0,0,0.06);color:var(--muted,#94a3b8);font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:0.03em;"><th style="padding:5px 8px;text-align:left;">Client</th><th style="padding:5px 8px;text-align:right;white-space:nowrap;">Count</th><th style="padding:5px 8px;text-align:right;white-space:nowrap;">% of total</th></tr></thead><tbody>';
+    var html = '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:linear-gradient(135deg,rgba(99,102,241,0.04),rgba(6,182,212,0.03));">';
+    html += '<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:6px;">All-time (' + devices.length + ' types, ' + ips.length + ' endpoints, ' + total + ' total)</div>';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:9px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;table-layout:fixed;"><colgroup><col style="width:50%"><col style="width:25%"><col style="width:25%"></colgroup>';
+    html += '<thead><tr style="border-bottom:1px solid rgba(0,0,0,0.06);color:var(--muted,#94a3b8);font-weight:600;font-size:8px;text-transform:uppercase;letter-spacing:0.03em;"><th style="padding:2px 6px;text-align:left;">Client</th><th style="padding:2px 6px;text-align:right;white-space:nowrap;">Count</th><th style="padding:2px 6px;text-align:right;white-space:nowrap;">% of total</th></tr></thead><tbody>';
     // Use sum of DISPLAYED device counts as the denominator (not totalVisits).
     // totalVisits was reduced by IP-reconciliation without reducing device
     // counts, so (device / totalVisits) could exceed 100%. Sum-of-devices
@@ -1227,10 +1227,10 @@
       var bg = i % 2 === 0 ? 'transparent' : 'rgba(99,102,241,0.03)';
       var pct = sumOfDevices > 0 ? ((d.visits / sumOfDevices) * 100).toFixed(1) + '%' : '—';
       var bar = sumOfDevices > 0 ? Math.min(100, (d.visits / sumOfDevices) * 100) : 0;
-      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.03);background:' + bg + ';"><td style="padding:5px 8px;color:var(--text,#0f172a);font-weight:500;">' + (d.device || 'Unknown') + '</td><td style="padding:5px 8px;text-align:right;font-weight:700;color:#f59e0b;white-space:nowrap;">' + d.visits + '</td><td style="padding:5px 8px;text-align:right;color:var(--text-soft,#475569);white-space:nowrap;">' + pct + ' <span style="display:inline-block;width:' + (bar * 0.6) + 'px;height:8px;border-radius:4px;background:linear-gradient(90deg,#6366f1,#06b6d4);vertical-align:middle;margin-left:2px;"></span></td></tr>';
+      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.03);background:' + bg + ';"><td style="padding:2px 6px;color:var(--text,#0f172a);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (d.device || 'Unknown') + '</td><td style="padding:2px 6px;text-align:right;font-weight:700;color:#f59e0b;white-space:nowrap;">' + d.visits + '</td><td style="padding:2px 6px;text-align:right;color:var(--text-soft,#475569);white-space:nowrap;">' + pct + ' <span style="display:inline-block;width:' + (bar * 0.4) + 'px;height:6px;border-radius:3px;background:linear-gradient(90deg,#6366f1,#06b6d4);vertical-align:middle;margin-left:2px;"></span></td></tr>';
     });
     html += '</tbody></table>';
-    html += '<details style="margin-top:10px;"><summary style="cursor:pointer;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);padding:4px 0;">Endpoints (' + ips.length + ') — click to expand · hover for last seen</summary><table style="width:100%;border-collapse:collapse;font-size:11px;font-family:monospace;margin-top:4px;"><thead><tr style="border-bottom:1px solid rgba(0,0,0,0.06);color:var(--muted,#94a3b8);font-weight:600;font-size:9px;text-transform:uppercase;"><th style="padding:5px 8px;text-align:left;">ID (masked)</th><th style="padding:5px 8px;text-align:left;">Type</th><th style="padding:5px 8px;text-align:left;">Geo</th><th style="padding:5px 8px;text-align:right;">Count</th></tr></thead><tbody>';
+    html += '<details style="margin-top:6px;"><summary style="cursor:pointer;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);padding:2px 0;">Endpoints (' + ips.length + ') — click to expand · hover for last seen</summary><table style="width:100%;border-collapse:collapse;font-size:9px;font-family:monospace;margin-top:3px;table-layout:fixed;"><colgroup><col style="width:28%"><col style="width:32%"><col style="width:25%"><col style="width:15%"></colgroup><thead><tr style="border-bottom:1px solid rgba(0,0,0,0.06);color:var(--muted,#94a3b8);font-weight:600;font-size:8px;text-transform:uppercase;"><th style="padding:2px 6px;text-align:left;">ID (masked)</th><th style="padding:2px 6px;text-align:left;">Type</th><th style="padding:2px 6px;text-align:left;">Geo</th><th style="padding:2px 6px;text-align:right;">Count</th></tr></thead><tbody>';
     function ipTypeStyle(t) {
       if (!t) return 'color:var(--muted,#94a3b8);';
       if (t.indexOf('Verified Bot') === 0) return 'color:#0891b2;font-weight:600;';
@@ -1249,7 +1249,7 @@
       var lastSeen = ip.lastSeen ? new Date(ip.lastSeen).toLocaleDateString('en-CA', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
       var device = ip.device || '';
       var tooltip = 'Location: ' + geoText + (device ? '\\nDevice: ' + device : '') + (lastSeen ? '\\nLast seen: ' + lastSeen : '') + (ip.uid ? '\\nVisitor ID: ' + ip.uid.slice(0, 12) : '');
-      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.03);background:' + bg + ';" title="' + tooltip.replace(/"/g, '&quot;') + '"><td style="padding:5px 8px;color:var(--text-soft,#475569);">' + (ip.ip || '—') + '</td><td style="padding:5px 8px;' + ipTypeStyle(ip.ipType) + 'white-space:nowrap;">' + (ip.ipType || 'Unknown') + '</td><td style="padding:5px 8px;color:var(--text-soft,#475569);font-size:10px;">' + geoText + '</td><td style="padding:5px 8px;text-align:right;font-weight:700;color:#f59e0b;">' + ip.visits + '</td></tr>';
+      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.03);background:' + bg + ';" title="' + tooltip.replace(/"/g, '&quot;') + '"><td style="padding:2px 6px;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (ip.ip || '—') + '</td><td style="padding:2px 6px;' + ipTypeStyle(ip.ipType) + 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (ip.ipType || 'Unknown') + '</td><td style="padding:2px 6px;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + geoText + '</td><td style="padding:2px 6px;text-align:right;font-weight:700;color:#f59e0b;">' + ip.visits + '</td></tr>';
     });
     html += '</tbody></table></details></div>';
     container.innerHTML = html;
@@ -1312,8 +1312,8 @@
     document.getElementById('cfgDevices').textContent = recentDevs;
     document.getElementById('cfgUpdated').textContent = '· ' + new Date().toLocaleTimeString() + ' · all-time: ' + (cum.totalVisits || 0) + ' total, ' + (cum.distinctIPs || 0) + ' endpoints, ' + (cum.distinctDevices || 0) + ' clients';
 
-    var breakdown = '<div style="margin-top:16px;padding:14px;border-radius:12px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:rgba(99,102,241,0.03);">';
-    breakdown += '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:8px;">Recent (' + recentIPs + ' unique, last 72h)</div>';
+    var breakdown = '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:rgba(99,102,241,0.03);">';
+    breakdown += '<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:5px;">Recent (' + recentIPs + ' unique, last 72h)</div>';
     var all = data.visits || [];
     var ipOs = {};
     all.forEach(function(v) {
@@ -1326,11 +1326,11 @@
     });
     Object.values(ipOs).sort(function(a, b) { return b.count - a.count; }).forEach(function(e) {
       var time = e.lastTs ? new Date(e.lastTs).toLocaleDateString(undefined, {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
-      breakdown += '<div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid rgba(0,0,0,0.03);line-height:1.4;font-size:11px;">';
+      breakdown += '<div style="display:flex;justify-content:space-between;gap:6px;padding:1px 0;border-bottom:1px solid rgba(0,0,0,0.03);line-height:1.3;font-size:9px;">';
       breakdown += '<span style="font-family:monospace;font-weight:600;color:var(--text,#0f172a);">' + e.ip + '</span>';
       breakdown += '<span style="color:var(--text-soft,#475569);">' + e.os + '</span>';
       breakdown += '<span style="font-weight:700;color:#f59e0b;">' + e.count + '×</span>';
-      breakdown += '<span style="color:var(--text-soft,#475569);font-size:10px;white-space:nowrap;">' + (e.country || '?') + ' · ' + time + '</span>';
+      breakdown += '<span style="color:var(--text-soft,#475569);font-size:8px;white-space:nowrap;">' + (e.country || '?') + ' · ' + time + '</span>';
       breakdown += '</div>';
     });
     breakdown += '</div>';
@@ -1343,20 +1343,20 @@
     // totalCum was reduced by IP-reconciliation without reducing device
     // counts, so (cnt / totalCum) could exceed 100%.
     var sumOfDeviceCounts = Object.values(deviceCounts).reduce(function(a, b) { return a + b; }, 0);
-    breakdown += '<div style="margin-top:12px;padding:14px;border-radius:12px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:rgba(34,197,94,0.03);">';
-    breakdown += '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:10px;">All-time unique — ' + Object.keys(deviceCounts).length + ' types · ' + Object.keys(ipCounts).length + ' endpoints · ' + totalCum + ' total</div>';
-    breakdown += '<table style="border-collapse:collapse;font-size:11px;width:100%;font-family:-apple-system,sans-serif;">';
-    breakdown += '<thead><tr style="background:rgba(34,197,94,0.06);color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:9px;"><th style="padding:6px 10px;text-align:left;">Client</th><th style="padding:6px 10px;text-align:right;">Count</th><th style="padding:6px 10px;text-align:right;">%</th></tr></thead><tbody>';
+    breakdown += '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:rgba(34,197,94,0.03);">';
+    breakdown += '<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:6px;">All-time unique — ' + Object.keys(deviceCounts).length + ' types · ' + Object.keys(ipCounts).length + ' endpoints · ' + totalCum + ' total</div>';
+    breakdown += '<table style="border-collapse:collapse;font-size:9px;width:100%;font-family:-apple-system,sans-serif;table-layout:fixed;"><colgroup><col style="width:50%"><col style="width:25%"><col style="width:25%"></colgroup>';
+    breakdown += '<thead><tr style="background:rgba(34,197,94,0.06);color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:8px;"><th style="padding:3px 6px;text-align:left;">Client</th><th style="padding:3px 6px;text-align:right;">Count</th><th style="padding:3px 6px;text-align:right;">%</th></tr></thead><tbody>';
     Object.entries(deviceCounts).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(entry, i) {
       var dev = entry[0]; var cnt = entry[1];
       var pct = sumOfDeviceCounts > 0 ? ((cnt / sumOfDeviceCounts) * 100).toFixed(1) : '0.0';
       var bg = i % 2 === 0 ? 'transparent' : 'rgba(34,197,94,0.02)';
-      breakdown += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:5px 10px;color:var(--text,#0f172a);font-weight:500;">' + dev + '</td><td style="padding:5px 10px;text-align:right;font-weight:700;color:#16a34a;">' + cnt + '</td><td style="padding:5px 10px;text-align:right;color:var(--muted,#94a3b8);">' + pct + '%</td></tr>';
+      breakdown += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:2px 6px;color:var(--text,#0f172a);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + dev + '</td><td style="padding:2px 6px;text-align:right;font-weight:700;color:#16a34a;">' + cnt + '</td><td style="padding:2px 6px;text-align:right;color:var(--muted,#94a3b8);">' + pct + '%</td></tr>';
     });
     breakdown += '</tbody></table>';
-    breakdown += '<div style="margin-top:12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:6px;">Top endpoints (all-time)</div>';
-    breakdown += '<table style="border-collapse:collapse;font-size:10px;width:100%;font-family:monospace;">';
-    breakdown += '<thead><tr style="color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:9px;"><th style="padding:3px 10px;text-align:left;">IP</th><th style="padding:3px 10px;text-align:left;">Type</th><th style="padding:3px 10px;text-align:left;">Geo</th><th style="padding:3px 10px;text-align:right;">Visits</th></tr></thead><tbody>';
+    breakdown += '<div style="margin-top:6px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:4px;">Top endpoints (all-time)</div>';
+    breakdown += '<table style="border-collapse:collapse;font-size:9px;width:100%;font-family:monospace;table-layout:fixed;"><colgroup><col style="width:30%"><col style="width:30%"><col style="width:25%"><col style="width:15%"></colgroup>';
+    breakdown += '<thead><tr style="color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:8px;"><th style="padding:2px 6px;text-align:left;">IP</th><th style="padding:2px 6px;text-align:left;">Type</th><th style="padding:2px 6px;text-align:left;">Geo</th><th style="padding:2px 6px;text-align:right;">Visits</th></tr></thead><tbody>';
     // Build ip→meta lookup from the live visit log so the all-time endpoint
     // table can show ipType + geo alongside the count. Without this, the table
     // only shows IP + count (the cumulative blob stores ipCounts as a flat
@@ -1384,18 +1384,24 @@
       if (t.indexOf('Other') === 0) return 'var(--text-soft,#475569)';
       return 'var(--muted,#94a3b8)';
     }
-    Object.entries(ipCounts).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 20).forEach(function(entry, i) {
+    Object.entries(ipCounts).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 10).forEach(function(entry, i) {
       var ip = entry[0]; var cnt = entry[1];
       var meta = ipMeta[ip] || {};
       var geoText = (meta.city && meta.city !== 'unknown' ? meta.city : '') + (meta.country && meta.country !== 'unknown' ? (meta.city && meta.city !== 'unknown' ? ', ' : '') + meta.country : '');
       if (!geoText) geoText = '—';
       var bg = i % 2 === 0 ? 'transparent' : 'rgba(34,197,94,0.02)';
-      breakdown += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:3px 10px;color:var(--text,#0f172a);font-weight:600;">' + ip + '</td><td style="padding:3px 10px;color:' + ipTypeColorStr(meta.ipType) + ';font-weight:600;white-space:nowrap;">' + (meta.ipType || 'Unknown') + '</td><td style="padding:3px 10px;color:var(--text-soft,#475569);">' + geoText + '</td><td style="padding:3px 10px;text-align:right;color:#16a34a;font-weight:700;">' + cnt + '×</td></tr>';
+      breakdown += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:2px 6px;color:var(--text,#0f172a);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + ip + '</td><td style="padding:2px 6px;color:' + ipTypeColorStr(meta.ipType) + ';font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (meta.ipType || 'Unknown') + '</td><td style="padding:2px 6px;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + geoText + '</td><td style="padding:2px 6px;text-align:right;color:#16a34a;font-weight:700;">' + cnt + '×</td></tr>';
     });
     breakdown += '</tbody></table></div>';
 
-    var html = '<div style="overflow-x:auto;border:1px solid var(--card-border,rgba(0,0,0,0.12));border-radius:10px;"><table style="border-collapse:collapse;font-size:11px;width:100%;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">';
-    html += '<thead><tr style="background:rgba(99,102,241,0.06);border-bottom:2px solid var(--card-border,rgba(0,0,0,0.12));color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:9px;"><th style="padding:10px 14px;text-align:left;white-space:nowrap;">When</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">IP</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Type</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Real?</th><th style="padding:10px 14px;text-align:center;white-space:nowrap;">Score</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Reason</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">From</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Page</th><th style="padding:10px 14px;text-align:left;white-space:nowrap;">Client</th><th style="padding:10px 14px;text-align:center;white-space:nowrap;">Reloads</th></tr></thead><tbody>';
+    // Main visits table — fixed-layout, 9px font, tight padding, no overflow wrapper.
+    // 10 columns sized via <colgroup> so the table fits the panel width without
+    // triggering horizontal scroll. Reason column wraps (long text). Capped to
+    // the 12 most recent sessions so the table never grows taller than the
+    // viewport — older sessions are still in the recent-IPs + all-time tables
+    // below.
+    var html = '<div style="border:1px solid var(--card-border,rgba(0,0,0,0.12));border-radius:8px;overflow:hidden;"><table style="border-collapse:collapse;font-size:9px;width:100%;font-family:-apple-system,BlinkMacSystemFont,sans-serif;table-layout:fixed;"><colgroup><col style="width:11%"><col style="width:11%"><col style="width:10%"><col style="width:8%"><col style="width:5%"><col style="width:18%"><col style="width:10%"><col style="width:7%"><col style="width:13%"><col style="width:7%"></colgroup>';
+    html += '<thead><tr style="background:rgba(99,102,241,0.06);border-bottom:1px solid var(--card-border,rgba(0,0,0,0.12));color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:8px;"><th style="padding:3px 5px;text-align:left;">When</th><th style="padding:3px 5px;text-align:left;">IP</th><th style="padding:3px 5px;text-align:left;">Type</th><th style="padding:3px 5px;text-align:left;">Real?</th><th style="padding:3px 5px;text-align:center;">Score</th><th style="padding:3px 5px;text-align:left;">Reason</th><th style="padding:3px 5px;text-align:left;">From</th><th style="padding:3px 5px;text-align:left;">Page</th><th style="padding:3px 5px;text-align:left;">Client</th><th style="padding:3px 5px;text-align:center;">×</th></tr></thead><tbody>';
     function ipTypeColor(t) {
       if (!t) return 'var(--muted,#94a3b8)';
       if (t.indexOf('Verified Bot') === 0 || t.indexOf('Search Engine') === 0) return '#0891b2';
@@ -1413,13 +1419,13 @@
       if (l.indexOf('Uncertain') === 0) return 'background:rgba(245,158,11,0.12);color:#f59e0b;';
       return 'background:rgba(148,163,184,0.1);color:var(--muted,#94a3b8);';
     }
-    sessions.forEach(function(s, i) {
+    sessions.slice(0, 12).forEach(function(s, i) {
       var bg = i % 2 === 0 ? 'transparent' : 'rgba(99,102,241,0.025)';
       var scoreColor = s.realScore >= 80 ? '#ef4444' : s.realScore >= 60 ? '#f59e0b' : s.realScore >= 40 ? '#94a3b8' : s.realScore >= 20 ? '#10b981' : '#10b981';
-      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:7px 14px;white-space:nowrap;color:var(--text,#0f172a);font-weight:600;">' + s.tsLabel + '</td><td style="padding:7px 14px;white-space:nowrap;font-family:monospace;color:var(--text-soft,#475569);">' + (s.ip || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:' + ipTypeColor(s.ipType) + ';font-weight:600;">' + (s.ipType || 'Unknown') + '</td><td style="padding:7px 14px;white-space:nowrap;"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;' + realLabelBg(s.realLabel) + '">' + (s.realLabel || '?') + '</span></td><td style="padding:7px 14px;text-align:center;white-space:nowrap;font-weight:700;color:' + scoreColor + ';">' + (s.realScore != null ? s.realScore : '?') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--muted,#94a3b8);font-style:italic;font-size:10px;">' + (s.realReason || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--text-soft,#475569);">' + (s.loc || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--primary,#6366f1);font-weight:500;">' + (s.page || '—') + '</td><td style="padding:7px 14px;white-space:nowrap;color:var(--muted,#94a3b8);">' + s.client + '</td>';
-      var rs = s.reloads > 1 ? 'color:#f59e0b;font-weight:700;background:rgba(245,158,11,0.08);border-radius:12px;padding:2px 8px;display:inline-block;' : 'color:var(--muted,#94a3b8);';
+      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:2px 5px;white-space:nowrap;color:var(--text,#0f172a);font-weight:600;overflow:hidden;text-overflow:ellipsis;">' + s.tsLabel + '</td><td style="padding:2px 5px;white-space:nowrap;font-family:monospace;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;">' + (s.ip || '—') + '</td><td style="padding:2px 5px;color:' + ipTypeColor(s.ipType) + ';font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (s.ipType || 'Unknown') + '</td><td style="padding:2px 5px;white-space:nowrap;"><span style="font-size:8px;font-weight:700;padding:1px 5px;border-radius:8px;' + realLabelBg(s.realLabel) + '">' + (s.realLabel || '?') + '</span></td><td style="padding:2px 5px;text-align:center;white-space:nowrap;font-weight:700;color:' + scoreColor + ';">' + (s.realScore != null ? s.realScore : '?') + '</td><td style="padding:2px 5px;color:var(--muted,#94a3b8);font-style:italic;font-size:8px;line-height:1.2;word-break:break-word;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">' + (s.realReason || '—') + '</td><td style="padding:2px 5px;white-space:nowrap;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;">' + (s.loc || '—') + '</td><td style="padding:2px 5px;color:var(--primary,#6366f1);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (s.page || '—') + '</td><td style="padding:2px 5px;color:var(--muted,#94a3b8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + s.client + '</td>';
+      var rs = s.reloads > 1 ? 'color:#f59e0b;font-weight:700;background:rgba(245,158,11,0.08);border-radius:8px;padding:1px 4px;display:inline-block;' : 'color:var(--muted,#94a3b8);';
       var rt = s.reloads > 1 ? s.reloads + '×' : '1';
-      html += '<td style="padding:7px 14px;text-align:center;white-space:nowrap;"><span style="' + rs + '">' + rt + '</span></td></tr>';
+      html += '<td style="padding:2px 5px;text-align:center;white-space:nowrap;"><span style="' + rs + '">' + rt + '</span></td></tr>';
     });
     html += '</tbody></table></div>';
     html += breakdown;
