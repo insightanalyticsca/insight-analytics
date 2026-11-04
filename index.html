@@ -1223,6 +1223,28 @@
       .catch(function() {});
   }
 
+  // ─── ECharts lazy-loader (only loaded when the activity panel first opens) ─
+  // Used by the all-time device pie chart in renderAllHistory(). Loaded once,
+  // cached on window.__echartsPromise so the second open is instant.
+  var ECHARTS_URL = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
+  var cfgPieChart = null;  // echarts instance for the device pie
+  function loadECharts() {
+    if (window.echarts) return Promise.resolve(window.echarts);
+    if (window.__echartsPromise) return window.__echartsPromise;
+    window.__echartsPromise = new Promise(function(resolve, reject) {
+      var s = document.createElement('script');
+      s.src = ECHARTS_URL;
+      s.onload = function() { resolve(window.echarts); };
+      s.onerror = function() { reject(new Error('Failed to load ECharts')); };
+      document.head.appendChild(s);
+    });
+    return window.__echartsPromise;
+  }
+  // Detect dark theme (so the pie chart uses light text on dark background)
+  function isDarkTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'dark';
+  }
+
   function renderAllHistory(data) {
     var container = document.getElementById('cfgHistory');
     if (!container) return;
@@ -1233,24 +1255,9 @@
       container.innerHTML = '<div style="padding:8px;font-size:9px;color:var(--muted,#94a3b8);">No cumulative data yet.</div>';
       return;
     }
-    var html = '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:linear-gradient(135deg,rgba(99,102,241,0.04),rgba(6,182,212,0.03));">';
-    html += '<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:6px;">All-time (' + devices.length + ' types, ' + ips.length + ' endpoints, ' + total + ' total)</div>';
-    html += '<table style="width:100%;border-collapse:collapse;font-size:9px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;table-layout:fixed;"><colgroup><col style="width:50%"><col style="width:25%"><col style="width:25%"></colgroup>';
-    html += '<thead><tr style="border-bottom:1px solid rgba(0,0,0,0.06);color:var(--muted,#94a3b8);font-weight:600;font-size:8px;text-transform:uppercase;letter-spacing:0.03em;"><th style="padding:2px 6px;text-align:left;">Client</th><th style="padding:2px 6px;text-align:right;white-space:nowrap;">Count</th><th style="padding:2px 6px;text-align:right;white-space:nowrap;">% of total</th></tr></thead><tbody>';
-    // Use sum of DISPLAYED device counts as the denominator (not totalVisits).
-    // totalVisits was reduced by IP-reconciliation without reducing device
-    // counts, so (device / totalVisits) could exceed 100%. Sum-of-devices
-    // guarantees percentages always sum to 100%.
-    var sumOfDevices = devices.reduce(function(s, d) { return s + d.visits; }, 0);
-    devices.forEach(function(d, i) {
-      var bg = i % 2 === 0 ? 'transparent' : 'rgba(99,102,241,0.03)';
-      var pct = sumOfDevices > 0 ? ((d.visits / sumOfDevices) * 100).toFixed(1) + '%' : '—';
-      var bar = sumOfDevices > 0 ? Math.min(100, (d.visits / sumOfDevices) * 100) : 0;
-      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.03);background:' + bg + ';"><td style="padding:2px 6px;color:var(--text,#0f172a);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (d.device || 'Unknown') + '</td><td style="padding:2px 6px;text-align:right;font-weight:700;color:#f59e0b;white-space:nowrap;">' + d.visits + '</td><td style="padding:2px 6px;text-align:right;color:var(--text-soft,#475569);white-space:nowrap;">' + pct + ' <span style="display:inline-block;width:' + (bar * 0.4) + 'px;height:6px;border-radius:3px;background:linear-gradient(90deg,#6366f1,#06b6d4);vertical-align:middle;margin-left:2px;"></span></td></tr>';
-    });
-    html += '</tbody></table>';
-    html += '<details style="margin-top:6px;"><summary style="cursor:pointer;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);padding:2px 0;">Endpoints (' + ips.length + ') — click to expand · hover for last seen</summary><table style="width:100%;border-collapse:collapse;font-size:9px;font-family:monospace;margin-top:3px;table-layout:fixed;"><colgroup><col style="width:28%"><col style="width:32%"><col style="width:25%"><col style="width:15%"></colgroup><thead><tr style="border-bottom:1px solid rgba(0,0,0,0.06);color:var(--muted,#94a3b8);font-weight:600;font-size:8px;text-transform:uppercase;"><th style="padding:2px 6px;text-align:left;">ID (masked)</th><th style="padding:2px 6px;text-align:left;">Type</th><th style="padding:2px 6px;text-align:left;">Geo</th><th style="padding:2px 6px;text-align:right;">Count</th></tr></thead><tbody>';
-    function ipTypeStyle(t) {
+
+    // ── Build the endpoints table (kept as-is, already in a <details>) ──
+    var ipTypeStyle = 'function' === typeof ipTypeStyleCached ? ipTypeStyleCached : function(t) {
       if (!t) return 'color:var(--muted,#94a3b8);';
       if (t.indexOf('Verified Bot') === 0) return 'color:#0891b2;font-weight:600;';
       if (t.indexOf('Search Engine') === 0) return 'color:#0891b2;font-weight:600;';
@@ -1260,7 +1267,9 @@
       if (t.indexOf('Residential') === 0) return 'color:#10b981;font-weight:600;';
       if (t.indexOf('Other') === 0) return 'color:var(--text-soft,#475569);';
       return 'color:var(--muted,#94a3b8);';
-    }
+    };
+    ipTypeStyleCached = ipTypeStyle;
+    var endpointsRows = '';
     ips.forEach(function(ip, i) {
       var bg = i % 2 === 0 ? 'transparent' : 'rgba(99,102,241,0.03)';
       var geoText = (ip.city && ip.city !== 'unknown' ? ip.city : '') + (ip.country && ip.country !== 'unknown' ? (ip.city ? ', ' : '') + ip.country : '');
@@ -1268,11 +1277,88 @@
       var lastSeen = ip.lastSeen ? new Date(ip.lastSeen).toLocaleDateString('en-CA', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
       var device = ip.device || '';
       var tooltip = 'Location: ' + geoText + (device ? '\\nDevice: ' + device : '') + (lastSeen ? '\\nLast seen: ' + lastSeen : '') + (ip.uid ? '\\nVisitor ID: ' + ip.uid.slice(0, 12) : '');
-      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.03);background:' + bg + ';" title="' + tooltip.replace(/"/g, '&quot;') + '"><td style="padding:2px 6px;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (ip.ip || '—') + '</td><td style="padding:2px 6px;' + ipTypeStyle(ip.ipType) + 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (ip.ipType || 'Unknown') + '</td><td style="padding:2px 6px;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + geoText + '</td><td style="padding:2px 6px;text-align:right;font-weight:700;color:#f59e0b;">' + ip.visits + '</td></tr>';
+      endpointsRows += '<tr style="border-bottom:1px solid rgba(0,0,0,0.03);background:' + bg + ';" title="' + tooltip.replace(/"/g, '&quot;') + '"><td style="padding:2px 6px;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (ip.ip || '—') + '</td><td style="padding:2px 6px;' + ipTypeStyle(ip.ipType) + 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (ip.ipType || 'Unknown') + '</td><td style="padding:2px 6px;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + geoText + '</td><td style="padding:2px 6px;text-align:right;font-weight:700;color:#f59e0b;">' + ip.visits + '</td></tr>';
     });
-    html += '</tbody></table></details></div>';
+
+    var html = '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:linear-gradient(135deg,rgba(99,102,241,0.04),rgba(6,182,212,0.03));">';
+    html += '<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:6px;">All-time — ' + devices.length + ' device types · ' + ips.length + ' endpoints · ' + total + ' visits</div>';
+
+    // ── Pie chart container (ECharts initialises into this after render) ──
+    // Two-column layout: pie on the left, legend table on the right. On narrow
+    // viewports the legend wraps below automatically (flex-wrap).
+    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">';
+    html += '<div id="cfgPie" style="width:180px;height:160px;flex-shrink:0;"></div>';
+    html += '<div style="flex:1;min-width:140px;">';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:9px;font-family:-apple-system,sans-serif;"><thead><tr style="color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:8px;"><th style="padding:2px 4px;text-align:left;">Client</th><th style="padding:2px 4px;text-align:right;">N</th><th style="padding:2px 4px;text-align:right;">%</th></tr></thead><tbody>';
+    var sumOfDevices = devices.reduce(function(s, d) { return s + d.visits; }, 0);
+    // Color palette for the pie slices (matches the existing site palette)
+    var pieColors = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#0891b2', '#84cc16', '#ec4899', '#94a3b8'];
+    devices.forEach(function(d, i) {
+      var pct = sumOfDevices > 0 ? ((d.visits / sumOfDevices) * 100).toFixed(1) : '0.0';
+      var color = pieColors[i % pieColors.length];
+      html += '<tr><td style="padding:2px 4px;color:var(--text,#0f172a);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:' + color + ';margin-right:4px;vertical-align:middle;"></span>' + (d.device || 'Unknown') + '</td><td style="padding:2px 4px;text-align:right;font-weight:700;color:#f59e0b;">' + d.visits + '</td><td style="padding:2px 4px;text-align:right;color:var(--muted,#94a3b8);">' + pct + '%</td></tr>';
+    });
+    html += '</tbody></table>';
+    html += '</div>';  // legend column
+    html += '</div>';  // flex row
+
+    // ── Collapsible endpoints table (collapsed by default) ──
+    html += '<details style="margin-top:6px;">';
+    html += '<summary style="cursor:pointer;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);padding:2px 0;">Endpoints (' + ips.length + ') — click to expand · hover for last seen</summary>';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:9px;font-family:monospace;margin-top:3px;table-layout:fixed;"><colgroup><col style="width:28%"><col style="width:32%"><col style="width:25%"><col style="width:15%"></colgroup><thead><tr style="border-bottom:1px solid rgba(0,0,0,0.06);color:var(--muted,#94a3b8);font-weight:600;font-size:8px;text-transform:uppercase;"><th style="padding:2px 6px;text-align:left;">ID (masked)</th><th style="padding:2px 6px;text-align:left;">Type</th><th style="padding:2px 6px;text-align:left;">Geo</th><th style="padding:2px 6px;text-align:right;">Count</th></tr></thead><tbody>';
+    html += endpointsRows;
+    html += '</tbody></table></details>';
+    html += '</div>';
+
     container.innerHTML = html;
+
+    // ── Initialise the ECharts pie (after the lazy-loaded lib is ready) ──
+    var pieData = devices.map(function(d, i) {
+      return { name: d.device || 'Unknown', value: d.visits, itemStyle: { color: pieColors[i % pieColors.length] } };
+    });
+    loadECharts().then(function(ec) {
+      var pieEl = document.getElementById('cfgPie');
+      if (!pieEl) return;
+      // Dispose any prior instance (otherwise echarts.init throws on re-render)
+      if (cfgPieChart) { try { cfgPieChart.dispose(); } catch(e) {} cfgPieChart = null; }
+      cfgPieChart = ec.init(pieEl, null, { renderer: 'svg' });
+      var dark = isDarkTheme();
+      cfgPieChart.setOption({
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)', textStyle: { fontSize: 11 } },
+        series: [{
+          type: 'pie',
+          radius: ['38%', '70%'],
+          center: ['50%', '50%'],
+          avoidLabelOverlap: true,
+          label: { show: false },
+          labelLine: { show: false },
+          emphasis: {
+            scale: true,
+            scaleSize: 6,
+            label: { show: true, fontSize: 10, fontWeight: 'bold', color: dark ? '#e2e8f0' : '#0f172a' }
+          },
+          data: pieData
+        }],
+        color: pieColors,
+        backgroundColor: 'transparent'
+      });
+      // Re-fit when the panel is resized (rare but covers browser zoom)
+      // Single-shot listener; gets cleaned up when the panel re-renders and
+      // the old pieEl is removed from the DOM (chart instance is disposed
+      // above on next render).
+      if (!window.__cfgPieResizeBound) {
+        window.addEventListener('resize', function() {
+          if (cfgPieChart) { try { cfgPieChart.resize(); } catch(e) {} }
+        });
+        window.__cfgPieResizeBound = true;
+      }
+    }).catch(function(e) {
+      // ECharts failed to load — silently show a fallback note in the pie slot
+      var pieEl = document.getElementById('cfgPie');
+      if (pieEl) pieEl.innerHTML = '<div style="font-size:9px;color:var(--muted,#94a3b8);text-align:center;padding-top:60px;">chart unavailable</div>';
+    });
   }
+  var ipTypeStyleCached = null;
 
   function renderState(data) {
     var rows = data.visits.map(function(v) {
@@ -1331,8 +1417,7 @@
     document.getElementById('cfgDevices').textContent = recentDevs;
     document.getElementById('cfgUpdated').textContent = '· ' + new Date().toLocaleTimeString() + ' · all-time: ' + (cum.totalVisits || 0) + ' total, ' + (cum.distinctIPs || 0) + ' endpoints, ' + (cum.distinctDevices || 0) + ' clients';
 
-    var breakdown = '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:rgba(99,102,241,0.03);">';
-    breakdown += '<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:5px;">Recent (' + recentIPs + ' unique, last 72h)</div>';
+    var breakdown = '<details style="margin-top:8px;"><summary style="cursor:pointer;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);padding:4px 0;">Recent visitors (' + recentIPs + ' unique, last 72h) — click to expand</summary><div style="margin-top:4px;padding:6px 8px;border-radius:6px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:rgba(99,102,241,0.03);">';
     var all = data.visits || [];
     var ipOs = {};
     all.forEach(function(v) {
@@ -1352,66 +1437,13 @@
       breakdown += '<span style="color:var(--text-soft,#475569);font-size:8px;white-space:nowrap;">' + (e.country || '?') + ' · ' + time + '</span>';
       breakdown += '</div>';
     });
-    breakdown += '</div>';
+    breakdown += '</div></details>';
 
-    // All-time unique devices from cumulative blob
-    var ipCounts = cum.ipCounts || {};
-    var deviceCounts = cum.deviceCounts || {};
-    var totalCum = cum.totalVisits || 0;
-    // Use sum of DISPLAYED device counts as the denominator (not totalCum).
-    // totalCum was reduced by IP-reconciliation without reducing device
-    // counts, so (cnt / totalCum) could exceed 100%.
-    var sumOfDeviceCounts = Object.values(deviceCounts).reduce(function(a, b) { return a + b; }, 0);
-    breakdown += '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:rgba(34,197,94,0.03);">';
-    breakdown += '<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:6px;">All-time unique — ' + Object.keys(deviceCounts).length + ' types · ' + Object.keys(ipCounts).length + ' endpoints · ' + totalCum + ' total</div>';
-    breakdown += '<table style="border-collapse:collapse;font-size:9px;width:100%;font-family:-apple-system,sans-serif;table-layout:fixed;"><colgroup><col style="width:50%"><col style="width:25%"><col style="width:25%"></colgroup>';
-    breakdown += '<thead><tr style="background:rgba(34,197,94,0.06);color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:8px;"><th style="padding:3px 6px;text-align:left;">Client</th><th style="padding:3px 6px;text-align:right;">Count</th><th style="padding:3px 6px;text-align:right;">%</th></tr></thead><tbody>';
-    Object.entries(deviceCounts).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(entry, i) {
-      var dev = entry[0]; var cnt = entry[1];
-      var pct = sumOfDeviceCounts > 0 ? ((cnt / sumOfDeviceCounts) * 100).toFixed(1) : '0.0';
-      var bg = i % 2 === 0 ? 'transparent' : 'rgba(34,197,94,0.02)';
-      breakdown += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:2px 6px;color:var(--text,#0f172a);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + dev + '</td><td style="padding:2px 6px;text-align:right;font-weight:700;color:#16a34a;">' + cnt + '</td><td style="padding:2px 6px;text-align:right;color:var(--muted,#94a3b8);">' + pct + '%</td></tr>';
-    });
-    breakdown += '</tbody></table>';
-    breakdown += '<div style="margin-top:6px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:4px;">Top endpoints (all-time)</div>';
-    breakdown += '<table style="border-collapse:collapse;font-size:9px;width:100%;font-family:monospace;table-layout:fixed;"><colgroup><col style="width:30%"><col style="width:30%"><col style="width:25%"><col style="width:15%"></colgroup>';
-    breakdown += '<thead><tr style="color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:8px;"><th style="padding:2px 6px;text-align:left;">IP</th><th style="padding:2px 6px;text-align:left;">Type</th><th style="padding:2px 6px;text-align:left;">Geo</th><th style="padding:2px 6px;text-align:right;">Visits</th></tr></thead><tbody>';
-    // Build ip→meta lookup from the live visit log so the all-time endpoint
-    // table can show ipType + geo alongside the count. Without this, the table
-    // only shows IP + count (the cumulative blob stores ipCounts as a flat
-    // map of ip→number, with no type or geo).
-    var ipMeta = {};
-    all.forEach(function(v) {
-      if (!v.ip) return;
-      var existing = ipMeta[v.ip];
-      var ts = v.ts ? new Date(v.ts).getTime() : 0;
-      if (!existing) {
-        ipMeta[v.ip] = { ipType: v.ipType || '', country: v.country || '', city: v.city || '', lastTs: ts };
-      } else if (ts > existing.lastTs) {
-        if (v.ipType) existing.ipType = v.ipType;
-        if (v.country) existing.country = v.country;
-        if (v.city) existing.city = v.city;
-        existing.lastTs = ts;
-      }
-    });
-    function ipTypeColorStr(t) {
-      if (!t) return 'var(--muted,#94a3b8)';
-      if (t.indexOf('Verified Bot') === 0 || t.indexOf('Search Engine') === 0) return '#0891b2';
-      if (t.indexOf('Cloud') === 0) return '#f59e0b';
-      if (t.indexOf('VPN/Proxy') === 0) return '#ef4444';
-      if (t.indexOf('Mobile') === 0 || t.indexOf('Residential') === 0) return '#10b981';
-      if (t.indexOf('Other') === 0) return 'var(--text-soft,#475569)';
-      return 'var(--muted,#94a3b8)';
-    }
-    Object.entries(ipCounts).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 10).forEach(function(entry, i) {
-      var ip = entry[0]; var cnt = entry[1];
-      var meta = ipMeta[ip] || {};
-      var geoText = (meta.city && meta.city !== 'unknown' ? meta.city : '') + (meta.country && meta.country !== 'unknown' ? (meta.city && meta.city !== 'unknown' ? ', ' : '') + meta.country : '');
-      if (!geoText) geoText = '—';
-      var bg = i % 2 === 0 ? 'transparent' : 'rgba(34,197,94,0.02)';
-      breakdown += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:2px 6px;color:var(--text,#0f172a);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + ip + '</td><td style="padding:2px 6px;color:' + ipTypeColorStr(meta.ipType) + ';font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (meta.ipType || 'Unknown') + '</td><td style="padding:2px 6px;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + geoText + '</td><td style="padding:2px 6px;text-align:right;color:#16a34a;font-weight:700;">' + cnt + '×</td></tr>';
-    });
-    breakdown += '</tbody></table></div>';
+    // All-time device breakdown + Top endpoints tables were REMOVED from here.
+    // They were a duplicate of the same data shown by renderAllHistory() (which
+    // is fed by op=devices — richer per-IP ipType + geo than the cumulative
+    // blob we used here). Keeping them in two places made the panel needlessly
+    // tall. See renderAllHistory() below for the single consolidated view.
 
     // Main visits table — fixed-layout, 9px font, tight padding, no overflow wrapper.
     // 10 columns sized via <colgroup> so the table fits the panel width without
