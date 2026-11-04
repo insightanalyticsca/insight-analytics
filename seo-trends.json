@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-03T13:32:41.876Z",
+  "collectedAt": "2026-11-04T13:43:29.034Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -37,7 +37,7 @@
     "organizational culture",
     "change management"
   ],
-  "totalTerms": 411,
+  "totalTerms": 428,
   "trends": [
     {
       "term": "ai dashboard",
@@ -244,6 +244,12 @@
       "seed": "change management"
     },
     {
+      "term": "future",
+      "volume": 100,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "business",
       "volume": 100,
       "source": "industry-rss",
@@ -394,7 +400,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management services",
+      "term": "treasury management jobs",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -460,7 +466,13 @@
       "seed": "change management"
     },
     {
-      "term": "future",
+      "term": "leadership",
+      "volume": 90,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "financial",
       "volume": 90,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -604,7 +616,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management systems",
+      "term": "treasury management services",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -670,19 +682,7 @@
       "seed": "change management"
     },
     {
-      "term": "2026",
-      "volume": 80,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "world",
-      "volume": 80,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "financial",
       "volume": 80,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -808,7 +808,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management jobs texas",
+      "term": "risk management definition",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -826,7 +826,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management officer salary",
+      "term": "treasury management systems",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -886,7 +886,7 @@
       "seed": "organizational culture"
     },
     {
-      "term": "change management process",
+      "term": "change management jobs",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "change management"
@@ -904,7 +904,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "management",
+      "term": "europe",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "8217",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1042,7 +1048,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management jobs california",
+      "term": "risk management framework",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1060,7 +1066,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management banking",
+      "term": "treasury management officer salary",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1120,13 +1126,13 @@
       "seed": "organizational culture"
     },
     {
-      "term": "change management jobs",
+      "term": "change management process",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "change management"
     },
     {
-      "term": "value",
+      "term": "intelligence",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1138,25 +1144,31 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "strategy",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "global",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "europe",
+      "term": "2026",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "stock",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
       "term": "supply",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "8217",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1294,7 +1306,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management definition",
+      "term": "risk management salary",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1312,7 +1324,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management officer",
+      "term": "treasury management banking",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1378,13 +1390,7 @@
       "seed": "change management"
     },
     {
-      "term": "intelligence",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "system",
+      "term": "value",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1402,19 +1408,37 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "strategy",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "economics",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "energy",
+      "term": "management",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "three",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "four",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "control",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "digital",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1540,7 +1564,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management framework",
+      "term": "risk management insurance",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1558,7 +1582,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management specialist salary",
+      "term": "treasury management officer",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1636,6 +1660,42 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "scaling",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "system",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "advantage",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "model",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "does",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "energy",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "economic",
       "volume": 40,
       "source": "industry-rss",
@@ -1648,31 +1708,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "billion",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "four",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "digital",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "2027",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "data",
+      "term": "real",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1684,7 +1720,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "best",
+      "term": "leaders",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1709,6 +1745,12 @@
     },
     {
       "term": "launch",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "democrats",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1822,7 +1864,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management salary",
+      "term": "risk management association",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1840,7 +1882,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management salary",
+      "term": "treasury management specialist salary",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1906,19 +1948,25 @@
       "seed": "change management"
     },
     {
+      "term": "2027",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "software",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "opportunity",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "leadership",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "advantage",
+      "term": "focus",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1936,13 +1984,19 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "rise",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "hidden",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "real",
+      "term": "america",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1960,19 +2014,25 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "capital",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "projects",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "experience",
+      "term": "really",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "resilience",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "story",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1984,19 +2044,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "tech",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "challenges",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "needs",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2009,18 +2057,6 @@
     },
     {
       "term": "five",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "social",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "funds",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2080,6 +2116,12 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "transformation",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "according",
       "volume": 30,
       "source": "industry-rss",
@@ -2098,6 +2140,12 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "best",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "alumni",
       "volume": 30,
       "source": "industry-rss",
@@ -2110,7 +2158,43 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "artificial",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "campus",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "china",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "competitive",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "para",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "stay",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "uncertainty",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2122,7 +2206,25 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "bonds",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "election",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "sweep",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "democrat",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2236,7 +2338,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management insurance",
+      "term": "risk management plan",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -2254,7 +2356,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management tompkins",
+      "term": "treasury management salary",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -2422,7 +2524,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management association",
+      "term": "risk management process",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -2440,7 +2542,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management simmons bank",
+      "term": "treasury management tompkins",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "treasury management"
