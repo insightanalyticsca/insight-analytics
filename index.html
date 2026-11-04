@@ -1204,6 +1204,85 @@
   cancel.addEventListener('click', closeModal);
   modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
 
+  // ─── User-collapse state tracking + data-fingerprint caching ──────────
+  // PROBLEM: renderState() and renderAllHistory() rebuild the entire DOM
+  // every 5s on the polling tick. That clobbered the user's <details>
+  // open/close choice (every refresh snapped them back to default) and
+  // tore down + re-initialised the ECharts pie (which flickered even
+  // when the underlying device counts were unchanged).
+  //
+  // FIX:
+  //   (1) captureOpenDetails() — snapshots which <details> inside the
+  //       panel are open, by id, before an innerHTML reset.
+  //   (2) restoreOpenDetails() — re-opens the ones the user had open.
+  //   (3) dataSignature(obj) — produces a small deterministic string
+  //       (a SHA-less, ordered JSON of the meaningful fields) so we
+  //       can compare two snapshots and skip the rebuild entirely when
+  //       nothing changed. Cheaper + safe — no hash collision concerns
+  //       because we're only comparing consecutive responses from the
+  //       same endpoint, and we fall back to a full re-render on any
+  //       signature mismatch.
+  var lastVisitsSig = null;    // signature of last visits payload (renderState)
+  var lastDevicesSig = null;   // signature of last devices payload (renderAllHistory)
+  var lastPieSig = null;       // signature of last pie data fed to ECharts
+
+  function captureOpenDetails(root) {
+    var open = {};
+    if (!root) return open;
+    var all = root.querySelectorAll('details[open]');
+    for (var i = 0; i < all.length; i++) {
+      // Use a stable selector — prefer id, fall back to summary text
+      var el = all[i];
+      var key = el.id;
+      if (!key) {
+        var s = el.querySelector('summary');
+        key = s ? s.textContent.trim() : ('details-' + i);
+      }
+      open[key] = true;
+    }
+    return open;
+  }
+  function restoreOpenDetails(root, openMap) {
+    if (!root || !openMap) return;
+    var all = root.querySelectorAll('details');
+    for (var i = 0; i < all.length; i++) {
+      var el = all[i];
+      var key = el.id;
+      if (!key) {
+        var s = el.querySelector('summary');
+        key = s ? s.textContent.trim() : ('details-' + i);
+      }
+      var wasOpen = !!openMap[key];
+      // Only flip if the user's state differs from the default — this way
+      // we restore the user's choice without forcing every <details> closed
+      // on first render (when openMap is empty).
+      if (wasOpen && !el.hasAttribute('open')) el.setAttribute('open', '');
+      else if (!wasOpen && el.hasAttribute('open')) el.removeAttribute('open');
+    }
+  }
+  // Compact deterministic signature for an op=visits response.
+  // Only includes fields that affect the rendered table — count, visits
+  // (ts/ip/ipType/realLabel/realScore/page/uid), and cumulative totals.
+  function visitsSignature(d) {
+    if (!d) return 'null';
+    var v = d.visits || [];
+    var cum = d.cumulative || {};
+    var visitKeys = v.map(function(x) {
+      return [x.ts, x.ip, x.ipType, x.realLabel, x.realScore, x.page, x.uid].join('|');
+    }).join('§');
+    return [d.count, d.site, visitKeys, cum.totalVisits, cum.distinctIPs, cum.distinctDevices].join('∥');
+  }
+  // Compact deterministic signature for an op=devices response.
+  // Only includes fields that affect the rendered pie + endpoints table.
+  function devicesSignature(d) {
+    if (!d) return 'null';
+    var devs = (d.devices || []).map(function(x) { return x.device + ':' + x.visits; }).join(',');
+    var ips = (d.ips || []).map(function(x) {
+      return [x.ip, x.visits, x.ipType, x.country, x.city, x.lastSeen].join('|');
+    }).join('§');
+    return [d.totalVisits, d.distinctDevices, d.distinctIPs, devs, ips].join('∥');
+  }
+
   function fetchState() {
     var siteQs = currentSite !== 'combined' ? '&site=' + currentSite : '';
     var url = EP + '?op=visits&password=' + encodeURIComponent(key) + siteQs;
@@ -1211,6 +1290,12 @@
       .then(function(r) { return r.status === 403 ? null : r.json(); })
       .then(function(data) {
         if (!data) { stopRefresh(); panel.style.display = 'none'; return; }
+        // Skip the table rebuild if the meaningful fields haven't changed
+        // since the last render. Prevents the 5s poll from snapping the
+        // user's <details> open/close choices back to default every tick.
+        var sig = visitsSignature(data);
+        if (sig === lastVisitsSig) return;
+        lastVisitsSig = sig;
         renderState(data);
       })
       .catch(function() {});
@@ -1218,7 +1303,14 @@
     fetch(devUrl, { cache: 'no-store', headers: { 'Origin': ORIGIN } })
       .then(function(r) { return r.status === 403 ? null : r.json(); })
       .then(function(d) {
-        if (d) renderAllHistory(d);
+        if (!d) return;
+        // Same pattern for the historical card + pie chart: skip the full
+        // rebuild (and the ECharts dispose + re-init) when the devices
+        // payload hasn't changed since last tick. Saves the pie flicker.
+        var sig = devicesSignature(d);
+        if (sig === lastDevicesSig) return;
+        lastDevicesSig = sig;
+        renderAllHistory(d);
       })
       .catch(function() {});
   }
@@ -1310,12 +1402,30 @@
     html += '</tbody></table></details>';
     html += '</div>';
 
+    // Capture the user's <details> open/close state (Endpoints table) before
+    // the innerHTML reset, then restore after — same pattern as renderState.
+    var savedOpen = captureOpenDetails(container);
     container.innerHTML = html;
+    restoreOpenDetails(container, savedOpen);
 
     // ── Initialise the ECharts pie (after the lazy-loaded lib is ready) ──
+    // NOTE: renderAllHistory() only runs when devicesSignature(data) differs
+    // from lastDevicesSig (see fetchState). So the pie re-render below only
+    // fires when the device breakdown actually changed — not every 5s.
     var pieData = devices.map(function(d, i) {
       return { name: d.device || 'Unknown', value: d.visits, itemStyle: { color: pieColors[i % pieColors.length] } };
     });
+    // Extra guard: also skip if the pie data itself is unchanged (the
+    // signature check above already covers this, but double-safety in case
+    // renderAllHistory() is ever called directly from another path).
+    var pieSig = pieData.map(function(p) { return p.name + ':' + p.value; }).join(',');
+    var pieUnchanged = (pieSig === lastPieSig);
+    lastPieSig = pieSig;
+    if (pieUnchanged && cfgPieChart) {
+      // Data unchanged AND chart already exists — leave it alone. Skip the
+      // dispose + re-init cycle entirely (no flicker).
+      return;
+    }
     loadECharts().then(function(ec) {
       var pieEl = document.getElementById('cfgPie');
       if (!pieEl) return;
@@ -1480,18 +1590,32 @@
     });
     html += '</tbody></table></div>';
     html += breakdown;
+    // Capture the user's <details> open/close choices before the innerHTML
+    // reset clobbers them, then restore them after. This way the 5s poll
+    // can update the table rows without snapping "Recent visitors" or any
+    // other collapsible back to its default state.
+    var savedOpen = captureOpenDetails(table);
     table.innerHTML = html;
+    restoreOpenDetails(table, savedOpen);
     error2.style.display = 'none';
   }
 
   function startRefresh(k) {
     key = k;
+    // Reset cached signatures on (re)start so the first render after the
+    // panel reopens isn't skipped by the unchanged-data short-circuit.
+    lastVisitsSig = null;
+    lastDevicesSig = null;
     fetchState();
     timer = setInterval(fetchState, REFRESH_MS);
   }
   function stopRefresh() {
     if (timer) { clearInterval(timer); timer = null; }
     key = null;
+    // Reset signatures here too — next time the panel opens, the first
+    // fetchState() must actually rebuild the tables.
+    lastVisitsSig = null;
+    lastDevicesSig = null;
   }
 
   submit.addEventListener('click', function() {
@@ -1522,6 +1646,11 @@
   // ─── Site tab bar: switch the active site filter + immediately re-fetch ─
   function setActiveTab(site) {
     currentSite = site;
+    // Reset cached signatures so the next fetchState() actually re-renders
+    // with the new site filter (otherwise the unchanged-data short-circuit
+    // would skip the rebuild and the panel would keep showing the old site).
+    lastVisitsSig = null;
+    lastDevicesSig = null;
     var tabs = document.querySelectorAll('.cfg-tab');
     tabs.forEach(function(t) {
       var isActive = t.getAttribute('data-site') === site;
