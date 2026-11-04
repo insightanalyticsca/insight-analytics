@@ -1368,7 +1368,8 @@
   // Used by the all-time device pie chart in renderAllHistory(). Loaded once,
   // cached on window.__echartsPromise so the second open is instant.
   var ECHARTS_URL = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
-  var cfgPieChart = null;  // echarts instance for the device pie
+  var cfgPieChart = null;     // echarts instance for the device pie (left)
+  var cfgPieChartType = null; // echarts instance for the type pie (right)
   function loadECharts() {
     if (window.echarts) return Promise.resolve(window.echarts);
     if (window.__echartsPromise) return window.__echartsPromise;
@@ -1424,12 +1425,19 @@
     var html = '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border,rgba(0,0,0,0.10));background:linear-gradient(135deg,rgba(99,102,241,0.04),rgba(6,182,212,0.03));">';
     html += '<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:6px;">All-time — ' + devices.length + ' device types · ' + ips.length + ' endpoints · ' + total + ' visits</div>';
 
-    // ── Pie chart container (ECharts initialises into this after render) ──
-    // Two-column layout: pie on the left, legend table on the right. On narrow
-    // viewports the legend wraps below automatically (flex-wrap).
-    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">';
-    html += '<div id="cfgPie" style="width:180px;height:160px;flex-shrink:0;"></div>';
-    html += '<div style="flex:1;min-width:140px;">';
+    // ── Pie chart containers (ECharts initialises into these after render) ─
+    // Two pie+legend blocks side by side, each wraps to its own row on narrow
+    // viewports. Left = by device (Browser · OS), right = by IP type
+    // (Cloud / VPN-Proxy / Mobile / Residential / Verified Bot / Other).
+    // Both pies are 140×130 so the pair fits on a typical desktop viewport
+    // without overflow.
+    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+    // ── Block 1: by device ──
+    html += '<div style="flex:1;min-width:240px;border:1px solid rgba(0,0,0,0.04);border-radius:6px;padding:4px 6px;">';
+    html += '<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:4px;">By device</div>';
+    html += '<div style="display:flex;gap:6px;align-items:center;">';
+    html += '<div id="cfgPie" style="width:140px;height:130px;flex-shrink:0;"></div>';
+    html += '<div style="flex:1;min-width:80px;">';
     html += '<table style="width:100%;border-collapse:collapse;font-size:9px;font-family:-apple-system,sans-serif;"><thead><tr style="color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:8px;"><th style="padding:2px 4px;text-align:left;">Client</th><th style="padding:2px 4px;text-align:right;">N</th><th style="padding:2px 4px;text-align:right;">%</th></tr></thead><tbody>';
     var sumOfDevices = devices.reduce(function(s, d) { return s + d.visits; }, 0);
     // Color palette for the pie slices (matches the existing site palette)
@@ -1441,7 +1449,84 @@
     });
     html += '</tbody></table>';
     html += '</div>';  // legend column
-    html += '</div>';  // flex row
+    html += '</div>';  // inner flex row
+    html += '</div>';  // block 1
+
+    // ── Block 2: by type (aggregated from the ips array) ──
+    // The ips array from op=devices has per-IP { ipType, visits } pairs.
+    // Each ipType is one of:
+    //   'Verified Bot · <category>'
+    //   'Search Engine · <Google/Bing>'
+    //   'Cloud · <provider>'
+    //   'VPN/Proxy · <provider>'
+    //   'Mobile · <carrier>'
+    //   'Residential · <ISP>'
+    //   'Other · <AS org name>'
+    //   'Unknown ASN' (no ASN data)
+    // We aggregate by the prefix family so the pie shows the high-level
+    // traffic composition: how much of your traffic is cloud (likely
+    // scrapers/devs) vs residential (likely humans) vs verified bots.
+    function typeFamily(t) {
+      if (!t || t === 'Unknown ASN' || t === 'unknown') return 'Unknown';
+      if (t.indexOf('Verified Bot') === 0) return 'Verified Bot';
+      if (t.indexOf('Search Engine') === 0) return 'Search Engine';
+      if (t.indexOf('Cloud') === 0) return 'Cloud';
+      if (t.indexOf('VPN/Proxy') === 0) return 'VPN/Proxy';
+      if (t.indexOf('Mobile') === 0) return 'Mobile';
+      if (t.indexOf('Residential') === 0) return 'Residential';
+      if (t.indexOf('Other') === 0) return 'Other';
+      return t;
+    }
+    // Stable color per family so the slice colors don't shift between renders.
+    var typeColors = {
+      'Verified Bot': '#0891b2',
+      'Search Engine': '#06b6d4',
+      'Cloud': '#f59e0b',
+      'VPN/Proxy': '#ef4444',
+      'Mobile': '#10b981',
+      'Residential': '#16a34a',
+      'Other': '#94a3b8',
+      'Unknown': '#cbd5e1'
+    };
+    var typeAgg = {};
+    ips.forEach(function(ip) {
+      var fam = typeFamily(ip.ipType);
+      typeAgg[fam] = (typeAgg[fam] || 0) + (ip.visits || 0);
+    });
+    // Build the type pie data in a stable order (Cloud first — usually the
+    // biggest bucket — then VPN, Mobile, Residential, Verified Bot, Search
+    // Engine, Other, Unknown). Anything else appended at the end.
+    var typeOrder = ['Verified Bot', 'Search Engine', 'Cloud', 'VPN/Proxy', 'Mobile', 'Residential', 'Other', 'Unknown'];
+    var typePieData = [];
+    typeOrder.forEach(function(fam) {
+      if (typeAgg[fam]) {
+        typePieData.push({ name: fam, value: typeAgg[fam], itemStyle: { color: typeColors[fam] } });
+      }
+    });
+    // Append any other family not in typeOrder (rare)
+    Object.keys(typeAgg).forEach(function(fam) {
+      if (typeOrder.indexOf(fam) < 0) {
+        typePieData.push({ name: fam, value: typeAgg[fam], itemStyle: { color: '#cbd5e1' } });
+      }
+    });
+    var sumOfType = typePieData.reduce(function(s, p) { return s + p.value; }, 0);
+
+    html += '<div style="flex:1;min-width:240px;border:1px solid rgba(0,0,0,0.04);border-radius:6px;padding:4px 6px;">';
+    html += '<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#94a3b8);margin-bottom:4px;">By type</div>';
+    html += '<div style="display:flex;gap:6px;align-items:center;">';
+    html += '<div id="cfgPieType" style="width:140px;height:130px;flex-shrink:0;"></div>';
+    html += '<div style="flex:1;min-width:80px;">';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:9px;font-family:-apple-system,sans-serif;"><thead><tr style="color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:8px;"><th style="padding:2px 4px;text-align:left;">Type</th><th style="padding:2px 4px;text-align:right;">N</th><th style="padding:2px 4px;text-align:right;">%</th></tr></thead><tbody>';
+    typePieData.forEach(function(p) {
+      var pct = sumOfType > 0 ? ((p.value / sumOfType) * 100).toFixed(1) : '0.0';
+      var color = p.itemStyle.color;
+      html += '<tr><td style="padding:2px 4px;color:var(--text,#0f172a);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:' + color + ';margin-right:4px;vertical-align:middle;"></span>' + p.name + '</td><td style="padding:2px 4px;text-align:right;font-weight:700;color:#f59e0b;">' + p.value + '</td><td style="padding:2px 4px;text-align:right;color:var(--muted,#94a3b8);">' + pct + '%</td></tr>';
+    });
+    html += '</tbody></table>';
+    html += '</div>';  // legend column
+    html += '</div>';  // inner flex row
+    html += '</div>';  // block 2
+    html += '</div>';  // outer flex row (the two blocks)
 
     // ── Collapsible endpoints table (collapsed by default) ──
     html += '<details style="margin-top:6px;">';
@@ -1457,64 +1542,92 @@
     container.innerHTML = html;
     restoreOpenDetails(container, savedOpen);
 
-    // ── Initialise the ECharts pie (after the lazy-loaded lib is ready) ──
+    // ── Initialise the ECharts pies (after the lazy-loaded lib is ready) ─
     // NOTE: renderAllHistory() only runs when devicesSignature(data) differs
-    // from lastDevicesSig (see fetchState). So the pie re-render below only
-    // fires when the device breakdown actually changed — not every 5s.
+    // from lastDevicesSig (see fetchState). So the pies re-render below only
+    // fire when the underlying data actually changed — not every 5s.
     var pieData = devices.map(function(d, i) {
       return { name: d.device || 'Unknown', value: d.visits, itemStyle: { color: pieColors[i % pieColors.length] } };
     });
-    // Extra guard: also skip if the pie data itself is unchanged (the
-    // signature check above already covers this, but double-safety in case
+    // Extra guard: also skip if BOTH pies' data is unchanged (the signature
+    // check above already covers this, but double-safety in case
     // renderAllHistory() is ever called directly from another path).
-    var pieSig = pieData.map(function(p) { return p.name + ':' + p.value; }).join(',');
+    var pieSig = 'device:' + pieData.map(function(p) { return p.name + ':' + p.value; }).join(',') +
+                '|type:' + typePieData.map(function(p) { return p.name + ':' + p.value; }).join(',');
     var pieUnchanged = (pieSig === lastPieSig);
     lastPieSig = pieSig;
-    if (pieUnchanged && cfgPieChart) {
-      // Data unchanged AND chart already exists — leave it alone. Skip the
-      // dispose + re-init cycle entirely (no flicker).
+    if (pieUnchanged && cfgPieChart && cfgPieChartType) {
+      // Both pies' data unchanged AND both chart instances already exist —
+      // skip the dispose + re-init cycle entirely (no flicker).
       return;
     }
     loadECharts().then(function(ec) {
       var pieEl = document.getElementById('cfgPie');
-      if (!pieEl) return;
-      // Dispose any prior instance (otherwise echarts.init throws on re-render)
-      if (cfgPieChart) { try { cfgPieChart.dispose(); } catch(e) {} cfgPieChart = null; }
-      cfgPieChart = ec.init(pieEl, null, { renderer: 'svg' });
+      var pieTypeEl = document.getElementById('cfgPieType');
       var dark = isDarkTheme();
-      cfgPieChart.setOption({
-        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)', textStyle: { fontSize: 11 } },
-        series: [{
-          type: 'pie',
-          radius: ['38%', '70%'],
-          center: ['50%', '50%'],
-          avoidLabelOverlap: true,
-          label: { show: false },
-          labelLine: { show: false },
-          emphasis: {
-            scale: true,
-            scaleSize: 6,
-            label: { show: true, fontSize: 10, fontWeight: 'bold', color: dark ? '#e2e8f0' : '#0f172a' }
-          },
-          data: pieData
-        }],
-        color: pieColors,
-        backgroundColor: 'transparent'
-      });
-      // Re-fit when the panel is resized (rare but covers browser zoom)
-      // Single-shot listener; gets cleaned up when the panel re-renders and
-      // the old pieEl is removed from the DOM (chart instance is disposed
-      // above on next render).
+      // ── Pie 1: by device ──
+      if (pieEl) {
+        if (cfgPieChart) { try { cfgPieChart.dispose(); } catch(e) {} cfgPieChart = null; }
+        cfgPieChart = ec.init(pieEl, null, { renderer: 'svg' });
+        cfgPieChart.setOption({
+          tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)', textStyle: { fontSize: 11 } },
+          series: [{
+            type: 'pie',
+            radius: ['38%', '70%'],
+            center: ['50%', '50%'],
+            avoidLabelOverlap: true,
+            label: { show: false },
+            labelLine: { show: false },
+            emphasis: {
+              scale: true,
+              scaleSize: 6,
+              label: { show: true, fontSize: 10, fontWeight: 'bold', color: dark ? '#e2e8f0' : '#0f172a' }
+            },
+            data: pieData
+          }],
+          color: pieColors,
+          backgroundColor: 'transparent'
+        });
+      }
+      // ── Pie 2: by type ──
+      if (pieTypeEl) {
+        if (cfgPieChartType) { try { cfgPieChartType.dispose(); } catch(e) {} cfgPieChartType = null; }
+        cfgPieChartType = ec.init(pieTypeEl, null, { renderer: 'svg' });
+        cfgPieChartType.setOption({
+          tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)', textStyle: { fontSize: 11 } },
+          series: [{
+            type: 'pie',
+            radius: ['38%', '70%'],
+            center: ['50%', '50%'],
+            avoidLabelOverlap: true,
+            label: { show: false },
+            labelLine: { show: false },
+            emphasis: {
+              scale: true,
+              scaleSize: 6,
+              label: { show: true, fontSize: 10, fontWeight: 'bold', color: dark ? '#e2e8f0' : '#0f172a' }
+            },
+            data: typePieData
+          }],
+          backgroundColor: 'transparent'
+        });
+      }
+      // Re-fit when the panel is resized (rare but covers browser zoom).
+      // Single-shot listener; cleaned up implicitly because the chart
+      // instances are disposed above on the next render.
       if (!window.__cfgPieResizeBound) {
         window.addEventListener('resize', function() {
           if (cfgPieChart) { try { cfgPieChart.resize(); } catch(e) {} }
+          if (cfgPieChartType) { try { cfgPieChartType.resize(); } catch(e) {} }
         });
         window.__cfgPieResizeBound = true;
       }
     }).catch(function(e) {
-      // ECharts failed to load — silently show a fallback note in the pie slot
+      // ECharts failed to load — silently show a fallback note in both pie slots
       var pieEl = document.getElementById('cfgPie');
-      if (pieEl) pieEl.innerHTML = '<div style="font-size:9px;color:var(--muted,#94a3b8);text-align:center;padding-top:60px;">chart unavailable</div>';
+      var pieTypeEl = document.getElementById('cfgPieType');
+      if (pieEl) pieEl.innerHTML = '<div style="font-size:9px;color:var(--muted,#94a3b8);text-align:center;padding-top:50px;">chart unavailable</div>';
+      if (pieTypeEl) pieTypeEl.innerHTML = '<div style="font-size:9px;color:var(--muted,#94a3b8);text-align:center;padding-top:50px;">chart unavailable</div>';
     });
   }
   var ipTypeStyleCached = null;

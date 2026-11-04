@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v5.47.0-stamp-tick';
+const VERSION = 'v5.48.0-type-pie';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
