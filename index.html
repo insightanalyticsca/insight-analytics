@@ -1040,7 +1040,26 @@
       </div>
       <button id="cfgClose" style="padding:4px 10px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:6px;background:transparent;color:var(--text-soft,#64748b);font-size:11px;cursor:pointer;">✕ Close</button>
     </div>
-    <style>@keyframes cfgPulse{0%,100%{opacity:0.7;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}</style>
+    <style>@keyframes cfgPulse{0%,100%{opacity:0.7;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+    .cfg-ai-card{margin-bottom:10px;padding:8px 10px;border-radius:8px;border:1px solid rgba(99,102,241,0.25);background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(6,182,212,0.05));font-size:10px;line-height:1.45;color:var(--text,#0f172a);white-space:normal;}
+    .cfg-ai-card h4{margin:0 0 4px 0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--primary,#6366f1);}
+    .cfg-ai-card .ai-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .cfg-ai-btn{padding:3px 10px;border:0;border-radius:6px;background:linear-gradient(135deg,var(--primary,#6366f1),var(--accent,#06b6d4));color:#fff;font-size:9px;font-weight:700;cursor:pointer;letter-spacing:0.03em;}
+    .cfg-ai-btn:disabled{opacity:0.6;cursor:wait;}
+    .cfg-ai-empty{font-size:9px;color:var(--muted,#94a3b8);font-style:italic;}
+    .cfg-ai-loading{font-size:9px;color:var(--primary,#6366f1);font-weight:600;}
+    .cfg-ai-loading::after{content:'';display:inline-block;width:8px;animation:cfgDots 1.4s infinite;}
+    @keyframes cfgDots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+    </style>
+
+    <!-- AI Insight card — refreshed on demand (button click), not on every 5s poll -->
+    <div class="cfg-ai-card" id="cfgAiCard">
+      <div class="ai-row">
+        <h4>AI Traffic Insight</h4>
+        <button id="cfgAiBtn" class="cfg-ai-btn">AI Refresh</button>
+      </div>
+      <div id="cfgAiBody" style="margin-top:4px;"><div class="cfg-ai-empty">Click "AI Refresh" for an LLM analysis of the latest traffic.</div></div>
+    </div>
 
     <!-- Site selector tab bar — filter the activity panel by site -->
     <div id="cfgTabs" style="display:flex;gap:3px;margin-bottom:10px;border-bottom:1px solid var(--card-border,rgba(0,0,0,0.08));padding-bottom:6px;">
@@ -1488,6 +1507,162 @@
       setActiveTab(t.getAttribute('data-site'));
     });
   }
+
+  // ─── AI Traffic Insight (manual refresh via button click) ──────────────
+  // The user clicks "AI Refresh" → we fetch the latest op=visits + op=devices
+  // from the CF worker, build a compact summary, send it to Groq via the
+  // Netlify chat-proxy POST, and render the LLM's analysis inside the
+  // cfgAiBody card. NOT auto-refreshed on the 5s poll — only on demand
+  // (so we don't burn Groq quota on every tick).
+  var AI_PROXY = 'https://startling-belekoy-b0ec70.netlify.app/groq-proxy';
+  var AI_MODEL = 'qwen/qwen3.8-27b';
+  var aiBtn = document.getElementById('cfgAiBtn');
+  var aiBody = document.getElementById('cfgAiBody');
+  var lastAiSummary = null;  // cached snapshot, in case the user clicks before the next fetch
+
+  function fmtTs(ts) {
+    if (!ts) return '—';
+    try { return new Date(ts).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); } catch(e) { return ts; }
+  }
+
+  // Build a compact, structured text snapshot of the latest traffic.
+  // Capped (~2 KB) so we stay under Groq's free-tier prompt limits.
+  function buildAiSnapshot(visitsData, devicesData) {
+    var v = (visitsData && visitsData.visits) || [];
+    var cum = (visitsData && visitsData.cumulative) || {};
+    var devs = (devicesData && devicesData.devices) || [];
+    var ips = (devicesData && devicesData.ips) || [];
+    var lines = [];
+    lines.push('SITE: ' + (visitsData && visitsData.site ? visitsData.site : 'combined') + '  EDGE: ' + (visitsData && visitsData.edge ? visitsData.edge : '?'));
+    lines.push('ALL-TIME: ' + (cum.totalVisits || 0) + ' visits, ' + (cum.distinctIPs || 0) + ' endpoints, ' + (cum.distinctDevices || 0) + ' device types');
+    lines.push('RECENT (last 72h, bot-filtered): ' + v.length + ' sessions');
+    // Summarize recent visits — only fields an LLM needs to spot patterns
+    if (v.length) {
+      lines.push('--- RECENT SESSIONS (most recent first, capped at 12) ---');
+      v.slice(0, 12).forEach(function(s) {
+        var bits = [];
+        bits.push(fmtTs(s.ts));
+        bits.push('ip=' + (s.ip || '?'));
+        if (s.ipType) bits.push('type=' + s.ipType);
+        if (s.city || s.country) bits.push('geo=' + [s.city, s.country].filter(Boolean).join(','));
+        if (s.realLabel) bits.push('real=' + s.realLabel + '(' + (s.realScore != null ? s.realScore : '?') + ')');
+        if (s.realReason) bits.push('why=' + s.realReason);
+        if (s.page) bits.push('page=' + s.page);
+        if (s.ua) bits.push('ua=' + (s.ua.length > 60 ? s.ua.slice(0, 60) + '…' : s.ua));
+        if (s.uid) bits.push('uid=' + s.uid.slice(0, 12));
+        lines.push('  ' + bits.join(' | '));
+      });
+    }
+    if (devs.length) {
+      lines.push('--- ALL-TIME DEVICE BREAKDOWN ---');
+      devs.slice(0, 8).forEach(function(d) { lines.push('  ' + d.device + ': ' + d.visits + ' visits'); });
+    }
+    if (ips.length) {
+      // Pull the top 8 IPs WITH enriched type + geo so the LLM can spot
+      // repeat visitors, geographic clusters, corporate VPN exits, etc.
+      lines.push('--- TOP ENDPOINTS (all-time) ---');
+      ips.slice(0, 8).forEach(function(ip) {
+        var bits = [ip.ip, 'visits=' + ip.visits];
+        if (ip.ipType && ip.ipType !== 'Unknown ASN') bits.push('type=' + ip.ipType);
+        if (ip.asOrganization) bits.push('as=' + ip.asOrganization);
+        if (ip.city && ip.city !== 'unknown') bits.push('city=' + ip.city);
+        if (ip.country && ip.country !== 'unknown') bits.push('cc=' + ip.country);
+        if (ip.lastSeen) bits.push('last=' + fmtTs(ip.lastSeen));
+        lines.push('  ' + bits.join(' | '));
+      });
+    }
+    return lines.join('\n');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function renderAiInsight(text) {
+    // Render as text with line breaks preserved. Don't allow any HTML from
+    // the model to leak through (escape first, then re-add safe <br>).
+    var safe = escapeHtml(text).replace(/\n/g, '<br>');
+    aiBody.innerHTML = '<div style="color:var(--text,#0f172a);">' + safe + '</div>';
+  }
+
+  function setAiState(state, message) {
+    if (state === 'loading') {
+      aiBody.innerHTML = '<div class="cfg-ai-loading">Analyzing traffic</div>';
+      aiBtn.disabled = true;
+      aiBtn.textContent = 'Analyzing…';
+    } else if (state === 'error') {
+      aiBody.innerHTML = '<div style="color:var(--danger,#ef4444);font-size:10px;">⚠ ' + escapeHtml(message || 'Failed to fetch insight') + '</div>';
+      aiBtn.disabled = false;
+      aiBtn.textContent = 'AI Refresh';
+    } else if (state === 'empty') {
+      aiBody.innerHTML = '<div class="cfg-ai-empty">Click "AI Refresh" for an LLM analysis of the latest traffic.</div>';
+      aiBtn.disabled = false;
+      aiBtn.textContent = 'AI Refresh';
+    } else if (state === 'done') {
+      aiBtn.disabled = false;
+      aiBtn.textContent = 'Refresh again';
+    }
+  }
+
+  function refreshAiInsight() {
+    if (!key) {
+      setAiState('error', 'Enter access key first to load live traffic data');
+      return;
+    }
+    setAiState('loading');
+    var siteQs = currentSite !== 'combined' ? '&site=' + currentSite : '';
+    var visitsP = fetch(EP + '?op=visits&password=' + encodeURIComponent(key) + siteQs, { cache: 'no-store', headers: { 'Origin': ORIGIN } })
+      .then(function(r) { return r.status === 403 ? null : r.json(); });
+    var devicesP = fetch(EP + '?op=devices&password=' + encodeURIComponent(key) + siteQs, { cache: 'no-store', headers: { 'Origin': ORIGIN } })
+      .then(function(r) { return r.status === 403 ? null : r.json(); });
+    Promise.all([visitsP, devicesP]).then(function(results) {
+      var visitsData = results[0];
+      var devicesData = results[1];
+      if (!visitsData || !devicesData) {
+        setAiState('error', 'Unauthorized or empty response from server');
+        return;
+      }
+      var snapshot = buildAiSnapshot(visitsData, devicesData);
+      lastAiSummary = snapshot;
+      var systemPrompt = [
+        'You are a security & traffic analyst for a small business website (insight-analytics.ca).',
+        'You receive a compact, structured snapshot of recent website visitors, including IP (last octet masked), IP type (residential/cloud/VPN/mobile/verified bot), approximate geo, real-vs-bot score (0=human, 100=bot), reason for the score, page visited, and a separate all-time top-endpoints table.',
+        'Your job: in 4-6 short bullet lines, tell the business owner (a) who is visiting right now and whether it looks like real interest or noise, (b) any geographic / ASN patterns worth noting (e.g. same corporate VPN subnet returning), (c) anything that looks like a scraper, automated probe, or suspicious behavior, (d) one concrete suggestion (what to watch for in the next 24h, or whether to block / allowlist anything).',
+        'Be specific. Cite actual IPs (masked as given), scores, reasons. Avoid generic platitudes. Plain text only, no markdown. No greeting, no sign-off, just the bullets.'
+      ].join(' ');
+      var userPrompt = 'Here is the live traffic snapshot. Analyze it.\n\n' + snapshot;
+      return fetch(AI_PROXY, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Origin': ORIGIN },
+        body: JSON.stringify({
+          model: AI_MODEL,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.4,
+          max_tokens: 600,
+          stream: false
+        })
+      });
+    }).then(function(r) {
+      if (!r) return null;
+      return r.json();
+    }).then(function(d) {
+      if (!d) return;
+      if (d.error) { setAiState('error', d.error); return; }
+      var text = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content) || '';
+      if (!text.trim()) { setAiState('error', 'Model returned empty response'); return; }
+      renderAiInsight(text.trim());
+      setAiState('done');
+    }).catch(function(e) {
+      setAiState('error', e.message || 'Network error');
+    });
+  }
+
+  if (aiBtn) aiBtn.addEventListener('click', refreshAiInsight);
 })();
 </script>
 
