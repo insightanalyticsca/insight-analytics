@@ -1955,7 +1955,10 @@
         'You are a security & traffic analyst for a small business website (insight-analytics.ca).',
         'You receive a compact, structured snapshot of recent website visitors, including IP (last octet masked), IP type (residential/cloud/VPN/mobile/verified bot), approximate geo, real-vs-bot score (0=human, 100=bot), reason for the score, page visited, and a separate all-time top-endpoints table.',
         'Your job: in 4-6 short bullet lines, tell the business owner (a) who is visiting right now and whether it looks like real interest or noise, (b) any geographic / ASN patterns worth noting (e.g. same corporate VPN subnet returning), (c) anything that looks like a scraper, automated probe, or suspicious behavior, (d) one concrete suggestion (what to watch for in the next 24h, or whether to block / allowlist anything).',
-        'Be specific. Cite actual IPs (masked as given), scores, reasons. Avoid generic platitudes. Plain text only, no markdown. No greeting, no sign-off, just the bullets.'
+        'Be specific. Cite actual IPs (masked as given), scores, reasons. Avoid generic platitudes. Plain text only, no markdown. No greeting, no sign-off, just the bullets.',
+        'CRITICAL — do NOT confuse these two distinct concepts:',
+        '  - The `type=` field describes the ASN that OWNS the source IP (e.g. "Cloud · AWS" means AWS owns the IP, NOT that the visit came from AWS). When the type is "Other · YouTube, LLC" or "Other · Palo Alto Networks, Inc" that means YouTube LLC / Palo Alto Networks OWNS the source IP — it does NOT mean the visit was referred from youtube.com or paloalto.com.',
+        '  - The `why=` field captures whether the HTTP Referer header was set ("has referrer" / "no referrer") — it is a boolean signal only. The actual referrer URL is NEVER available in the data. Do NOT invent specific referrer sources (youtube.com, google.com, reddit.com, etc.) — you do not have that information. If you want to mention referrer, only say "had a referrer header" or "had no referrer header", never name a specific site.'
       ].join(' ');
       var userPrompt = 'Here is the live traffic snapshot. Analyze it.\n\n' + snapshot;
       return fetch(AI_PROXY, {
