@@ -1268,7 +1268,7 @@
     var v = d.visits || [];
     var cum = d.cumulative || {};
     var visitKeys = v.map(function(x) {
-      return [x.ts, x.ip, x.ipType, x.realLabel, x.realScore, x.page, x.uid].join('|');
+      return [x.ts, x.ip, x.ipType, x.realLabel, x.realScore, x.page, x.uid, x.referrer || ''].join('|');
     }).join('§');
     return [d.count, d.site, visitKeys, cum.totalVisits, cum.distinctIPs, cum.distinctDevices].join('∥');
   }
@@ -1278,7 +1278,7 @@
     if (!d) return 'null';
     var devs = (d.devices || []).map(function(x) { return x.device + ':' + x.visits; }).join(',');
     var ips = (d.ips || []).map(function(x) {
-      return [x.ip, x.visits, x.ipType, x.country, x.city, x.lastSeen].join('|');
+      return [x.ip, x.visits, x.ipType, x.country, x.city, x.lastSeen, x.referrer || ''].join('|');
     }).join('§');
     return [d.totalVisits, d.distinctDevices, d.distinctIPs, devs, ips].join('∥');
   }
@@ -1645,7 +1645,8 @@
         realReason: v.realReason || '',
         page: v.page || '—',
         client: parseClient(v.ua),
-        os: parseClientOS(v.ua)
+        os: parseClientOS(v.ua),
+        referrer: v.referrer || ''
       };
     });
 
@@ -1667,7 +1668,7 @@
           cur.lastLabel = v.tsLabel;
         } else {
           if (cur) sessions.push(cur);
-          cur = { ts: v.ts, tsLabel: v.tsLabel, ip: v.ip, loc: v.loc, ipType: v.ipType, realLabel: v.realLabel, realScore: v.realScore, realReason: v.realReason, page: v.page, client: v.client, reloads: 1, lastTs: v.ts, lastLabel: v.tsLabel };
+          cur = { ts: v.ts, tsLabel: v.tsLabel, ip: v.ip, loc: v.loc, ipType: v.ipType, realLabel: v.realLabel, realScore: v.realScore, realReason: v.realReason, page: v.page, client: v.client, referrer: v.referrer, reloads: 1, lastTs: v.ts, lastLabel: v.tsLabel };
         }
       });
       if (cur) sessions.push(cur);
@@ -1725,8 +1726,8 @@
     // the 12 most recent sessions so the table never grows taller than the
     // viewport — older sessions are still in the recent-IPs + all-time tables
     // below.
-    var html = '<div style="border:1px solid var(--card-border,rgba(0,0,0,0.12));border-radius:8px;overflow:hidden;"><table style="border-collapse:collapse;font-size:9px;width:100%;font-family:-apple-system,BlinkMacSystemFont,sans-serif;table-layout:fixed;"><colgroup><col style="width:11%"><col style="width:11%"><col style="width:10%"><col style="width:8%"><col style="width:5%"><col style="width:18%"><col style="width:10%"><col style="width:7%"><col style="width:13%"><col style="width:7%"></colgroup>';
-    html += '<thead><tr style="background:rgba(99,102,241,0.06);border-bottom:1px solid var(--card-border,rgba(0,0,0,0.12));color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:8px;"><th style="padding:3px 5px;text-align:left;">When</th><th style="padding:3px 5px;text-align:left;">IP</th><th style="padding:3px 5px;text-align:left;">Type</th><th style="padding:3px 5px;text-align:left;">Real?</th><th style="padding:3px 5px;text-align:center;">Score</th><th style="padding:3px 5px;text-align:left;">Reason</th><th style="padding:3px 5px;text-align:left;">From</th><th style="padding:3px 5px;text-align:left;">Page</th><th style="padding:3px 5px;text-align:left;">Client</th><th style="padding:3px 5px;text-align:center;">×</th></tr></thead><tbody>';
+    var html = '<div style="border:1px solid var(--card-border,rgba(0,0,0,0.12));border-radius:8px;overflow:hidden;"><table style="border-collapse:collapse;font-size:9px;width:100%;font-family:-apple-system,BlinkMacSystemFont,sans-serif;table-layout:fixed;"><colgroup><col style="width:10%"><col style="width:10%"><col style="width:9%"><col style="width:7%"><col style="width:4%"><col style="width:14%"><col style="width:9%"><col style="width:6%"><col style="width:11%"><col style="width:9%"><col style="width:5%"></colgroup>';
+    html += '<thead><tr style="background:rgba(99,102,241,0.06);border-bottom:1px solid var(--card-border,rgba(0,0,0,0.12));color:var(--muted,#94a3b8);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:8px;"><th style="padding:3px 5px;text-align:left;">When</th><th style="padding:3px 5px;text-align:left;">IP</th><th style="padding:3px 5px;text-align:left;">Type</th><th style="padding:3px 5px;text-align:left;">Real?</th><th style="padding:3px 5px;text-align:center;">Score</th><th style="padding:3px 5px;text-align:left;">Reason</th><th style="padding:3px 5px;text-align:left;">From</th><th style="padding:3px 5px;text-align:left;">Page</th><th style="padding:3px 5px;text-align:left;">Client</th><th style="padding:3px 5px;text-align:left;">Referrer</th><th style="padding:3px 5px;text-align:center;">×</th></tr></thead><tbody>';
     function ipTypeColor(t) {
       if (!t) return 'var(--muted,#94a3b8)';
       if (t.indexOf('Verified Bot') === 0 || t.indexOf('Search Engine') === 0) return '#0891b2';
@@ -1747,7 +1748,14 @@
     sessions.slice(0, 12).forEach(function(s, i) {
       var bg = i % 2 === 0 ? 'transparent' : 'rgba(99,102,241,0.025)';
       var scoreColor = s.realScore >= 80 ? '#ef4444' : s.realScore >= 60 ? '#f59e0b' : s.realScore >= 40 ? '#94a3b8' : s.realScore >= 20 ? '#10b981' : '#10b981';
-      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:2px 5px;white-space:nowrap;color:var(--text,#0f172a);font-weight:600;overflow:hidden;text-overflow:ellipsis;">' + s.tsLabel + '</td><td style="padding:2px 5px;white-space:nowrap;font-family:monospace;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;">' + (s.ip || '—') + '</td><td style="padding:2px 5px;color:' + ipTypeColor(s.ipType) + ';font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (s.ipType || 'Unknown') + '</td><td style="padding:2px 5px;white-space:nowrap;"><span style="font-size:8px;font-weight:700;padding:1px 5px;border-radius:8px;' + realLabelBg(s.realLabel) + '">' + (s.realLabel || '?') + '</span></td><td style="padding:2px 5px;text-align:center;white-space:nowrap;font-weight:700;color:' + scoreColor + ';">' + (s.realScore != null ? s.realScore : '?') + '</td><td style="padding:2px 5px;color:var(--muted,#94a3b8);font-style:italic;font-size:8px;line-height:1.2;word-break:break-word;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">' + (s.realReason || '—') + '</td><td style="padding:2px 5px;white-space:nowrap;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;">' + (s.loc || '—') + '</td><td style="padding:2px 5px;color:var(--primary,#6366f1);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (s.page || '—') + '</td><td style="padding:2px 5px;color:var(--muted,#94a3b8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + s.client + '</td>';
+      // Referrer display: shorten "https://www.google.com" → "google.com" so
+      // the column doesn't overflow. 'direct' (no referrer header) → '—'.
+      var refDisp = '—';
+      if (s.referrer) {
+        try { refDisp = new URL(s.referrer).hostname.replace(/^www\./, ''); }
+        catch(e) { refDisp = s.referrer.slice(0, 20); }
+      }
+      html += '<tr style="border-bottom:1px solid rgba(0,0,0,0.04);background:' + bg + ';"><td style="padding:2px 5px;white-space:nowrap;color:var(--text,#0f172a);font-weight:600;overflow:hidden;text-overflow:ellipsis;">' + s.tsLabel + '</td><td style="padding:2px 5px;white-space:nowrap;font-family:monospace;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;">' + (s.ip || '—') + '</td><td style="padding:2px 5px;color:' + ipTypeColor(s.ipType) + ';font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (s.ipType || 'Unknown') + '</td><td style="padding:2px 5px;white-space:nowrap;"><span style="font-size:8px;font-weight:700;padding:1px 5px;border-radius:8px;' + realLabelBg(s.realLabel) + '">' + (s.realLabel || '?') + '</span></td><td style="padding:2px 5px;text-align:center;white-space:nowrap;font-weight:700;color:' + scoreColor + ';">' + (s.realScore != null ? s.realScore : '?') + '</td><td style="padding:2px 5px;color:var(--muted,#94a3b8);font-style:italic;font-size:8px;line-height:1.2;word-break:break-word;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">' + (s.realReason || '—') + '</td><td style="padding:2px 5px;white-space:nowrap;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;">' + (s.loc || '—') + '</td><td style="padding:2px 5px;color:var(--primary,#6366f1);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (s.page || '—') + '</td><td style="padding:2px 5px;color:var(--muted,#94a3b8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + s.client + '</td><td style="padding:2px 5px;color:var(--text-soft,#475569);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (s.referrer || '').replace(/"/g, '&quot;') + '">' + refDisp + '</td>';
       var rs = s.reloads > 1 ? 'color:#f59e0b;font-weight:700;background:rgba(245,158,11,0.08);border-radius:8px;padding:1px 4px;display:inline-block;' : 'color:var(--muted,#94a3b8);';
       var rt = s.reloads > 1 ? s.reloads + '×' : '1';
       html += '<td style="padding:2px 5px;text-align:center;white-space:nowrap;"><span style="' + rs + '">' + rt + '</span></td></tr>';
@@ -1873,6 +1881,7 @@
         if (s.realLabel) bits.push('real=' + s.realLabel + '(' + (s.realScore != null ? s.realScore : '?') + ')');
         if (s.realReason) bits.push('why=' + s.realReason);
         if (s.page) bits.push('page=' + s.page);
+        if (s.referrer) bits.push('ref=' + s.referrer);
         if (s.ua) bits.push('ua=' + (s.ua.length > 60 ? s.ua.slice(0, 60) + '…' : s.ua));
         if (s.uid) bits.push('uid=' + s.uid.slice(0, 12));
         lines.push('  ' + bits.join(' | '));
@@ -1953,12 +1962,13 @@
       lastAiSummary = snapshot;
       var systemPrompt = [
         'You are a security & traffic analyst for a small business website (insight-analytics.ca).',
-        'You receive a compact, structured snapshot of recent website visitors, including IP (last octet masked), IP type (residential/cloud/VPN/mobile/verified bot), approximate geo, real-vs-bot score (0=human, 100=bot), reason for the score, page visited, and a separate all-time top-endpoints table.',
+        'You receive a compact, structured snapshot of recent website visitors, including IP (last octet masked), IP type (residential/cloud/VPN/mobile/verified bot), approximate geo, real-vs-bot score (0=human, 100=bot), reason for the score, page visited, referrer origin (when available), and a separate all-time top-endpoints table.',
         'Your job: in 4-6 short bullet lines, tell the business owner (a) who is visiting right now and whether it looks like real interest or noise, (b) any geographic / ASN patterns worth noting (e.g. same corporate VPN subnet returning), (c) anything that looks like a scraper, automated probe, or suspicious behavior, (d) one concrete suggestion (what to watch for in the next 24h, or whether to block / allowlist anything).',
-        'Be specific. Cite actual IPs (masked as given), scores, reasons. Avoid generic platitudes. Plain text only, no markdown. No greeting, no sign-off, just the bullets.',
+        'Be specific. Cite actual IPs (masked as given), scores, reasons, referrers. Avoid generic platitudes. Plain text only, no markdown. No greeting, no sign-off, just the bullets.',
         'CRITICAL — do NOT confuse these two distinct concepts:',
         '  - The `type=` field describes the ASN that OWNS the source IP (e.g. "Cloud · AWS" means AWS owns the IP, NOT that the visit came from AWS). When the type is "Other · YouTube, LLC" or "Other · Palo Alto Networks, Inc" that means YouTube LLC / Palo Alto Networks OWNS the source IP — it does NOT mean the visit was referred from youtube.com or paloalto.com.',
-        '  - The `why=` field captures whether the HTTP Referer header was set ("has referrer" / "no referrer") — it is a boolean signal only. The actual referrer URL is NEVER available in the data. Do NOT invent specific referrer sources (youtube.com, google.com, reddit.com, etc.) — you do not have that information. If you want to mention referrer, only say "had a referrer header" or "had no referrer header", never name a specific site.'
+        '  - The `ref=` field is the actual HTTP Referer origin (scheme + host, no path/query), captured when a Referer header was sent. This IS a real signal about which site linked to insight-analytics.ca — you CAN cite it (e.g. "referrer was google.com — likely came from a Google search"). Note: ref= is empty for direct hits (no Referer header) and for same-origin navigation (internal nav within the site, not interesting).',
+        '  - The `why=` field captures whether the HTTP Referer header was set ("has referrer" / "no referrer") — redundant with ref= but kept for backward-compat. Do not invent specific referrer sources if ref= is empty; only mention referrer when the ref= field is non-empty.'
       ].join(' ');
       var userPrompt = 'Here is the live traffic snapshot. Analyze it.\n\n' + snapshot;
       return fetch(AI_PROXY, {
