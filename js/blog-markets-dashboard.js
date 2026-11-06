@@ -2049,6 +2049,21 @@
   }
 
   function fetchAIBrief() {
+    // Wrap the actual fetch in a retry-with-backoff.
+    // Netlify function cold-starts (1-2s) and transient network failures
+    // often cause the FIRST brief attempt on page load to fail. Without
+    // a retry, the user sees 'AI narrative is temporarily unavailable'
+    // and has to manually reload 2-3 times before it works.
+    //
+    // With this retry: 3 attempts, 2s → 5s → 15s backoff. If all 3 fail,
+    // show the unavailable message. If any succeeds, the streaming
+    // parser populates the cells as the text arrives.
+    fetchAIBriefWithRetry(0);
+  }
+
+  function fetchAIBriefWithRetry(attempt) {
+    var MAX_ATTEMPTS = 3;
+    var BACKOFFS = [0, 2000, 5000, 15000];  // ms before attempt N (0 = immediate)
     var summary = buildSummary();
     var ids = ['bmd-ai-happened', 'bmd-ai-why', 'bmd-ai-expect', 'bmd-ai-do'];
 
@@ -2061,10 +2076,15 @@
       return;
     }
 
-    // Detect trading-session state, compute focus, and show LIVE indicator
+    // First attempt: detect trading-session state, compute focus, show LIVE
+    // indicator. Subsequent retries (after a failure) don't need to redo
+    // these — the session state hasn't changed in 2-15 seconds.
     var sessionState = getTradingSessionState();
     var briefFocus = getBriefFocus(sessionState);
-    setMarketSessionBadge(sessionState, briefFocus);
+    if (attempt === 0) {
+      setMarketSessionBadge(sessionState, briefFocus);
+      lastAIBriefTime = Date.now();  // gate the 5-min refresh interval
+    }
 
     var prompt = buildAIBriefPrompt(summary, sessionState, briefFocus);
     fetch('https://startling-belekoy-b0ec70.netlify.app/groq-proxy', {
@@ -2093,10 +2113,32 @@
         });
       }
       return pump();
-    }).catch(function () {
+    }).catch(function (err) {
+      // Retry with backoff if we haven't exhausted attempts.
+      // Common failure modes this fixes:
+      //   - Netlify function cold-start (1-2s wake-up time, request times out)
+      //   - Transient network blip on first page load
+      //   - Netlify function rate-limit / brief unavailability
+      if (attempt < MAX_ATTEMPTS - 1) {
+        var backoff = BACKOFFS[attempt + 1];
+        // Show "retrying" hint on the cells (so user knows it's not stuck)
+        ids.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el && (el.textContent === '' || el.textContent.indexOf('AI narrative is temporarily unavailable') === 0)) {
+            el.classList.remove('bmd-shimmer');
+            el.textContent = 'Connecting to AI service… (retry ' + (attempt + 2) + ' of ' + MAX_ATTEMPTS + ')';
+          }
+        });
+        setTimeout(function () { fetchAIBriefWithRetry(attempt + 1); }, backoff);
+        return;
+      }
+      // All retries exhausted — show honest message about what happened
       ids.forEach(function (id) {
         var el = document.getElementById(id);
-        if (el) { el.classList.remove('bmd-shimmer'); el.textContent = 'AI narrative is temporarily unavailable — our team is already on it. Live data is still streaming in the dashboard above, so the numbers stay fresh while we restore the AI service.'; }
+        if (el) {
+          el.classList.remove('bmd-shimmer');
+          el.textContent = 'AI narrative could not be generated after ' + MAX_ATTEMPTS + ' attempts. The live market data above is still current — only the AI summary is affected. Reload the page to try again.';
+        }
       });
     });
   }
