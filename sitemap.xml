@@ -600,4 +600,10 @@
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://insight-analytics.ca/insights/ai-is-reshaping-the-tms-market-deployment-will-determine-the-winners</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
