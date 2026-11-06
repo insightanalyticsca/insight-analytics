@@ -1629,10 +1629,47 @@
 
   // ─── AI Brief (Groq streaming) ──────────────────────────────────────────
   function buildSummary() {
+    // ── Equity source: live futures when GLOBEX is open + NYSE is closed ───
+    // The previous version always used ^GSPC / ^IXIC / ^DJI / ^GSPTSE (the
+    // cash index), but when NYSE is closed and GLOBEX futures are trading
+    // (overnight Sun-Thu + pre-market), the cash index is FROZEN at the
+    // last session close. The user sees the futures tile ticking up
+    // (using ES=F live data) while the AI brief says "S&P 500 closed
+    // down 4.35%" (using ^GSPC stale change-vs-prior-day). That mismatch
+    // is what was reported — fixing it here.
+    //
+    // When GLOBEX is open AND NYSE is closed, the AI brief now uses the
+    // LIVE futures price+change (ES=F, NQ=F, YM=F, RTY=F) and labels
+    // them as futures, not as the cash index. The brief prompt below
+    // also gets a "sessionState.equitiesLive = true|false" flag so it
+    // knows whether to use present continuous ("is up") or past tense
+    // ("closed up").
+    var sess = getTradingSessionState();
+    var useFutures = sess.globexOpen && !sess.nyseOpen;
+
+    var spLabel, spPrice, spChange;
+    var nsLabel, nsPrice, nsChange;
+    var djLabel, djPrice, djChange;
+    if (useFutures && liveData.esFuture && liveData.esFuture.price != null) {
+      spLabel = 'S&P 500 FUTURES (ES=F, live GLOBEX)'; spPrice = liveData.esFuture.price; spChange = liveData.esFuture.change;
+    } else if (liveData.sp500) {
+      spLabel = sess.nyseOpen ? 'S&P 500 (live NYSE)' : 'S&P 500 (last NYSE close)'; spPrice = liveData.sp500.price; spChange = liveData.sp500.change;
+    }
+    if (useFutures && liveData.nqFuture && liveData.nqFuture.price != null) {
+      nsLabel = 'NASDAQ FUTURES (NQ=F, live GLOBEX)'; nsPrice = liveData.nqFuture.price; nsChange = liveData.nqFuture.change;
+    } else if (liveData.nasdaq) {
+      nsLabel = sess.nyseOpen ? 'NASDAQ (live NYSE)' : 'NASDAQ (last NYSE close)'; nsPrice = liveData.nasdaq.price; nsChange = liveData.nasdaq.change;
+    }
+    if (useFutures && liveData.ymFuture && liveData.ymFuture.price != null) {
+      djLabel = 'Dow Jones FUTURES (YM=F, live GLOBEX)'; djPrice = liveData.ymFuture.price; djChange = liveData.ymFuture.change;
+    } else if (liveData.dow) {
+      djLabel = sess.nyseOpen ? 'Dow Jones (live NYSE)' : 'Dow Jones (last NYSE close)'; djPrice = liveData.dow.price; djChange = liveData.dow.change;
+    }
+
     var parts = [];
-    if (liveData.sp500) parts.push('S&P 500: ' + fmt(liveData.sp500.price, 0) + ' (' + (liveData.sp500.change >= 0 ? '+' : '') + liveData.sp500.change.toFixed(2) + '%)');
-    if (liveData.nasdaq) parts.push('NASDAQ: ' + fmt(liveData.nasdaq.price, 0) + ' (' + (liveData.nasdaq.change >= 0 ? '+' : '') + liveData.nasdaq.change.toFixed(2) + '%)');
-    if (liveData.dow) parts.push('Dow Jones: ' + fmt(liveData.dow.price, 0) + ' (' + (liveData.dow.change >= 0 ? '+' : '') + liveData.dow.change.toFixed(2) + '%)');
+    if (spPrice != null) parts.push(spLabel + ': ' + fmt(spPrice, 0) + ' (' + (spChange >= 0 ? '+' : '') + spChange.toFixed(2) + '%)');
+    if (nsPrice != null) parts.push(nsLabel + ': ' + fmt(nsPrice, 0) + ' (' + (nsChange >= 0 ? '+' : '') + nsChange.toFixed(2) + '%)');
+    if (djPrice != null) parts.push(djLabel + ': ' + fmt(djPrice, 0) + ' (' + (djChange >= 0 ? '+' : '') + djChange.toFixed(2) + '%)');
     if (liveData.tsx) parts.push('TSX: ' + fmt(liveData.tsx.price, 0) + ' (' + (liveData.tsx.change >= 0 ? '+' : '') + liveData.tsx.change.toFixed(2) + '%)');
     if (liveData.btc) parts.push('BTC: $' + fmt(liveData.btc.price, 0) + ' (' + (liveData.btc.change >= 0 ? '+' : '') + liveData.btc.change.toFixed(2) + '%)');
     if (liveData.eth) parts.push('ETH: $' + fmt(liveData.eth.price, 0) + ' (' + (liveData.eth.change >= 0 ? '+' : '') + liveData.eth.change.toFixed(2) + '%)');
@@ -1831,6 +1868,28 @@
       ? 'Traditional markets are OPEN right now — equity/index/commodity/FX prices reflect live intraday quotes.'
       : 'Traditional markets are CLOSED right now (' + sessionState.sessionLabel + '). Equity/index prices reflect the most recent session close. Crypto continues to trade live.';
 
+    // ─── Equity source clarification (added 2026-11-05) ────────────────
+    // When GLOBEX is open and NYSE is closed (overnight Sun-Thu, pre-market),
+    // the LIVE summary feeds equity futures (ES=F, NQ=F, YM=F, RTY=F) — NOT
+    // the cash index (^GSPC, ^IXIC, ^DJI). The summary labels reflect this:
+    //   "S&P 500 FUTURES (ES=F, live GLOBEX): 7402 (+0.27%)"
+    // means the futures contract is currently trading live at +0.27% on the
+    // session. This is NOT the same as the S&P 500 cash index close, which
+    // is frozen until the next NYSE open.
+    //
+    // When NYSE is open, the summary uses the cash index:
+    //   "S&P 500 (live NYSE): 5801 (+0.45%)"
+    // Both summary labels include explicit "(live GLOBEX)" or "(live NYSE)"
+    // or "(last NYSE close)" suffixes so the model knows what the number
+    // represents. Read the label carefully and use it verbatim — don't
+    // substitute "S&P 500" for "S&P 500 FUTURES" or vice versa.
+    var useFuturesForEquities = sessionState.globexOpen && !sessionState.nyseOpen;
+    var equitiesSourceNote = useFuturesForEquities
+      ? 'EQUITY SOURCE NOTE: NYSE is closed but GLOBEX futures are trading. The summary below uses LIVE futures data (ES=F, NQ=F, YM=F) — these prices are ticking in real time. The percentage change shown is the futures contract\'s change on the current session, NOT the cash index change from yesterday\'s close. Treat these as LIVE quotes — use present continuous tense ("S&P futures are up 0.27%", "NASDAQ futures are gaining"). The cash index price is not available until NYSE reopens.'
+      : (sessionState.nyseOpen
+          ? 'EQUITY SOURCE NOTE: NYSE is open. The summary below uses the LIVE cash index (^GSPC, ^IXIC, ^DJI). Use present continuous tense ("S&P 500 is up 0.45%").'
+          : 'EQUITY SOURCE NOTE: Both NYSE and GLOBEX are closed. The summary below uses the LAST SESSION\'s cash index close. Use past tense ("S&P 500 closed up 0.45%").');
+
     // ─── Per-asset-class tense rules ────────────────────────────────────
     // Different asset classes are in different trading states at any given
     // moment. The brief must use the right tense per asset class — otherwise
@@ -1899,6 +1958,12 @@
     if (equitiesBanned) tenseGuide.push(equitiesBanned, '');
     if (fxBanned) tenseGuide.push(fxBanned, '');
     if (futuresBanned) tenseGuide.push(futuresBanned, '');
+    // Critical: tell the model whether the summary uses live futures or
+    // stale cash index for equities. Without this, the model was reading
+    // "S&P 500: 7353 (-4.35%)" from ^GSPC (yesterday's close change) and
+    // saying "S&P 500 closed down 4.35%" — but the futures tile was showing
+    // ES=F at +0.27% live, causing the user to see two different stories.
+    tenseGuide.push(equitiesSourceNote, '');
     tenseGuide.push(
       '',
       'MIXED-ASSET EXAMPLES (these show the correct mixed-tense phrasing):',
