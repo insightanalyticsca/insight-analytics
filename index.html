@@ -1082,6 +1082,15 @@
       <button data-site="dashboards" class="cfg-tab" style="padding:3px 10px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:6px;background:transparent;color:var(--text-soft,#64748b);font-size:10px;font-weight:600;cursor:pointer;">Dashboards</button>
     </div>
 
+    <!-- Page filter — only show visits matching the selected page path -->
+    <div id="cfgPageFilter" style="display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:10px;">
+      <span style="color:var(--muted,#94a3b8);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;font-size:9px;">Page:</span>
+      <select id="cfgPageSelect" style="flex:1;padding:3px 6px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:6px;background:var(--bg,#fff);color:var(--text,#0f172a);font-size:10px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer;max-width:340px;">
+        <option value="all">All pages</option>
+      </select>
+      <button id="cfgPageClear" type="button" style="padding:3px 8px;border:1px solid var(--card-border,rgba(0,0,0,0.15));border-radius:6px;background:transparent;color:var(--text-soft,#64748b);font-size:9px;cursor:pointer;display:none;">Clear ×</button>
+    </div>
+
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
       <div style="padding:6px 10px;border-radius:8px;border:1px solid rgba(99,102,241,0.15);background:linear-gradient(135deg,rgba(99,102,241,0.06),rgba(6,182,212,0.04));">
         <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted,#94a3b8);margin-bottom:2px;">Total</div>
@@ -1204,6 +1213,7 @@
   var timer = null;
   var key = null;
   var currentSite = 'combined';  // 'combined' | 'main' | 'dashboards'
+  var currentPageFilter = 'all';  // 'all' | '<page value>'
 
   gear.addEventListener('mouseenter', function() { gear.style.opacity = '0.6'; });
   gear.addEventListener('mouseleave', function() { gear.style.opacity = '0.3'; });
@@ -1343,6 +1353,10 @@
         if (cum.distinctIPs != null) latestAllTime.distinctIPs = cum.distinctIPs;
         if (cum.distinctDevices != null) latestAllTime.distinctDevices = cum.distinctDevices;
         updateSummaryCards();
+        // Populate the page-filter dropdown from the current visit log
+        // every tick — this keeps the dropdown in sync if new pages are
+        // visited between polls, and preserves the user's selection.
+        populatePageFilter(v);
         // Skip the table rebuild if the meaningful fields haven't changed
         // since the last render. Prevents the 5s poll from snapping the
         // user's <details> open/close choices back to default every tick.
@@ -1647,7 +1661,12 @@
   var ipTypeStyleCached = null;
 
   function renderState(data) {
-    var rows = data.visits.map(function(v) {
+    // Apply the user's page filter (if any) BEFORE building rows. The
+    // summary cards at the top still show unfiltered totals — this filter
+    // only narrows the main table + the recent visitors breakdown so the
+    // user can focus on traffic to a specific page.
+    var filteredVisits = applyPageFilter(data.visits || []);
+    var rows = filteredVisits.map(function(v) {
       return {
         ts: v.ts ? new Date(v.ts).getTime() : 0,
         tsLabel: v.ts ? new Date(v.ts).toLocaleTimeString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '—',
@@ -1774,6 +1793,13 @@
       var rt = s.reloads > 1 ? s.reloads + '×' : '1';
       html += '<td style="padding:2px 5px;text-align:center;white-space:nowrap;"><span style="' + rs + '">' + rt + '</span></td></tr>';
     });
+    // Empty-state row when the page filter narrows the results to nothing
+    if (sessions.length === 0) {
+      var msg = (currentPageFilter !== 'all')
+        ? 'No visits to page "' + currentPageFilter + '" in the current view.'
+        : 'No visits in the last 72 hours.';
+      html += '<tr><td colspan="11" style="padding:14px;text-align:center;color:var(--muted,#94a3b8);font-size:10px;font-style:italic;">' + msg + '</td></tr>';
+    }
     html += '</tbody></table></div>';
     html += breakdown;
     // Capture the user's <details> open/close choices before the innerHTML
@@ -1852,6 +1878,87 @@
       var t = e.target.closest('.cfg-tab');
       if (!t) return;
       setActiveTab(t.getAttribute('data-site'));
+    });
+  }
+
+  // ─── Page filter (dropdown populated from the visit log) ────────────────
+  // Lets the user filter the visits table by a specific page path. The
+  // dropdown options are derived from the distinct 'page' values in the
+  // current visit log, with visit counts. The filter only affects the
+  // main visits table + recent visitors breakdown — the summary cards +
+  // all-time tables still show the unfiltered totals.
+  var pageSelect = document.getElementById('cfgPageSelect');
+  var pageClearBtn = document.getElementById('cfgPageClear');
+
+  // Populate the page dropdown from a list of visits. Called from
+  // fetchState() after each successful response. Preserves the user's
+  // current selection if the option still exists in the new data.
+  function populatePageFilter(visits) {
+    if (!pageSelect) return;
+    // Build a { pageValue: count } map from the visit log
+    var counts = {};
+    visits.forEach(function(v) {
+      var p = v.page || '(missing)';
+      counts[p] = (counts[p] || 0) + 1;
+    });
+    // Sort: most-visited first, then alphabetical
+    var sorted = Object.keys(counts).sort(function(a, b) {
+      if (counts[b] !== counts[a]) return counts[b] - counts[a];
+      return a < b ? -1 : 1;
+    });
+    // Save current selection so we can restore it after rebuilding the list
+    var prevSelection = pageSelect.value || 'all';
+    // Rebuild the <option> list
+    var html = '<option value="all">All pages (' + visits.length + ')</option>';
+    sorted.forEach(function(p) {
+      var label = p === 'direct' ? 'direct (no page param — non-browser)' : p;
+      // Truncate very long page paths in the option label so the dropdown
+      // doesn't overflow on narrow viewports. The full value is preserved
+      // in the option's value attribute.
+      var displayLabel = label.length > 60 ? label.slice(0, 57) + '…' : label;
+      var sel = (p === prevSelection) ? ' selected' : '';
+      html += '<option value="' + p.replace(/"/g, '&quot;') + '"' + sel + '>' + displayLabel + ' (' + counts[p] + ')</option>';
+    });
+    pageSelect.innerHTML = html;
+    // If the previous selection is no longer in the data, reset to 'all'
+    if (prevSelection !== 'all' && counts[prevSelection] == null) {
+      currentPageFilter = 'all';
+      pageSelect.value = 'all';
+    } else {
+      pageSelect.value = prevSelection;
+    }
+    // Show/hide the Clear button based on whether a filter is active
+    if (pageClearBtn) pageClearBtn.style.display = (currentPageFilter !== 'all') ? 'inline-block' : 'none';
+  }
+
+  if (pageSelect) {
+    pageSelect.addEventListener('change', function() {
+      currentPageFilter = pageSelect.value || 'all';
+      if (pageClearBtn) pageClearBtn.style.display = (currentPageFilter !== 'all') ? 'inline-block' : 'none';
+      // Force a re-render by invalidating the signature cache.
+      // Without this, the unchanged-data short-circuit in fetchState would
+      // skip the rebuild and the panel wouldn't reflect the new filter.
+      lastVisitsSig = null;
+      if (key) fetchState();
+    });
+  }
+  if (pageClearBtn) {
+    pageClearBtn.addEventListener('click', function() {
+      currentPageFilter = 'all';
+      if (pageSelect) pageSelect.value = 'all';
+      pageClearBtn.style.display = 'none';
+      lastVisitsSig = null;
+      if (key) fetchState();
+    });
+  }
+
+  // Apply the current page filter to a list of visits. Returns the
+  // filtered list. Used by renderState() before building the sessions
+  // table and the recent visitors breakdown.
+  function applyPageFilter(visits) {
+    if (currentPageFilter === 'all') return visits;
+    return visits.filter(function(v) {
+      return (v.page || '(missing)') === currentPageFilter;
     });
   }
 
