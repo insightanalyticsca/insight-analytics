@@ -104,6 +104,91 @@
           "reason": "volume 100 (source: google-autocomplete)"
         }
       ]
+    },
+    "insights/de-risking-risk-management-with-ai-how-rbi-built-for-quality-and-speed.html": {
+      "currentTargetTerm": "risk management",
+      "currentTermVolume": 100,
+      "lastRewriteDate": "2026-11-08T12:42:12.444Z",
+      "variantHistory": [
+        {
+          "date": "2026-11-08T12:42:12.444Z",
+          "targetTerm": "risk management",
+          "termVolume": 100,
+          "titleBefore": "De-risking risk management with AI: How RBI built for quality and speed | Insight Analytics",
+          "titleAfter": "Risk Management: AI-Driven Oversight for Boards | Insight Analytics",
+          "descBefore": "The integration of AI into financial risk management can simultaneously reduce operational latency and enhance reporting accuracy, directly strengthening t",
+          "descAfter": "Apply AI to risk management to cut reporting latency and improve accuracy. Strengthen board oversight and fiduciary compliance with data-driven, analyst-grade insights.",
+          "reason": "volume 100 (source: google-autocomplete)"
+        }
+      ]
+    },
+    "insights/why-sustainability-leaders-need-to-think-like-change-managers.html": {
+      "currentTargetTerm": "change management",
+      "currentTermVolume": 100,
+      "lastRewriteDate": "2026-11-08T12:42:12.444Z",
+      "variantHistory": [
+        {
+          "date": "2026-11-08T12:42:12.444Z",
+          "targetTerm": "change management",
+          "termVolume": 100,
+          "titleBefore": "Why sustainability leaders need to think like change managers | Insight Analytics",
+          "titleAfter": "Change Management: The Key to Sustainable ROI | Insight Analytics",
+          "descBefore": "The primary driver of sustainability ROI is not technological adoption, but the organizational change management required to embed new behaviors into opera",
+          "descAfter": "Maximize sustainability ROI by prioritizing change management. Our data shows embedding new behaviors drives operational success better than tech alone.",
+          "reason": "volume 100 (source: google-autocomplete)"
+        }
+      ]
+    },
+    "insights/ann-berry-on-the-importance-of-learning-ai.html": {
+      "currentTargetTerm": "capital allocation",
+      "currentTermVolume": 100,
+      "lastRewriteDate": "2026-11-08T12:42:12.444Z",
+      "variantHistory": [
+        {
+          "date": "2026-11-08T12:42:12.444Z",
+          "targetTerm": "capital allocation",
+          "termVolume": 100,
+          "titleBefore": "Ann Berry on the Importance of Learning AI | Insight Analytics",
+          "titleAfter": "Capital Allocation: AI Literacy for Boards | Insight Analytics",
+          "descBefore": "The strategic imperative for board-level oversight has shifted from passive AI adoption to active AI literacy, a competency gap that now directly correlate",
+          "descAfter": "Align capital allocation with active AI literacy. Discover how board-level competency drives fiduciary duty and superior resource efficiency.",
+          "reason": "volume 100 (source: google-autocomplete)"
+        }
+      ]
+    },
+    "insights/questioning-your-ai-roi-start-with-your-ai-strategy.html": {
+      "currentTargetTerm": "ai strategy",
+      "currentTermVolume": 100,
+      "lastRewriteDate": "2026-11-08T12:42:12.444Z",
+      "variantHistory": [
+        {
+          "date": "2026-11-08T12:42:12.444Z",
+          "targetTerm": "ai strategy",
+          "termVolume": 100,
+          "titleBefore": "Questioning Your AI ROI? Start With Your AI Strategy | Insight Analytics",
+          "titleAfter": "Build an AI Strategy That Drives Measurable ROI | Insight Analytics",
+          "descBefore": "The primary determinant of AI ROI is not the sophistication of the underlying model, but the clarity of the strategic alignment between specific AI use cas",
+          "descAfter": "Align your AI strategy with financial outcomes to maximize ROI. We help you define clear use cases and bridge the gap between IT spend and business value.",
+          "reason": "volume 100 (source: google-autocomplete)"
+        }
+      ]
+    },
+    "insights/the-view-from-the-moon-how-to-rethink-your-global-strategy.html": {
+      "currentTargetTerm": "capital allocation",
+      "currentTermVolume": 100,
+      "lastRewriteDate": "2026-11-08T12:42:12.444Z",
+      "variantHistory": [
+        {
+          "date": "2026-11-08T12:42:12.444Z",
+          "targetTerm": "capital allocation",
+          "termVolume": 100,
+          "titleBefore": "The view from the Moon: How to rethink your global strategy | Insight Analytics",
+          "titleAfter": "Capital Allocation: Rethink Global Strategy | Insight Analytics",
+          "descBefore": "The erosion of the product-service boundary is forcing a fundamental re-evaluation of global capital allocation, shifting the primary driver of EBITDA marg",
+          "descAfter": "Re-evaluate global capital allocation as product-service boundaries erode. Discover how dynamic ecosystem orchestration now drives EBITDA margin growth.",
+          "reason": "volume 100 (source: google-autocomplete)"
+        }
+      ]
     }
   }
 }
