@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
+
+  <!-- Critical: tell Googlebot NOT to index this 404 page. Google will
+       eventually drop the URL from its index after seeing noindex here
+       repeatedly. Combined with the 404 status code, this is the
+       cleanest way to remove legacy /blog/* URLs from Search Console. -->
+  <meta name="robots" content="noindex, nofollow" />
+
+  <title>Page not found — Insight Analytics</title>
+  <meta name="description" content="The page you were looking for has moved or no longer exists. Find what you need on the Insight Analytics homepage, demos, or AI insights." />
+  <link rel="canonical" href="https://insight-analytics.ca/404.html" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+
+  <link rel="stylesheet" href="/css/fonts.css" />
+  <link rel="stylesheet" href="/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="/css/styles.css?v=4.94.0" />
+
+  <!-- Auto-redirect the legacy /blog/* paths to their new homes.
+       These paths were removed in commit 2ecd4c6 (Nov 2026) but Google
+       still has them indexed. Rather than showing a 404 page to humans
+       who click an old search result, redirect them to the closest
+       current equivalent. The redirect is via window.location.replace
+       (so it doesn't create a back-button trap). -->
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #ede9fe 100%);
+      color: #0f172a;
+    }
+    .nf-wrap {
+      max-width: 540px;
+      width: 100%;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 16px;
+      padding: 32px 28px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+    .nf-code {
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -2px;
+    }
+    .nf-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      margin-top: 6px;
+      margin-bottom: 16px;
+    }
+    .nf-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 12px 0;
+    }
+    .nf-msg {
+      font-size: 14px;
+      line-height: 1.55;
+      color: #475569;
+      margin: 0 0 24px 0;
+    }
+    .nf-msg strong { color: #0f172a; }
+    .nf-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .nf-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+    .nf-btn:hover { transform: translateY(-1px); }
+    .nf-btn-primary {
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(99,102,241,0.3);
+    }
+    .nf-btn-secondary {
+      background: #fff;
+      color: #475569;
+      border: 1px solid rgba(0,0,0,0.12);
+    }
+    .nf-search-hint {
+      font-size: 12px;
+      color: #94a3b8;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    .nf-search-hint code {
+      background: rgba(99,102,241,0.08);
+      color: #6366f1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 100%); color: #e2e8f0; }
+      .nf-wrap { background: #0f172a; border-color: rgba(255,255,255,0.08); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+      .nf-title { color: #e2e8f0; }
+      .nf-msg { color: #94a3b8; }
+      .nf-msg strong { color: #e2e8f0; }
+      .nf-btn-secondary { background: rgba(255,255,255,0.04); color: #cbd5e1; border-color: rgba(255,255,255,0.12); }
+      .nf-search-hint { border-color: rgba(255,255,255,0.06); }
+    }
+  </style>
+</head>
+<body>
+  <div class="nf-wrap">
+    <div class="nf-code">404</div>
+    <div class="nf-eyebrow">Page not found</div>
+    <h1 class="nf-title">We couldn't find that page.</h1>
+    <p class="nf-msg">
+      The URL you opened has moved or no longer exists.
+      <span id="nf-reason"></span>
+    </p>
+
+    <div class="nf-actions">
+      <a href="/" class="nf-btn nf-btn-primary">
+        <i class="fas fa-home"></i>
+        Go to homepage
+      </a>
+      <a href="/demos/" class="nf-btn nf-btn-secondary">
+        <i class="fas fa-flask"></i>
+        Live demos
+      </a>
+      <a href="/insights/" class="nf-btn nf-btn-secondary">
+        <i class="fas fa-newspaper"></i>
+        AI insights
+      </a>
+      <a href="/faq/" class="nf-btn nf-btn-secondary">
+        <i class="fas fa-question-circle"></i>
+        FAQ
+      </a>
+    </div>
+
+    <div class="nf-search-hint">
+      Looking for something specific? <a href="/?q=" style="color:#6366f1;text-decoration:none;font-weight:600;">Search the site</a>
+      or email <a href="mailto:dev@insight-analytics.ca" style="color:#6366f1;text-decoration:none;">dev@insight-analytics.ca</a>.
+    </div>
+  </div>
+
+  <script>
+    // ─── Legacy /blog/* path redirects ────────────────────────────────────
+    // The /blog/ directory was removed in commit 2ecd4c6 (Nov 2026) and
+    // the content was moved to /demos/ (for app writeups) and /insights/
+    // (for AI-generated articles). Google still has the old /blog/* URLs
+    // indexed and is reporting them as 404. Rather than showing this 404
+    // page to humans who click an old search result, auto-redirect them
+    // to the closest current equivalent.
+    //
+    // Map of legacy URL → new URL (for the paths that have a clear successor):
+    var BLOG_REDIRECTS = {
+      '/blog/ai-dashboard-builder/':     '/demos/ai-dashboard-builder.html',
+      '/blog/fuzzy-address-matching/':   '/demos/fuzzy-address-matching.html',
+      '/blog/markets-dashboard/':        '/demos/universal-dashboard-builder.html',
+      '/blog/pipeline-builder/':         '/demos/universal-dashboard-builder.html',
+      '/blog/load-forecast/':            '/demos/weather-load-forecast.html',
+      '/blog/universal-dashboard-builder/': '/demos/universal-dashboard-builder.html',
+      '/blog/universal-time-series-prediction/': '/demos/universal-time-series-prediction.html',
+      '/blog/personalized-power-automate/': '/demos/personalized-power-automate.html',
+      '/blog/database-archaeology/':     '/demos/database-archaeology.html',
+      '/blog/weather-load-forecast/':    '/demos/weather-load-forecast.html',
+      '/blog/':                           '/demos/',
+      '/blog':                            '/demos/'
+    };
+
+    (function() {
+      var path = window.location.pathname;
+      // Strip trailing slash (except for root) so /blog/foo/ and /blog/foo
+      // both match
+      var normalized = path.length > 1 && path.slice(-1) === '/' ? path.slice(0, -1) : path;
+      var withSlash = normalized + '/';
+
+      // Check both forms
+      var target = BLOG_REDIRECTS[path] || BLOG_REDIRECTS[normalized] || BLOG_REDIRECTS[withSlash];
+
+      if (target) {
+        // Replace current history entry so the back button doesn't trap
+        // the user on the 404 page after the redirect.
+        window.location.replace(target);
+        // Show a hint in case the redirect is slow / disabled
+        var reason = document.getElementById('nf-reason');
+        if (reason) {
+          reason.innerHTML = ' Redirecting you to <code>' + target + '</code>…';
+          reason.style.display = 'block';
+          reason.style.marginTop = '8px';
+          reason.style.color = '#6366f1';
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

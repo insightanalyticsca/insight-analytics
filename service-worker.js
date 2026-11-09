@@ -9,7 +9,7 @@
  *    assets in the background and update the cache for next time.
  */
 
-const VERSION = 'v5.53.0-page-filter';
+const VERSION = 'v5.54.0-404-handling';
 const STATIC_CACHE = `ia-static-${VERSION}`;
 const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 
@@ -19,6 +19,7 @@ const RUNTIME_CACHE = `ia-runtime-${VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
+  './404.html',
   './css/styles.css?v=4.94.0',
   './js/app.js?v=5.41.0-cv-fix',
   './js/hero-animation.js?v=4.94.0',
