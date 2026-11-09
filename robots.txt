@@ -2,12 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /netlify/
 Disallow: /data/
-# Legacy /blog/* paths were removed in commit 2ecd4c6 (Nov 2026).
-# The content was moved to /demos/ and /insights/. Google still has
-# these old URLs indexed and reports them as 404 — disallowing them
-# here tells Googlebot to stop crawling them, which combined with the
-# noindex meta on /404.html will eventually drop them from the index.
-Disallow: /blog/
 
 # Allow Googlebot-Extended for AI Overview / AI Mode inclusion
 User-agent: Googlebot-Extended

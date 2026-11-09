@@ -1,4 +1,8 @@
 {
+  "404.html": {
+    "related": [],
+    "topic": "general"
+  },
   "dashboards-preview/custom-html/executive-customer-payments.html": {
     "related": [],
     "topic": "executive"
@@ -203,6 +207,10 @@
     "related": [],
     "topic": "general"
   },
+  "insights/how-ai-is-transforming-automotive-quality-operations.html": {
+    "related": [],
+    "topic": "general"
+  },
   "insights/how-ai-is-transforming-strategy-development.html": {
     "related": [],
     "topic": "general"
@@ -243,11 +251,23 @@
     "related": [],
     "topic": "general"
   },
+  "insights/introducing-the-supply-chain-logistics-video-library-expert-insights-from-arc-advisory-group.html": {
+    "related": [],
+    "topic": "general"
+  },
   "insights/is-ai-scaling-your-worst-habits.html": {
     "related": [],
     "topic": "general"
   },
+  "insights/kinaxis-reports-22-saas-growth-in-q3-2026-raises-full-year-outlook.html": {
+    "related": [],
+    "topic": "general"
+  },
   "insights/lack-of-trust-drives-the-just-in-case-energy-era.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/markets-brace-for-washington-policy-battles.html": {
     "related": [],
     "topic": "general"
   },

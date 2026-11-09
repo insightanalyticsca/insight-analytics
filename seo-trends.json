@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-08T12:42:12.444Z",
+  "collectedAt": "2026-11-09T15:02:19.536Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -37,10 +37,10 @@
     "organizational culture",
     "change management"
   ],
-  "totalTerms": 425,
+  "totalTerms": 420,
   "trends": [
     {
-      "term": "ai dashboard",
+      "term": "ai dashboards",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "ai dashboard"
@@ -244,25 +244,19 @@
       "seed": "change management"
     },
     {
+      "term": "future",
+      "volume": 100,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "growth",
       "volume": 100,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "2026",
-      "volume": 100,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "business",
-      "volume": 100,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "world",
       "volume": 100,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -478,13 +472,13 @@
       "seed": "change management"
     },
     {
-      "term": "future",
+      "term": "2026",
       "volume": 90,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "leadership",
+      "term": "world",
       "volume": 90,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -616,7 +610,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management certification",
+      "term": "risk management jobs san antonio",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -694,7 +688,7 @@
       "seed": "organizational culture"
     },
     {
-      "term": "change management meaning",
+      "term": "change management process",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "change management"
@@ -826,7 +820,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management spokane county",
+      "term": "risk management framework",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -904,13 +898,25 @@
       "seed": "organizational culture"
     },
     {
-      "term": "change management process",
+      "term": "change management meaning",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "change management"
     },
     {
       "term": "executive",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "leadership",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "europe",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1048,7 +1054,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management agency",
+      "term": "risk management certification",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1138,7 +1144,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "europe",
+      "term": "market",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1151,12 +1157,6 @@
     },
     {
       "term": "ranks",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "china",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1282,7 +1282,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management strategies",
+      "term": "risk management definition",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1366,13 +1366,13 @@
       "seed": "change management"
     },
     {
-      "term": "health",
+      "term": "intelligence",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "intelligence",
+      "term": "banking",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1384,13 +1384,25 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "energy",
+      "term": "three",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
       "term": "8217",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "china",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "supply",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1516,7 +1528,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management definition",
+      "term": "risk management includes",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1600,7 +1612,7 @@
       "seed": "change management"
     },
     {
-      "term": "next",
+      "term": "health",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1618,43 +1630,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "banking",
+      "term": "strategy",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "three",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "billion",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "four",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "tech",
+      "term": "energy",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
       "term": "digital",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "market",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1691,12 +1679,6 @@
     },
     {
       "term": "para",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "chain",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1810,7 +1792,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management framework",
+      "term": "risk management coordinator salary",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1906,7 +1888,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "science",
+      "term": "next",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1942,19 +1924,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "wave",
+      "term": "focus",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
       "term": "work",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "strategy",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1984,19 +1960,13 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "rise",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "impact",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "stock",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "women",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2020,6 +1990,18 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "sustainability",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "data",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "hidden",
       "volume": 30,
       "source": "industry-rss",
@@ -2038,18 +2020,6 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "fund",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "record",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "first",
       "volume": 30,
       "source": "industry-rss",
@@ -2057,6 +2027,12 @@
     },
     {
       "term": "entrepreneurs",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "four",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2158,12 +2134,6 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "bloomberg",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "artificial",
       "volume": 30,
       "source": "industry-rss",
@@ -2182,25 +2152,25 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "supply",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "supply chain",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "blue",
+      "term": "chain",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "raises",
+      "term": "stocks",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "says",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2314,7 +2284,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management salary",
+      "term": "risk management plan template",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -2506,7 +2476,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management insurance",
+      "term": "risk management salary",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "risk management"
