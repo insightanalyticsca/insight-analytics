@@ -725,7 +725,13 @@ Content: ${content.text.slice(0, 800)}`);
       }
       if (seo.description) {
         if (html.match(/<meta\s+name=["']description["']/i)) {
-          html = html.replace(/<meta\s+name=["']description["']\s+content=["'][^"']*["']/is, `<meta name="description" content="${escAttr(seo.description)}">`);
+          // CRITICAL: the regex MUST consume the closing > of the tag (including
+          // optional self-closing /> form). Without \s*\/?> at the end, each
+          // cron run adds one more > character after the tag, producing
+          // visible '>' text at the top of the page. Bug found 2026-11-12
+          // after 3 cron runs left executive-customer-payments.html with
+          // content="...">>>>  (4 trailing > characters).
+          html = html.replace(/<meta\s+name=["']description["']\s+content=["'][^"']*["']\s*\/?>/is, `<meta name="description" content="${escAttr(seo.description)}">`);
         } else {
           html = html.replace(/<head[^>]*>/i, m => `${m}\n  <meta name="description" content="${escAttr(seo.description)}">`);
         }
@@ -733,7 +739,9 @@ Content: ${content.text.slice(0, 800)}`);
       }
       if (seo.keywords) {
         if (html.match(/<meta\s+name=["']keywords["']/i)) {
-          html = html.replace(/<meta\s+name=["']keywords["']\s+content=["'][^"']*["']/is, `<meta name="keywords" content="${escAttr(seo.keywords)}">`);
+          // Same fix as description regex above — consume the closing > to
+          // prevent accumulating stray > characters on each cron run.
+          html = html.replace(/<meta\s+name=["']keywords["']\s+content=["'][^"']*["']\s*\/?>/is, `<meta name="keywords" content="${escAttr(seo.keywords)}">`);
         } else {
           html = html.replace(/<\/head>/i, m => `  <meta name="keywords" content="${escAttr(seo.keywords)}">\n${m}`);
         }
