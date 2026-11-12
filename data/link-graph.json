@@ -1,8 +1,4 @@
 {
-  "404.html": {
-    "related": [],
-    "topic": "general"
-  },
   "dashboards-preview/custom-html/executive-customer-payments.html": {
     "related": [],
     "topic": "executive"
@@ -311,6 +307,10 @@
     "related": [],
     "topic": "general"
   },
+  "insights/people-process-and-technology-are-no-longer-enough-rethinking-supply-chain-management-in-the-age-of-ai.html": {
+    "related": [],
+    "topic": "general"
+  },
   "insights/persistent-oil-prices-threaten-inflation-outlook.html": {
     "related": [],
     "topic": "general"
@@ -375,6 +375,10 @@
     "related": [],
     "topic": "general"
   },
+  "insights/the-chro-six-pack-for-ai-implementations.html": {
+    "related": [],
+    "topic": "general"
+  },
   "insights/the-rise-of-the-agentic-coworker-a-banking-cios-guide-to-the-next-wave-of-ai.html": {
     "related": [],
     "topic": "general"
@@ -412,6 +416,10 @@
     "topic": "general"
   },
   "insights/us-tech-stocks-fall-after-earnings-fuel-ai-spending-concerns.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/us-treasury-futures-retreat-as-markets-see-more-fed-hikes.html": {
     "related": [],
     "topic": "general"
   },

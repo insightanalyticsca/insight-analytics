@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-11T13:30:01.956Z",
+  "collectedAt": "2026-11-12T14:34:23.268Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -37,7 +37,7 @@
     "organizational culture",
     "change management"
   ],
-  "totalTerms": 418,
+  "totalTerms": 424,
   "trends": [
     {
       "term": "ai dashboard",
@@ -172,7 +172,7 @@
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation line",
+      "term": "capital allocation",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "capital allocation"
@@ -251,6 +251,12 @@
     },
     {
       "term": "2026",
+      "volume": 100,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "future",
       "volume": 100,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -400,7 +406,7 @@
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation",
+      "term": "capital allocation line",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "capital allocation"
@@ -472,13 +478,13 @@
       "seed": "change management"
     },
     {
-      "term": "agentic",
+      "term": "global",
       "volume": 90,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "future",
+      "term": "agentic",
       "volume": 90,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -610,7 +616,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management framework",
+      "term": "risk management certification",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -688,25 +694,13 @@
       "seed": "organizational culture"
     },
     {
-      "term": "change management meaning",
+      "term": "change management jobs",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "change management"
     },
     {
-      "term": "global",
-      "volume": 80,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "8217",
-      "volume": 80,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "times",
+      "term": "nvidia",
       "volume": 80,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -814,7 +808,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation specialist",
+      "term": "ai implementation company",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -832,7 +826,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management definition",
+      "term": "risk management framework",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -910,16 +904,10 @@
       "seed": "organizational culture"
     },
     {
-      "term": "change management jobs",
+      "term": "change management meaning",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "change management"
-    },
-    {
-      "term": "europe",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
     },
     {
       "term": "growth",
@@ -934,7 +922,25 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "leadership",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "financial times",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "times",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "8217",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1042,7 +1048,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation company",
+      "term": "ai implementation certification",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -1060,7 +1066,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management salary",
+      "term": "risk management definition",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1144,7 +1150,13 @@
       "seed": "change management"
     },
     {
-      "term": "leadership",
+      "term": "value",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "europe",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1163,24 +1175,6 @@
     },
     {
       "term": "ranks",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "supply",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "supply chain",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "chain",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1288,7 +1282,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation certification",
+      "term": "ai implementation engineer",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -1306,7 +1300,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management plan",
+      "term": "risk management salary",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1390,6 +1384,18 @@
       "seed": "change management"
     },
     {
+      "term": "building",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "advantage",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "banking",
       "volume": 50,
       "source": "industry-rss",
@@ -1402,7 +1408,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "energy",
+      "term": "economics",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1510,7 +1516,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation engineer",
+      "term": "ai implementation specialist salary",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -1612,13 +1618,7 @@
       "seed": "change management"
     },
     {
-      "term": "advantage",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "value",
+      "term": "america",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1630,7 +1630,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "judgment",
+      "term": "2027",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "focus",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1648,19 +1654,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "problem",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "tech",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "markets",
+      "term": "challenges",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1714,13 +1708,25 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "stocks",
+      "term": "logistics",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "coreweave",
+      "term": "supply",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "supply chain",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "chain",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1816,7 +1822,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation specialist salary",
+      "term": "ai implementation consultant jobs",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -1918,31 +1924,37 @@
       "seed": "change management"
     },
     {
+      "term": "opportunity",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "moves",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "retail",
+      "term": "beyond",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "building",
+      "term": "make",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "america",
+      "term": "private",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "2027",
+      "term": "science",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1954,19 +1966,19 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "judgment",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "organizational",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "scaling",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "focus",
+      "term": "losing",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1978,19 +1990,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "economics",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "winners",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "impact",
+      "term": "problem",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2026,25 +2026,37 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "challenges",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "needs",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "three",
+      "term": "real",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "index",
+      "term": "energy",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "markets",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "powers",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "three",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2140,13 +2152,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "blow",
+      "term": "build",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "para",
+      "term": "trump",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2158,7 +2170,31 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "logistics",
+      "term": "board",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "profits",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "stocks",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "fall",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "huang",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2254,7 +2290,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation consultant jobs",
+      "term": "ai implementation courses",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -2272,7 +2308,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management certification",
+      "term": "risk management plan",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -2446,7 +2482,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation courses",
+      "term": "ai implementation business",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "ai implementation"
