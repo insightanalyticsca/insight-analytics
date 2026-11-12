@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /netlify/
 Disallow: /data/
+Disallow: /blog/
 
 # Allow Googlebot-Extended for AI Overview / AI Mode inclusion
 User-agent: Googlebot-Extended

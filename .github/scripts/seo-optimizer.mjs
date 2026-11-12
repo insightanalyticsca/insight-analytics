@@ -45,7 +45,16 @@ function collectHtmlFiles() {
       const full = join(dir, entry);
       const stat = statSync(full);
       if (stat.isDirectory()) scan(full);
-      else if (entry.endsWith('.html') && !entry.includes('_old')) files.push(full);
+      else if (entry.endsWith('.html') && !entry.includes('_old')) {
+        // Skip 404.html — it's a noindex error page, not content. Including
+        // it in the sitemap + having noindex meta on the page itself causes
+        // Google Search Console to flag it as "Excluded by 'noindex' tag"
+        // (the sitemap says 'please index this' but the page says 'don't
+        // index me'). Added 2026-11-12 to fix the new Search Console
+        // notification (msg_100059089).
+        if (entry === '404.html') continue;
+        files.push(full);
+      }
     }
   }
   scan(REPO_ROOT);
@@ -104,10 +113,28 @@ async function groqChat(prompt) {
 // ─── P0: Fix robots.txt ─────────────────────────────────────────────────
 function fixRobotsTxt() {
   console.log('🤖 P0: Fixing robots.txt (allow Googlebot-Extended)...');
+  // NOTE: the hardcoded content below MUST be kept in sync with any
+  // manual additions made to robots.txt. If you add a new Disallow
+  // rule directly to robots.txt (e.g. for legacy /blog/ paths or
+  // security scanner paths), add it here too — otherwise this
+  // function will silently strip it on the next cron run.
+  //
+  // Critical disallows that must NOT be removed:
+  //   - /netlify/         (internal Netlify function source, not for indexing)
+  //   - /data/            (raw JSON data files, not for indexing)
+  //   - /blog/            (legacy /blog/* paths removed in commit 2ecd4c6;
+  //                        Google still has them indexed and reports 404;
+  //                        disallowing them tells Googlebot to stop crawling
+  //                        so they eventually drop from the index. Without
+  //                        this, Google re-crawls /blog/* every few days
+  //                        and re-reports the 404 notification in Search
+  //                        Console. Added back here 2026-11-12 after the
+  //                        SEO cron stripped it from robots.txt.)
   const robots = `User-agent: *
 Allow: /
 Disallow: /netlify/
 Disallow: /data/
+Disallow: /blog/
 
 # Allow Googlebot-Extended for AI Overview / AI Mode inclusion
 User-agent: Googlebot-Extended
@@ -116,6 +143,7 @@ Allow: /
 Sitemap: ${SITE_URL}/sitemap.xml`;
   writeFileSync(join(REPO_ROOT, 'robots.txt'), robots);
   console.log('  ✅ Googlebot-Extended explicitly allowed');
+  console.log('  ✅ /blog/ disallow preserved (legacy path removal)');
 }
 
 // ─── P0: Add preconnect/preload resource hints ──────────────────────────
