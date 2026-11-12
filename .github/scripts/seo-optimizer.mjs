@@ -146,6 +146,29 @@ Sitemap: ${SITE_URL}/sitemap.xml`;
   console.log('  ✅ /blog/ disallow preserved (legacy path removal)');
 }
 
+// ─── P0: Ensure every HTML page has a canonical tag ──────────────────────
+// Without a canonical, Google may flag the page as "Duplicate without
+// user-selected canonical" in Search Console. This function checks for
+// an existing <link rel="canonical"> and adds one if missing.
+// Added 2026-11-12 after Search Console reported 1 page with this issue
+// (turned out to be 3 dashboard HTML files that the SEO cron never
+// added canonicals to).
+function ensureCanonical(html, relPath) {
+  // 404.html is intentionally noindex — it shouldn't have a canonical
+  // pointing to itself (and we don't want it indexed anyway).
+  if (relPath === '404.html') return html;
+  // Skip pages that already have a canonical tag
+  if (html.match(/<link\s+rel=["']canonical["']/i)) return html;
+  // Inject canonical right after the <title> tag (or before </head> as fallback)
+  const canonicalUrl = `${SITE_URL}/${relPath}`;
+  const canonicalTag = `\n  <link rel="canonical" href="${canonicalUrl}" />`;
+  if (html.match(/<title[^>]*>[^<]*<\/title>/i)) {
+    return html.replace(/(<title[^>]*>[^<]*<\/title>)/i, `$1${canonicalTag}`);
+  }
+  // Fallback: inject before </head>
+  return html.replace(/<\/head>/i, `${canonicalTag}\n</head>`);
+}
+
 // ─── P0: Add preconnect/preload resource hints ──────────────────────────
 function addResourceHints(html, relPath) {
   const hints = [
@@ -637,6 +660,11 @@ async function main() {
     // P0: Add resource hints (preconnect, preload)
     const withHints = addResourceHints(html, relPath);
     if (withHints !== html) { html = withHints; modified = true; changeLog.techniques.push('resource-hints'); }
+
+    // P0: Ensure canonical tag (added 2026-11-12 — fixes "Duplicate without
+    // user-selected canonical" Search Console error)
+    const withCanonical = ensureCanonical(html, relPath);
+    if (withCanonical !== html) { html = withCanonical; modified = true; changeLog.techniques.push('canonical'); }
 
     // P0: Defer scripts
     const withDeferred = deferScripts(html);
