@@ -27,6 +27,13 @@
   <link rel="stylesheet" href="/css/font-awesome.min.css">
   <link rel="stylesheet" href="/css/styles.css?v=4.94.0">
   <style>
+    /* CRITICAL: Disable the global scroll-snap + smooth-scroll for this page.
+       The global CSS sets html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
+       which makes the browser snap to the nearest section on page load —
+       landing the user in the middle/end of the page instead of the top.
+       This page doesn't use section-based snap layout, so we kill both. */
+    html { scroll-snap-type: none !important; scroll-behavior: auto !important; }
+    .db-section, .db-hero, main > section { scroll-snap-align: none !important; }
     .db-hero{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);color:#e2e8f0;padding:60px 0 50px;text-align:center}
     .db-hero h1{font-size:clamp(28px,5vw,42px);font-weight:800;margin:0 0 12px;line-height:1.15}
     .db-hero h1 .grad{background:linear-gradient(135deg,#6366f1,#06b6d4);-webkit-background-clip:text;background-clip:text;color:transparent}
