@@ -100,6 +100,9 @@
   <a href="/#contact" role="menuitem">Contact</a>
   <a href="/#contact" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Book a Demo</a>
 </div>
+
+<span id="top" aria-hidden="true"></span>
+
 <main>
 <section class="db-hero">
   <div class="container">
@@ -121,6 +124,19 @@
 </main>
 <footer class="footer"><div class="container"><div class="footer-bottom"><span class="footer-tagline">Insight Analytics · <em>Live truth on every desk.</em></span><span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span></div></div></footer>
 <script src="/js/theme-toggle.js?v=4.94.0" defer></script>
-<script>document.getElementById('menu-toggle')?.addEventListener('click',function(){var m=document.getElementById('mobile-menu');var o=m.classList.toggle('open');this.setAttribute('aria-expanded',o)});document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script>
+// Force scroll to top on page load — the global CSS has
+// `scroll-snap-type: y mandatory` which can make the browser
+// snap to the first section instead of starting at the top.
+// This runs before paint so the user never sees the wrong position.
+window.scrollTo(0, 0);
+document.getElementById('menu-toggle')?.addEventListener('click',function(){var m=document.getElementById('mobile-menu');var o=m.classList.toggle('open');this.setAttribute('aria-expanded',o)});
+document.getElementById('year').textContent=new Date().getFullYear();
+// Also scroll to top when clicking the "Dashboard Builder" nav link
+// while already on this page (same-URL navigation does nothing by default).
+document.querySelectorAll('a[href="/dashboard-builder/"]').forEach(function(a){
+  a.addEventListener('click', function(e){ if(window.location.pathname.indexOf('/dashboard-builder')===0){ e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'}); } });
+});
+</script>
 </body>
 </html>
