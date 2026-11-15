@@ -786,4 +786,10 @@
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://insight-analytics.ca/insights/why-cfos-need-to-get-out-of-the-office-to-make-transformation-pay</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
