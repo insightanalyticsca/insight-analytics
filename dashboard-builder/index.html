@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)">
-  <title>Live Dashboard Builder — Download & Demo | Insight Analytics</title>
-  <meta name="description" content="Download the Live Dashboard Builder demo. Connect to SQL, generate executive dashboards with AI narration, export as PNG, and deploy to IIS in minutes. Windows desktop application.">
-  <meta name="keywords" content="dashboard builder, live dashboard, SQL dashboard, executive dashboard, AI dashboard, ECharts, Windows EXE, IIS deployment, data visualization, dashboard download">
+  <title>Business Rule Observatory — Dashboard Builder Demo | Insight Analytics</title>
+  <meta name="description" content="Download the Business Rule Observatory demo. Works immediately with pre-built data — no SQL or Codex needed. Generate executive dashboards with AI narration, export branded PNGs, deploy to IIS. Windows desktop application.">
+  <meta name="keywords" content="dashboard builder, Business Rule Observatory, SQL dashboard, executive dashboard, AI dashboard, ECharts, Windows EXE, IIS deployment, Codex, data visualization, dashboard download">
   <meta name="author" content="Insight Analytics">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <link rel="canonical" href="https://insight-analytics.ca/dashboard-builder/" />
@@ -16,22 +16,17 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Live Dashboard Builder — Download & Demo | Insight Analytics">
-  <meta property="og:description" content="Download the Live Dashboard Builder demo. Connect to SQL, generate executive dashboards with AI narration, export as PNG, and deploy to IIS.">
+  <meta property="og:title" content="Business Rule Observatory — Dashboard Builder Demo">
+  <meta property="og:description" content="Works immediately with pre-built data. Generate executive dashboards with AI narration, export branded PNGs, deploy to IIS. Windows desktop application.">
   <meta property="og:url" content="https://insight-analytics.ca/dashboard-builder/">
   <meta property="og:image" content="https://insight-analytics.ca/icons/icon-512.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Live Dashboard Builder — Download & Demo">
-  <meta name="twitter:description" content="Connect to SQL, generate executive dashboards with AI narration, export as PNG, deploy to IIS.">
+  <meta name="twitter:title" content="Business Rule Observatory — Dashboard Builder Demo">
+  <meta name="twitter:description" content="Works immediately. Generate dashboards, export PNGs, deploy to IIS. Windows desktop application.">
   <link rel="stylesheet" href="/css/fonts.css">
   <link rel="stylesheet" href="/css/font-awesome.min.css">
   <link rel="stylesheet" href="/css/styles.css?v=4.94.0">
   <style>
-    /* CRITICAL: Disable the global scroll-snap + smooth-scroll for this page.
-       The global CSS sets html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
-       which makes the browser snap to the nearest section on page load —
-       landing the user in the middle/end of the page instead of the top.
-       This page doesn't use section-based snap layout, so we kill both. */
     html { scroll-snap-type: none !important; scroll-behavior: auto !important; }
     .db-section, .db-hero, main > section { scroll-snap-align: none !important; }
     .db-hero{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);color:#e2e8f0;padding:60px 0 50px;text-align:center}
@@ -39,8 +34,9 @@
     .db-hero h1 .grad{background:linear-gradient(135deg,#6366f1,#06b6d4);-webkit-background-clip:text;background-clip:text;color:transparent}
     .db-hero p{font-size:16px;max-width:620px;margin:0 auto 24px;color:#94a3b8;line-height:1.55}
     .db-hero-cta{display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center}
-    .db-btn-download{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#06b6d4);color:#fff;font-size:15px;font-weight:700;text-decoration:none;box-shadow:0 8px 24px rgba(99,102,241,0.4);transition:transform 150ms ease}
+    .db-btn-download{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#06b6d4);color:#fff;font-size:15px;font-weight:700;text-decoration:none;box-shadow:0 8px 24px rgba(99,102,241,0.4);transition:transform 150ms ease;cursor:pointer;border:none}
     .db-btn-download:hover{transform:translateY(-2px)}
+    .db-btn-download:disabled{opacity:0.6;cursor:wait;transform:none}
     .db-btn-secondary{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;font-weight:600;text-decoration:none;border:1px solid rgba(255,255,255,0.15);transition:background 150ms ease}
     .db-btn-secondary:hover{background:rgba(255,255,255,0.14)}
     .db-section{padding:48px 0;border-bottom:1px solid rgba(0,0,0,0.06)}
@@ -65,10 +61,13 @@
     .db-config-table code{background:rgba(99,102,241,0.06);color:#6366f1;padding:2px 6px;border-radius:4px;font-size:12px}
     .db-notice{padding:14px 18px;border-radius:10px;border:1px solid rgba(245,158,11,0.2);background:rgba(245,158,11,0.06);font-size:13px;color:var(--text-soft,#475569);margin:16px 0}
     .db-notice strong{color:#f59e0b}
+    .db-instant{padding:14px 18px;border-radius:10px;border:1px solid rgba(16,185,129,0.2);background:rgba(16,185,129,0.06);font-size:13px;color:var(--text-soft,#475569);margin:16px 0}
+    .db-instant strong{color:#10b981}
     @media(max-width:640px){.db-hero{padding:40px 0 32px}.db-section{padding:32px 0}.db-features-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
+
 <header class="navbar" id="navbar">
   <div class="nav-inner">
     <a href="/" class="brand" aria-label="Insight Analytics home">
@@ -111,40 +110,156 @@
 <span id="top" aria-hidden="true"></span>
 
 <main>
+
 <section class="db-hero">
   <div class="container">
-    <h1>Live Dashboard Builder<br><span class="grad">Desktop Application Demo</span></h1>
-    <p>A Windows desktop application that connects to your SQL database, generates executive dashboards with AI narration, and deploys them to IIS — all through a guided wizard interface.</p>
+    <h1>Business Rule Observatory<br><span class="grad">Dashboard Builder Demo</span></h1>
+    <p>A Windows desktop application that generates executive dashboards from SQL data with AI narration. Works immediately with pre-built demo data — no setup required.</p>
     <div class="db-hero-cta">
-      <a href="#download" class="db-btn-download"><i class="fas fa-download"></i> Download Demo</a>
+      <button id="db-download-btn" class="db-btn-download" onclick="initiateDownload()">
+        <i class="fas fa-download"></i>
+        <span id="db-download-label">Download Demo</span>
+      </button>
       <a href="#how-it-works" class="db-btn-secondary"><i class="fas fa-play-circle"></i> See How It Works</a>
     </div>
   </div>
 </section>
-<section class="db-section" id="overview"><div class="container"><h2>What It Does</h2><p>The Live Dashboard Builder is a Windows desktop application that turns raw SQL data into production-ready executive dashboards in minutes. It walks you through a series of guided dialogs — connect to Codex for AI narration, connect to your SQL source for live data — then automatically generates a complete dashboard website with interactive ECharts visualizations, KPI tiles, and AI-written narrative summaries.</p><p>Every dashboard the builder generates is a standalone HTML page. You can save individual charts as PNG images, export the full dashboard as a visual package, or deploy the entire thing to an IIS web server using the built-in IIS deployment guide.</p><div class="db-notice"><strong>Demo Version:</strong> This is a feature-limited demo. The full version supports additional data sources, scheduled refresh, role-based access, and multi-tenant deployment. <a href="/#contact" style="color:#6366f1;font-weight:600;text-decoration:none;">Contact us</a> for the full version.</div></div></section>
-<section class="db-section" id="features"><div class="container"><h2>Features</h2><div class="db-features-grid"><div class="db-feature-card"><div class="icon"><i class="fas fa-database"></i></div><h3>SQL Source Connection</h3><p>Guided dialog connects to SQL Server, Azure SQL, or any ODBC-compatible source. Auto-discovers tables, views, and stored procedures. Live data refresh — no static snapshots.</p></div><div class="db-feature-card"><div class="icon"><i class="fas fa-robot"></i></div><h3>AI Narration via Codex</h3><p>Connects to Codex (Groq-powered) to generate plain-English narrative summaries of your data. Real interpretation, not just numbers.</p></div><div class="db-feature-card"><div class="icon"><i class="fas fa-chart-pie"></i></div><h3>Live ECharts Visuals</h3><p>Generates interactive ECharts dashboards — bar, line, pie, heatmap, gauge, scatter. Tooltips, zoom, pan, legend toggle. Canvas renderer for performance.</p></div><div class="db-feature-card"><div class="icon"><i class="fas fa-file-image"></i></div><h3>PNG + Visual Export</h3><p>Save any chart as a high-resolution PNG. Export the full dashboard as a self-contained visual package (HTML + CSS + JS) that runs anywhere.</p></div><div class="db-feature-card"><div class="icon"><i class="fas fa-server"></i></div><h3>IIS Deployment Guide</h3><p>Built-in wizard walks you through deploying the generated dashboard to IIS — folder structure, web.config, MIME types, HTTPS bindings. No IIS expertise required.</p></div><div class="db-feature-card"><div class="icon"><i class="fas fa-desktop"></i></div><h3>Desktop Application</h3><p>Runs as a native Windows EXE. No browser setup, no Node.js, no Docker. Double-click and go. Dialogs guide you through every step — no code required.</p></div></div></div></section>
-<section class="db-section" id="how-it-works"><div class="container"><h2>How It Works</h2><p>The builder runs as a guided wizard. Each step is a dialog that collects one piece of configuration, then moves to the next. No code, no scripts, no command line.</p><ol class="db-steps"><li><strong>Launch the EXE</strong>Double-click <code>DashboardBuilder.exe</code>. The splash screen loads, then the first dialog appears: "Connect to Codex for AI narration."</li><li><strong>Connect to Codex (AI Narration)</strong>Enter your Groq API key (or skip for dashboards without AI narration). The builder validates the key and shows a green checkmark when connected. This enables the AI-written executive summary at the top of every generated dashboard.</li><li><strong>Connect to SQL Source</strong>The next dialog asks for your SQL connection string. Choose from:<br><br><table class="db-config-table"><thead><tr><th>Option</th><th>Example</th></tr></thead><tbody><tr><td>SQL Server (Windows Auth)</td><td><code>Server=myserver;Database=mydb;Integrated Security=True</code></td></tr><tr><td>SQL Server (SQL Auth)</td><td><code>Server=myserver;Database=mydb;User Id=sa;Password=*****</code></td></tr><tr><td>Azure SQL</td><td><code>Server=tcp:myserver.database.windows.net,1433;Database=mydb;User Id=user@myserver;Password=*****</code></td></tr><tr><td>ODBC (any source)</td><td><code>DSN=MyDataSource;Uid=user;Pwd=*****</code></td></tr></tbody></table>The builder tests the connection, lists available tables and views, and lets you select which ones to include in the dashboard.</li><li><strong>Select Charts + KPIs</strong>For each table/view you selected, the builder auto-detects columns and suggests chart types:<ul><li>Date + numeric &rarr; <strong>Line chart</strong> (trend over time)</li><li>Category + numeric &rarr; <strong>Bar chart</strong> (comparison)</li><li>Two categories &rarr; <strong>Heatmap</strong> (cross-tab density)</li><li>Single metric &rarr; <strong>KPI tile</strong> (big number + delta)</li><li>Part-of-whole &rarr; <strong>Pie / donut chart</strong></li></ul>You can override any suggestion — pick a different chart type, change colors, add filters, set thresholds.</li><li><strong>Generate the Dashboard</strong>Click <code>Generate</code>. The builder fetches live data from your SQL source, renders ECharts visualizations, sends the data summary to Codex for AI narration, assembles a complete HTML dashboard page, and opens it in your default browser — live, interactive, ready to use.</li><li><strong>Export as PNG or Visual Package</strong><ul><li><strong>Single chart PNG:</strong> Click the camera icon on any chart &rarr; saves a high-res PNG</li><li><strong>Full dashboard export:</strong> File &rarr; Export &rarr; saves the complete HTML + CSS + JS as a self-contained folder</li></ul></li><li><strong>Deploy to IIS</strong>The final dialog is the IIS Deployment Guide. It walks you through: creating the IIS site (folder path, site name, port), configuring web.config (MIME types, compression), setting up HTTPS (binding, certificate), and testing the deployed URL. Includes copy-paste commands for <code>appcmd</code> and PowerShell.</li></ol></div></section>
-<section class="db-section" id="config"><div class="container"><h2>Configuration Reference</h2><h3>Codex (AI Narration) Settings</h3><table class="db-config-table"><thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead><tbody><tr><td>API Key</td><td>(empty)</td><td>Groq API key for AI narration. Required for AI summaries.</td></tr><tr><td>Model</td><td><code>qwen/qwen3.8-27b</code></td><td>LLM model for narrative generation.</td></tr><tr><td>Max Tokens</td><td><code>1500</code></td><td>Maximum length of the AI executive summary.</td></tr><tr><td>Temperature</td><td><code>0.3</code></td><td>Creativity of the AI narration. Lower = more factual.</td></tr></tbody></table><h3>SQL Source Settings</h3><table class="db-config-table"><thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead><tbody><tr><td>Connection String</td><td>(empty)</td><td>ADO.NET connection string. Supports SQL Server, Azure SQL, ODBC.</td></tr><tr><td>Refresh Interval</td><td><code>30s</code></td><td>How often live data refreshes. Set to 0 for static.</td></tr><tr><td>Query Timeout</td><td><code>15s</code></td><td>Max time per SQL query.</td></tr><tr><td>Max Rows</td><td><code>10000</code></td><td>Safety limit per query.</td></tr></tbody></table><h3>Dashboard Output Settings</h3><table class="db-config-table"><thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead><tbody><tr><td>Output Folder</td><td><code>C:\Dashboards\</code></td><td>Where generated dashboards are saved.</td></tr><tr><td>Chart Library</td><td><code>ECharts 5.5</code></td><td>Bundled — no CDN dependency.</td></tr><tr><td>Theme</td><td><code>auto</code></td><td>Light/dark/auto. Auto follows OS preference.</td></tr><tr><td>Export Format</td><td><code>HTML</code></td><td>Self-contained HTML or ZIP package.</td></tr></tbody></table><h3>IIS Deployment Settings</h3><table class="db-config-table"><thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead><tbody><tr><td>Site Name</td><td><code>DashboardBuilder</code></td><td>IIS site name.</td></tr><tr><td>Physical Path</td><td><code>C:\inetpub\DashboardBuilder</code></td><td>Folder for dashboard files.</td></tr><tr><td>Port</td><td><code>8080</code></td><td>HTTP port.</td></tr><tr><td>HTTPS Port</td><td><code>8443</code></td><td>Optional HTTPS port. Requires certificate.</td></tr></tbody></table></div></section>
-<section class="db-section" id="requirements"><div class="container"><h2>System Requirements</h2><table class="db-config-table"><thead><tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr></thead><tbody><tr><td>OS</td><td>Windows 10 (64-bit)</td><td>Windows 11 (64-bit)</td></tr><tr><td>.NET Runtime</td><td>.NET 6.0</td><td>.NET 8.0</td></tr><tr><td>RAM</td><td>4 GB</td><td>8 GB+</td></tr><tr><td>Disk Space</td><td>50 MB</td><td>200 MB</td></tr><tr><td>Browser</td><td>Chrome 90+ / Edge 90+</td><td>Latest Chrome or Edge</td></tr><tr><td>SQL Source</td><td>SQL Server 2016+</td><td>SQL Server 2019+ / Azure SQL</td></tr><tr><td>IIS (for deployment)</td><td>IIS 10 (Windows 10+)</td><td>IIS 10 with URL Rewrite module</td></tr><tr><td>Internet (for AI narration)</td><td>Any connection</td><td>Broadband</td></tr></tbody></table><div class="db-notice"><strong>Demo Limitations:</strong><ul style="margin:8px 0;padding-left:20px;"><li>Maximum 3 charts per dashboard (full version: unlimited)</li><li>Maximum 1,000 rows per query (full version: 10,000+)</li><li>AI narration limited to 500 tokens (full version: 1,500)</li><li>No scheduled refresh (full version: cron-based auto-refresh)</li><li>No multi-user access control (full version: role-based)</li><li>IIS deployment limited to single-site (full version: multi-site + load balancing)</li></ul></div></div></section>
-<section class="db-section" id="download"><div class="container" style="text-align:center;"><h2>Download the Demo</h2><p style="max-width:520px;margin:0 auto 24px;">The demo EXE is a standalone Windows application. No installer needed — just download, unzip, and double-click to run.</p><div style="display:inline-flex;flex-direction:column;align-items:center;gap:12px;"><a href="https://github.com/insightanalyticsca/live-dashboard-builder/releases" class="db-btn-download" style="font-size:17px;padding:16px 36px;"><i class="fas fa-download"></i> Download Dashboard Builder Demo</a><span style="font-size:12px;color:var(--muted,#94a3b8);"><i class="fas fa-shield-alt"></i> Scanned with Windows Defender · ~15 MB · .NET 6.0 required</span></div><div style="margin-top:32px;padding:16px;border-radius:10px;border:1px solid var(--card-border,rgba(0,0,0,0.08));background:var(--bg-soft,rgba(99,102,241,0.03));max-width:500px;margin-left:auto;margin-right:auto;"><p style="margin:0;font-size:13px;"><strong>Need the full version?</strong> The full Dashboard Builder removes all demo limits and adds scheduled refresh, multi-user access, and multi-site IIS deployment. <a href="/#contact" style="color:#6366f1;font-weight:600;text-decoration:none;">Contact us for licensing &rarr;</a></p></div></div></section>
-<section class="db-section" style="text-align:center;background:linear-gradient(135deg,rgba(99,102,241,0.04),rgba(6,182,212,0.03));"><div class="container"><h2>Questions? Book a Walkthrough</h2><p style="max-width:480px;margin:0 auto 20px;">We'll screen-share the builder in action, connect it to your SQL source live, and generate a dashboard from your actual data.</p><a href="/#contact" class="db-btn-download"><i class="fas fa-calendar-check"></i> Book a Live Demo</a></div></section>
+
+<section class="db-section" id="overview">
+  <div class="container">
+    <h2>What It Does</h2>
+    <div class="db-instant">
+      <strong>Works immediately — no setup required.</strong> The demo includes pre-built database JSON files so you can generate dashboards right away without connecting to SQL or installing Codex. Just launch and click <strong>View sample report</strong>.
+    </div>
+    <p>Business Rule Observatory is a Windows desktop application that turns raw SQL data into production-ready executive dashboards in minutes. It walks you through guided GUI dialogs — connect to Codex for AI narration (optional), connect to your SQL source for live data (optional) — then automatically generates a complete dashboard with interactive ECharts visualizations, KPI tiles, and AI-written narrative summaries.</p>
+    <p>Every dashboard is a standalone HTML page. Save individual charts as branded PNG images, export the full dashboard as a visual package, or deploy to IIS using the built-in deployment guide.</p>
+    <div class="db-notice">
+      <strong>Demo Version:</strong> Limited to 4 visuals per dashboard. The full version supports unlimited visuals, scheduled refresh, multi-user access, and automated IIS deployment. <a href="/#contact" style="color:#6366f1;font-weight:600;text-decoration:none;">Contact us</a> for the full version.
+    </div>
+  </div>
+</section>
+
+<section class="db-section" id="features">
+  <div class="container">
+    <h2>Features</h2>
+    <div class="db-features-grid">
+      <div class="db-feature-card"><div class="icon"><i class="fas fa-bolt"></i></div><h3>Works Immediately</h3><p>Pre-built demo data included. Launch the EXE, click View sample report, explore dashboards instantly. No SQL server, no Codex, no setup.</p></div>
+      <div class="db-feature-card"><div class="icon"><i class="fas fa-database"></i></div><h3>SQL Source Connection</h3><p>Guided dialog connects to SQL Server, Azure SQL, or ODBC. Auto-discovers tables and views. Live data refresh — no static snapshots.</p></div>
+      <div class="db-feature-card"><div class="icon"><i class="fas fa-robot"></i></div><h3>AI Narration via Codex</h3><p>Optional: connect Codex (ChatGPT CLI) for AI-written executive summaries. The wizard auto-detects existing installations or guides you through setup — all in the GUI, no terminal.</p></div>
+      <div class="db-feature-card"><div class="icon"><i class="fas fa-chart-pie"></i></div><h3>Live ECharts Visuals</h3><p>Interactive charts — bar, line, pie, heatmap, gauge, scatter. Tooltips, zoom, pan, legend toggle. Click any chart to maximize to full screen.</p></div>
+      <div class="db-feature-card"><div class="icon"><i class="fas fa-file-image"></i></div><h3>Branded PNG Export</h3><p>Save any chart as a high-resolution PNG with Insight Analytics branding. Export the full dashboard as a self-contained HTML package.</p></div>
+      <div class="db-feature-card"><div class="icon"><i class="fas fa-server"></i></div><h3>IIS Deployment Guide</h3><p>Built-in wizard walks you through deploying dashboards to IIS — folder structure, web.config, MIME types, HTTPS bindings. No IIS expertise required.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="db-section" id="how-it-works">
+  <div class="container">
+    <h2>How It Works</h2>
+    <ol class="db-steps">
+      <li><strong>Launch the EXE</strong>Double-click <code>BusinessRuleObservatory.exe</code>. Choose <strong>View sample report</strong> (instant, no setup) or <strong>Connect ChatGPT</strong> (guided AI setup).</li>
+      <li><strong>Connect Codex — optional</strong>The wizard scans your machine for existing Codex installations (desktop app, PATH, npm, editor extensions, package managers). If found, shows a green checkmark. If not found, click <strong>Set up AI</strong> — the app downloads, verifies, and installs Codex automatically. Browser sign-in with a one-time code. No terminal needed.</li>
+      <li><strong>Connect to SQL — optional</strong>Dialog prompts for your connection string. Supports SQL Server (Windows/SQL auth), Azure SQL, ODBC. Tests connection, lists tables and views, auto-detects column types and suggests chart types.</li>
+      <li><strong>Generate Dashboard</strong>Click Generate. The app fetches live data (or uses demo data), renders ECharts visuals, sends summary to Codex for AI narration (if connected), assembles HTML dashboard, opens in your browser.</li>
+      <li><strong>Explore + Export</strong>Maximize any chart to full screen. Download any chart as a branded PNG. Export the full dashboard as a self-contained HTML folder.</li>
+    </ol>
+    <div class="db-instant">
+      <strong>No Codex installed?</strong> No problem. Click <strong>View sample report</strong> to explore the pre-built demo dashboard immediately. Codex setup is guided and automatic — the app downloads and installs it for you via Windows GUI dialogs, no terminal required.
+    </div>
+  </div>
+</section>
+
+<section class="db-section" id="requirements">
+  <div class="container">
+    <h2>System Requirements</h2>
+    <table class="db-config-table">
+      <thead><tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr></thead>
+      <tbody>
+        <tr><td>OS</td><td>Windows 10 (64-bit)</td><td>Windows 11 (64-bit)</td></tr>
+        <tr><td>.NET Runtime</td><td>Bundled (self-contained)</td><td>—</td></tr>
+        <tr><td>RAM</td><td>4 GB</td><td>8 GB+</td></tr>
+        <tr><td>Disk Space</td><td>150 MB</td><td>300 MB</td></tr>
+        <tr><td>Browser</td><td>Chrome 90+ / Edge 90+</td><td>Latest Chrome or Edge</td></tr>
+        <tr><td>SQL Source (optional)</td><td>SQL Server 2016+</td><td>SQL Server 2019+ / Azure SQL</td></tr>
+        <tr><td>Codex (optional)</td><td>Auto-installed by the app</td><td>Latest version</td></tr>
+        <tr><td>ChatGPT account</td><td>Not required for demo</td><td>Required for AI narration</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="db-section" id="download">
+  <div class="container" style="text-align:center;">
+    <h2>Download</h2>
+    <p style="max-width:520px;margin:0 auto 24px;">The demo EXE is a standalone Windows application — no installer needed. Just download and double-click.</p>
+    <div style="display:inline-flex;flex-direction:column;align-items:center;gap:12px;">
+      <button id="db-download-btn-2" class="db-btn-download" style="font-size:17px;padding:16px 36px;" onclick="initiateDownload()">
+        <i class="fas fa-download"></i>
+        <span id="db-download-label-2">Download BusinessRuleObservatory.exe</span>
+      </button>
+      <span style="font-size:12px;color:var(--muted,#94a3b8);">
+        <i class="fas fa-shield-alt"></i> 113.6 MB · Windows 10/11 64-bit · .NET self-contained
+      </span>
+    </div>
+    <div style="margin-top:32px;padding:16px;border-radius:10px;border:1px solid var(--card-border,rgba(0,0,0,0.08));background:var(--bg-soft,rgba(99,102,241,0.03));max-width:500px;margin-left:auto;margin-right:auto;">
+      <p style="margin:0;font-size:13px;"><strong>Need the full version?</strong> Unlimited visuals, scheduled refresh, multi-user access, automated IIS deployment. <a href="/#contact" style="color:#6366f1;font-weight:600;text-decoration:none;">Contact us &rarr;</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="db-section" style="text-align:center;background:linear-gradient(135deg,rgba(99,102,241,0.04),rgba(6,182,212,0.03));">
+  <div class="container">
+    <h2>Questions? Book a Walkthrough</h2>
+    <p style="max-width:480px;margin:0 auto 20px;">We'll screen-share the builder in action, connect it to your SQL source live, and generate a dashboard from your actual data.</p>
+    <a href="/#contact" class="db-btn-download"><i class="fas fa-calendar-check"></i> Book a Live Demo</a>
+  </div>
+</section>
+
 </main>
+
 <footer class="footer"><div class="container"><div class="footer-bottom"><span class="footer-tagline">Insight Analytics · <em>Live truth on every desk.</em></span><span>&copy; <span id="year">2026</span> Insight Analytics. All rights reserved.</span></div></div></footer>
+
 <script src="/js/theme-toggle.js?v=4.94.0" defer></script>
 <script src="/js/sw-register.js?v=4.99.0" defer></script>
 <script>
-// Force scroll to top on page load — the global CSS has
-// `scroll-snap-type: y mandatory` which can make the browser
-// snap to the first section instead of starting at the top.
-// This runs before paint so the user never sees the wrong position.
 window.scrollTo(0, 0);
 document.getElementById('menu-toggle')?.addEventListener('click',function(){var m=document.getElementById('mobile-menu');var o=m.classList.toggle('open');this.setAttribute('aria-expanded',o)});
 document.getElementById('year').textContent=new Date().getFullYear();
-// Also scroll to top when clicking the "Dashboard Builder" nav link
-// while already on this page (same-URL navigation does nothing by default).
-document.querySelectorAll('a[href="/dashboard-builder/"]').forEach(function(a){
-  a.addEventListener('click', function(e){ if(window.location.pathname.indexOf('/dashboard-builder')===0){ e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'}); } });
-});
+
+// ─── Download via token-based proxy ──────────────────────────────────────
+// Instead of linking directly to GitHub (which would require the repo to be
+// public), this calls the CF Worker's token endpoint, gets a one-time
+// download URL, and redirects the browser there. The worker handles
+// fetching the file from the private GitHub repo and streaming it to the
+// visitor. No GitHub account needed.
+function initiateDownload() {
+  var btns = document.querySelectorAll('#db-download-btn, #db-download-btn-2');
+  var labels = document.querySelectorAll('#db-download-label, #db-download-label-2');
+  // Disable buttons + show loading state
+  btns.forEach(function(b) { b.disabled = true; });
+  labels.forEach(function(l) { l.textContent = 'Preparing download...'; });
+
+  fetch('https://groq-proxy.insight-analytics.workers.dev/groq-proxy?op=request-download-token')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        labels.forEach(function(l) { l.textContent = data.error; });
+        btns.forEach(function(b) { b.disabled = false; });
+        return;
+      }
+      // Redirect to the download URL — browser will start the file download
+      window.location.href = data.downloadUrl;
+      // Reset buttons after a delay (in case the user comes back)
+      setTimeout(function() {
+        btns.forEach(function(b) { b.disabled = false; });
+        labels.forEach(function(l) { l.textContent = 'Download Demo'; });
+      }, 5000);
+    })
+    .catch(function(err) {
+      labels.forEach(function(l) { l.textContent = 'Download failed — try again'; });
+      btns.forEach(function(b) { b.disabled = false; });
+    });
+}
 </script>
 </body>
 </html>
