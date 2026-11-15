@@ -1,4 +1,8 @@
 {
+  "dashboard-builder/index.html": {
+    "related": [],
+    "topic": "general"
+  },
   "dashboards-preview/custom-html/executive-customer-payments.html": {
     "related": [],
     "topic": "executive"
@@ -91,6 +95,10 @@
     "related": [],
     "topic": "its"
   },
+  "insights/amazon-revives-deal-with-troubled-data-centre-venture-backed-by-rick-perry.html": {
+    "related": [],
+    "topic": "general"
+  },
   "insights/ann-berry-on-the-importance-of-learning-ai.html": {
     "related": [],
     "topic": "general"
@@ -128,6 +136,10 @@
     "topic": "general"
   },
   "insights/blue-yonder-launches-ai-native-order-management-for-retailers-and-distributors.html": {
+    "related": [],
+    "topic": "general"
+  },
+  "insights/brilliant-moves-coffee-with-the-coca-cola-company-ceo-henrique-braun.html": {
     "related": [],
     "topic": "general"
   },
@@ -390,6 +402,10 @@
   "insights/the-chro-six-pack-for-ai-implementations.html": {
     "related": [],
     "topic": "general"
+  },
+  "insights/the-economics-of-an-idle-trailer-where-logistics-profits-disappear.html": {
+    "related": [],
+    "topic": "its"
   },
   "insights/the-return-trip-is-becoming-a-logistics-product.html": {
     "related": [],

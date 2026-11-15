@@ -2,6 +2,13 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)">
@@ -65,6 +72,27 @@
     .db-instant strong{color:#10b981}
     @media(max-width:640px){.db-hero{padding:40px 0 32px}.db-section{padding:32px 0}.db-features-grid{grid-template-columns:1fr}}
   </style>
+
+  <style>
+  /* P1: content-visibility: auto — skip rendering off-screen elements.
+     Deliberately NOT applied to main > section (breaks hash-link scrolling). */
+  .canvas-grid > .canvas-tile:nth-child(n+5),
+  .grid-analytics > div:nth-child(n+5),
+  .sector-block:nth-child(n+3),
+  #analytics,
+  #library {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+  /* CSS containment — isolate layout/paint */
+  .canvas-tile, .exec-visual, .card, .tile {
+    contain: layout style paint;
+  }
+  </style>
+
+  <meta name="dateModified" content="2026-11-15T13:22:00.912Z">
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"WebPage","@id":"https://insight-analytics.ca/dashboard-builder/index.html#page","name":"Business Rule Observatory — Dashboard Builder Demo | Insight Analytics","description":"Download the Business Rule Observatory demo. Works immediately with pre-built data — no SQL or Codex needed. Generate executive dashboards with AI narration, export branded PNGs, deploy to IIS. Windows desktop application.","url":"https://insight-analytics.ca/dashboard-builder/index.html","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"Business Rule Observatory","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-15","dateModified":"2026-11-15T13:22:00.912Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Dashboard Builder","item":"https://insight-analytics.ca/dashboard-builder.html"},{"@type":"ListItem","position":3,"name":"Index","item":"https://insight-analytics.ca/dashboard-builder/index.html"}]},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the Business Rule Observatory Dashboard Builder demo?","acceptedAnswer":{"@type":"Answer","text":"It is a Windows desktop application that instantly creates executive dashboards from SQL data with optional AI narration, using pre‑built demo data so no setup is required."}},{"@type":"Question","name":"Do I need to install anything to try the Business Rule Observatory demo?","acceptedAnswer":{"@type":"Answer","text":"No, the demo includes pre‑built JSON database files and runs directly after download; you can launch it and view a sample report without connecting to a SQL server or installing Codex."}},{"@type":"Question","name":"Can the Business Rule Observatory generate AI‑narrated dashboards?","acceptedAnswer":{"@type":"Answer","text":"Yes, the application can connect to Codex for AI narration, though this step is optional and the dashboards work perfectly without it."}},{"@type":"Question","name":"How quickly can I create a production‑ready executive dashboard with Business Rule Observatory?","acceptedAnswer":{"@type":"Answer","text":"The guided GUI lets you turn raw SQL data into a production‑ready dashboard in minutes, typically after a few clicks."}}]},{"@context":"https://schema.org","@type":"HowTo","name":"Generate an Executive Dashboard Using the Business Rule Observatory Demo","step":[{"@type":"HowToStep","position":1,"name":"Download the demo","text":"On the Dashboard Builder page, click the “Download Demo” button to download the Windows desktop application package."},{"@type":"HowToStep","position":2,"name":"Install/launch the application","text":"Run the downloaded installer (or unzip the package) and launch the Business Rule Observatory Dashboard Builder application. No additional setup is required because the demo includes pre‑built JSON data files."},{"@type":"HowToStep","position":3,"name":"Open a sample report","text":"In the application, click the “View sample report” button. The demo will automatically load the bundled JSON data and generate an executive dashboard."},{"@type":"HowToStep","position":4,"name":"Explore the generated dashboard","text":"Review the visualizations, AI‑generated narration, and interactive elements. Use the navigation controls to drill into details or switch between report pages."},{"@type":"HowToStep","position":5,"name":"Create your own dashboard (optional)","text":"If you have your own SQL data, replace the demo JSON files with your database export or configure a SQL connection in the app, then repeat steps 3‑4 to generate a custom dashboard."}]}]}</script>
 </head>
 <body>
 

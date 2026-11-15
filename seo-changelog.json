@@ -120,6 +120,66 @@
       "descBefore": "The erosion of the product-service boundary is forcing a fundamental re-evaluation of global capital allocation, shifting the primary driver of EBITDA marg",
       "descAfter": "Re-evaluate global capital allocation as product-service boundaries erode. Discover how dynamic ecosystem orchestration now drives EBITDA margin growth.",
       "reason": "trend match 58%, vol 100 (source: google-autocomplete)"
+    },
+    {
+      "date": "2026-11-15T13:24:16.123Z",
+      "relPath": "insights/the-chro-six-pack-for-ai-implementations.html",
+      "action": "rewrite-seo",
+      "targetTerm": "ai implementation",
+      "termVolume": 100,
+      "titleBefore": "The CHRO six-pack for AI implementations | Insight Analytics",
+      "titleAfter": "AI Implementation: The CHRO Six-Pack | Insight Analytics",
+      "descBefore": "The primary strategic risk in AI adoption is not technical failure, but the erosion of organizational trust and governance integrity, which directly threat",
+      "descAfter": "Master AI implementation with this CHRO framework. Secure organizational trust and governance to protect EBITDA stability and brand equity.",
+      "reason": "trend match 75%, vol 100 (source: google-autocomplete)"
+    },
+    {
+      "date": "2026-11-15T13:24:16.123Z",
+      "relPath": "insights/healthcare-after-the-midterms-the-fragility-of-the-ai-boom-and-the-lessons-from-two-failed-drug-trials.html",
+      "action": "rewrite-seo",
+      "targetTerm": "capital allocation",
+      "termVolume": 100,
+      "titleBefore": "Healthcare After the Midterms, the Fragility of the AI Boom, and the Lessons from Two Failed Drug Trials | Insight Analytics",
+      "titleAfter": "Capital Allocation: 2026 Healthcare Risk Shifts | Insight Analytics",
+      "descBefore": "The convergence of political uncertainty, AI capital fragility, and clinical trial failures signals a structural shift in healthcare risk premiums, demandi",
+      "descAfter": "Navigate healthcare risk premiums with precise capital allocation. Our analysis reveals structural shifts in AI and clinical trial data for superior portfolio resilience.",
+      "reason": "trend match 67%, vol 100 (source: google-autocomplete)"
+    },
+    {
+      "date": "2026-11-15T13:24:16.123Z",
+      "relPath": "insights/supply-chain-resilience-is-not-visibility-it-is-the-ability-to-execute-alternati.html",
+      "action": "rewrite-seo",
+      "targetTerm": "supply chain resilience",
+      "termVolume": 100,
+      "titleBefore": "Supply Chain Resilience Is Not Visibility. It Is the Ability to Execute Alternatives | Insight Analytics",
+      "titleAfter": "Supply Chain Resilience: Execute Alternatives | Insight Analytics",
+      "descBefore": "The primary driver of supply chain resilience is not the sophistication of visibility tools, but the pre-negotiated availability of executable alternatives",
+      "descAfter": "Build supply chain resilience by pre-negotiating executable alternatives. Our analysis shows decentralized decision rights outperform passive visibility tools.",
+      "reason": "trend match 67%, vol 100 (source: google-autocomplete)"
+    },
+    {
+      "date": "2026-11-15T13:24:16.123Z",
+      "relPath": "insights/nvidias-board-ceo-hunt-stocks-finish-week-higher-retail-in-focus.html",
+      "action": "rewrite-seo",
+      "targetTerm": "corporate governance",
+      "termVolume": 100,
+      "titleBefore": "Nvidia’s Board CEO Hunt, Stocks Finish Week Higher, Retail in Focus | Insight Analytics",
+      "titleAfter": "Corporate Governance: Board Oversight in the AI Era | Insight Analytics",
+      "descBefore": "Nvidia’s board-level CEO search signals a structural shift in AI governance, where fiduciary oversight of capital-intensive infrastructure now rivals opera",
+      "descAfter": "Analyze how corporate governance shapes AI infrastructure strategy. Discover how fiduciary oversight now rivals operational execution in strategic importance.",
+      "reason": "trend match 58%, vol 100 (source: google-autocomplete)"
+    },
+    {
+      "date": "2026-11-15T13:24:16.123Z",
+      "relPath": "demos/universal-dashboard-builder.html",
+      "action": "rewrite-seo",
+      "targetTerm": "executive dashboard",
+      "termVolume": 100,
+      "titleBefore": "The Universal Dashboard Builder: From Data to Dazzling Executive Dashboards | Insight Analytics",
+      "titleAfter": "Build Executive Dashboards: Real-Time KPIs | Insight Analytics",
+      "descBefore": "A universal dashboard builder platform that takes any data source and produces interactive, AI-assisted executive dashboards. 50+ production deployments across utilities, retail, and IT operations.",
+      "descAfter": "Transform raw data into actionable executive dashboards. Our platform delivers real-time KPIs and AI-driven insights for faster, data-backed strategic decisions.",
+      "reason": "trend match 58%, vol 100 (source: google-autocomplete)"
     }
   ]
 }
