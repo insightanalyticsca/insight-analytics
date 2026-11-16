@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-15T13:24:16.123Z",
+  "collectedAt": "2026-11-16T14:39:26.093Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -454,7 +454,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture definition",
+      "term": "organizational culture and leadership",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -670,7 +670,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture and leadership",
+      "term": "organizational culture examples",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -892,7 +892,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture examples",
+      "term": "organizational culture theory",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -904,31 +904,7 @@
       "seed": "change management"
     },
     {
-      "term": "intelligence",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "europe",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "2026",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "growth",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "nvidia",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -947,12 +923,6 @@
     },
     {
       "term": "times",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "china",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1150,7 +1120,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture theory",
+      "term": "organizational culture meaning",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -1162,13 +1132,25 @@
       "seed": "change management"
     },
     {
+      "term": "intelligence",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "building",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "next",
+      "term": "europe",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "growth",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1396,6 +1378,12 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "billion",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "beyond",
       "volume": 50,
       "source": "industry-rss",
@@ -1403,6 +1391,12 @@
     },
     {
       "term": "advantage",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "next",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1420,19 +1414,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "crisis",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "research",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "trump",
+      "term": "nvidia",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1642,19 +1624,13 @@
       "seed": "change management"
     },
     {
+      "term": "opportunity",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "healthcare",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "america",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "agentic",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1666,7 +1642,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "life",
+      "term": "risk",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1678,7 +1654,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "strategy",
+      "term": "problem",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1690,13 +1666,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "problem",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "tech",
+      "term": "crisis",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1709,12 +1679,6 @@
     },
     {
       "term": "world financial",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "entrepreneurs",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1733,6 +1697,24 @@
     },
     {
       "term": "chair",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "research",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "market",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "china",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1936,31 +1918,49 @@
       "seed": "change management"
     },
     {
+      "term": "energy",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "role",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "leading",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "sustainability",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "finance",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "billion",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "opportunity",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "trade",
+      "term": "america",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
       "term": "human",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "agentic",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1978,19 +1978,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "operations",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "risk",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "science",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "rules",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2002,7 +1996,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "does",
+      "term": "scaling",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "focus",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "strategy",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2015,6 +2021,12 @@
     },
     {
       "term": "trust",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "tech",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2038,13 +2050,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "digital",
+      "term": "five",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
       "term": "best",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "entrepreneurs",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2128,13 +2146,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "market",
+      "term": "2025",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "bloomberg",
+      "term": "european",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2146,19 +2164,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "artificial",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "campus",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "build",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2176,13 +2182,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "spacex",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "starship",
+      "term": "supply",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
