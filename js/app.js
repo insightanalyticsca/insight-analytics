@@ -778,7 +778,13 @@
   // behavior (Page Down scrolls one viewport, no snap, no JS interference).
   // The CSS prefers-reduced-motion block also disables scroll-snap entirely.
   const prefersReducedMotionKbd = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!prefersReducedMotionKbd) {
+  // Also skip on pages that don't have a section-based layout (e.g. the
+  // insights listing page with 100+ article cards). On those pages, the
+  // section navigator finds only 2 targets (header + footer) and PageDown
+  // jumps straight to the bottom instead of scrolling one viewport.
+  // Require at least 3 snap targets for the keyboard handler to activate.
+  const hasEnoughSections = SNAP_TARGETS().length >= 3;
+  if (!prefersReducedMotionKbd && hasEnoughSections) {
     document.addEventListener("keydown", function (e) {
       // Don't hijack keyboard when the user is typing in a form field or
       // using a screen reader (let the AT handle the keys natively)
