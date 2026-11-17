@@ -819,4 +819,48 @@
    * ------------------------------------------------------------------ */
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  /* ------------------------------------------------------------------
+   * Beacon — log page visit to the activity tracker
+   *
+   * Fires on EVERY page that loads app.js (homepage, all 100+ insight
+   * articles, FAQ, demos, solutions showcase). Sends a 1x1 GIF ping
+   * to the CF Worker which logs the visit with: page path, visitor UID
+   * (persistent in localStorage), timestamp, geo, ASN, UA.
+   *
+   * Previously this code only existed inside the activity panel IIFE
+   * in index.html — so only the homepage was tracked. Insight articles
+   * getting organic Google clicks were invisible to the tracker.
+   *
+   * The activity panel IIFE in index.html has its own copy of this code
+   * too (it needs the EP variable for the gear panel). The duplicate
+   * beacon from the homepage is harmless — the worker deduplicates by
+   * ts+ip.
+   * ------------------------------------------------------------------ */
+  (function() {
+    var BEACON_EP = 'https://groq-proxy.insight-analytics.workers.dev/groq-proxy';
+    function beaconIsAutomated() {
+      var ua = (navigator.userAgent || '').toLowerCase();
+      var patterns = ['bot', 'crawl', 'spider', 'scrape', 'curl', 'wget',
+        'python', 'headless', 'phantom', 'selenium', 'puppeteer', 'playwright',
+        'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider',
+        'yandexbot', 'ahrefsbot', 'semrushbot', 'facebookexternalhit',
+        'twitterbot', 'linkedinbot', 'scrapy', 'httpx', 'node-fetch', 'axios'];
+      for (var i = 0; i < patterns.length; i++) {
+        if (ua.indexOf(patterns[i]) >= 0) return true;
+      }
+      return false;
+    }
+    if (!beaconIsAutomated()) {
+      var visitorUid = '';
+      try {
+        visitorUid = localStorage.getItem('ia-visitor-uid');
+        if (!visitorUid) {
+          visitorUid = 'v-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+          localStorage.setItem('ia-visitor-uid', visitorUid);
+        }
+      } catch(e) {}
+      new Image().src = BEACON_EP + '?op=beacon&page=' + encodeURIComponent(window.location.pathname) + '&site=main&uid=' + encodeURIComponent(visitorUid) + '&cb=' + Date.now();
+    }
+  })();
 })();
