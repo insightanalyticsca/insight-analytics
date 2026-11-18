@@ -62,13 +62,13 @@ TARGETS = [
         ],
         'parentheticals': [
             '(see live markets dashboard →)',
-            '(live S&P/NASDAQ/crypto chart →)',
             '(see this move in real-time →)',
             '(interactive markets viz →)',
             '(watch the market reaction live →)',
             '(see live market reaction →)',
             '(real-time markets dashboard →)',
             '(live chart →)',
+            '(see the dashboard track this live →)',
         ],
     },
     {
@@ -249,9 +249,13 @@ TARGETS = [
         ],
         'parentheticals': [
             '(see live supply chain dashboard →)',
-            '(interactive OTIF/freight viz →)',
+            '(interactive supply chain viz →)',
             '(see the network live →)',
             '(real-time operations center →)',
+            '(see live logistics dashboard →)',
+            '(interactive operations viz →)',
+            '(see the operations center →)',
+            '(live supply chain ops →)',
         ],
     },
     {
@@ -287,9 +291,11 @@ TARGETS = [
         ],
         'parentheticals': [
             '(see live risk dashboard →)',
-            '(interactive treasury viz →)',
             '(see exposure live →)',
             '(real-time risk intelligence →)',
+            '(interactive risk viz →)',
+            '(see live banking risk dashboard →)',
+            '(live treasury viz →)',
         ],
     },
     {
