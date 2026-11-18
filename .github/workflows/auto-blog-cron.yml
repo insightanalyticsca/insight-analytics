@@ -30,10 +30,26 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Generate blog articles
         run: node .github/scripts/auto-blog.mjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Inject contextual product links into new articles
+        # Runs the link injector over the whole /insights/ corpus.
+        # The script is idempotent — already-linked articles are skipped via
+        # pre-scan for existing class="internal-product-link" tags, so only
+        # the newly-generated articles from the previous step get touched.
+        # If no keywords match in a new article, it is left untouched.
+        # Safe to re-run on every cron tick.
+        run: python3 .github/scripts/inject_product_links.py
+        env:
+          SITE_ROOT: ${{ github.workspace }}
 
       - name: Check for changes
         id: changes
@@ -50,6 +66,6 @@ jobs:
         run: |
           git config user.name "Auto-Blog Bot"
           git config user.email "blog-bot@insight-analytics.ca"
-          git commit -m "blog: auto-generated AI articles — $(date -u +%Y-%m-%d-%H%M)"
+          git commit -m "blog: auto-generated AI articles — $(date -u +%Y-%m-%d-%H%M) + product links"
           git push
           echo "Pushed. deploy.yml will auto-fire via workflow_run trigger (no manual dispatch needed)."
