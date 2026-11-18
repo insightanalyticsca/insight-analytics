@@ -51,6 +51,21 @@ jobs:
         env:
           SITE_ROOT: ${{ github.workspace }}
 
+      - name: Inject contextual dashboard/app links (topic-matched + parenthetical asides)
+        # Second pass: for each article, scores every live app / dashboard
+        # target by topical keyword density, picks the BEST match, and injects
+        # ONE creative link + parenthetical aside at the end of the sentence
+        # containing the matched keyword.
+        # Skips articles that already have a contextual-link (idempotent) or
+        # that don't have a clear topical match (min 2 keyword hits).
+        # Targets: markets dashboard, retail dashboard, supply chain (Meridian),
+        # SaaS (Velocity), banking risk (Sentinel), IT service, customer payments,
+        # e-bill, AI dashboard builder, time series, weather load forecast,
+        # database archaeology, fuzzy address matching, personalized power automate.
+        run: python3 .github/scripts/inject_contextual_links.py
+        env:
+          SITE_ROOT: ${{ github.workspace }}
+
       - name: Check for changes
         id: changes
         run: |

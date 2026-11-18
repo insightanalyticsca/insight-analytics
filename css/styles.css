@@ -3024,3 +3024,31 @@ body.dark .article-body .internal-product-link:hover {
   border-bottom-color: rgba(103, 232, 249, .6);
   background: rgba(139, 147, 255, .08);
 }
+
+/* ═══ Contextual links — topic-matched dashboard/app links with parenthetical asides ═══ */
+/* Added by scripts/inject_contextual_links.py — 2026-11-19                          */
+/* The .link-aside span is the "(see live X dashboard →)" hint that follows the link. */
+.article-body .internal-product-link.contextual-link {
+  /* Inherits from .internal-product-link (accent color, dashed underline)            */
+  /* No additional styling needed — the class is just a marker for revert/targeting.   */
+}
+.article-body .link-aside {
+  font-size: 0.82em;
+  color: var(--muted, #64748b);
+  font-style: italic;
+  white-space: nowrap;
+  opacity: 0.85;
+  transition: opacity .15s ease, color .15s ease;
+}
+.article-body .link-aside:hover {
+  opacity: 1;
+  color: var(--accent, #6366f1);
+}
+[data-theme="dark"] .article-body .link-aside,
+body.dark .article-body .link-aside {
+  color: #93a4c0;
+}
+[data-theme="dark"] .article-body .link-aside:hover,
+body.dark .article-body .link-aside:hover {
+  color: #8b93ff;
+}
