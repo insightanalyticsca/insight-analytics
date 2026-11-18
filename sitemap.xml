@@ -846,4 +846,10 @@
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://insight-analytics.ca/insights/democrats-have-dealt-trump-a-crushing-blow-heres-what-it-means-for-business-leaders</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
