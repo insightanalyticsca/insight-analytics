@@ -14,7 +14,7 @@
   'use strict';
   if (!('serviceWorker' in navigator)) return;
 
-  var EXPECTED_SW_VERSION = 'v5.66.0-contextual-v2';
+  var EXPECTED_SW_VERSION = 'v5.67.0-contextual-v3';
 
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('/service-worker.js', {

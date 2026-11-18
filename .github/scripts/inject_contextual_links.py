@@ -376,12 +376,15 @@ def score_target(plain_text: str, target: dict) -> tuple:
     return score, first_match
 
 
-def pick_best_target(plain_text: str, already_linked_urls: set) -> tuple:
+def pick_best_target(plain_text: str, already_linked_urls: set, article_slug: str) -> tuple:
     """Pick the highest-scoring target that hasn't already been linked.
+    For the winning target, also pick a varied anchor keyword from the set
+    of matching keywords (deterministic per-article hash) so the same anchor
+    doesn't appear on every article.
     Returns (target_dict, score, matched_keyword) or (None, 0, None)."""
     best = None
     best_score = 0
-    best_kw = None
+    best_matching_keywords = []
     for target in TARGETS:
         if target['url'] in already_linked_urls:
             continue
@@ -390,8 +393,24 @@ def pick_best_target(plain_text: str, already_linked_urls: set) -> tuple:
         if score >= threshold and score > best_score:
             best = target
             best_score = score
-            best_kw = first_kw
-    return best, best_score, best_kw
+            # Collect ALL matching keywords (not just the first) so we can vary the anchor
+            text_lower = plain_text.lower()
+            matching = []
+            for kw in target['keywords']:
+                pattern = re.compile(r'(?<![\w])' + re.escape(kw.lower()) + r'(?![\w])')
+                if pattern.search(text_lower):
+                    matching.append(kw)
+            best_matching_keywords = matching
+    if not best:
+        return None, 0, None
+    # Vary which keyword gets linked based on article slug hash
+    # (deterministic so the same article always gets the same anchor)
+    if best_matching_keywords:
+        h = int(hashlib.md5(article_slug.encode()).hexdigest(), 16)
+        chosen = best_matching_keywords[h % len(best_matching_keywords)]
+    else:
+        chosen = None
+    return best, best_score, chosen
 
 
 def pick_parenthetical(target: dict, article_slug: str) -> str:
@@ -483,7 +502,7 @@ def process_article(html: str, article_slug: str) -> tuple:
     plain = re.sub(r'<[^>]+>', ' ', body_content)
     plain = re.sub(r'\s+', ' ', plain)
 
-    target, score, matched_kw = pick_best_target(plain, already_linked_urls)
+    target, score, matched_kw = pick_best_target(plain, already_linked_urls, article_slug)
     if not target:
         return html, None
 
