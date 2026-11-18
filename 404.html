@@ -15,6 +15,13 @@
   <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
 
+  <!-- Meta-refresh redirects for legacy /blog/* URLs that Google has indexed.
+       Google follows meta refresh redirects (unlike JS redirects), so this
+       passes link juice from the old /blog/ URLs to the new /demos/ URLs.
+       The JS redirect below handles human visitors with a smoother UX;
+       this meta tag handles Googlebot. -->
+  <meta http-equiv="refresh" content="0; url=https://insight-analytics.ca/demos/" />
+
   <!-- Critical: tell Googlebot NOT to index this 404 page. Google will
        eventually drop the URL from its index after seeing noindex here
        repeatedly. Combined with the 404 status code, this is the
