@@ -14,7 +14,7 @@
   'use strict';
   if (!('serviceWorker' in navigator)) return;
 
-  var EXPECTED_SW_VERSION = 'v5.69.0-single-link';
+  var EXPECTED_SW_VERSION = 'v5.70.0-eyebrow-map';
 
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('/service-worker.js', {

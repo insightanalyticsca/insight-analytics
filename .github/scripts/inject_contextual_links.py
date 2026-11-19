@@ -324,6 +324,29 @@ MIN_MATCHES_TO_LINK = 1  # default if not specified per-target — any single ke
 # The weighted score (title×10 + firstpara×5 + body×1) is used for CHOOSING
 # between targets when multiple match, not for filtering.
 
+# ───────── Eyebrow → Dashboard mapping ─────────
+# Each article has an eyebrow (category label) like "Logistics & Supply Chain"
+# or "Markets & Market Research". This is the STRONGEST signal for which
+# dashboard to link — much more reliable than body keyword matching.
+# If the article's eyebrow maps to a dashboard, ALWAYS inject a link to that
+# dashboard (even if no specific keyword appears in the body).
+EYEBROW_MAP = {
+    'Logistics & Supply Chain': 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian.html',
+    'Logistics &amp; Supply Chain': 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-meridian.html',
+    'Markets & Market Research': '/demos/universal-dashboard-builder',
+    'Markets &amp; Market Research': '/demos/universal-dashboard-builder',
+    'AI Implementation': '/demos/ai-dashboard-builder',
+    'Corporate Governance': 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-sentinel.html',
+    'Cost & Efficiency': '/demos/universal-dashboard-builder',
+    'Cost &amp; Efficiency': '/demos/universal-dashboard-builder',
+    'Executive Strategy': '/solutions-showcase/',
+    'Profitability': '/dashboards-preview/custom-html/executive-customer-payments.html',
+    'M&A & Strategy': 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-sentinel.html',
+    'M&amp;A &amp; Strategy': 'https://insightanalyticsca.github.io/dashboards/custom-html/executive-sentinel.html',
+    'ROI & Capital': '/demos/universal-dashboard-builder',
+    'ROI &amp; Capital': '/demos/universal-dashboard-builder',
+}
+
 # ───────── Weighted scoring ─────────
 # An article's title and first paragraph signal its PRIMARY topic much more
 # strongly than the body. A stocks article might mention "inventory optimization"
@@ -373,6 +396,22 @@ def restore_protected_regions(html: str, restore_map: dict) -> str:
 
 
 # ───────── Scoring + injection ─────────
+def extract_eyebrow(html: str) -> str:
+    """Extract the article's eyebrow (category label) from the article-hero section."""
+    m = re.search(r'<div class="article-eyebrow"[^>]*>([^<]+)</div>', html)
+    if m:
+        return m.group(1).strip()
+    return ''
+
+
+def find_target_by_url(url: str) -> dict:
+    """Find a target dict by its URL."""
+    for t in TARGETS:
+        if t['url'] == url:
+            return t
+    return None
+
+
 def extract_title_and_first_para(html: str) -> tuple:
     """Extract the article title (from <h1> or <title>) and the first paragraph
     of the article-body section. Returns (title_text, first_para_text)."""
@@ -545,8 +584,80 @@ def process_article(html: str, article_slug: str) -> tuple:
 
     # Extract title + first paragraph for weighted scoring
     title, first_para = extract_title_and_first_para(html)
+    eyebrow = extract_eyebrow(html)
 
-    # Pick best target — returns the target + ALL matching keywords
+    # ─── EYEBROW OVERRIDE ─────────────────────────────────────────────
+    # If the article's eyebrow (category) maps directly to a dashboard,
+    # use that dashboard. This is the STRONGEST signal — much more reliable
+    # than body keyword matching. Every article with a mapped eyebrow gets
+    # a link, even if no specific keyword appears in the body.
+    eyebrow_url = EYEBROW_MAP.get(eyebrow, '')
+    if eyebrow_url and eyebrow_url not in already_linked_urls:
+        target = find_target_by_url(eyebrow_url)
+        if target:
+            # Use the eyebrow-mapped target directly. Still try to find a
+            # keyword from this target's list that appears in the body,
+            # for a natural anchor text. Fall back to a generic link if
+            # no keyword is in the body.
+            matching_keywords = []
+            for kw in target['keywords']:
+                if count_keyword_matches(plain_body, kw) > 0:
+                    matching_keywords.append(kw)
+            
+            # Mask + inject
+            masked, restore_map = mask_protected_regions(body_content)
+            
+            # Pick keyword via hash rotation (or use first matching)
+            if matching_keywords:
+                h = int(hashlib.md5(article_slug.encode()).hexdigest(), 16)
+                rotated = matching_keywords[h % len(matching_keywords):] + matching_keywords[:h % len(matching_keywords)]
+                chosen_kw = None
+                for kw in rotated:
+                    new_masked, matched = inject_link(masked, kw, target['url'], target['name'])
+                    if matched:
+                        masked = new_masked
+                        chosen_kw = kw
+                        break
+                if chosen_kw:
+                    anchor_text = f'({chosen_kw} — see {target["name"]} →)'
+                else:
+                    # Keyword was in scoring but not in masked body — use generic
+                    link_text = f'(see {target["name"]} →)'
+                    link_html = f' <a href="{target["url"]}" class="internal-product-link contextual-link">{link_text}</a>'
+                    p_end = masked.find('</p>')
+                    if p_end != -1:
+                        masked = masked[:p_end] + link_html + masked[p_end:]
+                    else:
+                        masked = masked + link_html
+                    anchor_text = link_text
+                    chosen_kw = '(generic)'
+            else:
+                # No matching keyword in body — inject generic link
+                link_text = f'(see {target["name"]} →)'
+                link_html = f' <a href="{target["url"]}" class="internal-product-link contextual-link">{link_text}</a>'
+                p_end = masked.find('</p>')
+                if p_end != -1:
+                    masked = masked[:p_end] + link_html + masked[p_end:]
+                else:
+                    masked = masked + link_html
+                anchor_text = link_text
+                chosen_kw = '(generic)'
+            
+            new_body_content = restore_protected_regions(masked, restore_map)
+            new_html = (
+                html[:body_match.start()] +
+                body_open + new_body_content + body_close +
+                html[body_match.end():]
+            )
+            return new_html, {
+                'target_url': target['url'],
+                'target_name': target['name'],
+                'keyword': chosen_kw,
+                'anchor_text': anchor_text,
+                'score': 100,  # eyebrow override = highest priority
+            }
+
+    # ─── FALLBACK: keyword-based scoring (if no eyebrow match) ───────
     target, score, matching_keywords = pick_best_target(
         title, first_para, plain_body, already_linked_urls, article_slug)
     if not target or not matching_keywords:
@@ -572,17 +683,15 @@ def process_article(html: str, article_slug: str) -> tuple:
 
     if not anchor_text:
         # No matching keyword in the body — use the target name alone
-        kw = matching_keywords[0] if matching_keywords else target['name']
         link_text = f'(see {target["name"]} →)'
         link_html = f' <a href="{target["url"]}" class="internal-product-link contextual-link">{link_text}</a>'
-        # Insert at end of first <p>
         p_end = masked.find('</p>')
         if p_end != -1:
             masked = masked[:p_end] + link_html + masked[p_end:]
         else:
             masked = masked + link_html
         anchor_text = link_text
-        chosen_kw = '(target-only)'
+        chosen_kw = '(generic)'
 
     new_body_content = restore_protected_regions(masked, restore_map)
     new_html = (
