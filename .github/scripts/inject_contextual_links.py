@@ -319,7 +319,7 @@ TARGETS = [
     },
 ]
 
-MIN_MATCHES_TO_LINK = 2  # default if not specified per-target — require ≥2 distinct keywords
+MIN_MATCHES_TO_LINK = 1  # default if not specified per-target — any single keyword match triggers a link
 # No MIN_WEIGHTED_SCORE gate — the min_matches check is the real quality filter.
 # The weighted score (title×10 + firstpara×5 + body×1) is used for CHOOSING
 # between targets when multiple match, not for filtering.
@@ -463,56 +463,54 @@ def pick_parenthetical(target: dict, article_slug: str) -> str:
     return target['parentheticals'][h % len(target['parentheticals'])]
 
 
-def inject_link(masked_body: str, keyword: str, url: str, parenthetical: str) -> tuple:
-    """Find first occurrence of keyword, wrap in <a>, then insert the
-    parenthetical aside at the END of the current sentence (or at the
-    next </p> if no sentence terminator is found within 300 chars).
-    This avoids breaking noun phrases like "Nasdaq 100" or "S&P 500".
-
-    Returns (new_body, anchor_text_matched) or (original, None)."""
-    # Step 1: find the keyword and wrap it in <a>
-    pattern = re.compile(
-        r'(?<![\w\x00])(' + re.escape(keyword) + r')(?![\w])',
+def inject_link(masked_body: str, keyword: str, url: str, target_name: str) -> tuple:
+    """Inject a SINGLE parenthetical link at the end of the current sentence.
+    
+    Format: (keyword — see target_name →)
+    The ENTIRE parenthetical is the link text. No separate aside span.
+    
+    Placement: finds the first occurrence of the keyword, then scans forward
+    to the end of that sentence (. ! ? ; or </p>), and inserts the link
+    right after the terminator.
+    
+    Returns (new_body, keyword_matched) or (original, None) if keyword not found."""
+    # Step 1: verify the keyword exists somewhere in the body (don't link if not present)
+    find_pattern = re.compile(
+        r'(?<![\w\x00])' + re.escape(keyword) + r'(?![\w])',
         re.IGNORECASE
     )
-    m = pattern.search(masked_body)
-    if not m:
+    if not find_pattern.search(masked_body):
         return masked_body, None
 
-    matched_text = m.group(1)
-    link_html = f'<a href="{url}" class="internal-product-link contextual-link">{matched_text}</a>'
-    after_link = masked_body[m.end(1):]
-
-    # Step 2: find where to insert the parenthetical.
-    # Look for the next sentence terminator (. ! ? ;) followed by whitespace,
-    # OR the next </p> tag, whichever comes first within 400 chars.
-    # Skip terminators that are part of abbreviations (e.g. "U.S." — heuristic:
-    # single capital letter followed by period).
+    # Step 2: find the end of the FIRST sentence in the body.
+    # We insert the link at the end of the first sentence (after the first . ! ? ;)
+    # OR at the end of the first <p> if no sentence terminator is found.
+    # This places the link early in the article (high visibility) and at a
+    # natural reading break.
     insert_pattern = re.compile(
-        r'([.!?;])\s+'           # sentence terminator + whitespace
-        r'|'
-        r'(</p>)',                # end of paragraph
+        r'([.!?;])\s+',           # sentence terminator + whitespace
         re.DOTALL
     )
-    insert_match = insert_pattern.search(after_link, 0)
-    if insert_match and (insert_match.end() <= 400 or insert_match.group(2)):
-        # Insert right after the terminator (or after </p>)
+    insert_match = insert_pattern.search(masked_body)
+    
+    # Build the single parenthetical link
+    link_text = f'({keyword} — see {target_name} →)'
+    link_html = f' <a href="{url}" class="internal-product-link contextual-link">{link_text}</a>'
+    
+    if insert_match:
+        # Insert right after the sentence terminator
         insert_pos = insert_match.end()
-        # If we matched </p>, put the aside BEFORE the closing tag (so it's inside the paragraph)
-        if insert_match.group(2):
-            # actually insert_match.end() is after </p>; we want before, so back up 4 chars
-            insert_pos = insert_match.start()
-        aside_html = f'<span class="link-aside"> {parenthetical}</span>'
-        new_after = after_link[:insert_pos] + aside_html + after_link[insert_pos:]
+        new_body = masked_body[:insert_pos] + link_html + masked_body[insert_pos:]
     else:
-        # No good insertion point found within range — fall back to immediate
-        # insertion right after the link (rare case, but better than dropping
-        # the parenthetical entirely).
-        aside_html = f'<span class="link-aside"> {parenthetical}</span>'
-        new_after = aside_html + after_link
-
-    new_body = masked_body[:m.start(1)] + link_html + new_after
-    return new_body, matched_text
+        # No sentence terminator found — insert at end of first <p>
+        p_end = masked_body.find('</p>')
+        if p_end != -1:
+            new_body = masked_body[:p_end] + link_html + masked_body[p_end:]
+        else:
+            # Last resort: append at end of body
+            new_body = masked_body + link_html
+    
+    return new_body, keyword
 
 
 def process_article(html: str, article_slug: str) -> tuple:
@@ -551,51 +549,40 @@ def process_article(html: str, article_slug: str) -> tuple:
     # Pick best target — returns the target + ALL matching keywords
     target, score, matching_keywords = pick_best_target(
         title, first_para, plain_body, already_linked_urls, article_slug)
-    if not target:
+    if not target or not matching_keywords:
         return html, None
 
     # Mask the body for injection
     masked, restore_map = mask_protected_regions(body_content)
-    parenthetical = pick_parenthetical(target, article_slug)
 
-    # Strategy 1: try each matching keyword in body-text order — link the
-    # first one that actually appears in the (masked) body. Vary which
-    # keyword we start with via article-slug hash so different articles
-    # get different anchors.
+    # Pick which keyword to use in the link text (deterministic via slug hash)
     h = int(hashlib.md5(article_slug.encode()).hexdigest(), 16)
-    # Rotate the keyword list so the hash determines starting offset
     rotated = matching_keywords[h % len(matching_keywords):] + matching_keywords[:h % len(matching_keywords)]
 
+    # Try each matching keyword until one is found in the body
     anchor_text = None
     chosen_kw = None
     for kw in rotated:
-        new_masked, anchor = inject_link(masked, kw, target['url'], parenthetical)
-        if anchor:
+        new_masked, matched = inject_link(masked, kw, target['url'], target['name'])
+        if matched:
             masked = new_masked
-            anchor_text = anchor
+            anchor_text = f'({kw} — see {target["name"]} →)'
             chosen_kw = kw
             break
 
-    # Strategy 2: if NO matching keyword appears in the body (they were all
-    # in the title or first-para-only), inject a new sentence at the end of
-    # the first paragraph: "→ See live X dashboard"
     if not anchor_text:
-        # Build a standalone CTA sentence using the target's name
-        cta_text = f'→ See {target["name"]} live'
-        cta_html = (
-            f' <a href="{target["url"]}" class="internal-product-link contextual-link">'
-            f'{cta_text}</a>'
-            f'<span class="link-aside"> {parenthetical}</span>'
-        )
-        # Find the end of the first <p> in the body and insert the CTA before </p>
-        first_p_match = re.search(r'(<p[^>]*>.*?)(</p>)', masked, re.DOTALL | re.IGNORECASE)
-        if first_p_match:
-            insert_pos = first_p_match.start(2)
-            masked = masked[:insert_pos] + cta_html + masked[insert_pos:]
-            anchor_text = cta_text
-            chosen_kw = '(appended CTA)'
+        # No matching keyword in the body — use the target name alone
+        kw = matching_keywords[0] if matching_keywords else target['name']
+        link_text = f'(see {target["name"]} →)'
+        link_html = f' <a href="{target["url"]}" class="internal-product-link contextual-link">{link_text}</a>'
+        # Insert at end of first <p>
+        p_end = masked.find('</p>')
+        if p_end != -1:
+            masked = masked[:p_end] + link_html + masked[p_end:]
         else:
-            return html, None  # no paragraph found — give up
+            masked = masked + link_html
+        anchor_text = link_text
+        chosen_kw = '(target-only)'
 
     new_body_content = restore_protected_regions(masked, restore_map)
     new_html = (
@@ -608,26 +595,50 @@ def process_article(html: str, article_slug: str) -> tuple:
         'target_name': target['name'],
         'keyword': chosen_kw,
         'anchor_text': anchor_text,
-        'parenthetical': parenthetical,
         'score': score,
     }
 
 
 def revert_article(html: str) -> tuple:
-    """Strip contextual-link <a> wrappers + their .link-aside spans."""
-    # Remove the <span class="link-aside"> … </span> first
+    """Strip ALL contextual-link elements — handles both old and new formats.
+    
+    Old format: <a ...>keyword</a><span class="link-aside">...</span>
+      → unwrap the anchor (keep the keyword text), remove the span entirely
+    
+    New format: <a ...>(keyword — see dashboard →)</a>
+      → remove the entire link (it's a standalone parenthetical)
+    
+    Returns (new_html, count_removed)."""
+    n_total = 0
+    
+    # Step 1: Remove NEW-format links entirely (standalone parentheticals)
+    # These start with '(' in the link text
+    new_pattern = re.compile(
+        r'\s*<a\s+href="[^"]*"\s+class="internal-product-link contextual-link"[^>]*>\([^<]*</a>',
+        re.DOTALL | re.IGNORECASE
+    )
+    html, n_new = new_pattern.subn('', html)
+    n_total += n_new
+    
+    # Step 2: Remove OLD-format .link-aside spans entirely
     span_pattern = re.compile(
         r'<span class="link-aside">[^<]*</span>',
         re.DOTALL | re.IGNORECASE
     )
     html, n_spans = span_pattern.subn('', html)
-    # Then unwrap the <a class="...contextual-link...">…</a>
-    a_pattern = re.compile(
-        r'<a\s+href="[^"]*"\s+class="internal-product-link contextual-link"[^>]*>(.*?)</a>',
+    n_total += n_spans
+    
+    # Step 3: Unwrap OLD-format anchors (keep the inner keyword text)
+    # These are <a class="internal-product-link contextual-link">keyword</a>
+    # where the text does NOT start with '('
+    old_pattern = re.compile(
+        r'<a\s+href="[^"]*"\s+class="internal-product-link contextual-link"[^>]*>([^<]+)</a>',
         re.DOTALL | re.IGNORECASE
     )
-    html, n_as = a_pattern.subn(r'\1', html)
-    return html, n_as + n_spans
+    html, n_old = old_pattern.subn(r'\1', html)
+    n_total += n_old
+    
+    return html, n_total
 
 
 # ───────── Main ─────────
@@ -693,7 +704,7 @@ def main():
             total_links += 1
             target_counts[info['target_name']] = target_counts.get(info['target_name'], 0) + 1
             print(f"  [{rel[:50]:50}]  '{info['anchor_text'][:24]}' → {info['target_name'][:30]}")
-            print(f"    {info['parenthetical']}")
+            print(f"    anchor: {info['anchor_text'][:60]}")
             if not args.dry_run:
                 art_path.write_text(new_html)
 
