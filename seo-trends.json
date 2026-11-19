@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-18T15:02:20.535Z",
+  "collectedAt": "2026-11-19T15:11:23.968Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -37,7 +37,7 @@
     "organizational culture",
     "change management"
   ],
-  "totalTerms": 426,
+  "totalTerms": 437,
   "trends": [
     {
       "term": "ai dashboard",
@@ -214,7 +214,7 @@
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership",
+      "term": "executive leadership council",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "executive leadership"
@@ -370,13 +370,13 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation specialist",
+      "term": "ai implementation jobs",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization meaning",
+      "term": "cost optimization hub",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "cost optimization"
@@ -406,7 +406,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management services",
+      "term": "treasury management jobs",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -442,7 +442,7 @@
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership council",
+      "term": "executive leadership",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "executive leadership"
@@ -460,7 +460,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture definition",
+      "term": "organizational culture and leadership",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -496,7 +496,7 @@
       "seed": "business intelligence"
     },
     {
-      "term": "data pipelines examples",
+      "term": "data pipeline tools",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "data pipeline"
@@ -580,13 +580,13 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation jobs",
+      "term": "ai implementation consultant",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization hub",
+      "term": "cost optimization meaning",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "cost optimization"
@@ -616,7 +616,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management systems",
+      "term": "treasury management services",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -634,7 +634,7 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions data centers",
+      "term": "carbon emissions per capita by country",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
@@ -670,7 +670,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture and leadership",
+      "term": "organizational culture examples",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -682,13 +682,13 @@
       "seed": "change management"
     },
     {
-      "term": "executive",
+      "term": "2026",
       "volume": 80,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "nvidia",
+      "term": "leadership",
       "volume": 80,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -724,7 +724,7 @@
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline tools",
+      "term": "data pipelines examples",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "data pipeline"
@@ -796,7 +796,7 @@
       "seed": "ai strategy"
     },
     {
-      "term": "ai roi study",
+      "term": "ai roi calculator",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai roi"
@@ -808,13 +808,13 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation consultant",
+      "term": "ai implementation specialist",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization aws",
+      "term": "cost optimization hub aws",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "cost optimization"
@@ -826,7 +826,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management spokane county",
+      "term": "risk management framework",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -844,7 +844,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management officer salary",
+      "term": "treasury management systems",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -862,13 +862,13 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions per capita by country",
+      "term": "carbon emissions data centers",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance fellowship",
+      "term": "climate finance columbia",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "climate finance"
@@ -910,19 +910,7 @@
       "seed": "change management"
     },
     {
-      "term": "2026",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "europe",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "leadership",
+      "term": "executive",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -941,6 +929,12 @@
     },
     {
       "term": "supply",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "anthropic",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1036,7 +1030,7 @@
       "seed": "ai strategy"
     },
     {
-      "term": "ai roi calculator",
+      "term": "ai roi study",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ai roi"
@@ -1054,7 +1048,7 @@
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization hub pricing",
+      "term": "cost optimization aws",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "cost optimization"
@@ -1066,7 +1060,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management agency",
+      "term": "risk management definition",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1084,7 +1078,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management banking",
+      "term": "treasury management officer salary",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1108,13 +1102,13 @@
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance columbia",
+      "term": "climate finance fellowship",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance law",
+      "term": "corporate governance certification",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "corporate governance"
@@ -1138,7 +1132,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture and leadership by edgar h. schein",
+      "term": "organizational culture meaning",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -1162,7 +1156,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "intelligence",
+      "term": "billion",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "europe",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1264,7 +1264,7 @@
       "seed": "ai executive brief"
     },
     {
-      "term": "ai strategy courses",
+      "term": "ai strategy and leadership program",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai strategy"
@@ -1282,13 +1282,13 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation engineer",
+      "term": "ai implementation certification",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization strategies",
+      "term": "cost optimization hub pricing",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "cost optimization"
@@ -1300,7 +1300,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management strategies",
+      "term": "risk management salary",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1318,7 +1318,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management officer",
+      "term": "treasury management banking",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1336,19 +1336,19 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions by year",
+      "term": "carbon emissions by source",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance masters",
+      "term": "climate finance action",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance documents",
+      "term": "corporate governance guidelines",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "corporate governance"
@@ -1390,7 +1390,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "trade",
+      "term": "intelligence",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1402,7 +1402,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "crisis",
+      "term": "needs",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "work",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1414,13 +1420,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "supply chain",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "chain",
+      "term": "china",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1510,7 +1510,7 @@
       "seed": "ai executive brief"
     },
     {
-      "term": "ai strategy and leadership program",
+      "term": "ai strategy courses",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai strategy"
@@ -1522,19 +1522,19 @@
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption meaning",
+      "term": "ai adoption maturity model",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation specialist salary",
+      "term": "ai implementation engineer",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai implementation"
     },
     {
-      "term": "cost optimization hub aws",
+      "term": "cost optimization strategies",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "cost optimization"
@@ -1546,7 +1546,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management definition",
+      "term": "risk management insurance",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1582,19 +1582,19 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions by source",
+      "term": "carbon emissions by year",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance meaning",
+      "term": "climate finance llc",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance institute",
+      "term": "corporate governance law",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "corporate governance"
@@ -1630,13 +1630,13 @@
       "seed": "change management"
     },
     {
-      "term": "entrepreneurs",
+      "term": "next",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "banking",
+      "term": "entrepreneurs",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1648,13 +1648,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "agentic",
+      "term": "healthcare",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "healthcare",
+      "term": "trade",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1672,6 +1672,12 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "planning",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "advantage",
       "volume": 40,
       "source": "industry-rss",
@@ -1684,25 +1690,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "private",
+      "term": "changing",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "judgment",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "digital",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "problem",
+      "term": "crisis",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1714,7 +1708,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "work",
+      "term": "nvidia",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "investors",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1732,7 +1732,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "summit",
+      "term": "management",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1750,13 +1750,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "market",
+      "term": "supply chain",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "china",
+      "term": "chain",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1780,7 +1780,7 @@
       "seed": "business intelligence"
     },
     {
-      "term": "data pipelines pocket reference",
+      "term": "data pipeline design",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "data pipeline"
@@ -1846,13 +1846,13 @@
       "seed": "ai roi"
     },
     {
-      "term": "ai adoption maturity model",
+      "term": "ai adoption meaning",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation certification",
+      "term": "ai implementation specialist salary",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -1870,7 +1870,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management framework",
+      "term": "risk management association",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -1882,13 +1882,13 @@
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation book",
+      "term": "capital allocation partners",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management salary",
+      "term": "treasury management tompkins",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1906,25 +1906,25 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions definition",
+      "term": "carbon emissions calculator",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance action",
+      "term": "climate finance masters",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance certification",
+      "term": "corporate governance awards",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership meaning",
+      "term": "executive leadership solutions",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "executive leadership"
@@ -1942,19 +1942,37 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture assessment instrument (ocai)",
+      "term": "organizational culture is best described as",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management plan",
+      "term": "change management jobs remote",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "change management"
     },
     {
+      "term": "transforming",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "infrastructure",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "banking",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "navigating",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1966,13 +1984,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "insurance",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "operations",
+      "term": "agentic",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2002,18 +2014,6 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "billion",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "earnings",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "human",
       "volume": 30,
       "source": "industry-rss",
@@ -2026,31 +2026,49 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "risk",
+      "term": "help",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "scaling",
+      "term": "private",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "transformation",
+      "term": "security",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "paradox",
+      "term": "turning",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "changing",
+      "term": "judgment",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "search",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "control",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "digital",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2074,7 +2092,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "needs",
+      "term": "challenge",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "problem",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2086,7 +2110,19 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "decisions",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "markets",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "summit",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2134,19 +2170,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "management",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "welcomes",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "foundation launch",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "social",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2176,6 +2206,12 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "million",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "alumni",
       "volume": 30,
       "source": "industry-rss",
@@ -2188,7 +2224,25 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "market",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "campus",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "record",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "changes",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2200,13 +2254,25 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "stocks",
+      "term": "give",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "rally",
+      "term": "freight",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "trump putin",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "putin",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2230,7 +2296,7 @@
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline design",
+      "term": "data pipeline icon",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "data pipeline"
@@ -2302,7 +2368,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation courses",
+      "term": "ai implementation consultant jobs",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -2320,7 +2386,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management salary",
+      "term": "risk management plan",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -2332,13 +2398,13 @@
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation model",
+      "term": "capital allocation book",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management jobs near me",
+      "term": "treasury management salary",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -2356,25 +2422,25 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions calculator",
+      "term": "carbon emissions definition",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance access network",
+      "term": "climate finance meaning",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance guidelines",
+      "term": "corporate governance documents",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership solutions",
+      "term": "executive leadership meaning",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "executive leadership"
@@ -2392,13 +2458,13 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture in healthcare",
+      "term": "organizational culture assessment instrument (ocai)",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management training",
+      "term": "change management plan",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "change management"
@@ -2422,13 +2488,13 @@
       "seed": "business intelligence"
     },
     {
-      "term": "data pipeline icon",
+      "term": "data pipelines pocket reference",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "data pipeline"
     },
     {
-      "term": "data lineage documentation",
+      "term": "data lineage mapping",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "data lineage"
@@ -2476,7 +2542,7 @@
       "seed": "ai executive brief"
     },
     {
-      "term": "ai strategy jobs remote",
+      "term": "ai strategy consultant jobs",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "ai strategy"
@@ -2494,7 +2560,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation consultant jobs",
+      "term": "ai implementation courses",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -2512,7 +2578,7 @@
       "seed": "profitability analysis"
     },
     {
-      "term": "risk management insurance",
+      "term": "risk management process",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "risk management"
@@ -2524,13 +2590,13 @@
       "seed": "mergers acquisitions"
     },
     {
-      "term": "capital allocation decisions",
+      "term": "capital allocation model",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management products",
+      "term": "treasury management officer",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -2548,25 +2614,25 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions of ai",
+      "term": "carbon emissions by industry",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance internship",
+      "term": "climate finance access network",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "climate finance"
     },
     {
-      "term": "corporate governance attorney",
+      "term": "corporate governance institute",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "corporate governance"
     },
     {
-      "term": "executive leadership jobs",
+      "term": "executive leadership development program",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "executive leadership"
@@ -2584,13 +2650,13 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture is best described as",
+      "term": "organizational culture in healthcare",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management consultant",
+      "term": "change management training",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "change management"
