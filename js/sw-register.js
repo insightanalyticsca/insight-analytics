@@ -14,7 +14,7 @@
   'use strict';
   if (!('serviceWorker' in navigator)) return;
 
-  var EXPECTED_SW_VERSION = 'v5.70.0-eyebrow-map';
+  var EXPECTED_SW_VERSION = 'v5.71.0-clean-sitemap';
 
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('/service-worker.js', {
