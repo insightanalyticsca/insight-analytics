@@ -56,7 +56,7 @@ TARGETS = [
             'jobs report', 'jobs data', 'oil prices', 'crude oil',
             'Wall Street', 'equity markets', 'stock rebound', 'stocks fell',
             'stocks rose', 'stocks dropped', 'stocks finish', 'stocks fall',
-            'Nasdaq', 'NASDAQ', 'S&P', 'Dow Jones', 'TSX',
+            'Nasdaq', 'S&P', 'Dow Jones',
             # Single-word (broad) — only used if article is clearly financial
             'stocks', 'bonds', 'yields', 'equities',
         ],
@@ -170,7 +170,7 @@ TARGETS = [
         'keywords': [
             'Power Automate', 'workflow automation',
             'AI pipeline builder', 'personalized automation',
-            'workflow orchestration', 'RPA',
+            'workflow orchestration',
             'robotic process automation',
             'warehouse automation', 'process automation',
         ],
@@ -245,7 +245,7 @@ TARGETS = [
             'disruption monitoring', 'warehouse execution',
             'inventory optimization', 'service level',
             'fill rate', 'last mile', 'demand planning',
-            'S&OP', 'lead time', 'OTIF',
+            'lead time', 'on-time delivery', 'order fulfillment',
         ],
         'parentheticals': [
             '(see live supply chain dashboard →)',
@@ -264,9 +264,10 @@ TARGETS = [
         'min_matches': 2,
         'keywords': [
             'SaaS growth', 'subscription retention', 'churn rate',
-            'net revenue retention', 'NRR', 'ARR growth',
-            'customer lifetime value', 'LTV', 'cohort analysis',
-            'retention curve', 'SaaS metrics', 'MRR',
+            'net revenue retention', 'annual recurring revenue',
+            'customer lifetime value', 'cohort analysis',
+            'retention curve', 'SaaS metrics',
+            'monthly recurring revenue',
         ],
         'parentheticals': [
             '(see live SaaS dashboard →)',
@@ -318,7 +319,19 @@ TARGETS = [
     },
 ]
 
-MIN_MATCHES_TO_LINK = 2  # default if not specified per-target
+MIN_MATCHES_TO_LINK = 2  # default if not specified per-target — require ≥2 distinct keywords
+# No MIN_WEIGHTED_SCORE gate — the min_matches check is the real quality filter.
+# The weighted score (title×10 + firstpara×5 + body×1) is used for CHOOSING
+# between targets when multiple match, not for filtering.
+
+# ───────── Weighted scoring ─────────
+# An article's title and first paragraph signal its PRIMARY topic much more
+# strongly than the body. A stocks article might mention "inventory optimization"
+# in passing in the body, but its title "Stocks Down Ahead of Nvidia Earnings"
+# makes it unambiguously a markets article. Weight accordingly:
+TITLE_WEIGHT = 10
+FIRST_PARA_WEIGHT = 5
+BODY_WEIGHT = 1
 
 # ───────── Protected regions (same as inject_product_links.py) ─────────
 PROTECTED_REGION_PATTERNS = [
@@ -360,57 +373,87 @@ def restore_protected_regions(html: str, restore_map: dict) -> str:
 
 
 # ───────── Scoring + injection ─────────
-def score_target(plain_text: str, target: dict) -> tuple:
-    """Return (score, first_matched_keyword) for a target on this article."""
-    text_lower = plain_text.lower()
-    score = 0
-    first_match = None
+def extract_title_and_first_para(html: str) -> tuple:
+    """Extract the article title (from <h1> or <title>) and the first paragraph
+    of the article-body section. Returns (title_text, first_para_text)."""
+    # Title: prefer <h1> inside article-hero, fall back to <title>
+    title = ''
+    m = re.search(r'<section class="article-hero"[^>]*>(.*?)</section>', html, re.DOTALL | re.IGNORECASE)
+    if m:
+        h1 = re.search(r'<h1[^>]*>(.*?)</h1>', m.group(1), re.DOTALL | re.IGNORECASE)
+        if h1:
+            title = re.sub(r'<[^>]+>', '', h1.group(1)).strip()
+    if not title:
+        m = re.search(r'<title>([^<]+)</title>', html)
+        if m:
+            title = m.group(1).split('|')[0].strip()
+
+    # First paragraph of article-body
+    first_para = ''
+    body_match = re.search(r'<section class="article-body"[^>]*>(.*?)</section>',
+                           html, re.DOTALL | re.IGNORECASE)
+    if body_match:
+        body = body_match.group(1)
+        # Skip the "← Back to all insights" link, find first <p> with substantive content
+        for p_match in re.finditer(r'<p[^>]*>(.*?)</p>', body, re.DOTALL | re.IGNORECASE):
+            para_text = re.sub(r'<[^>]+>', '', p_match.group(1)).strip()
+            if len(para_text) > 40:  # skip trivial paragraphs
+                first_para = para_text
+                break
+
+    return title, first_para
+
+
+def count_keyword_matches(text: str, keyword: str) -> int:
+    """Count distinct occurrences of keyword in text (case-insensitive, word-bounded)."""
+    if not text:
+        return 0
+    pattern = re.compile(r'(?<![\w])' + re.escape(keyword.lower()) + r'(?![\w])')
+    return len(pattern.findall(text.lower()))
+
+
+def score_target(title: str, first_para: str, body_text: str, target: dict) -> tuple:
+    """Weighted scoring: title×10 + first_para×5 + body×1.
+    Returns (weighted_score, list_of_matching_keywords_in_priority_order)."""
+    matching_keywords = []
+    title_count_total = 0
+    firstpara_count_total = 0
+    body_count_total = 0
     for kw in target['keywords']:
-        # Case-insensitive count of distinct occurrences
-        pattern = re.compile(r'(?<![\w])' + re.escape(kw.lower()) + r'(?![\w])')
-        matches = pattern.findall(text_lower)
-        if matches:
-            score += len(matches)
-            if first_match is None:
-                first_match = kw  # remember the first keyword (in priority order) that matched
-    return score, first_match
+        t_count = count_keyword_matches(title, kw)
+        f_count = count_keyword_matches(first_para, kw)
+        b_count = count_keyword_matches(body_text, kw)
+        if t_count + f_count + b_count > 0:
+            matching_keywords.append(kw)
+        title_count_total += t_count
+        firstpara_count_total += f_count
+        body_count_total += b_count
+    weighted = (title_count_total * TITLE_WEIGHT
+                + firstpara_count_total * FIRST_PARA_WEIGHT
+                + body_count_total * BODY_WEIGHT)
+    return weighted, matching_keywords
 
 
-def pick_best_target(plain_text: str, already_linked_urls: set, article_slug: str) -> tuple:
-    """Pick the highest-scoring target that hasn't already been linked.
-    For the winning target, also pick a varied anchor keyword from the set
-    of matching keywords (deterministic per-article hash) so the same anchor
-    doesn't appear on every article.
-    Returns (target_dict, score, matched_keyword) or (None, 0, None)."""
+def pick_best_target(title: str, first_para: str, body_text: str,
+                     already_linked_urls: set, article_slug: str) -> tuple:
+    """Pick the highest-WEIGHTED-scoring target. Returns
+    (target_dict, weighted_score, list_of_matching_keywords_in_priority_order)
+    or (None, 0, [])."""
     best = None
     best_score = 0
     best_matching_keywords = []
     for target in TARGETS:
         if target['url'] in already_linked_urls:
             continue
-        score, first_kw = score_target(plain_text, target)
-        threshold = target.get('min_matches', MIN_MATCHES_TO_LINK)
-        if score >= threshold and score > best_score:
+        score, matching_kws = score_target(title, first_para, body_text, target)
+        threshold_matches = target.get('min_matches', MIN_MATCHES_TO_LINK)
+        if len(matching_kws) >= threshold_matches and score > best_score:
             best = target
             best_score = score
-            # Collect ALL matching keywords (not just the first) so we can vary the anchor
-            text_lower = plain_text.lower()
-            matching = []
-            for kw in target['keywords']:
-                pattern = re.compile(r'(?<![\w])' + re.escape(kw.lower()) + r'(?![\w])')
-                if pattern.search(text_lower):
-                    matching.append(kw)
-            best_matching_keywords = matching
+            best_matching_keywords = matching_kws
     if not best:
-        return None, 0, None
-    # Vary which keyword gets linked based on article slug hash
-    # (deterministic so the same article always gets the same anchor)
-    if best_matching_keywords:
-        h = int(hashlib.md5(article_slug.encode()).hexdigest(), 16)
-        chosen = best_matching_keywords[h % len(best_matching_keywords)]
-    else:
-        chosen = None
-    return best, best_score, chosen
+        return None, 0, []
+    return best, best_score, best_matching_keywords
 
 
 def pick_parenthetical(target: dict, article_slug: str) -> str:
@@ -498,22 +541,63 @@ def process_article(html: str, article_slug: str) -> tuple:
     ):
         already_linked_urls.add(m.group(1))
 
-    # Plain-text for scoring
-    plain = re.sub(r'<[^>]+>', ' ', body_content)
-    plain = re.sub(r'\s+', ' ', plain)
+    # Plain-text body for body-text scoring
+    plain_body = re.sub(r'<[^>]+>', ' ', body_content)
+    plain_body = re.sub(r'\s+', ' ', plain_body)
 
-    target, score, matched_kw = pick_best_target(plain, already_linked_urls, article_slug)
+    # Extract title + first paragraph for weighted scoring
+    title, first_para = extract_title_and_first_para(html)
+
+    # Pick best target — returns the target + ALL matching keywords
+    target, score, matching_keywords = pick_best_target(
+        title, first_para, plain_body, already_linked_urls, article_slug)
     if not target:
         return html, None
 
-    # Mask + inject
+    # Mask the body for injection
     masked, restore_map = mask_protected_regions(body_content)
     parenthetical = pick_parenthetical(target, article_slug)
-    new_masked, anchor_text = inject_link(masked, matched_kw, target['url'], parenthetical)
-    if not anchor_text:
-        return html, None
 
-    new_body_content = restore_protected_regions(new_masked, restore_map)
+    # Strategy 1: try each matching keyword in body-text order — link the
+    # first one that actually appears in the (masked) body. Vary which
+    # keyword we start with via article-slug hash so different articles
+    # get different anchors.
+    h = int(hashlib.md5(article_slug.encode()).hexdigest(), 16)
+    # Rotate the keyword list so the hash determines starting offset
+    rotated = matching_keywords[h % len(matching_keywords):] + matching_keywords[:h % len(matching_keywords)]
+
+    anchor_text = None
+    chosen_kw = None
+    for kw in rotated:
+        new_masked, anchor = inject_link(masked, kw, target['url'], parenthetical)
+        if anchor:
+            masked = new_masked
+            anchor_text = anchor
+            chosen_kw = kw
+            break
+
+    # Strategy 2: if NO matching keyword appears in the body (they were all
+    # in the title or first-para-only), inject a new sentence at the end of
+    # the first paragraph: "→ See live X dashboard"
+    if not anchor_text:
+        # Build a standalone CTA sentence using the target's name
+        cta_text = f'→ See {target["name"]} live'
+        cta_html = (
+            f' <a href="{target["url"]}" class="internal-product-link contextual-link">'
+            f'{cta_text}</a>'
+            f'<span class="link-aside"> {parenthetical}</span>'
+        )
+        # Find the end of the first <p> in the body and insert the CTA before </p>
+        first_p_match = re.search(r'(<p[^>]*>.*?)(</p>)', masked, re.DOTALL | re.IGNORECASE)
+        if first_p_match:
+            insert_pos = first_p_match.start(2)
+            masked = masked[:insert_pos] + cta_html + masked[insert_pos:]
+            anchor_text = cta_text
+            chosen_kw = '(appended CTA)'
+        else:
+            return html, None  # no paragraph found — give up
+
+    new_body_content = restore_protected_regions(masked, restore_map)
     new_html = (
         html[:body_match.start()] +
         body_open + new_body_content + body_close +
@@ -522,7 +606,7 @@ def process_article(html: str, article_slug: str) -> tuple:
     return new_html, {
         'target_url': target['url'],
         'target_name': target['name'],
-        'keyword': matched_kw,
+        'keyword': chosen_kw,
         'anchor_text': anchor_text,
         'parenthetical': parenthetical,
         'score': score,
