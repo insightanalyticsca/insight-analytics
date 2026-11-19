@@ -584,8 +584,16 @@ function generateSitemap(htmlFiles, allPageInfo) {
   const urls = htmlFiles.map(f => {
     const relPath = f.replace(REPO_ROOT + '/', '');
     const info = allPageInfo[relPath] || { priority: '0.6' };
+    // Convert file paths to clean URLs matching canonical tags:
+    //   insights/foo.html → insights/foo
+    //   demos/index.html  → demos/
+    //   index.html        → (root)
+    let cleanPath = relPath
+      .replace(/\/index\.html$/, '/')   // /path/index.html → /path/
+      .replace(/^index\.html$/, '')      // root index.html → (empty = root)
+      .replace(/\.html$/, '');           // foo.html → foo
     return `  <url>
-    <loc>${SITE_URL}/${relPath}</loc>
+    <loc>${SITE_URL}/${cleanPath}</loc>
     <lastmod>${TODAY}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>${info.priority}</priority>
