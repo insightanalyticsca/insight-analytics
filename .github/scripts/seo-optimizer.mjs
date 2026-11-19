@@ -29,6 +29,9 @@ const TODAY = NOW.split('T')[0];
 function classifyPage(relPath, html) {
   if (relPath === "index.html") return { type: "home", schemaType: 'WebSite', priority: '1.0' };
   if (relPath === 'visuals.html') return { type: 'gallery', schemaType: 'CollectionPage', priority: '0.9' };
+  // Insight articles get Article schema (not WebPage) — required for Google News,
+  // Top Stories, AI Overview citations, and article rich results.
+  if (relPath.startsWith('insights/') && relPath.endsWith('.html')) return { type: 'article', schemaType: 'Article', priority: '0.8' };
   if (relPath.includes('executive')) return { type: 'executive', schemaType: 'Article', priority: '0.8' };
   if (relPath.includes('csr-')) return { type: 'csr', schemaType: 'Article', priority: '0.7' };
   if (relPath.includes('its-')) return { type: 'its', schemaType: 'Article', priority: '0.7' };
@@ -462,30 +465,91 @@ function buildDatasetSchema(content, relPath) {
 }
 
 // ─── Build comprehensive JSON-LD @graph ────────────────────────────────
-function buildJsonLdGraph(relPath, content, pageInfo, faqSchema, howToSchema) {
-  const url = `${SITE_URL}/${relPath}`;
+function buildJsonLdGraph(relPath, content, pageInfo, faqSchema, howToSchema, existingHtml) {
+  // Use clean URL (no .html) to match canonical tags
+  const cleanRelPath = relPath
+    .replace(/\/index\.html$/, '/')   // /path/index.html → /path/
+    .replace(/^index\.html$/, '')      // root index.html → (empty)
+    .replace(/\.html$/, '');           // foo.html → foo
+  const url = `${SITE_URL}/${cleanRelPath}`;
+
+  // Extract the original datePublished from the existing HTML's JSON-LD
+  // (if present) so the daily SEO cron doesn't overwrite it with TODAY.
+  // This is critical — without it, all articles appear to have been
+  // published on the same day (the daily rewrite date), which signals
+  // "mass-generated content" to Google's spam classifier.
+  let originalDatePublished = '';
+  if (existingHtml) {
+    const existingMatch = existingHtml.match(/"datePublished"\s*:\s*"([^"]+)"/);
+    if (existingMatch) {
+      originalDatePublished = existingMatch[1];
+    }
+  }
+  // Extract the article eyebrow (category) for articleSection
+  let articleSection = '';
+  if (existingHtml) {
+    const eyebrowMatch = existingHtml.match(/<div class="article-eyebrow"[^>]*>([^<]+)<\/div>/);
+    if (eyebrowMatch) {
+      articleSection = eyebrowMatch[1].trim().replace(/&amp;/g, '&');
+    }
+  }
+
+  const isArticle = pageInfo.schemaType === 'Article';
+  const pageSchema = {
+    '@context': 'https://schema.org',
+    '@type': pageInfo.schemaType,
+    '@id': `${url}#page`,
+    name: content.title,
+    description: content.desc || content.text.slice(0, 160),
+    url: url,
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+    about: {
+      '@type': 'Thing',
+      name: content.title.split(/[-—]/)[0].trim(),
+      sameAs: `https://en.wikipedia.org/wiki/Dashboard_(business)`
+    },
+    author: { '@id': `${SITE_URL}/#author` },
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    datePublished: originalDatePublished || TODAY,  // preserve original date!
+    dateModified: NOW,  // today's rewrite date
+    speakable: buildSpeakableSchema()
+  };
+
+  // Add Article-specific fields (headline, image, articleSection, mainEntityOfPage)
+  if (isArticle) {
+    pageSchema.headline = content.title;
+    pageSchema.articleSection = articleSection || 'Business Analytics';
+    pageSchema.mainEntityOfPage = {
+      '@type': 'WebPage',
+      '@id': url
+    };
+    // Use the site's OG image or the icon as the article image.
+    // Article schema requires an image (at least 1200x675 recommended).
+    if (existingHtml) {
+      const ogImageMatch = existingHtml.match(/<meta\s+property="og:image"\s+content="([^"]+)"/);
+      if (ogImageMatch) {
+        pageSchema.image = {
+          '@type': 'ImageObject',
+          url: ogImageMatch[1],
+          width: 1200,
+          height: 675
+        };
+      }
+    }
+    if (!pageSchema.image) {
+      pageSchema.image = {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/icons/icon-512.png`,
+        width: 512,
+        height: 512
+      };
+    }
+  }
+
   const graph = [
     buildOrgSchema(),
     buildPersonSchema(),
-    {
-      '@context': 'https://schema.org',
-      '@type': pageInfo.schemaType,
-      '@id': `${url}#page`,
-      name: content.title,
-      description: content.desc || content.text.slice(0, 160),
-      url: url,
-      isPartOf: { '@id': `${SITE_URL}/#website` },
-      about: {
-        '@type': 'Thing',
-        name: content.title.split(/[-—]/)[0].trim(),
-        sameAs: `https://en.wikipedia.org/wiki/Dashboard_(business)`
-      },
-      author: { '@id': `${SITE_URL}/#author` },
-      publisher: { '@id': `${SITE_URL}/#organization` },
-      datePublished: TODAY,
-      dateModified: NOW,
-      speakable: buildSpeakableSchema()
-    },
+    pageSchema,
     buildBreadcrumbSchema(relPath)
   ];
 
@@ -765,7 +829,7 @@ Content: ${content.text.slice(0, 800)}`);
     }
 
     // Build + inject comprehensive JSON-LD
-    const jsonLd = buildJsonLdGraph(relPath, content, pageInfo, faqSchema, howToSchema);
+    const jsonLd = buildJsonLdGraph(relPath, content, pageInfo, faqSchema, howToSchema, html);
     html = injectJsonLd(html, jsonLd);
     modified = true; changeLog.techniques.push('json-ld-graph');
 
