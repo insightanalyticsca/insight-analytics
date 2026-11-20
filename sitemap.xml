@@ -882,4 +882,10 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://insight-analytics.ca/insights/the-data-center-boom-is-exposing-the-limits-of-conventional-logistics-planning</loc>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
