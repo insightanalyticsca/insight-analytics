@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-19T15:11:23.968Z",
+  "collectedAt": "2026-11-20T14:51:34.114Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -37,7 +37,7 @@
     "organizational culture",
     "change management"
   ],
-  "totalTerms": 437,
+  "totalTerms": 419,
   "trends": [
     {
       "term": "ai dashboard",
@@ -250,18 +250,6 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "global",
-      "volume": 100,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "business",
-      "volume": 100,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "iese",
       "volume": 100,
       "source": "industry-rss",
@@ -460,7 +448,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture and leadership",
+      "term": "organizational culture definition",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -472,7 +460,7 @@
       "seed": "change management"
     },
     {
-      "term": "world",
+      "term": "global",
       "volume": 90,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -670,7 +658,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture examples",
+      "term": "organizational culture and leadership",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -682,19 +670,7 @@
       "seed": "change management"
     },
     {
-      "term": "2026",
-      "volume": 80,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "leadership",
-      "volume": 80,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "8217",
+      "term": "world",
       "volume": 80,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -862,7 +838,7 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions data centers",
+      "term": "carbon emissions meaning",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
@@ -898,19 +874,31 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture theory",
+      "term": "organizational culture examples",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management jobs",
+      "term": "change management process",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "change management"
     },
     {
-      "term": "executive",
+      "term": "business",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "europe",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "anthropic",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -923,18 +911,6 @@
     },
     {
       "term": "times",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "supply",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "anthropic",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1096,7 +1072,7 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions meaning",
+      "term": "carbon emissions by source",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
@@ -1132,16 +1108,34 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture meaning",
+      "term": "organizational culture theory",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management process",
+      "term": "change management jobs",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "change management"
+    },
+    {
+      "term": "tech",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "customer",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "needs",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
     },
     {
       "term": "value",
@@ -1156,13 +1150,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "billion",
+      "term": "2026",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "europe",
+      "term": "8217",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "markets",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1336,7 +1336,7 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions by source",
+      "term": "carbon emissions by year",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
@@ -1390,19 +1390,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "intelligence",
+      "term": "trade",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "tech",
+      "term": "make",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "needs",
+      "term": "private",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1414,13 +1414,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "trump",
+      "term": "nvidia",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "china",
+      "term": "executive",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1582,7 +1582,7 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions by year",
+      "term": "carbon emissions calculator",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
@@ -1630,6 +1630,12 @@
       "seed": "change management"
     },
     {
+      "term": "building",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "next",
       "volume": 40,
       "source": "industry-rss",
@@ -1654,49 +1660,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "trade",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "building",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "beyond",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "planning",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "advantage",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "make",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "changing",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "crisis",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1708,13 +1672,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "nvidia",
+      "term": "crisis",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "investors",
+      "term": "data",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "leadership",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1744,19 +1714,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "chair",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "supply chain",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "chain",
+      "term": "market",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1906,7 +1864,7 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions calculator",
+      "term": "carbon emissions definition",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
@@ -1948,37 +1906,19 @@
       "seed": "organizational culture"
     },
     {
-      "term": "change management jobs remote",
+      "term": "change management plan",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "change management"
     },
     {
+      "term": "european",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "transforming",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "infrastructure",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "banking",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "navigating",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "opportunity",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2008,49 +1948,55 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "intelligence",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "america",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "human",
+      "term": "billion",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "customer",
+      "term": "retail",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "help",
+      "term": "experience",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "private",
+      "term": "risk",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "security",
+      "term": "insurers",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "turning",
+      "term": "trillion",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "judgment",
+      "term": "economics",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2062,25 +2008,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "control",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "digital",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "build",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "data",
+      "term": "first",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2092,43 +2020,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "challenge",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "problem",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "best",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "decisions",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "markets",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "summit",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "four",
+      "term": "private markets",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2176,13 +2074,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "social",
+      "term": "chair",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "programs",
+      "term": "social",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2206,12 +2104,6 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "million",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "alumni",
       "volume": 30,
       "source": "industry-rss",
@@ -2224,7 +2116,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "market",
+      "term": "bloomberg",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2236,43 +2128,43 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "record",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "changes",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "para",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "give",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "freight",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "trump putin",
+      "term": "supply",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "putin",
+      "term": "supply chain",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "chain",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "stock",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "etfs",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "stocks",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2422,7 +2314,7 @@
       "seed": "sustainability strategy"
     },
     {
-      "term": "carbon emissions definition",
+      "term": "carbon emissions data centers",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "carbon emissions"
@@ -2464,7 +2356,7 @@
       "seed": "organizational culture"
     },
     {
-      "term": "change management plan",
+      "term": "change management jobs remote",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "change management"
