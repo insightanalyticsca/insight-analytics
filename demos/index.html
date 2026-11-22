@@ -24,9 +24,6 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#1E3A8A" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
@@ -128,76 +125,8 @@
   
   
   
-  <!-- STAGED-EXE:HEAD-START -->
-<style> block in <head> with the gating CSS rule + the card
-       highlight styling.
-    2. A new .blog-card.stage-only at the top of .blog-grid, with a
-       "Download" eyebrow + a Windows demo card that links to the
-       explanatory page.
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"WebPage","@id":"https://insight-analytics.ca/demos/index.html#page","name":"Live Demos — Production-Ready Pipelines | Insight Analytics","description":"Production-ready demos — same code, same data flow, same KPIs as our 50+ production deployments. Click, interact, judge for yourself. Live dashboards, AI pipeline constructor, database archaeology, time series prediction.","url":"https://insight-analytics.ca/demos/index.html","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"Live Demos","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-17","dateModified":"2026-11-17T15:26:12.424Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Demos","item":"https://insight-analytics.ca/demos.html"},{"@type":"ListItem","position":3,"name":"Index","item":"https://insight-analytics.ca/demos/index.html"}]}]}</script>
 
-  PLACEMENT DECISION:
-    Injected as the FIRST card in .blog-grid (before the AI Dashboard
-    Builder card), because:
-      (a) a Windows binary demo is a different kind of artifact from
-          the in-browser demos and deserves top billing when revealed;
-      (b) the showcase's existing flow goes from "AI-Assisted Dashboard
-          Builder" down through more specific demos to "All Live
-          Dashboards gallery" — putting the Windows demo first
-          preserves that flow as a finale.
--->
-
-<style>
-/* ═══ Stage-gated download card — invisible until body.stage-live is set ═══ */
-body:not(.stage-live) .stage-only { display: none !important; }
-
-/* ── Highlight styling for the Windows demo card ── */
-.blog-card.stage-only {
-  background: linear-gradient(135deg, rgba(99, 102, 241, .08), rgba(6, 182, 212, .08));
-  border: 1px solid rgba(99, 102, 241, .25);
-  position: relative;
-  overflow: hidden;
-}
-.blog-card.stage-only::before {
-  content: 'WINDOWS DEMO';
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  font: 9px 'JetBrains Mono', monospace;
-  letter-spacing: .14em;
-  color: #fff;
-  background: linear-gradient(120deg, #6366f1, #06b6d4);
-  padding: 4px 9px;
-  border-radius: 4px;
-  font-weight: 700;
-  z-index: 1;
-}
-.blog-card.stage-only .card-eyebrow {
-  color: #6366f1;
-  font-weight: 600;
-}
-.blog-card.stage-only:hover {
-  border-color: rgba(99, 102, 241, .5);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, .18);
-}
-.blog-card.stage-only .card-meta-extra {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 6px;
-  padding: 3px 8px;
-  font: 10px 'JetBrains Mono', monospace;
-  background: rgba(99, 102, 241, .12);
-  color: #6366f1;
-  border-radius: 4px;
-  letter-spacing: .04em;
-}
-</style>
-<!-- STAGED-EXE:HEAD-END -->
-
-  
-  
-  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@context":"https://schema.org","@type":"Organization","@id":"https://insight-analytics.ca/#organization","name":"Insight Analytics","url":"https://insightanalyticsca.github.io","logo":"https://insight-analytics.ca/icons/icon-512.png","description":"AI-powered corporate dashboards with Groq streaming, ECharts visualizations, and executive analytics for utilities, IT service management, and beauty retail.","sameAs":["https://github.com/insightanalyticsca","https://insightanalyticsca.github.io","https://www.linkedin.com/company/insight-analytics-ca"]},{"@context":"https://schema.org","@type":"Person","@id":"https://insight-analytics.ca/#author","name":"Insight Analytics Team","url":"https://insight-analytics.ca","jobTitle":"Data & Analytics Engineer","worksFor":{"@id":"https://insight-analytics.ca/#organization"},"knowsAbout":[{"@type":"Thing","name":"ECharts","sameAs":"https://en.wikipedia.org/wiki/Apache_ECharts"},{"@type":"Thing","name":"Power BI","sameAs":"https://en.wikipedia.org/wiki/Microsoft_Power_BI"},{"@type":"Thing","name":"RAG","sameAs":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"@type":"Thing","name":"PWA","sameAs":"https://en.wikipedia.org/wiki/Progressive_web_app"}]},{"@context":"https://schema.org","@type":"WebPage","@id":"https://insight-analytics.ca/demos/#page","name":"Live Demos — Production-Ready Pipelines | Insight Analytics","description":"Production-ready demos — same code, same data flow, same KPIs as our 50+ production deployments. Click, interact, judge for yourself. Live dashboards, AI pipeline constructor, database archaeology, time series prediction.","url":"https://insight-analytics.ca/demos/","isPartOf":{"@id":"https://insight-analytics.ca/#website"},"about":{"@type":"Thing","name":"Live Demos","sameAs":"https://en.wikipedia.org/wiki/Dashboard_(business)"},"author":{"@id":"https://insight-analytics.ca/#author"},"publisher":{"@id":"https://insight-analytics.ca/#organization"},"datePublished":"2026-11-19","dateModified":"2026-11-21T14:05:48.195Z","speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".exec-title",".canvas-title",".tile-title","main > section > h2"]}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://insight-analytics.ca"},{"@type":"ListItem","position":2,"name":"Demos","item":"https://insight-analytics.ca/demos.html"},{"@type":"ListItem","position":3,"name":"Index","item":"https://insight-analytics.ca/demos/index.html"}]}]}</script>
 </head>
 <body>
 
@@ -248,27 +177,6 @@ body:not(.stage-live) .stage-only { display: none !important; }
 
   <div class="blog-grid">
     
-<!-- STAGED-EXE:GRID-START -->
-<a href="/demos/business-rule-observatory" class="blog-card stage-only">
-  <div class="card-eyebrow">Windows Desktop Demo · Test phase</div>
-  <h2>Business Rule Observatory — Standalone Windows Executable</h2>
-  <p>A 113.6&nbsp;MB self-contained Windows binary that demonstrates the Business Rule Observatory pipeline end-to-end: rule ingestion, conflict detection, drift analysis, and the audit trail. No installer, no prerequisites, no network connection needed for the bundled sample scenarios. Token-authenticated download via Cloudflare Worker — the GitHub source URL is never exposed.</p>
-  <div class="card-meta">
-    <span>Windows 10/11 (64-bit)</span>
-    <span class="sep">·</span>
-    <span>113.6 MB</span>
-    <span class="sep">·</span>
-    <span>Self-contained .exe</span>
-  </div>
-  <div class="card-meta-extra">
-    <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" aria-hidden="true">
-      <path d="M12 4v12m0 0l-4-4m4 4l4-4"/>
-      <path d="M4 20h16" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-    </svg>
-    Token-based download · single-use · 10-min TTL
-  </div>
-</a>
-<!-- STAGED-EXE:GRID-END -->
 <a href="/demos/ai-dashboard-builder" class="blog-card">
       <div class="card-eyebrow">Generative Business Intelligence</div>
       <h2>AI-Assisted Dashboard Builder: From Plain English to Live Executive Dashboard</h2>

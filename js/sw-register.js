@@ -14,7 +14,7 @@
   'use strict';
   if (!('serviceWorker' in navigator)) return;
 
-  var EXPECTED_SW_VERSION = 'v5.72.0-article-schema';
+  var EXPECTED_SW_VERSION = 'v5.73.0-dataset-license';
 
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('/service-worker.js', {

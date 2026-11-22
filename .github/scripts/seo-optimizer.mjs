@@ -456,6 +456,9 @@ function buildDatasetSchema(content, relPath) {
     creator: { '@id': `${SITE_URL}/#organization` },
     datePublished: TODAY,
     keywords: 'corporate dashboard, analytics, ECharts, executive reporting',
+    // Google requires a license field for Dataset schema — points to the
+    // site's terms of use / data license page.
+    license: `${SITE_URL}/faq/`,
     distribution: {
       '@type': 'DataDownload',
       encodingFormat: 'application/json',
