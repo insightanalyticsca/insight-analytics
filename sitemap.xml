@@ -930,4 +930,10 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://insight-analytics.ca/insights/ocean-freight-resilience-is-a-network-design-problem-not-a-routing-exercise</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
