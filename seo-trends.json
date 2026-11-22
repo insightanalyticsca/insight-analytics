@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-21T14:08:36.675Z",
+  "collectedAt": "2026-11-22T14:00:14.129Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -37,7 +37,7 @@
     "organizational culture",
     "change management"
   ],
-  "totalTerms": 425,
+  "totalTerms": 427,
   "trends": [
     {
       "term": "ai dashboard",
@@ -406,7 +406,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management services",
+      "term": "treasury management jobs",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -460,7 +460,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture definition",
+      "term": "organizational culture and leadership",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -616,7 +616,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management systems",
+      "term": "treasury management services",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -670,7 +670,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture and leadership",
+      "term": "organizational culture examples",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -832,7 +832,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management officer salary",
+      "term": "treasury management systems",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -886,22 +886,16 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture examples",
+      "term": "organizational culture theory",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management jobs",
+      "term": "change management process",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "change management"
-    },
-    {
-      "term": "europe",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
     },
     {
       "term": "financial times",
@@ -911,12 +905,6 @@
     },
     {
       "term": "times",
-      "volume": 70,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "china",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1060,7 +1048,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management banking",
+      "term": "treasury management officer salary",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1114,13 +1102,13 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture theory",
+      "term": "organizational culture meaning",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "organizational culture"
     },
     {
-      "term": "change management process",
+      "term": "change management jobs",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "change management"
@@ -1144,13 +1132,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "leaders",
+      "term": "europe",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "anthropic",
+      "term": "supply",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "leaders",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1318,7 +1312,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management specialist salary",
+      "term": "treasury management banking",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1396,25 +1390,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "needs",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "foundation",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "make",
+      "term": "advantage",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "supply",
+      "term": "make",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1444,7 +1432,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "trump",
+      "term": "china",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "stock",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1588,7 +1582,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management tompkins",
+      "term": "treasury management specialist salary",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1696,7 +1690,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "advantage",
+      "term": "trillion",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "anthropic",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1715,18 +1715,6 @@
     },
     {
       "term": "world financial",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "summit",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "management",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1876,7 +1864,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management salary",
+      "term": "treasury management tompkins",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -1948,7 +1936,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "public",
+      "term": "needs",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1973,6 +1961,18 @@
     },
     {
       "term": "power",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "asia",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "insurance",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2008,6 +2008,12 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "billion",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "trade",
       "volume": 30,
       "source": "industry-rss",
@@ -2026,25 +2032,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "private",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "need",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "trillion",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "procurement",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2057,6 +2045,12 @@
     },
     {
       "term": "build",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "capital",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2134,6 +2128,12 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "management",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "foundation launch",
       "volume": 30,
       "source": "industry-rss",
@@ -2182,6 +2182,18 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "support",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "bloomberg",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "artificial",
       "volume": 30,
       "source": "industry-rss",
@@ -2194,13 +2206,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "para",
+      "term": "trump",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "putin",
+      "term": "para",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2332,7 +2344,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management officer",
+      "term": "treasury management salary",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "treasury management"
@@ -2524,7 +2536,7 @@
       "seed": "capital allocation"
     },
     {
-      "term": "treasury management simmons bank",
+      "term": "treasury management officer",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "treasury management"
