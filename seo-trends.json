@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-22T14:00:14.129Z",
+  "collectedAt": "2026-11-23T17:16:52.552Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -37,7 +37,7 @@
     "organizational culture",
     "change management"
   ],
-  "totalTerms": 427,
+  "totalTerms": 415,
   "trends": [
     {
       "term": "ai dashboard",
@@ -142,7 +142,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation",
+      "term": "ai implementation challenges accounting firms",
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -242,18 +242,6 @@
       "volume": 100,
       "source": "google-autocomplete",
       "seed": "change management"
-    },
-    {
-      "term": "future",
-      "volume": 100,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "global",
-      "volume": 100,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
     },
     {
       "term": "business",
@@ -370,7 +358,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation jobs",
+      "term": "ai implementation",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -460,7 +448,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture and leadership",
+      "term": "organizational culture definition",
       "volume": 90,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -472,7 +460,7 @@
       "seed": "change management"
     },
     {
-      "term": "world",
+      "term": "future",
       "volume": 90,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -526,7 +514,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics companies",
+      "term": "energy analytics lab",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -580,7 +568,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation consultant",
+      "term": "ai implementation jobs",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -658,7 +646,7 @@
       "seed": "executive leadership"
     },
     {
-      "term": "cfo strategy summit",
+      "term": "cfo strategy presentation",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "cfo strategy"
@@ -670,7 +658,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture examples",
+      "term": "organizational culture and leadership",
       "volume": 80,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -682,13 +670,31 @@
       "seed": "change management"
     },
     {
-      "term": "8217",
+      "term": "tech",
+      "volume": 80,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "global",
+      "volume": 80,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "world",
       "volume": 80,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
       "term": "financial",
+      "volume": 80,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "huang",
       "volume": 80,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -724,7 +730,7 @@
       "seed": "data lineage"
     },
     {
-      "term": "metadata and discovery group",
+      "term": "metadata and discovery librarian",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
@@ -742,7 +748,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics lab",
+      "term": "energy analytics course",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -796,7 +802,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation specialist",
+      "term": "ai implementation consultant",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -874,7 +880,7 @@
       "seed": "executive leadership"
     },
     {
-      "term": "cfo strategy presentation",
+      "term": "cfo strategy summit",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "cfo strategy"
@@ -886,7 +892,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture theory",
+      "term": "organizational culture examples",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -896,6 +902,24 @@
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "change management"
+    },
+    {
+      "term": "growth",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "2026",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "nvidia",
+      "volume": 70,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
     },
     {
       "term": "financial times",
@@ -940,7 +964,7 @@
       "seed": "data lineage"
     },
     {
-      "term": "metadata and discovery librarian",
+      "term": "metadata and discovery group",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "metadata discovery"
@@ -958,7 +982,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics course",
+      "term": "energy analytics lab iit kanpur",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -1012,7 +1036,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation company",
+      "term": "ai implementation specialist",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -1102,7 +1126,7 @@
       "seed": "ceo decision making"
     },
     {
-      "term": "organizational culture meaning",
+      "term": "organizational culture theory",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "organizational culture"
@@ -1120,43 +1144,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "growth",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "2026",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "europe",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "supply",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "leaders",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "leadership",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "executive",
+      "term": "8217",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1169,6 +1163,12 @@
     },
     {
       "term": "ranks",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "return",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1222,7 +1222,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics lab iit kanpur",
+      "term": "energy analytics kazakhstan",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -1276,7 +1276,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation certification",
+      "term": "ai implementation company",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -1378,7 +1378,7 @@
       "seed": "change management"
     },
     {
-      "term": "tech",
+      "term": "work",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1396,49 +1396,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "advantage",
+      "term": "supply",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "make",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "supply chain",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "chain",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "work",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "data",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "china",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "stock",
+      "term": "executive",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1492,7 +1456,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics kazakhstan",
+      "term": "energy analytics institute",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -1546,7 +1510,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation engineer",
+      "term": "ai implementation certification",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -1648,7 +1612,13 @@
       "seed": "change management"
     },
     {
-      "term": "building",
+      "term": "make",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "next",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1666,13 +1636,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "role",
+      "term": "agentic",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "leading",
+      "term": "role",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1690,19 +1660,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "trillion",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "anthropic",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "crisis",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "data",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1726,13 +1690,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "chair",
+      "term": "market",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "market",
+      "term": "stocks",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1786,7 +1750,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics institute",
+      "term": "energy analytics engineer",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -1828,7 +1792,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation specialist salary",
+      "term": "ai implementation engineer",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -1930,13 +1894,13 @@
       "seed": "change management"
     },
     {
-      "term": "transforming",
+      "term": "building",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "needs",
+      "term": "transforming",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1948,43 +1912,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "next",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "navigating",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "power",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "asia",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "insurance",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "operations",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "agentic",
+      "term": "leading",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2020,37 +1954,31 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "human",
+      "term": "risk",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "planning",
+      "term": "trust",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "need",
+      "term": "supply chain",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "economics",
+      "term": "chain",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "build",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "capital",
+      "term": "leaders",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2062,13 +1990,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "behind",
+      "term": "digital",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "nvidia",
+      "term": "anthropic",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "leadership",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2081,12 +2015,6 @@
     },
     {
       "term": "best",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "four",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2140,13 +2068,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "social",
+      "term": "chair",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "programs",
+      "term": "social",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2182,19 +2110,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "support",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "bloomberg",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "artificial",
+      "term": "2024",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2206,13 +2122,25 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "trump",
+      "term": "logistics",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "para",
+      "term": "nvidia return",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "debt",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "huang return",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2266,7 +2194,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics engineer",
+      "term": "energy analytics dashboard",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -2308,7 +2236,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation consultant jobs",
+      "term": "ai implementation specialist salary",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "ai implementation"
@@ -2458,7 +2386,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics dashboard",
+      "term": "energy analytics platform",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -2500,7 +2428,7 @@
       "seed": "ai adoption"
     },
     {
-      "term": "ai implementation courses",
+      "term": "ai implementation consultant jobs",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "ai implementation"
