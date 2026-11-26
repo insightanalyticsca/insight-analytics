@@ -2099,44 +2099,27 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 22px;
-  height: 22px;
+  min-width: 16px;
+  height: 16px;
   border-radius: 50%;
-  font: 600 11px/1 var(--font-head, 'Inter', sans-serif);
-  background: linear-gradient(120deg, var(--accent, #6366f1), var(--accent2, #06b6d4));
+  font: 700 9px/1 var(--font-head, 'Inter', sans-serif);
+  background: rgba(99, 102, 241, .85);
   color: #fff;
-  padding: 0 6px;
-  margin-left: 8px;
+  padding: 0 4px;
+  margin-left: 6px;
   vertical-align: middle;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, .25);
   opacity: 0;
-  transition: opacity .3s ease;
+  transition: opacity .2s ease;
   flex-shrink: 0;
 }
 .insight-card .visitor-badge.visible { opacity: 1; }
 .insight-card .visitor-badge[data-count="0"] { display: none; }
-.insight-card h2 { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
-.insight-card .visitor-badge:hover::after {
-  content: attr(data-title);
-  position: absolute;
-  background: var(--surface, #1e293b);
-  color: var(--text, #e2e8f0);
-  font-size: 10px;
-  font-weight: 500;
-  padding: 4px 8px;
-  border-radius: 6px;
-  white-space: nowrap;
-  margin-top: 28px;
-  margin-left: -30px;
-  z-index: 10;
-  box-shadow: 0 4px 12px rgba(0,0,0,.15);
-}
+.insight-card .card-source { display: inline-flex; align-items: center; }
 </style>
 <script>
 (function () {
   'use strict';
   var WORKER_URL = 'https://groq-proxy.insight-analytics.workers.dev/groq-proxy';
-  // Cache for 5 minutes in sessionStorage to avoid re-fetching on every page load
   var CACHE_KEY = 'ia-page-stats';
   var CACHE_TTL = 5 * 60 * 1000;
 
@@ -2145,7 +2128,6 @@
     var matchCount = 0;
     cards.forEach(function (card) {
       var href = card.getAttribute('href') || '';
-      // Normalize: /insights/foo → /insights/foo (strip trailing .html if present)
       var page = href.replace(/\.html$/, '');
       var count = pageStats[page] || pageStats[href] || 0;
       if (count > 0) {
@@ -2153,24 +2135,25 @@
         if (!badge) {
           badge = document.createElement('span');
           badge.className = 'visitor-badge';
-          badge.setAttribute('data-title', count + ' unique visitors (72h)');
-          var h2 = card.querySelector('h2');
-          if (h2) h2.appendChild(badge);
+          // Insert after the source name (.card-source), same line
+          var source = card.querySelector('.card-source');
+          if (source) {
+            source.appendChild(badge);
+          } else {
+            // No source element — append to the meta line
+            var meta = card.querySelector('.card-meta');
+            if (meta) meta.appendChild(badge);
+          }
         }
         badge.textContent = count;
         badge.setAttribute('data-count', count);
-        badge.setAttribute('data-title', count + ' unique visitors (all-time)');
         requestAnimationFrame(function () { badge.classList.add('visible'); });
         matchCount++;
       }
     });
-    if (matchCount > 0) {
-      console.log('[visitor-badges] Rendered ' + matchCount + ' badges');
-    }
   }
 
   function fetchAndRender() {
-    // Check cache
     try {
       var cached = sessionStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -2186,19 +2169,14 @@
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (!data || !data.pages) return;
-        // Cache the result
         try {
           sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
         } catch (e) {}
         renderBadges(data.pages);
       })
-      .catch(function (err) {
-        // Silently fail — badges just don't appear
-        console.log('[visitor-badges] Fetch failed:', err.message);
-      });
+      .catch(function () {});
   }
 
-  // Run after DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', fetchAndRender);
   } else {
