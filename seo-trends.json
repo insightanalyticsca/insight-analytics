@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-26T16:19:25.753Z",
+  "collectedAt": "2026-11-27T16:04:29.969Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -37,7 +37,7 @@
     "organizational culture",
     "change management"
   ],
-  "totalTerms": 416,
+  "totalTerms": 420,
   "trends": [
     {
       "term": "ai dashboard",
@@ -245,6 +245,12 @@
     },
     {
       "term": "global",
+      "volume": 100,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "2026",
       "volume": 100,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -472,12 +478,6 @@
       "seed": "change management"
     },
     {
-      "term": "europe",
-      "volume": 90,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "financial",
       "volume": 90,
       "source": "industry-rss",
@@ -694,7 +694,7 @@
       "seed": "change management"
     },
     {
-      "term": "2026",
+      "term": "europe",
       "volume": 80,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -748,7 +748,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics lab",
+      "term": "energy analytics companies",
       "volume": 70,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -916,7 +916,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "four",
+      "term": "tech",
       "volume": 70,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -982,7 +982,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics course",
+      "term": "energy analytics lab",
       "volume": 60,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -1144,7 +1144,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "energy",
+      "term": "four",
+      "volume": 60,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "power",
       "volume": 60,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1216,7 +1222,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics institute",
+      "term": "energy analytics course",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -1372,6 +1378,12 @@
       "seed": "change management"
     },
     {
+      "term": "growth",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "intelligence",
       "volume": 50,
       "source": "industry-rss",
@@ -1379,12 +1391,6 @@
     },
     {
       "term": "work",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "tech",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1402,7 +1408,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "power",
+      "term": "energy",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1415,12 +1421,6 @@
     },
     {
       "term": "human",
-      "volume": 50,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "retail",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1480,7 +1480,7 @@
       "seed": "fuzzy matching"
     },
     {
-      "term": "energy analytics kazakhstan",
+      "term": "energy analytics institute",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "energy analytics"
@@ -1636,18 +1636,6 @@
       "seed": "change management"
     },
     {
-      "term": "european",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "agentic",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "make",
       "volume": 40,
       "source": "industry-rss",
@@ -1672,12 +1660,6 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "growth",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "role",
       "volume": 40,
       "source": "industry-rss",
@@ -1690,13 +1672,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "advantage",
+      "term": "experience",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "data",
+      "term": "nvidia",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "crisis",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1778,6 +1766,12 @@
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "fuzzy matching"
+    },
+    {
+      "term": "energy analytics kazakhstan",
+      "volume": 30,
+      "source": "google-autocomplete",
+      "seed": "energy analytics"
     },
     {
       "term": "time series prediction using lstm",
@@ -1924,6 +1918,24 @@
       "seed": "change management"
     },
     {
+      "term": "next",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "european",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "agentic",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "media",
       "volume": 30,
       "source": "industry-rss",
@@ -1937,6 +1949,12 @@
     },
     {
       "term": "transforming",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "scale",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1972,13 +1990,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "trade",
+      "term": "beyond",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "beyond",
+      "term": "advantage",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "retail",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1996,13 +2020,7 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "nvidia",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "crisis",
+      "term": "does",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2014,13 +2032,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "capital",
+      "term": "data",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
       "term": "challenges",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "risk",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2057,12 +2081,6 @@
     },
     {
       "term": "faculty",
-      "volume": 30,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "years",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2122,13 +2140,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "pace",
+      "term": "market",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "market",
+      "term": "2024",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2152,13 +2170,19 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "para",
+      "term": "stocks",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "latest",
+      "term": "says",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "storm",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
