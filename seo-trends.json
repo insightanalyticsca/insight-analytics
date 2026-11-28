@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-11-27T16:04:29.969Z",
+  "collectedAt": "2026-11-28T15:00:46.838Z",
   "seedKeywords": [
     "ai dashboard",
     "executive dashboard",
@@ -37,7 +37,7 @@
     "organizational culture",
     "change management"
   ],
-  "totalTerms": 420,
+  "totalTerms": 427,
   "trends": [
     {
       "term": "ai dashboard",
@@ -1150,12 +1150,6 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "power",
-      "volume": 60,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
       "term": "iese ranks",
       "volume": 60,
       "source": "industry-rss",
@@ -1336,7 +1330,7 @@
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance jobs nyc",
+      "term": "climate finance action",
       "volume": 50,
       "source": "google-autocomplete",
       "seed": "climate finance"
@@ -1414,6 +1408,12 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "leading",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "healthcare",
       "volume": 50,
       "source": "industry-rss",
@@ -1427,6 +1427,24 @@
     },
     {
       "term": "leaders",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "launch",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "best",
+      "volume": 50,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "since",
       "volume": 50,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1594,7 +1612,7 @@
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance action",
+      "term": "climate finance lab",
       "volume": 40,
       "source": "google-autocomplete",
       "seed": "climate finance"
@@ -1660,31 +1678,13 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "power",
+      "volume": 40,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "role",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "leading",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "experience",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "nvidia",
-      "volume": 40,
-      "source": "industry-rss",
-      "seed": "rss-aggregate"
-    },
-    {
-      "term": "crisis",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1708,13 +1708,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "launch",
+      "term": "chair",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "chair",
+      "term": "2024",
       "volume": 40,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -1876,7 +1876,7 @@
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance lab",
+      "term": "climate finance llc",
       "volume": 30,
       "source": "google-autocomplete",
       "seed": "climate finance"
@@ -1966,6 +1966,12 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "india",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "navigating",
       "volume": 30,
       "source": "industry-rss",
@@ -2021,6 +2027,18 @@
     },
     {
       "term": "does",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "nvidia",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "crisis",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2140,13 +2158,13 @@
       "seed": "rss-aggregate"
     },
     {
-      "term": "market",
+      "term": "2025",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "2024",
+      "term": "market",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2164,25 +2182,49 @@
       "seed": "rss-aggregate"
     },
     {
+      "term": "china",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "luxury",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
       "term": "team",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "stocks",
+      "term": "test",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "says",
+      "term": "prices",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
     },
     {
-      "term": "storm",
+      "term": "best week",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "week",
+      "volume": 30,
+      "source": "industry-rss",
+      "seed": "rss-aggregate"
+    },
+    {
+      "term": "week since",
       "volume": 30,
       "source": "industry-rss",
       "seed": "rss-aggregate"
@@ -2332,7 +2374,7 @@
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance llc",
+      "term": "climate finance solutions careers",
       "volume": 20,
       "source": "google-autocomplete",
       "seed": "climate finance"
@@ -2518,7 +2560,7 @@
       "seed": "carbon emissions"
     },
     {
-      "term": "climate finance solutions careers",
+      "term": "climate finance masters",
       "volume": 10,
       "source": "google-autocomplete",
       "seed": "climate finance"
